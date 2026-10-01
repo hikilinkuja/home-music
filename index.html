@@ -145,6 +145,8 @@ button{font-family:var(--mono)}
 @keyframes blink{50%{opacity:.35}}
 #blockLabel{color:var(--paper)}
 #clock{font-size:15px; color:var(--amber); letter-spacing:.14em; font-variant-numeric:tabular-nums}
+.hdr-btns{display:flex; gap:8px}
+#top .tbtn{padding:5px 10px; font-size:10px; letter-spacing:.16em}
 
 /* ---------- stage ---------- */
 #stage{
@@ -155,9 +157,9 @@ button{font-family:var(--mono)}
     linear-gradient(to bottom, #07070e, #0a0916 60%, #0d0b1c);
 }
 #citySvg{position:absolute; left:50%; top:0; transform:translateX(-50%); width:1500px; max-width:none; height:460px; z-index:0; opacity:.9; pointer-events:none}
-.wall{position:relative; z-index:2; width:min(860px, 100%); display:flex; justify-content:center}
+.wall{position:relative; z-index:2; width:min(620px, 96%); display:flex; justify-content:center}
 .bezel{
-  position:relative; width:100%; aspect-ratio:16/9; background:#000;
+  position:relative; z-index:61; width:100%; aspect-ratio:16/9; background:#000;
   border:3px solid #221f33; border-radius:10px; overflow:hidden;
   box-shadow:0 0 0 1px #060610, 0 0 42px rgba(141,123,255,.16), 0 22px 60px rgba(0,0,0,.6);
 }
@@ -166,8 +168,8 @@ button{font-family:var(--mono)}
 .corner.tr{top:6px; right:6px; border-left:0; border-bottom:0}
 .corner.bl{bottom:6px; left:6px; border-right:0; border-top:0}
 .corner.br{bottom:6px; right:6px; border-left:0; border-top:0}
-.yt-slot{position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease}
-.yt-slot.live{opacity:1}
+.yt-slot{position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease; pointer-events:none}
+.yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
 #standby{
   position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; gap:10px;
@@ -357,7 +359,11 @@ footer b{color:var(--paper); font-weight:500}
   <header id="top">
     <div class="brand"><b>HOME MUSIC</b><span>24-hour selector</span></div>
     <div class="onair"><span class="dot"></span><span class="lbl">on air &middot; </span><span id="blockLabel">&hellip;</span></div>
-    <div id="clock">--:--</div>
+    <div class="hdr-btns">
+      <div id="clock">--:--</div>
+      <button class="tbtn" id="genreBtn" type="button">The sound</button>
+      <button class="tbtn" id="histBtn" type="button">Session log</button>
+    </div>
   </header>
 
   <main id="stage">
@@ -721,11 +727,6 @@ footer b{color:var(--paper); font-weight:500}
       <div class="grp">
         <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
         <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
-      </div>
-      <div class="spacer"></div>
-      <div class="grp">
-        <button class="tbtn" id="genreBtn" type="button">The sound</button>
-        <button class="tbtn" id="histBtn" type="button">Session log</button>
       </div>
     </div>
   </main>
@@ -1253,12 +1254,15 @@ function beginRadio(){
   }
   go();
 }
+var needleTries = 0;
 function checkAudible(){
   var p = P[activeKey];
   if(!p.ready){ setTimeout(checkAudible, 800); return; }
   var st=-9, mu=false;
   try{ st = p.yt.getPlayerState(); mu = p.yt.isMuted(); }catch(e){}
-  if(st !== 1 || mu){ $("needle").classList.add("on"); }
+  if(st === 1 && !mu){ needleTries = 0; return; }
+  if((st === 3 || st === -1) && needleTries++ < 5){ setTimeout(checkAudible, 1200); return; }
+  $("needle").classList.add("on");
 }
 $("needle") && $("needle").addEventListener("click", function(){
   var p = P[activeKey];
@@ -1273,6 +1277,7 @@ function onState(k, st){
     if(k === activeKey){
       $("standby").classList.add("off");
       $("slot"+k).classList.add("live");
+      $("needle").classList.remove("on");
       lastT = 0; lastStamp = Date.now();
     }
     retryCount = 0;
