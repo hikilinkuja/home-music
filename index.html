@@ -319,7 +319,7 @@ button{font-family:var(--mono)}
       <a id="gIshkur" href="https://music.ishkur.com/" target="_blank" rel="noopener">The full genre map: Ishkur's Guide &nearr;</a>
     </div>
     <div class="credits">
-      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. The rig performs every changeover itself; you can still grab a record to scratch (a vinyl layer, the stream itself stays sealed), ride the crossfader, or press start/stop. Shortcuts: [&rarr;] next &middot; [m] mute.
+      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. The rig performs every changeover itself: record swap, needle drop, crossfade, platter brake, all real motion. Just watch. Shortcuts: [&rarr;] next &middot; [m] mute.
     </div>
   </aside>
 
@@ -1267,91 +1267,8 @@ var API={
 var levels={A:0,B:0};
 function now3(){ return performance.now()/1000; }
 
-/* ---------- optional interaction (real controls) ---------- */
-var ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
-var dragging=null, orbit={on:false,x:0,y:0}, yaw=0, pitchCam=0, userHold=0;
-function setPtr(e){
-  var r=canvas.getBoundingClientRect();
-  ptr.x=((e.clientX-r.left)/r.width)*2-1;
-  ptr.y=-((e.clientY-r.top)/r.height)*2+1;
-}
-var vTmp=new THREE.Vector3();
-function planeHit(y, out){
-  ray.setFromCamera(ptr,cam);
-  var t=(y-ray.ray.origin.y)/ray.ray.direction.y;
-  out.copy(ray.ray.direction).multiplyScalar(t).add(ray.ray.origin);
-  return out;
-}
-canvas.addEventListener("pointerdown", function(e){
-  setPtr(e); ray.setFromCamera(ptr,cam);
-  var hits=ray.intersectObjects(pickables,false);
-  if(hits.length){
-    userHold=4;
-    var o=hits[0].object, u=o.userData, d;
-    if(u.type==="record"){
-      d=decks[u.deck]; d.grab=true; d.grabVel=0;
-      var wp=d.rec.getWorldPosition(new THREE.Vector3());
-      planeHit(wp.y, vTmp);
-      d.lastAng=Math.atan2(vTmp.z-wp.z, vTmp.x-wp.x);
-      dragging={type:"record", deck:u.deck};
-    } else if(u.type==="startstop"){
-      d=decks[u.deck]; d.running=!d.running; pressBtn(d);
-      if(API.ctl.startstop) API.ctl.startstop(u.deck, d.running);
-    } else if(u.type==="cue"){
-      d=decks[u.deck]; d.armDown=!d.armDown;
-      if(API.ctl.cue) API.ctl.cue(u.deck, d.armDown);
-    } else {
-      dragging={type:u.type, deck:u.deck, obj:o, u:u};
-    }
-    try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
-    e.preventDefault();
-  } else {
-    orbit.on=true; orbit.x=e.clientX; orbit.y=e.clientY;
-  }
-});
-canvas.addEventListener("pointermove", function(e){
-  setPtr(e);
-  if(dragging && dragging.type==="record"){
-    userHold=4;
-    var d=decks[dragging.deck];
-    var wp=d.rec.getWorldPosition(new THREE.Vector3());
-    planeHit(wp.y, vTmp);
-    var a=Math.atan2(vTmp.z-wp.z, vTmp.x-wp.x);
-    var da=a-d.lastAng;
-    if(da>Math.PI) da-=Math.PI*2; if(da<-Math.PI) da+=Math.PI*2;
-    d.lastAng=a; d.angle-=da; d.grabVel=-da;
-    if(API.ctl.scratch) API.ctl.scratch(da);
-  } else if(dragging && dragging.obj){
-    userHold=4;
-    var u=dragging.u, o=dragging.obj;
-    planeHit(o.getWorldPosition(new THREE.Vector3()).y, vTmp);
-    if(u.axis==="x"){
-      o.position.x=Math.max(u.min, Math.min(u.max, vTmp.x - mix.position.x));
-      if(u.type==="xfader" && !fading && API.ctl.fade){ API.ctl.fade((o.position.x+0.62)/1.24); }
-    } else {
-      var parent=(u.type==="pitch") ? decks[u.deck].group : mix;
-      o.position.z=Math.max(u.min, Math.min(u.max, vTmp.z - parent.position.z));
-      if(u.type==="chfader" && API.ctl.ch){
-        API.ctl.ch(u.deck, Math.max(0, Math.min(1, (1.0-o.position.z)/1.3)));
-      }
-    }
-  } else if(orbit.on){
-    yaw += (e.clientX-orbit.x)*0.004;
-    pitchCam += (e.clientY-orbit.y)*0.003;
-    yaw=Math.max(-0.6, Math.min(0.6, yaw));
-    pitchCam=Math.max(-0.25, Math.min(0.35, pitchCam));
-    orbit.x=e.clientX; orbit.y=e.clientY;
-  }
-});
-function endDrag(){
-  if(dragging && dragging.type==="record"){
-    var d=decks[dragging.deck]; d.grab=false;
-    if(API.ctl.scratchEnd) API.ctl.scratchEnd();
-  }
-  dragging=null; orbit.on=false;
-}
-canvas.addEventListener("pointerup", endDrag);
-canvas.addEventListener("pointercancel", endDrag);
+/* ---------- watch-only: the rig performs, nobody reaches in ---------- */
+var yaw=0, pitchCam=0, userHold=0;
 
 /* ---------- lens pass ---------- */
 var rt=new THREE.WebGLRenderTarget(4,4, MOBILE?{}:{samples:4});
@@ -1622,35 +1539,6 @@ var FX = {
       setTimeout(function(){ try{ck.src.stop();}catch(e){} }, 700);
     }
   },
-  /* vinyl scratch layer: the stream cannot be scratched, this noise bed answers the hand */
-  _scr:null,
-  scratch: function(da){
-    if(!this.ctx) return;
-    this.resume();
-    var c=this.ctx, t=c.currentTime;
-    if(!this._scr){
-      var len=c.sampleRate*1.2, buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
-      for(var i=0;i<len;i++){ d[i]=Math.random()*2-1; }
-      var src=c.createBufferSource(); src.buffer=buf; src.loop=true;
-      var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.Q.value=1.6; bp.frequency.value=900;
-      var g=c.createGain(); g.gain.value=0.0001;
-      src.connect(bp); bp.connect(g); g.connect(this.master);
-      var s=c.createGain(); s.gain.value=0.35; g.connect(s); s.connect(this.echoIn);
-      src.start();
-      this._scr={src:src,bp:bp,g:g};
-    }
-    var mag=Math.min(0.5, Math.abs(da)*2.4);
-    this._scr.bp.frequency.setTargetAtTime(420+Math.min(2600, Math.abs(da)*5200), t, 0.02);
-    this._scr.g.gain.cancelScheduledValues(t);
-    this._scr.g.gain.setValueAtTime(Math.max(0.0001,mag), t);
-    this._scr.g.gain.linearRampToValueAtTime(0.0001, t+0.22);
-  },
-  scratchEnd: function(){
-    if(!this.ctx || !this._scr) return;
-    var t=this.ctx.currentTime;
-    this._scr.g.gain.cancelScheduledValues(t);
-    this._scr.g.gain.setTargetAtTime(0.0001, t, 0.05);
-  },
   transitionFx: function(){
     var self=this;
     self.stab();
@@ -1709,57 +1597,24 @@ var muted=false;
 var transitioning=false;
 var retryCount=0;
 var lastT=0, lastStamp=0;
-var chMult={A:1,B:1};        /* rig channel faders */
-var gate={A:1,B:1};          /* rig tonearm lifts: arm up means silence */
-var manualMix=null;          /* rig crossfader when the viewer grabs it between changeovers */
 
 try{ var sv = localStorage.getItem("hm_vol"); if(sv!==null){ masterVol = Math.max(0, Math.min(100, parseInt(sv,10)||80)); } }catch(e){}
 
 function other(k){ return k==="A" ? "B" : "A"; }
 function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
-function playerOfDeck(dk){ return SIMPLE ? (dk===rigDeck ? P.A : null) : P[dk]; }
 function applyVol(k){
   var p=P[k]; if(!p || !p.ready || !p.yt) return;
-  var dk = deckOfPlayer(k);
   var f = (p.fade==null?1:p.fade);
-  if(manualMix!=null && !transitioning){
-    f = (dk==="A") ? Math.cos(manualMix*Math.PI/2) : Math.sin(manualMix*Math.PI/2);
-  }
-  var v = masterVol * f * chMult[dk] * gate[dk];
-  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, v)))); }catch(e){}
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f)))); }catch(e){}
 }
 function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
 function audibleLevel(k){
   var p=P[k]; if(!p || !p.ready || !p.yt) return 0;
   var st=-9; try{ st=p.yt.getPlayerState(); }catch(e){ return 0; }
   if(st!==1 || muted) return 0;
-  var dk = deckOfPlayer(k);
   var f = (p.fade==null?1:p.fade);
-  if(manualMix!=null && !transitioning){
-    f = (dk==="A") ? Math.cos(manualMix*Math.PI/2) : Math.sin(manualMix*Math.PI/2);
-  }
-  return (masterVol/100) * f * chMult[dk] * gate[dk];
+  return (masterVol/100) * f;
 }
-
-/* rig controls answer back into the real mix */
-RIG.ctl.startstop = function(dk, running){
-  var p = playerOfDeck(dk); if(!p || !p.ready) return;
-  try{ running ? p.yt.playVideo() : p.yt.pauseVideo(); }catch(e){}
-};
-RIG.ctl.cue = function(dk, down){
-  gate[dk] = down ? 1 : 0;
-  applyVol("A"); applyVol("B");
-};
-RIG.ctl.fade = function(t01){
-  manualMix = Math.max(0, Math.min(1, t01));
-  applyVol("A"); applyVol("B");
-};
-RIG.ctl.ch = function(dk, v){
-  chMult[dk] = Math.max(0, Math.min(1, v));
-  applyVol("A"); applyVol("B");
-};
-RIG.ctl.scratch = function(da){ FX.scratch(da); };
-RIG.ctl.scratchEnd = function(){ FX.scratchEnd(); };
 
 /* feed the VU meters and the tonearm creep */
 setInterval(function(){
@@ -1885,7 +1740,6 @@ function hardNextAudio(t){
 }
 function hardNext(){
   var t = nextTrack(); if(!t) return;
-  manualMix = null;
   hardNextAudio(t);
   RIG.quick(deckOfPlayer(activeKey));
 }
@@ -1895,7 +1749,6 @@ function hardNext(){
 function startTransition(){
   if(transitioning || !radioOn) return;
   var t = nextTrack(); if(!t) return;
-  manualMix = null;
 
   if(SIMPLE){
     transitioning = true;
