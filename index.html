@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Home Music</title>
-<meta name="description" content="Home Music. A 24-hour selector: dub to jungle to techno, programmed by the clock.">
+<meta name="description" content="Home Music. A 24-hour selector: dub to jungle to techno, performed by the rig, programmed by the clock.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">
 <style>
-/* Layout concept: a night broadcast booth seen from the floor. Video wall up top,
-   DJ silhouette at the decks below it, data panels like pirate-radio teletext. */
+/* Layout: a full-screen performing rig; the radio chrome floats over it. */
 :root{
   --ink:#07070e;
   --panel:#0d0d19;
@@ -22,7 +21,7 @@
   --red-deep:#7e140f;
   --amber:#ffb12b;
   --teal:#41d9c8;
-  --violet:#8d7bff;
+  --alu:#cdd2e4;
   --display:'Anton', 'Arial Narrow', sans-serif;
   --mono:'IBM Plex Mono', 'Courier New', monospace;
   color-scheme: dark;
@@ -30,13 +29,9 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;
-  background:var(--ink);
-  color:var(--paper);
-  font-family:var(--mono);
-  font-size:14px;
-  line-height:1.55;
-  overflow-x:hidden;
+  margin:0; background:var(--ink); color:var(--paper);
+  font-family:var(--mono); font-size:14px; line-height:1.5;
+  overflow:hidden;
 }
 ::selection{background:var(--red); color:var(--paper)}
 a{color:var(--amber); text-decoration:none}
@@ -44,30 +39,13 @@ a:hover{color:var(--paper)}
 button{font-family:var(--mono)}
 :focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
-/* ---------- atmosphere layers ---------- */
-#noise{
-  position:fixed; inset:-50%; z-index:60; pointer-events:none; opacity:.055;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 1.2s steps(3) infinite;
-}
-@keyframes grain{
-  0%{transform:translate(0,0)} 33%{transform:translate(-2%,1%)}
-  66%{transform:translate(1%,-2%)} 100%{transform:translate(0,0)}
-}
-#scan{
-  position:fixed; inset:0; z-index:59; pointer-events:none; opacity:.5;
-  background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 3px);
-}
-#vignette{
-  position:fixed; inset:0; z-index:58; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-}
-@media (prefers-reduced-motion: reduce){
-  #noise{animation:none}
-  *{animation-duration:.001s !important; transition-duration:.001s !important}
-}
+#gl{position:fixed; inset:0; z-index:1; display:block; width:100%; height:100%; touch-action:none}
+#glFallback{position:fixed; inset:0; z-index:1; display:none; align-items:center; justify-content:center;
+  color:var(--dim); letter-spacing:.2em; text-align:center; padding:20px;
+  background:radial-gradient(circle at 50% 30%, #12101f, var(--ink))}
+#glFallback.on{display:flex}
 
-/* ---------- splash ---------- */
+/* ---------- splash + MC intro ---------- */
 #splash{
   position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
   background:
@@ -76,21 +54,21 @@ button{font-family:var(--mono)}
   transition:opacity .9s ease;
   padding:24px 16px;
 }
-#splash::before{ /* red sun */
+#splash::before{
   content:""; position:absolute; left:50%; top:36%; width:260px; height:260px;
   transform:translate(-50%,-50%); border-radius:50%;
   background:radial-gradient(circle at 42% 38%, #ff6a4e, var(--red) 55%, var(--red-deep));
   box-shadow:0 0 90px 12px rgba(232,57,44,.45);
 }
-#splash::after{ /* grid floor */
+#splash::after{
   content:""; position:absolute; left:0; right:0; bottom:0; height:38%;
   background:
     repeating-linear-gradient(to top, rgba(141,123,255,.22) 0 1px, transparent 1px 34px),
     repeating-linear-gradient(to right, rgba(141,123,255,.14) 0 1px, transparent 1px 56px);
   transform:perspective(380px) rotateX(55deg);
   transform-origin:50% 100%;
-  mask-image:linear-gradient(to top, #000 55%, transparent);
   -webkit-mask-image:linear-gradient(to top, #000 55%, transparent);
+          mask-image:linear-gradient(to top, #000 55%, transparent);
 }
 .sp-inner{position:relative; z-index:2; text-align:center; max-width:720px; width:100%}
 .sp-bar{width:72px; height:5px; background:var(--red); margin:0 auto 16px; box-shadow:0 0 16px rgba(232,57,44,.8)}
@@ -104,13 +82,11 @@ button{font-family:var(--mono)}
 #enter{
   cursor:pointer; border:2px solid var(--amber); color:var(--amber); background:rgba(255,177,43,.07);
   font-size:15px; letter-spacing:.28em; padding:16px 34px; text-transform:uppercase;
-  box-shadow:0 0 0 rgba(255,177,43,.0);
   animation:pulse 1.6s ease-in-out infinite;
 }
 #enter:hover{background:var(--amber); color:var(--ink)}
 @keyframes pulse{50%{box-shadow:0 0 26px rgba(255,177,43,.45)}}
 .sp-note{color:var(--dim); font-size:11px; margin-top:16px; letter-spacing:.12em}
-/* MC sequence */
 #mc{display:none; min-height:220px}
 #mc.on{display:block}
 .mc-line{
@@ -128,153 +104,92 @@ button{font-family:var(--mono)}
 #skipIntro:hover{color:var(--paper); border-color:var(--dim)}
 #splash.off{opacity:0; pointer-events:none}
 
-/* ---------- app frame ---------- */
-#app{display:none; min-height:100%; flex-direction:column}
-#app.on{display:flex}
+/* ---------- top bar ---------- */
+#app{display:none}
+#app.on{display:block}
 #top{
+  position:fixed; left:0; right:0; top:0; z-index:40;
   display:flex; align-items:center; justify-content:space-between; gap:14px;
-  padding:12px 20px; border-bottom:1px solid var(--line);
-  background:linear-gradient(to bottom, rgba(13,13,25,.92), rgba(13,13,25,.75));
-  position:sticky; top:env(safe-area-inset-top, 0px); z-index:40; backdrop-filter:blur(4px);
+  padding:calc(10px + env(safe-area-inset-top, 0px)) 18px 10px;
+  background:linear-gradient(to bottom, rgba(7,7,14,.88), rgba(7,7,14,0));
 }
 .brand{display:flex; align-items:baseline; gap:10px; min-width:0}
-.brand b{font-family:var(--display); font-weight:400; font-size:22px; letter-spacing:.04em; color:var(--paper); text-shadow:2px 2px 0 var(--red)}
-.brand span{color:var(--teal); font-size:10px; letter-spacing:.4em; white-space:nowrap}
+.brand b{font-family:var(--display); font-weight:400; font-size:22px; letter-spacing:.04em; color:var(--paper); text-shadow:2px 2px 0 var(--red); white-space:nowrap}
+.brand span{color:var(--teal); font-size:10px; letter-spacing:.34em; white-space:nowrap; text-transform:uppercase}
 .onair{display:flex; align-items:center; gap:9px; color:var(--dim); font-size:11px; letter-spacing:.18em; text-transform:uppercase; text-align:center}
 .onair .dot{width:9px; height:9px; border-radius:50%; background:var(--red); box-shadow:0 0 10px var(--red); animation:blink 1.4s infinite}
 @keyframes blink{50%{opacity:.35}}
 #blockLabel{color:var(--paper)}
-#clock{font-size:15px; color:var(--amber); letter-spacing:.14em; font-variant-numeric:tabular-nums}
-.hdr-btns{display:flex; gap:8px}
-#top .tbtn{padding:5px 10px; font-size:10px; letter-spacing:.16em}
+.hdr-btns{display:flex; align-items:center; gap:8px}
+#clock{font-size:15px; color:var(--amber); letter-spacing:.14em; font-variant-numeric:tabular-nums; margin-right:6px}
+.tbtn{
+  cursor:pointer; background:rgba(7,7,14,.55); border:1px solid var(--line); color:var(--dim);
+  padding:6px 11px; letter-spacing:.18em; font-size:10px; text-transform:uppercase;
+}
+.tbtn:hover,.tbtn.on{color:var(--amber); border-color:var(--amber)}
 
-/* ---------- stage ---------- */
-#stage{
-  position:relative; flex:1; display:flex; flex-direction:column; align-items:center;
-  padding:26px 16px 0; overflow:hidden;
-  background:
-    radial-gradient(circle 420px at 50% 230px, rgba(232,57,44,.13), transparent 70%),
-    linear-gradient(to bottom, #07070e, #0a0916 60%, #0d0b1c);
+/* ---------- HUD : monitor + now playing ---------- */
+#hud{
+  position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index:30; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; pointer-events:none;
 }
-#citySvg{position:absolute; left:50%; top:0; transform:translateX(-50%); width:1500px; max-width:none; height:460px; z-index:0; opacity:.9; pointer-events:none}
-.wall{position:relative; z-index:2; width:min(620px, 96%); display:flex; justify-content:center}
-.bezel{
-  position:relative; z-index:61; width:100%; aspect-ratio:16/9; background:#000;
-  border:3px solid #221f33; border-radius:10px; overflow:hidden;
-  box-shadow:0 0 0 1px #060610, 0 0 42px rgba(141,123,255,.16), 0 22px 60px rgba(0,0,0,.6);
+#hud > *{pointer-events:auto}
+.vidpanel{
+  flex:0 0 302px; max-width:302px; background:var(--panel);
+  border:2px solid #3a3560; box-shadow:0 0 0 1px #090812, 0 14px 40px rgba(0,0,0,.6);
+  border-radius:8px; overflow:hidden;
 }
-.bezel .corner{position:absolute; width:14px; height:14px; border:2px solid var(--amber); z-index:6; pointer-events:none}
-.corner.tl{top:6px; left:6px; border-right:0; border-bottom:0}
-.corner.tr{top:6px; right:6px; border-left:0; border-bottom:0}
-.corner.bl{bottom:6px; left:6px; border-right:0; border-top:0}
-.corner.br{bottom:6px; right:6px; border-left:0; border-top:0}
+.vp-top{display:flex; align-items:center; justify-content:space-between; padding:5px 9px;
+  border-bottom:1px solid var(--line); background:linear-gradient(#1b1830,#12101f)}
+.vp-top .lab{font-size:9px; letter-spacing:.26em; color:var(--dim); text-transform:uppercase}
+.vp-top .dot{width:7px; height:7px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); animation:blink 1.4s infinite}
+.vp-screen{position:relative; aspect-ratio:16/9; background:#000}
 .yt-slot{position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease; pointer-events:none}
 .yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
 #standby{
-  position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; gap:10px;
-  align-items:center; justify-content:center; background:
-    repeating-linear-gradient(45deg, #0b0a14 0 18px, #0e0c1a 18px 36px);
-  color:var(--dim); letter-spacing:.3em; font-size:12px; text-transform:uppercase; text-align:center;
+  position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; gap:6px;
+  align-items:center; justify-content:center; text-align:center; padding:8px;
+  background:repeating-linear-gradient(45deg, #0b0a14 0 14px, #0e0c1a 14px 28px);
+  color:var(--dim); letter-spacing:.2em; font-size:10px; text-transform:uppercase;
   transition:opacity .8s ease;
 }
-#standby .big{font-family:var(--display); font-size:30px; color:var(--paper); letter-spacing:.08em; text-shadow:2px 2px 0 var(--red)}
+#standby .big{font-family:var(--display); font-size:20px; color:var(--paper); letter-spacing:.06em; text-shadow:2px 2px 0 var(--red)}
 #standby.off{opacity:0; pointer-events:none}
-#needle{
-  position:absolute; inset:0; z-index:7; display:none; align-items:center; justify-content:center;
-  background:rgba(7,7,14,.82); cursor:pointer; border:0; width:100%; color:var(--amber);
-  font-size:14px; letter-spacing:.3em; text-transform:uppercase;
-}
-#needle.on{display:flex}
+.vp-ctrl{display:flex; align-items:center; gap:9px; padding:7px 9px; border-top:1px solid var(--line)}
+#vol{accent-color:var(--amber); width:100%; min-width:60px}
+#muteBtn{padding:5px 9px}
 
-/* booth : ink line art */
-#booth{position:relative; z-index:3; width:min(1150px, 106%); margin-top:-34px; pointer-events:none}
-#boothSvg{width:100%; height:auto; display:block}
-#djHead{animation:bob 1.15s ease-in-out infinite; transform-box:fill-box; transform-origin:center bottom}
-@keyframes bob{50%{transform:translateY(2.5px)}}
-.tonearm{transform-box:view-box; transition:transform 1.5s cubic-bezier(.45,.02,.2,1)}
-#tonearmL{transform-origin:428px 172px}
-#tonearmR{transform-origin:1034px 172px}
-#tonearmL.play,#tonearmR.play{transform:rotate(13deg)}
-.rec{transition:opacity .9s ease}
-.rec.off{opacity:0}
-#foreR{transform-box:view-box; transform-origin:698px 256px; transform:rotate(var(--fr,0deg))}
-#handR{transform-box:view-box; transform:translateX(var(--xf,0px))}
-#xfKnob{transform-box:view-box; transform:translate(620px,307.5px) translateX(var(--xf,0px))}
-#foreL{transform-box:view-box; transform-origin:532px 252px; transition:transform .8s ease}
-#booth.liftL #foreL{transform:rotate(-9deg)}
-#crateTop{transform-box:view-box; transition:transform .5s ease}
-#booth.cratePop #crateTop{transform:translateY(-12px)}
-#discFly{transform-box:view-box; transform:translate(1128px,352px) scale(.5); opacity:0}
-#discFly.flyL{animation:flyL 1.25s cubic-bezier(.35,.1,.3,1) forwards}
-#discFly.flyR{animation:flyR 1.05s cubic-bezier(.35,.1,.3,1) forwards}
-@keyframes flyL{
-  0%{transform:translate(1128px,352px) scale(.5); opacity:0}
-  12%{opacity:1}
-  55%{transform:translate(700px,150px) scale(.8)}
-  100%{transform:translate(268px,234px) scale(1); opacity:1}
-}
-@keyframes flyR{
-  0%{transform:translate(1128px,352px) scale(.5); opacity:0}
-  14%{opacity:1}
-  55%{transform:translate(1010px,170px) scale(.8)}
-  100%{transform:translate(874px,234px) scale(1); opacity:1}
-}
-.vu{animation:vu .5s steps(2) infinite}
-.vu:nth-child(2){animation-duration:.34s}
-.vu:nth-child(3){animation-duration:.42s}
-@keyframes vu{50%{opacity:.15}}
-#speedlines{
-  position:absolute; inset:-6% -2%; z-index:4; opacity:0; pointer-events:none;
-  transition:opacity .12s;
-  background:repeating-conic-gradient(from 3deg, transparent 0 11deg, rgba(244,236,217,.5) 11deg 12.6deg);
-  -webkit-mask-image:radial-gradient(circle, transparent 30%, #000 62%);
-  mask-image:radial-gradient(circle, transparent 30%, #000 62%);
-}
-#speedlines.on{opacity:.75}
-.beacon{animation:blink 2.2s infinite}
-
-/* ---------- now playing ---------- */
 #now{
-  position:relative; z-index:5; width:min(860px, 100%);
-  margin:-6px auto 0; padding:18px 20px 16px;
-  background:linear-gradient(135deg, var(--panel), var(--panel2));
+  flex:1 1 300px; min-width:272px; max-width:520px;
+  background:linear-gradient(135deg, rgba(13,13,25,.92), rgba(19,16,34,.92));
   border:1px solid var(--line); border-left:4px solid var(--blk, var(--amber));
+  padding:12px 16px 12px; backdrop-filter:blur(5px);
 }
 .chiprow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-#gChip{
-  font-size:10px; letter-spacing:.26em; text-transform:uppercase; padding:4px 10px;
-  color:var(--ink); background:var(--blk, var(--amber)); font-weight:700;
-}
+#gChip{font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:3px 9px; color:var(--ink); background:var(--blk, var(--amber)); font-weight:700}
 #tYear{color:var(--dim); font-size:12px; letter-spacing:.2em}
-#tArtist{font-family:var(--display); font-weight:400; font-size:clamp(26px, 4.4vw, 40px); margin:8px 0 0; line-height:1.03; text-transform:uppercase; letter-spacing:.015em}
-#tTitle{color:var(--amber); font-size:clamp(15px, 2.4vw, 19px); margin:4px 0 10px; letter-spacing:.04em}
-#tBlurb{color:var(--paper); opacity:.82; margin:0 0 14px; max-width:66ch; font-size:13.5px}
-.t-links{display:flex; gap:12px; flex-wrap:wrap}
+#tArtist{font-family:var(--display); font-weight:400; font-size:clamp(22px, 3vw, 30px); margin:6px 0 0; line-height:1.05; text-transform:uppercase; letter-spacing:.015em}
+#tTitle{color:var(--amber); font-size:15px; margin:3px 0 7px; letter-spacing:.04em}
+#tBlurb{color:var(--paper); opacity:.82; margin:0 0 10px; font-size:12.5px; max-height:5.6em; overflow-y:auto}
+.t-links{display:flex; gap:9px; flex-wrap:wrap}
 .t-links a{
-  border:1px solid var(--line); padding:7px 13px; font-size:11px; letter-spacing:.2em;
+  border:1px solid var(--line); padding:5px 10px; font-size:10px; letter-spacing:.18em;
   text-transform:uppercase; color:var(--paper); background:rgba(255,255,255,.03);
 }
 .t-links a:hover{border-color:var(--amber); color:var(--amber)}
 
-/* ---------- control bar ---------- */
-#ctrl{
-  z-index:5; width:min(860px, 100%); margin:10px auto 26px;
-  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  color:var(--dim); font-size:11px; letter-spacing:.14em;
+#needle{
+  position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:60;
+  display:none; cursor:pointer; border:2px solid var(--amber); width:auto;
+  color:var(--amber); background:rgba(7,7,14,.9);
+  font-size:13px; letter-spacing:.3em; text-transform:uppercase; padding:16px 26px;
 }
-#ctrl .grp{display:flex; align-items:center; gap:9px}
-#vol{accent-color:var(--amber); width:140px}
-.tbtn{
-  cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
-  padding:7px 12px; letter-spacing:.2em; font-size:11px; text-transform:uppercase;
-}
-.tbtn:hover,.tbtn.on{color:var(--amber); border-color:var(--amber)}
-#ctrl .spacer{flex:1}
+#needle.on{display:block}
 
-/* ---------- panels ---------- */
+/* ---------- side panels ---------- */
 .panel{
-  position:fixed; top:0; bottom:0; width:min(360px, 92vw); z-index:70;
+  position:fixed; top:0; bottom:0; width:min(380px, 94vw); z-index:70;
   background:rgba(10,10,20,.97); border-color:var(--line);
   padding:calc(18px + env(safe-area-inset-top, 0px)) 20px 24px; overflow-y:auto;
   transition:transform .35s ease;
@@ -282,10 +197,7 @@ button{font-family:var(--mono)}
 #genrePanel{left:0; border-right:1px solid var(--line); transform:translateX(-102%)}
 #histPanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
 .panel.on{transform:translateX(0)}
-.panel h3{
-  font-family:var(--display); font-weight:400; letter-spacing:.06em; font-size:20px;
-  margin:4px 0 2px; text-transform:uppercase; text-shadow:2px 2px 0 var(--red)
-}
+.panel h3{font-family:var(--display); font-weight:400; letter-spacing:.06em; font-size:20px; margin:4px 0 2px; text-transform:uppercase; text-shadow:2px 2px 0 var(--red)}
 .panel .pclose{position:absolute; top:14px; right:14px; background:none; border:1px solid var(--line); color:var(--dim); cursor:pointer; padding:4px 9px}
 .panel .psub{color:var(--dim); font-size:10px; letter-spacing:.3em; text-transform:uppercase; margin:0 0 14px}
 #gName{color:var(--amber); font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin:14px 0 6px}
@@ -294,6 +206,8 @@ button{font-family:var(--mono)}
 .g-links{display:flex; flex-direction:column; gap:8px; margin-top:18px}
 .g-links a{font-size:11px; letter-spacing:.14em; text-transform:uppercase; border:1px solid var(--line); padding:8px 11px; color:var(--paper); background:rgba(255,255,255,.03)}
 .g-links a:hover{border-color:var(--amber); color:var(--amber)}
+.credits{margin-top:26px; border-top:1px dashed var(--line); padding-top:14px; color:var(--dim); font-size:11px}
+.credits b{color:var(--paper); font-weight:500}
 #histList{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
 #histList li{border-bottom:1px dashed var(--line); padding-bottom:10px}
 #histList .h-time{color:var(--dim); font-size:10px; letter-spacing:.2em}
@@ -303,42 +217,30 @@ button{font-family:var(--mono)}
 #histList .h-links a{margin-right:12px}
 .h-empty{color:var(--dim); font-size:12px}
 
-/* ---------- toast + footer ---------- */
 #toast{
-  position:fixed; left:50%; bottom:28px; transform:translate(-50%, 90px); z-index:75;
+  position:fixed; left:50%; top:calc(64px + env(safe-area-inset-top, 0px)); transform:translate(-50%, -140px); z-index:75;
   visibility:hidden;
   background:var(--panel2); border:1px solid var(--amber); color:var(--amber);
-  padding:11px 20px; font-size:11px; letter-spacing:.26em; text-transform:uppercase;
+  padding:10px 18px; font-size:11px; letter-spacing:.24em; text-transform:uppercase;
   transition:transform .4s ease; max-width:92vw; text-align:center;
 }
 #toast.on{transform:translate(-50%, 0); visibility:visible}
-footer{
-  border-top:1px solid var(--line); color:var(--dim); font-size:10.5px; letter-spacing:.1em;
-  padding:14px 20px calc(16px + env(safe-area-inset-bottom, 0px)); display:flex; gap:8px 22px; flex-wrap:wrap; justify-content:center;
-  background:var(--panel);
-}
-footer b{color:var(--paper); font-weight:500}
 
-/* ---------- responsive ---------- */
 @media (max-width:700px){
-  #top{padding:10px 12px}
-  .brand b{font-size:17px; white-space:nowrap}
+  .brand b{font-size:17px}
   .brand span{display:none}
-  .onair{font-size:9px; letter-spacing:.06em; gap:6px}
-  .onair .lbl{display:none}
+  .onair{display:none}
   #clock{font-size:13px}
-  #booth{margin-top:-12px}
-  #now{padding:14px 14px 13px}
-  #ctrl{gap:10px}
-  #vol{width:100px}
+  .vidpanel{flex-basis:244px; max-width:244px}
+  #now{min-width:200px}
+  #tBlurb{max-height:4.4em}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s !important; transition-duration:.001s !important}
 }
 </style>
 </head>
 <body>
-<div id="noise"></div>
-<div id="scan"></div>
-<div id="vignette"></div>
-
 <!-- ============ SPLASH ============ -->
 <div id="splash">
   <div class="sp-inner">
@@ -354,7 +256,11 @@ footer b{color:var(--paper); font-weight:500}
   </div>
 </div>
 
-<!-- ============ APP ============ -->
+<!-- ============ STAGE ============ -->
+<canvas id="gl"></canvas>
+<div id="glFallback">this device could not start the 3d stage.<br>the radio still plays below.</div>
+
+<!-- ============ APP CHROME ============ -->
 <div id="app">
   <header id="top">
     <div class="brand"><b>HOME MUSIC</b><span>24-hour selector</span></div>
@@ -366,348 +272,23 @@ footer b{color:var(--paper); font-weight:500}
     </div>
   </header>
 
-  <main id="stage">
-    <svg id="citySvg" viewBox="0 0 1500 460" aria-hidden="true">
-      <circle cx="750" cy="120" r="150" fill="#e8392c" opacity="0.16"/>
-      <circle cx="750" cy="120" r="108" fill="#e8392c" opacity="0.2"/>
-      <g fill="#0a0916">
-        <rect x="0" y="250" width="90" height="210"/><rect x="95" y="300" width="70" height="160"/>
-        <rect x="170" y="210" width="60" height="250"/><rect x="235" y="280" width="95" height="180"/>
-        <rect x="335" y="240" width="55" height="220"/><rect x="395" y="310" width="80" height="150"/>
-        <rect x="480" y="200" width="70" height="260"/><rect x="555" y="270" width="60" height="190"/>
-        <rect x="885" y="260" width="65" height="200"/><rect x="955" y="210" width="75" height="250"/>
-        <rect x="1035" y="300" width="60" height="160"/><rect x="1100" y="235" width="85" height="225"/>
-        <rect x="1190" y="290" width="60" height="170"/><rect x="1255" y="220" width="70" height="240"/>
-        <rect x="1330" y="275" width="90" height="185"/><rect x="1425" y="240" width="75" height="220"/>
-      </g>
-      <g stroke="#1c1930" stroke-width="3">
-        <line x1="205" y1="210" x2="205" y2="150"/><line x1="515" y1="200" x2="515" y2="130"/>
-        <line x1="995" y1="210" x2="995" y2="140"/><line x1="1290" y1="220" x2="1290" y2="160"/>
-      </g>
-      <g fill="#e8392c">
-        <circle class="beacon" cx="205" cy="148" r="4"/><circle class="beacon" cx="515" cy="128" r="4"/>
-        <circle class="beacon" cx="995" cy="138" r="4"/><circle class="beacon" cx="1290" cy="158" r="4"/>
-      </g>
-      <g fill="#ffb12b" opacity="0.5">
-        <rect x="185" y="230" width="7" height="9"/><rect x="200" y="252" width="7" height="9"/>
-        <rect x="495" y="222" width="7" height="9"/><rect x="520" y="244" width="7" height="9"/>
-        <rect x="505" y="286" width="7" height="9"/><rect x="250" y="300" width="7" height="9"/>
-        <rect x="285" y="322" width="7" height="9"/><rect x="975" y="238" width="7" height="9"/>
-        <rect x="1000" y="262" width="7" height="9"/><rect x="1120" y="258" width="7" height="9"/>
-        <rect x="1145" y="282" width="7" height="9"/><rect x="1270" y="246" width="7" height="9"/>
-        <rect x="1352" y="296" width="7" height="9"/><rect x="60" y="276" width="7" height="9"/>
-      </g>
-      <g fill="#41d9c8" opacity="0.45">
-        <rect x="350" y="262" width="7" height="9"/><rect x="415" y="330" width="7" height="9"/>
-        <rect x="575" y="292" width="7" height="9"/><rect x="905" y="282" width="7" height="9"/>
-        <rect x="1210" y="312" width="7" height="9"/><rect x="1445" y="262" width="7" height="9"/>
-        <rect x="140" y="320" width="7" height="9"/>
-      </g>
-    </svg>
-
-    <div class="wall">
-      <div class="bezel">
-        <div class="corner tl"></div><div class="corner tr"></div>
-        <div class="corner bl"></div><div class="corner br"></div>
+  <div id="hud">
+    <div class="vidpanel">
+      <div class="vp-top"><span class="lab">Live feed &middot; monitor 1</span><span class="dot"></span></div>
+      <div class="vp-screen">
         <div class="yt-slot" id="slotA"><div id="ytA"></div></div>
         <div class="yt-slot" id="slotB"><div id="ytB"></div></div>
         <div id="standby">
           <div class="big">Home Music</div>
           <div id="standbyMsg">tuning&hellip;</div>
         </div>
-        <button id="needle" type="button">touch to drop the needle</button>
+      </div>
+      <div class="vp-ctrl">
+        <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
+        <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
       </div>
     </div>
 
-    <!-- ============ BOOTH : ink line art ============ -->
-    <div id="booth">
-      <div id="speedlines"></div>
-      <svg id="boothSvg" viewBox="0 0 1240 470" aria-hidden="true">
-        <defs>
-          <pattern id="hx" width="7" height="7" patternUnits="userSpaceOnUse">
-            <path d="M0 7 L7 0" stroke="#ecdfc3" stroke-width="1" opacity="0.28"/>
-          </pattern>
-          <pattern id="hx2" width="6" height="6" patternUnits="userSpaceOnUse">
-            <path d="M0 6 L6 0 M0 0 L6 6" stroke="#ecdfc3" stroke-width="0.8" opacity="0.22"/>
-          </pattern>
-          <radialGradient id="djGlow" cx="50%" cy="42%" r="55%">
-            <stop offset="0%" stop-color="#ffb12b" stop-opacity="0.16"/>
-            <stop offset="55%" stop-color="#e8392c" stop-opacity="0.08"/>
-            <stop offset="100%" stop-color="#e8392c" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <ellipse cx="620" cy="190" rx="250" ry="165" fill="url(#djGlow)"/>
-
-        <!-- speakers -->
-        <g stroke="#ecdfc3" fill="none" stroke-width="2.5">
-          <rect x="10" y="148" width="96" height="160" fill="#0b0a14"/>
-          <circle cx="58" cy="196" r="30"/><circle cx="58" cy="196" r="12" fill="url(#hx)"/>
-          <circle cx="58" cy="262" r="26"/><circle cx="58" cy="262" r="10" fill="url(#hx)"/>
-          <rect x="26" y="292" width="64" height="8" rx="4" opacity="0.6"/>
-          <rect x="1134" y="148" width="96" height="160" fill="#0b0a14"/>
-          <circle cx="1182" cy="196" r="30"/><circle cx="1182" cy="196" r="12" fill="url(#hx)"/>
-          <circle cx="1182" cy="262" r="26"/><circle cx="1182" cy="262" r="10" fill="url(#hx)"/>
-          <rect x="1150" y="292" width="64" height="8" rx="4" opacity="0.6"/>
-        </g>
-
-        <!-- ============ DJ (original character, ink style) ============ -->
-        <g id="dj">
-          <!-- left headphone cup (behind hair) -->
-          <rect x="566" y="92" width="20" height="32" rx="9" fill="#0b0a14" stroke="#e8392c" stroke-width="3"/>
-          <!-- torso -->
-          <path d="M 468 308 C 474 232 500 196 544 184 C 570 176 584 160 588 144 L 652 144 C 656 160 670 176 696 184 C 740 196 766 232 772 308 Z"
-                fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-          <path d="M 472 300 C 476 250 492 214 520 196 L 520 300 Z" fill="url(#hx)"/>
-          <path d="M 588 150 L 566 196 M 652 150 L 674 196" stroke="#ecdfc3" stroke-width="2" opacity="0.6" fill="none"/>
-          <path d="M 620 198 L 620 300" stroke="#ecdfc3" stroke-width="1.6" stroke-dasharray="3 5" opacity="0.5" fill="none"/>
-          <path d="M 500 234 C 516 222 532 212 546 198 M 740 234 C 724 222 708 212 694 198" stroke="#ecdfc3" stroke-width="1.5" opacity="0.45" fill="none"/>
-          <rect x="586" y="214" width="30" height="18" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.5" opacity="0.8"/>
-          <text x="601" y="227" text-anchor="middle" font-size="10" fill="#ecdfc3" opacity="0.85" style="font-family:'IBM Plex Mono',monospace">HM</text>
-
-          <!-- head -->
-          <g id="djHead">
-            <path d="M 578 100 L 584 68 L 596 84 L 604 56 L 616 78 L 628 52 L 638 76 L 650 60 L 656 84 L 666 72 L 668 100
-                     C 668 118 662 132 650 140 L 638 148 C 622 152 606 148 598 140 C 586 130 578 116 578 100 Z"
-                  fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-            <path d="M 584 110 L 600 108 L 598 136 L 588 127 Z" fill="url(#hx)"/>
-            <path d="M 596 84 L 600 97 M 616 78 L 618 93 M 638 76 L 636 91 M 654 84 L 650 97" stroke="#ecdfc3" stroke-width="1.3" fill="none" opacity="0.5"/>
-            <path d="M 604 110 C 608 107 613 107 617 110 M 627 110 C 631 107 636 107 640 110" stroke="#ecdfc3" stroke-width="2.2" fill="none"/>
-            <path d="M 608 114 L 614 114 M 629 114 L 635 114" stroke="#ecdfc3" stroke-width="1.8" fill="none" opacity="0.9"/>
-            <path d="M 621 104 L 622 112 M 622 112 L 620 122 L 627 124" stroke="#ecdfc3" stroke-width="1.6" fill="none" opacity="0.8"/>
-            <path d="M 613 134 L 632 132" stroke="#ecdfc3" stroke-width="2" fill="none" opacity="0.9"/>
-            <path d="M 648 118 C 646 127 641 133 635 138" stroke="#ecdfc3" stroke-width="1.4" fill="none" opacity="0.55"/>
-            <path d="M 598 139 C 604 144 614 147 624 146" stroke="#ecdfc3" stroke-width="1.2" fill="none" opacity="0.4"/>
-            <!-- headphone band + right cup -->
-            <path d="M 580 84 C 592 46 650 46 662 86" fill="none" stroke="#ecdfc3" stroke-width="4"/>
-            <path d="M 585 86 C 596 56 646 56 657 88" fill="none" stroke="#ecdfc3" stroke-width="1.3" opacity="0.5"/>
-            <rect x="652" y="92" width="22" height="34" rx="9" fill="#0b0a14" stroke="#e8392c" stroke-width="3"/>
-            <circle cx="663" cy="109" r="6" fill="none" stroke="#e8392c" stroke-width="2" opacity="0.85"/>
-          </g>
-          <!-- headphone cable to mixer -->
-          <path d="M 663 128 C 700 190 600 262 536 306" fill="none" stroke="#ecdfc3" stroke-width="1.8" opacity="0.6"/>
-
-          <!-- left arm reaching the left deck -->
-          <path d="M 564 192 C 536 204 520 226 522 252 L 544 258 C 544 234 556 214 578 202 Z"
-                fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
-          <g id="foreL">
-            <path d="M 544 256 C 500 272 420 262 352 236 L 356 222 C 420 246 492 254 536 240 Z"
-                  fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
-            <g id="handL">
-              <path d="M 356 226 C 352 214 336 214 334 226 C 332 236 341 245 353 241 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-              <path d="M 342 226 L 326 219 M 343 232 L 326 233 M 343 238 L 329 246" stroke="#ecdfc3" stroke-width="1.8" fill="none"/>
-            </g>
-          </g>
-
-          <!-- right arm to the crossfader -->
-          <path d="M 676 192 C 702 206 712 228 708 254 L 688 258 C 688 234 676 214 656 202 Z"
-                fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
-          <g id="foreR">
-            <path d="M 708 254 C 696 280 668 296 628 302 L 624 288 C 652 282 678 268 688 252 Z"
-                  fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
-          </g>
-          <g id="handR">
-            <path d="M 612 298 C 614 287 631 285 635 294 L 631 306 C 622 302 618 302 616 307 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-            <path d="M 616 304 L 616 316 M 624 302 L 624 317 M 632 301 L 631 315 M 612 303 L 605 311" stroke="#ecdfc3" stroke-width="1.8" fill="none"/>
-          </g>
-        </g>
-
-        <!-- ============ table ============ -->
-        <path d="M 60 308 L 1180 308 L 1215 470 L 25 470 Z" fill="#100e1e" stroke="#ecdfc3" stroke-width="2.5"/>
-        <line x1="60" y1="308" x2="1180" y2="308" stroke="#ffb12b" stroke-width="1.8" opacity="0.65"/>
-        <path d="M 48 368 L 1192 368" stroke="#ecdfc3" stroke-width="1.2" opacity="0.25"/>
-        <path d="M 36 428 L 1204 428" stroke="#ecdfc3" stroke-width="1.2" opacity="0.18"/>
-        <path d="M 70 312 L 48 466 M 1170 312 L 1192 466" stroke="#ecdfc3" stroke-width="1.4" opacity="0.3"/>
-        <path d="M 90 320 L 250 320 L 236 420 L 76 420 Z" fill="url(#hx)" opacity="0.5"/>
-        <path d="M 990 320 L 1150 320 L 1164 420 L 1004 420 Z" fill="url(#hx)" opacity="0.5"/>
-        <!-- cables on the table front -->
-        <g fill="none" stroke="#ecdfc3" stroke-width="2" opacity="0.45">
-          <path d="M 300 342 C 420 382 560 374 612 344"/>
-          <path d="M 640 344 C 720 386 860 382 940 346"/>
-          <path d="M 196 312 C 206 332 238 336 258 318"/>
-        </g>
-
-        <!-- ============ deck L ============ -->
-        <g transform="translate(150,128)">
-          <rect x="3" y="3" width="328" height="200" rx="10" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-          <rect x="13" y="13" width="308" height="180" rx="6" fill="none" stroke="#ecdfc3" stroke-width="1.2" opacity="0.3"/>
-          <g fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.55">
-            <circle cx="20" cy="20" r="2.8"/><circle cx="314" cy="20" r="2.8"/>
-            <circle cx="20" cy="186" r="2.8"/><circle cx="314" cy="186" r="2.8"/>
-          </g>
-          <circle cx="118" cy="106" r="86" fill="none" stroke="#ecdfc3" stroke-width="2.5"/>
-          <circle cx="118" cy="106" r="80" fill="none" stroke="#ecdfc3" stroke-width="1.6" stroke-dasharray="2 6" opacity="0.85"/>
-          <circle cx="118" cy="106" r="74" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
-          <g transform="translate(118,106)">
-            <g id="recL" class="rec">
-              <circle r="70" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-              <g fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.22">
-                <circle r="64"/><circle r="58"/><circle r="52"/><circle r="46"/><circle r="40"/>
-              </g>
-              <circle r="32" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
-              <circle id="labL" r="21" fill="#e8392c"/>
-              <circle r="3" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1"/>
-              <line x1="0" y1="-19" x2="0" y2="-9" stroke="#f4ecd9" stroke-width="2.5"/>
-            </g>
-          </g>
-          <rect x="24" y="168" width="14" height="22" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
-          <circle class="strobedot" cx="31" cy="175" r="2.6" fill="#e8392c"/>
-          <rect x="56" y="176" width="24" height="16" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
-          <rect x="90" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
-          <rect x="108" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
-          <circle cx="115" cy="184" r="1.6" fill="#ecdfc3"/>
-          <rect x="56" y="20" width="18" height="12" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.7"/>
-          <rect x="296" y="64" width="8" height="104" rx="4" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
-          <g stroke="#ecdfc3" stroke-width="1" opacity="0.5">
-            <line x1="288" y1="70" x2="294" y2="70"/><line x1="288" y1="86" x2="294" y2="86"/>
-            <line x1="284" y1="116" x2="294" y2="116"/><line x1="288" y1="102" x2="294" y2="102"/>
-            <line x1="288" y1="134" x2="294" y2="134"/><line x1="288" y1="150" x2="294" y2="150"/>
-            <line x1="288" y1="166" x2="294" y2="166"/>
-          </g>
-          <rect x="288" y="108" width="24" height="13" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-          <line x1="300" y1="108" x2="300" y2="121" stroke="#ecdfc3" stroke-width="1"/>
-          <circle cx="278" cy="44" r="20" fill="none" stroke="#ecdfc3" stroke-width="2"/>
-          <circle cx="278" cy="44" r="10" fill="none" stroke="#ecdfc3" stroke-width="2"/>
-          <line x1="262" y1="70" x2="268" y2="88" stroke="#ecdfc3" stroke-width="3"/>
-          <circle cx="261" cy="68" r="3" fill="#ecdfc3"/>
-          <g id="tonearmL" class="tonearm">
-            <line x1="278" y1="44" x2="296" y2="31" stroke="#ecdfc3" stroke-width="3.5"/>
-            <circle cx="301" cy="28" r="8.5" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-            <path d="M 278 44 C 270 76 258 92 240 112 S 214 136 206 146" fill="none" stroke="#ecdfc3" stroke-width="3"/>
-            <path d="M 206 146 l -14 10 l -6 -9 l 14 -10 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-            <line x1="196" y1="155" x2="191" y2="161" stroke="#ecdfc3" stroke-width="2"/>
-            <line x1="216" y1="136" x2="222" y2="130" stroke="#ecdfc3" stroke-width="2" opacity="0.7"/>
-          </g>
-        </g>
-
-        <!-- ============ deck R ============ -->
-        <g transform="translate(756,128)">
-          <rect x="3" y="3" width="328" height="200" rx="10" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-          <rect x="13" y="13" width="308" height="180" rx="6" fill="none" stroke="#ecdfc3" stroke-width="1.2" opacity="0.3"/>
-          <g fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.55">
-            <circle cx="20" cy="20" r="2.8"/><circle cx="314" cy="20" r="2.8"/>
-            <circle cx="20" cy="186" r="2.8"/><circle cx="314" cy="186" r="2.8"/>
-          </g>
-          <circle cx="118" cy="106" r="86" fill="none" stroke="#ecdfc3" stroke-width="2.5"/>
-          <circle cx="118" cy="106" r="80" fill="none" stroke="#ecdfc3" stroke-width="1.6" stroke-dasharray="2 6" opacity="0.85"/>
-          <circle cx="118" cy="106" r="74" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
-          <g transform="translate(118,106)">
-            <g id="recR" class="rec off">
-              <circle r="70" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-              <g fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.22">
-                <circle r="64"/><circle r="58"/><circle r="52"/><circle r="46"/><circle r="40"/>
-              </g>
-              <circle r="32" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
-              <circle id="labR" r="21" fill="#f4ecd9"/>
-              <circle r="3" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1"/>
-              <line x1="0" y1="-19" x2="0" y2="-9" stroke="#0b0a14" stroke-width="2.5"/>
-            </g>
-          </g>
-          <rect x="24" y="168" width="14" height="22" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
-          <circle class="strobedot" cx="31" cy="175" r="2.6" fill="#e8392c"/>
-          <rect x="56" y="176" width="24" height="16" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
-          <rect x="90" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
-          <rect x="108" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
-          <circle cx="97" cy="184" r="1.6" fill="#ecdfc3"/>
-          <rect x="56" y="20" width="18" height="12" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.7"/>
-          <rect x="296" y="64" width="8" height="104" rx="4" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
-          <g stroke="#ecdfc3" stroke-width="1" opacity="0.5">
-            <line x1="288" y1="70" x2="294" y2="70"/><line x1="288" y1="86" x2="294" y2="86"/>
-            <line x1="284" y1="116" x2="294" y2="116"/><line x1="288" y1="102" x2="294" y2="102"/>
-            <line x1="288" y1="134" x2="294" y2="134"/><line x1="288" y1="150" x2="294" y2="150"/>
-            <line x1="288" y1="166" x2="294" y2="166"/>
-          </g>
-          <rect x="288" y="96" width="24" height="13" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-          <line x1="300" y1="96" x2="300" y2="109" stroke="#ecdfc3" stroke-width="1"/>
-          <circle cx="278" cy="44" r="20" fill="none" stroke="#ecdfc3" stroke-width="2"/>
-          <circle cx="278" cy="44" r="10" fill="none" stroke="#ecdfc3" stroke-width="2"/>
-          <line x1="262" y1="70" x2="268" y2="88" stroke="#ecdfc3" stroke-width="3"/>
-          <circle cx="261" cy="68" r="3" fill="#ecdfc3"/>
-          <g id="tonearmR" class="tonearm">
-            <line x1="278" y1="44" x2="296" y2="31" stroke="#ecdfc3" stroke-width="3.5"/>
-            <circle cx="301" cy="28" r="8.5" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-            <path d="M 278 44 C 270 76 258 92 240 112 S 214 136 206 146" fill="none" stroke="#ecdfc3" stroke-width="3"/>
-            <path d="M 206 146 l -14 10 l -6 -9 l 14 -10 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-            <line x1="196" y1="155" x2="191" y2="161" stroke="#ecdfc3" stroke-width="2"/>
-            <line x1="216" y1="136" x2="222" y2="130" stroke="#ecdfc3" stroke-width="2" opacity="0.7"/>
-          </g>
-        </g>
-
-        <!-- ============ mixer ============ -->
-        <g transform="translate(516,172)">
-          <rect x="3" y="3" width="202" height="152" rx="8" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-          <rect x="11" y="11" width="186" height="136" rx="5" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.3"/>
-          <g fill="none" stroke="#ecdfc3" stroke-width="1.2" opacity="0.5">
-            <circle cx="16" cy="16" r="2.4"/><circle cx="192" cy="16" r="2.4"/>
-            <circle cx="16" cy="142" r="2.4"/><circle cx="192" cy="142" r="2.4"/>
-          </g>
-          <g fill="none" stroke="#ecdfc3" stroke-width="1.8">
-            <circle cx="40" cy="30" r="8"/><line x1="40" y1="24" x2="40" y2="30"/>
-            <circle cx="40" cy="56" r="7"/><line x1="40" y1="51" x2="40" y2="56"/>
-            <circle cx="40" cy="78" r="7"/><line x1="35" y1="73" x2="40" y2="78"/>
-            <circle cx="40" cy="100" r="7"/><line x1="45" y1="95" x2="40" y2="100"/>
-            <circle cx="168" cy="30" r="8"/><line x1="168" y1="24" x2="168" y2="30"/>
-            <circle cx="168" cy="56" r="7"/><line x1="173" y1="51" x2="168" y2="56"/>
-            <circle cx="168" cy="78" r="7"/><line x1="168" y1="71" x2="168" y2="78"/>
-            <circle cx="168" cy="100" r="7"/><line x1="163" y1="95" x2="168" y2="100"/>
-          </g>
-          <rect x="33" y="114" width="14" height="9" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
-          <rect x="161" y="114" width="14" height="9" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
-          <rect x="75" y="34" width="6" height="76" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
-          <rect x="127" y="34" width="6" height="76" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
-          <rect x="69" y="58" width="18" height="9" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1.8"/>
-          <rect x="121" y="46" width="18" height="9" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1.8"/>
-          <g>
-            <rect class="vu" x="96" y="30" width="7" height="4" fill="#e8392c"/>
-            <rect class="vu" x="96" y="37" width="7" height="4" fill="#ffb12b"/>
-            <rect x="96" y="44" width="7" height="4" fill="#41d9c8" opacity="0.75"/>
-            <rect x="96" y="51" width="7" height="4" fill="#41d9c8" opacity="0.45"/>
-            <rect class="vu" x="107" y="30" width="7" height="4" fill="#e8392c"/>
-            <rect class="vu" x="107" y="37" width="7" height="4" fill="#ffb12b"/>
-            <rect x="107" y="44" width="7" height="4" fill="#41d9c8" opacity="0.75"/>
-            <rect x="107" y="51" width="7" height="4" fill="#41d9c8" opacity="0.45"/>
-          </g>
-          <circle cx="104" cy="74" r="7" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
-          <line x1="104" y1="68" x2="104" y2="74" stroke="#ecdfc3" stroke-width="1.6"/>
-          <circle cx="104" cy="100" r="8" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
-          <line x1="99" y1="94" x2="104" y2="100" stroke="#ecdfc3" stroke-width="1.6"/>
-          <rect x="54" y="132" width="100" height="7" rx="3" fill="none" stroke="#ecdfc3" stroke-width="2"/>
-          <circle cx="16" cy="140" r="3.5" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
-        </g>
-        <!-- crossfader knob (positioned by CSS vars) -->
-        <g id="xfKnob">
-          <rect x="-8" y="-11" width="16" height="22" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
-          <line x1="0" y1="-11" x2="0" y2="11" stroke="#ecdfc3" stroke-width="1.2"/>
-        </g>
-
-        <!-- ============ record crate ============ -->
-        <g transform="translate(1092,318)">
-          <path d="M 2 20 L 18 2 L 136 2 L 120 20 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
-          <rect x="2" y="20" width="118" height="74" rx="3" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-          <rect x="2" y="20" width="118" height="74" rx="3" fill="url(#hx)" opacity="0.35"/>
-          <g fill="#0b0a14" stroke="#ecdfc3" stroke-width="1.5">
-            <rect x="12" y="-32" width="10" height="56" transform="rotate(-8 17 -4)"/>
-            <rect x="26" y="-34" width="10" height="58" transform="rotate(-4 31 -5)"/>
-            <rect x="40" y="-35" width="10" height="59"/>
-            <rect x="54" y="-34" width="10" height="58" transform="rotate(3 59 -5)"/>
-            <g id="crateTop"><rect x="68" y="-36" width="11" height="60" transform="rotate(6 73 -6)" stroke="#e8392c"/></g>
-            <rect x="84" y="-33" width="10" height="57" transform="rotate(9 89 -4)"/>
-            <rect x="98" y="-30" width="10" height="54" transform="rotate(12 103 -3)"/>
-          </g>
-        </g>
-
-        <!-- flying record for the swap -->
-        <g id="discFly">
-          <circle r="70" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
-          <g fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.25">
-            <circle r="60"/><circle r="48"/><circle r="38"/>
-          </g>
-          <circle r="21" fill="#e8392c"/>
-          <circle r="3" fill="#0b0a14"/>
-        </g>
-      </svg>
-    </div>
-
-    <!-- ============ NOW PLAYING ============ -->
     <section id="now" aria-live="polite">
       <div class="chiprow">
         <span id="gChip">&hellip;</span>
@@ -722,14 +303,9 @@ footer b{color:var(--paper); font-weight:500}
         <a id="aSrc" href="#" target="_blank" rel="noopener" hidden>&#9636; Liner source</a>
       </div>
     </section>
+  </div>
 
-    <div id="ctrl">
-      <div class="grp">
-        <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
-        <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
-      </div>
-    </div>
-  </main>
+  <button id="needle" type="button">touch to drop the needle</button>
 
   <aside id="genrePanel" class="panel" aria-label="about this genre">
     <button class="pclose" data-close="genrePanel" type="button">&times;</button>
@@ -742,6 +318,9 @@ footer b{color:var(--paper); font-weight:500}
       <a id="gWiki" href="#" target="_blank" rel="noopener">This genre on Wikipedia &nearr;</a>
       <a id="gIshkur" href="https://music.ishkur.com/" target="_blank" rel="noopener">The full genre map: Ishkur's Guide &nearr;</a>
     </div>
+    <div class="credits">
+      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. The rig performs every changeover itself; you can still grab a record to scratch (a vinyl layer, the stream itself stays sealed), ride the crossfader, or press start/stop. Shortcuts: [&rarr;] next &middot; [m] mute.
+    </div>
   </aside>
 
   <aside id="histPanel" class="panel" aria-label="session history">
@@ -752,14 +331,6 @@ footer b{color:var(--paper); font-weight:500}
   </aside>
 
   <div id="toast" role="status"></div>
-
-  <footer>
-    <span><b>HOME MUSIC</b> &middot; broadcast from the living room</span>
-    <span>programme follows your clock: morning 06-13 &middot; afternoon 13-20 &middot; night 20-06</span>
-    <span>tracks stream via YouTube &middot; every tune linked to YouTube + Spotify</span>
-    <span>liner notes compiled from Wikipedia, Discogs, AllMusic and the music press &middot; genre map: Ishkur's Guide &middot; the DJ is one of ours</span>
-    <span>selector shortcuts: [&rarr;] next &middot; [m] mute</span>
-  </footer>
 </div>
 <script>
 /* ================= PROGRAMME DATA ================= */
@@ -953,19 +524,1002 @@ const MC_LINES = [
   { t:"STRICTLY VIBES. PULL UP!",        fx:"sweep" }
 ];
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
 <script>
-/* ================= HOME MUSIC ENGINE ================= */
+/* ================= THE RIG : full-dress stage + performance API ================= */
+window.RIG=(function(){
+"use strict";
+var stub={ok:false, prepare:function(k,cb){ if(cb) setTimeout(cb,300); }, fadeBegin:function(){}, setFade:function(){},
+  finish:function(){}, quick:function(){}, first:function(){}, setLevels:function(){}, setProgress:function(){}, ctl:{}};
+var canvas=document.getElementById("gl");
+if(typeof THREE==="undefined" || !canvas){ document.getElementById("glFallback").classList.add("on"); return stub; }
+try{
+var MOBILE=window.matchMedia("(pointer:coarse)").matches;
+
+var renderer=new THREE.WebGLRenderer({canvas:canvas, antialias:!MOBILE});
+renderer.setPixelRatio(Math.min(MOBILE?1.25:1.6, window.devicePixelRatio||1));
+renderer.physicallyCorrectLights=true;
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.32;
+renderer.shadowMap.enabled=!MOBILE;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+var scene=new THREE.Scene();
+scene.background=new THREE.Color(0x05050a);
+scene.fog=new THREE.Fog(0x05050a, 16, 38);
+var cam=new THREE.PerspectiveCamera(40, 2, 0.1, 90);
+
+var envScene=new THREE.Scene();
+function envPlane(w,h,c,i,x,y,z,rx,ry){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({color:c}));
+  m.material.color.multiplyScalar(i);
+  m.position.set(x,y,z); m.rotation.set(rx||0,ry||0,0); envScene.add(m);
+}
+envPlane(12,5,0xffffff,2.2, 0,9,0, -Math.PI/2,0);
+envPlane(3,3,0xe8392c,2.4, 0,4,-8, 0,0);
+envPlane(1,4,0xffb12b,2.0, 5,3,-7, 0,0);
+envPlane(1,3,0x41d9c8,1.6, -5,3,-7, 0,0);
+envPlane(0.7,4,0xff6a3c,1.6, 8,3,-6, 0,-0.4);
+envPlane(0.7,3,0x8d7bff,1.4, -8,3,-6, 0,0.4);
+envPlane(8,4,0x2b3566,0.8, 0,2,8, 0,Math.PI);
+var pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(envScene, 0.05).texture;
+
+scene.add(new THREE.HemisphereLight(0x6d76a8, 0x08070e, 0.62));
+var key=new THREE.DirectionalLight(0xfff2dc, 1.1);
+key.position.set(3,8,5); scene.add(key);
+var spot=new THREE.SpotLight(0xffc96a, 90, 0, 0.62, 0.5, 1.6);
+spot.position.set(-0.2,4.8,0.74);
+spot.castShadow=!MOBILE;
+if(spot.shadow){ spot.shadow.mapSize.set(1024,1024); spot.shadow.bias=-0.0004; }
+scene.add(spot);
+var spotTarget=new THREE.Object3D(); spotTarget.position.set(-0.4,0,0.2); scene.add(spotTarget);
+spot.target=spotTarget;
+var redP=new THREE.PointLight(0xe8392c, 26, 0, 2); redP.position.set(0,2.4,-5.4); scene.add(redP);
+var tealP=new THREE.PointLight(0x41d9c8, 8, 0, 2); tealP.position.set(-7.5,2.2,2.5); scene.add(tealP);
+var ampGlow=new THREE.PointLight(0xffb12b, 7, 6, 2); ampGlow.position.set(8.2,1.3,-3.4); scene.add(ampGlow);
+
+/* ---------- textures ---------- */
+function tex(draw, size, w, h){
+  var c=document.createElement("canvas"); c.width=w||size||512; c.height=h||size||512;
+  draw(c.getContext("2d"), c.width, c.height);
+  var t=new THREE.CanvasTexture(c); t.anisotropy=8; return t;
+}
+function brushedWorn(level){
+  return tex(function(g,s){
+    g.fillStyle="#1b1828"; g.fillRect(0,0,s,s);
+    var i;
+    for(i=0;i<2600;i++){
+      g.strokeStyle="rgba(255,255,255,"+(Math.random()*0.05)+")";
+      var y=Math.random()*s; g.beginPath(); g.moveTo(0,y); g.lineTo(s,y+Math.random()*2-1); g.stroke();
+    }
+    for(i=0;i<34*level;i++){
+      g.fillStyle="rgba(0,0,0,"+(0.05+Math.random()*0.12)+")";
+      g.beginPath();
+      g.ellipse(Math.random()*s, Math.random()*s, 8+Math.random()*46, 5+Math.random()*26, Math.random()*3, 0, Math.PI*2);
+      g.fill();
+    }
+    var ed=g.createLinearGradient(0,0,0,s);
+    ed.addColorStop(0,"rgba(0,0,0,0.28)"); ed.addColorStop(0.12,"rgba(0,0,0,0)");
+    ed.addColorStop(0.88,"rgba(0,0,0,0)"); ed.addColorStop(1,"rgba(0,0,0,0.3)");
+    g.fillStyle=ed; g.fillRect(0,0,s,s);
+    for(i=0;i<24*level;i++){
+      g.strokeStyle="rgba(236,223,195,"+(0.04+Math.random()*0.1)+")";
+      g.lineWidth=0.8+Math.random();
+      var x=Math.random()*s, y2=Math.random()*s, a=Math.random()*6.3;
+      g.beginPath(); g.moveTo(x,y2); g.lineTo(x+Math.cos(a)*18, y2+Math.sin(a)*18); g.stroke();
+    }
+  });
+}
+var wornA=brushedWorn(1.6), wornB=brushedWorn(0.8);
+var vinylBump=tex(function(g,s){
+  var cx=s/2, r;
+  for(r=s/2; r>0; r-=2){
+    g.strokeStyle=(r%4<2)?"#9a9a9a":"#6f6f6f";
+    g.beginPath(); g.arc(cx,cx,r,0,Math.PI*2); g.stroke();
+  }
+},1024);
+var smudge=tex(function(g,s){
+  g.fillStyle="#8c8c8c"; g.fillRect(0,0,s,s);
+  var i;
+  for(i=0;i<14;i++){
+    g.fillStyle="rgba(255,255,255,"+(0.1+Math.random()*0.2)+")";
+    g.beginPath();
+    g.ellipse(Math.random()*s,Math.random()*s, 14+Math.random()*30, 9+Math.random()*18, Math.random()*3, 0, Math.PI*2);
+    g.fill();
+  }
+},256);
+function labelCan(bg, ink, l1, l2){
+  return tex(function(g,s){
+    g.fillStyle=bg; g.beginPath(); g.arc(s/2,s/2,s/2,0,Math.PI*2); g.fill();
+    g.strokeStyle="rgba(0,0,0,.55)"; g.lineWidth=10;
+    g.beginPath(); g.arc(s/2,s/2,s*0.46,0,Math.PI*2); g.stroke();
+    g.beginPath(); g.arc(s/2,s/2,s*0.1,0,Math.PI*2); g.stroke();
+    g.fillStyle=ink; g.textAlign="center";
+    g.font="bold "+(s*0.105)+"px Arial Narrow, sans-serif"; g.fillText(l1, s/2, s*0.4);
+    g.font=(s*0.065)+"px monospace"; g.fillText(l2, s/2, s*0.66);
+  });
+}
+var RLBL={
+  A:[labelCan("#c92c20","#f6e3c8","HOME MUSIC","SIDE A : 33"), labelCan("#8f1812","#f6e3c8","HOME MUSIC","ROOTS CUT 33")],
+  B:[labelCan("#e09a22","#1d1408","HOME MUSIC","SIDE B : 45"), labelCan("#caa43c","#1d1408","HOME MUSIC","AMEN CUT 45")]
+};
+var feltT=tex(function(g,s){
+  g.fillStyle="#141220"; g.fillRect(0,0,s,s);
+  var i;
+  for(i=0;i<5200;i++){
+    g.fillStyle="rgba(255,255,255,"+(Math.random()*0.045)+")";
+    g.fillRect(Math.random()*s, Math.random()*s, 1.4, 1.4);
+  }
+  g.strokeStyle="rgba(255,255,255,0.1)";
+  for(i=0;i<8;i++){ g.beginPath(); g.arc(s/2,s/2, 60+Math.random()*180, Math.random()*6, Math.random()*6+1); g.stroke(); }
+});
+var plateT=tex(function(g,w,h){
+  g.fillStyle="#141120"; g.fillRect(0,0,w,h);
+  g.strokeStyle="#4a4468"; g.lineWidth=5; g.strokeRect(5,5,w-10,h-10);
+  g.strokeStyle="#cfc4a6"; g.lineWidth=2; g.textAlign="center";
+  g.font="bold 54px Arial Narrow, sans-serif";
+  g.strokeText("HOME MUSIC", w/2, h*0.46);
+  g.fillStyle="#8d90b0"; g.font="22px monospace";
+  g.fillText("HM-001 : 33 1/3 : BARCELOS", w/2, h*0.78);
+  var p;
+  for(p=0;p<4;p++){ g.fillStyle="#6b6490"; g.beginPath(); g.arc(p<2?18:w-18, p%2?18:h-18, 6, 0, 7); g.fill(); }
+},0,512,128);
+function stencilT(txt){
+  return tex(function(g,w,h){
+    g.clearRect(0,0,w,h);
+    g.fillStyle="rgba(236,223,195,0.85)"; g.textAlign="center";
+    g.font="bold "+(h*0.62)+"px Arial Narrow, sans-serif";
+    g.fillText(txt, w/2, h*0.72);
+    g.globalCompositeOperation="destination-out";
+    var i;
+    for(i=0;i<120;i++){ g.fillRect(Math.random()*w, Math.random()*h, 2, 2); }
+  },0,256,96);
+}
+var chevT=tex(function(g,w,h){
+  g.fillStyle="#0e0c16"; g.fillRect(0,0,w,h);
+  g.strokeStyle="#ffb12b"; g.lineWidth=16;
+  var x;
+  for(x=-h; x<w+h; x+=44){ g.beginPath(); g.moveTo(x,h+8); g.lineTo(x+h,-8); g.stroke(); }
+},0,512,64);
+chevT.wrapS=THREE.RepeatWrapping; chevT.repeat.x=3;
+function stickerT(txt,bg){
+  return tex(function(g,w,h){
+    g.clearRect(0,0,w,h);
+    g.fillStyle=bg; g.fillRect(4,4,w-8,h-8);
+    g.strokeStyle="rgba(0,0,0,0.4)"; g.lineWidth=3; g.strokeRect(4,4,w-8,h-8);
+    g.fillStyle="#141120"; g.textAlign="center";
+    g.font="bold "+(h*0.52)+"px Arial Narrow, sans-serif";
+    g.fillText(txt, w/2, h*0.66);
+    g.fillStyle="rgba(255,255,255,0.35)";
+    g.beginPath(); g.moveTo(w-4,4); g.lineTo(w-30,4); g.lineTo(w-4,26); g.fill();
+  },0,192,96);
+}
+var sleeveT=tex(function(g,s){
+  g.fillStyle="#1d1830"; g.fillRect(0,0,s,s);
+  g.strokeStyle="#e8392c"; g.lineWidth=10;
+  g.beginPath(); g.arc(s/2,s/2,s*0.3,0,Math.PI*2); g.stroke();
+  g.fillStyle="#ecdfc3"; g.textAlign="center";
+  g.font="bold "+(s*0.1)+"px Arial Narrow, sans-serif";
+  g.fillText("HOME MUSIC", s/2, s*0.16);
+  g.font=(s*0.055)+"px monospace"; g.fillStyle="#8d90b0";
+  g.fillText("DUBPLATE :: NOT FOR SALE", s/2, s*0.9);
+});
+var hifiT=tex(function(g,w,h){
+  g.clearRect(0,0,w,h);
+  g.fillStyle="rgba(255,177,43,0.92)"; g.textAlign="center";
+  g.font="bold "+(h*0.56)+"px Arial Narrow, sans-serif";
+  g.fillText("HOME MUSIC HI-FI", w/2, h*0.7);
+},0,512,96);
+var clockT=tex(function(g,s){
+  g.fillStyle="#0d0b14"; g.beginPath(); g.arc(s/2,s/2,s/2,0,7); g.fill();
+  g.strokeStyle="#ecdfc3"; g.lineWidth=4;
+  g.beginPath(); g.arc(s/2,s/2,s*0.42,0,7); g.stroke();
+  g.beginPath(); g.moveTo(s/2,s/2); g.lineTo(s/2,s*0.2); g.stroke();
+  g.beginPath(); g.moveTo(s/2,s/2); g.lineTo(s*0.68,s*0.58); g.stroke();
+},128);
+var silT=tex(function(g,w,h){
+  g.clearRect(0,0,w,h);
+  g.fillStyle="rgba(10,9,16,0.95)";
+  g.beginPath(); g.arc(w/2,h*0.2,w*0.17,0,7); g.fill();
+  g.fillRect(w*0.3,h*0.3,w*0.4,h*0.6);
+  g.beginPath(); g.ellipse(w/2,h*0.32,w*0.3,h*0.1,0,0,7); g.fill();
+  g.strokeStyle="rgba(232,57,44,0.8)"; g.lineWidth=7;
+  g.beginPath(); g.arc(w/2,h*0.19,w*0.19,Math.PI*1.05,Math.PI*1.95); g.stroke();
+},0,128,256);
+var flareT=tex(function(g,s){
+  var r=g.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+  r.addColorStop(0,"rgba(255,220,160,0.9)");
+  r.addColorStop(0.18,"rgba(255,190,100,0.28)");
+  r.addColorStop(1,"rgba(255,180,90,0)");
+  g.fillStyle=r; g.fillRect(0,0,s,s);
+  g.fillStyle="rgba(255,220,170,0.5)";
+  g.fillRect(0,s/2-2,s,4); g.fillRect(s/2-2,0,4,s);
+},256);
+var dotT=tex(function(g,s){
+  var r=g.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+  r.addColorStop(0,"rgba(255,235,200,1)"); r.addColorStop(1,"rgba(255,235,200,0)");
+  g.fillStyle=r; g.fillRect(0,0,s,s);
+},64);
+var coneT=tex(function(g,w,h){
+  var r=g.createLinearGradient(0,0,0,h);
+  r.addColorStop(0,"rgba(255,201,106,0.34)"); r.addColorStop(1,"rgba(255,201,106,0)");
+  g.fillStyle=r; g.fillRect(0,0,w,h);
+},0,64,256);
+var monT=tex(function(g,s){
+  g.fillStyle="#131230"; g.fillRect(0,0,s,s);
+  g.strokeStyle="rgba(240,232,214,.3)"; var i;
+  for(i=14;i<s;i+=16){ g.beginPath(); g.moveTo(10,i); g.lineTo(s-10,i+(i%32===14?6:-6)); g.stroke(); }
+  g.fillStyle="#8d90b0"; g.font=(s*0.08)+"px monospace"; g.textAlign="center";
+  g.fillText("FEED ON", s/2, s*0.46); g.fillText("MONITOR 1", s/2, s*0.62);
+},256);
+
+/* ---------- materials + helpers ---------- */
+var M={
+  deckA:new THREE.MeshStandardMaterial({color:0x3a3453, metalness:0.8, roughness:0.42, map:wornA, envMapIntensity:1.4}),
+  deckB:new THREE.MeshStandardMaterial({color:0x3a3453, metalness:0.8, roughness:0.4, map:wornB, envMapIntensity:1.4}),
+  plate:new THREE.MeshStandardMaterial({color:0x2a2540, metalness:0.75, roughness:0.45, map:wornB, envMapIntensity:1.2}),
+  dark:new THREE.MeshStandardMaterial({color:0x12101c, metalness:0.3, roughness:0.62}),
+  caseShell:new THREE.MeshStandardMaterial({color:0x191526, metalness:0.25, roughness:0.7, map:wornA}),
+  alu:new THREE.MeshStandardMaterial({color:0xcdd2e4, metalness:0.95, roughness:0.3, envMapIntensity:1.5}),
+  rubber:new THREE.MeshStandardMaterial({color:0x0c0b13, metalness:0.05, roughness:0.92}),
+  steel:new THREE.MeshStandardMaterial({color:0xd4d8ea, metalness:0.92, roughness:0.24, envMapIntensity:1.6}),
+  felt:new THREE.MeshStandardMaterial({color:0xffffff, map:feltT, metalness:0, roughness:0.95}),
+  btn:new THREE.MeshStandardMaterial({color:0x1a1727, metalness:0.4, roughness:0.5}),
+  knob:new THREE.MeshStandardMaterial({color:0xd7dae8, metalness:0.7, roughness:0.35}),
+  glove:new THREE.MeshStandardMaterial({color:0x1a1524, metalness:0.05, roughness:0.8}),
+  sleeve:new THREE.MeshStandardMaterial({color:0x100d18, metalness:0.05, roughness:0.95}),
+  rib:new THREE.MeshStandardMaterial({color:0x221c33, metalness:0.1, roughness:0.9}),
+  cab:new THREE.MeshStandardMaterial({color:0x151126, metalness:0.2, roughness:0.75, map:wornA}),
+  glass:new THREE.MeshStandardMaterial({color:0x8fa8d8, metalness:0.2, roughness:0.06, transparent:true, opacity:0.13, envMapIntensity:1.8})
+};
+function vinylMat(){
+  return new THREE.MeshPhysicalMaterial({color:0x0b0a10, metalness:0.0, roughness:0.4,
+    clearcoat:0.85, clearcoatRoughness:0.3, clearcoatRoughnessMap:smudge,
+    bumpMap:vinylBump, bumpScale:0.004, envMapIntensity:1.5, transparent:true});
+}
+function roundedBox(w,d,h,r){
+  var s=new THREE.Shape(), x=w/2-r, y=d/2-r;
+  s.moveTo(-x,-d/2); s.lineTo(x,-d/2); s.absarc(x,-y,r,-Math.PI/2,0,false);
+  s.lineTo(w/2,y); s.absarc(x,y,r,0,Math.PI/2,false);
+  s.lineTo(-x,d/2); s.absarc(-x,y,r,Math.PI/2,Math.PI,false);
+  s.lineTo(-w/2,-y); s.absarc(-x,-y,r,Math.PI,Math.PI*1.5,false);
+  var g=new THREE.ExtrudeGeometry(s,{depth:h, bevelEnabled:true, bevelThickness:0.03, bevelSize:0.03, bevelSegments:2, curveSegments:10});
+  g.rotateX(-Math.PI/2);
+  return g;
+}
+function decal(texture,w,h){
+  return new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+    new THREE.MeshStandardMaterial({map:texture, transparent:true, roughness:0.6, metalness:0.1, polygonOffset:true, polygonOffsetFactor:-1}));
+}
+
+/* ---------- furniture ---------- */
+var floor=new THREE.Mesh(new THREE.PlaneGeometry(80,40),
+  new THREE.MeshStandardMaterial({color:0x0a0912, metalness:0.5, roughness:0.42}));
+floor.rotation.x=-Math.PI/2; floor.position.y=-2.4; floor.receiveShadow=true; scene.add(floor);
+function trims(parent, w, d, y){
+  [[0,y,d/2,w,0.1,0.1],[0,y,-d/2,w,0.1,0.1],[-w/2,y,0,0.1,0.1,d],[w/2,y,0,0.1,0.1,d]].forEach(function(e){
+    var t=new THREE.Mesh(new THREE.BoxGeometry(e[3],e[4],e[5]), M.alu);
+    t.position.set(e[0],e[1],e[2]); parent.add(t);
+  });
+  [[-w/2,d/2],[w/2,d/2],[-w/2,-d/2],[w/2,-d/2]].forEach(function(c){
+    var b=new THREE.Mesh(new THREE.SphereGeometry(0.13,12,10), M.alu);
+    b.position.set(c[0],y,c[1]); parent.add(b);
+  });
+}
+var caseTop=new THREE.Group(); scene.add(caseTop);
+var c1=new THREE.Mesh(new THREE.BoxGeometry(14,1.15,5.9), M.caseShell);
+c1.position.y=-0.58; c1.castShadow=true; c1.receiveShadow=true; caseTop.add(c1);
+trims(caseTop,14,5.9,-0.04); trims(caseTop,14,5.9,-1.12);
+var c2=new THREE.Mesh(new THREE.BoxGeometry(13,1.1,5.4), M.caseShell);
+c2.position.y=-1.72; c2.castShadow=true; caseTop.add(c2);
+trims(caseTop,13,5.4,-2.26);
+var li;
+for(li=-1; li<=1; li+=2){
+  var latch=new THREE.Group(); latch.position.set(li*3.6,-0.62,2.99); caseTop.add(latch);
+  var lc=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.06,18), M.alu);
+  lc.rotation.x=Math.PI/2; latch.add(lc);
+  var lw=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.3,0.05), M.alu);
+  lw.position.y=-0.18; latch.add(lw);
+}
+var handle=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.4,0.08), M.dark);
+handle.position.set(0,-1.72,2.74); caseTop.add(handle);
+var riv=new THREE.InstancedMesh(new THREE.SphereGeometry(0.025,6,6), M.alu, 48);
+var rm4=new THREE.Matrix4(), ri;
+for(ri=0; ri<48; ri++){
+  rm4.setPosition(-6.6+(ri%24)*0.575, ri<24?-0.1:-1.06, 2.96);
+  riv.setMatrixAt(ri, rm4);
+}
+caseTop.add(riv);
+var chev=decal(chevT,7,0.5); chev.position.set(-2.6,-0.36,2.96); caseTop.add(chev);
+var stk1=decal(stickerT("DUB SIDE","#c7b89a"),1.5,0.75); stk1.position.set(4.8,-0.62,2.97); stk1.rotation.z=-0.12; caseTop.add(stk1);
+var stk2=decal(stickerT("160 BPM","#e09a22"),1.3,0.65); stk2.position.set(-5.6,-1.7,2.72); stk2.rotation.z=0.1; caseTop.add(stk2);
+
+/* ---------- decks ---------- */
+var pickables=[], decks={};
+function makeDeck(side){
+  var g=new THREE.Group(), x=side==="A"?-3.55:3.55;
+  g.position.set(x,0,0); scene.add(g);
+  var dm = side==="A" ? M.deckA : M.deckB;
+  g.add(new THREE.Mesh(roundedBox(4.9,3.9,0.14,0.14), M.rubber));
+  var body=new THREE.Mesh(roundedBox(4.7,3.7,0.34,0.18), dm);
+  body.position.y=0.13; body.castShadow=true; body.receiveShadow=true; g.add(body);
+  var top=new THREE.Mesh(roundedBox(4.4,3.4,0.12,0.14), M.plate);
+  top.position.y=0.47; top.receiveShadow=true; g.add(top);
+  var px=-0.55;
+  var well=new THREE.Mesh(new THREE.CylinderGeometry(1.56,1.56,0.1,64), M.dark);
+  well.position.set(px,0.56,0); g.add(well);
+  var wellRim=new THREE.Mesh(new THREE.TorusGeometry(1.56,0.028,10,64), M.alu);
+  wellRim.rotation.x=Math.PI/2; wellRim.position.set(px,0.615,0); g.add(wellRim);
+  var platter=new THREE.Mesh(new THREE.CylinderGeometry(1.42,1.42,0.14,64), M.steel);
+  platter.position.set(px,0.66,0); platter.castShadow=true; g.add(platter);
+  var dots=new THREE.Group(), di;
+  for(di=0; di<48; di++){
+    var dd=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.05,0.02), M.dark);
+    var a=di/48*Math.PI*2;
+    dd.position.set(Math.cos(a)*1.42,0,Math.sin(a)*1.42);
+    dd.lookAt(0,0,0); dots.add(dd);
+  }
+  dots.position.copy(platter.position); g.add(dots);
+  var slip=new THREE.Mesh(new THREE.CylinderGeometry(1.28,1.28,0.02,64), M.felt);
+  slip.position.set(px,0.745,0); g.add(slip);
+  var rec=new THREE.Group(); rec.position.set(px,0.78,0); g.add(rec);
+  var dMat=vinylMat();
+  var disc=new THREE.Mesh(new THREE.CylinderGeometry(1.26,1.26,0.025,72), dMat);
+  disc.castShadow=true; rec.add(disc);
+  var lMat=new THREE.MeshStandardMaterial({map:RLBL[side][0], roughness:0.7, transparent:true});
+  var lab=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.03,48), lMat);
+  lab.position.y=0.005; rec.add(lab);
+  var spindle=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.12,16), M.steel);
+  spindle.position.set(px,0.81,0); g.add(spindle);
+  disc.userData={type:"record", deck:side};
+  pickables.push(disc);
+  var ss=new THREE.Mesh(roundedBox(0.5,0.42,0.12,0.06), M.btn);
+  ss.position.set(-1.95,0.6,1.3); ss.userData={type:"startstop", deck:side}; g.add(ss); pickables.push(ss);
+  var ssr=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.015,8,32), M.alu);
+  ssr.rotation.x=Math.PI/2; ssr.position.set(-1.95,0.62,1.3); g.add(ssr);
+  var lampP=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,0.26,16), M.dark);
+  lampP.position.set(-2.0,0.66,0.55); g.add(lampP);
+  var lampGlow=new THREE.Mesh(new THREE.SphereGeometry(0.04,10,10),
+    new THREE.MeshStandardMaterial({color:0xff3b2e, emissive:0xff3b2e, emissiveIntensity:2.6}));
+  lampGlow.position.set(-2.0,0.83,0.55); g.add(lampGlow);
+  var rail=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.03,1.5), M.dark);
+  rail.position.set(1.95,0.62,0.45); g.add(rail);
+  var pk=new THREE.Mesh(roundedBox(0.34,0.2,0.1,0.04), M.knob);
+  pk.position.set(1.95,0.68,0.45); pk.userData={type:"pitch", deck:side, min:-0.3, max:1.2, axis:"z"};
+  pk.castShadow=true; g.add(pk); pickables.push(pk);
+  var isl=new THREE.Mesh(roundedBox(1.5,1.4,0.1,0.12), dm);
+  isl.position.set(1.55,0.56,-1.0); g.add(isl);
+  var ab=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.26,28), M.plate);
+  ab.position.set(1.55,0.72,-1.05); g.add(ab);
+  var gim=new THREE.Mesh(new THREE.TorusGeometry(0.2,0.03,10,28), M.steel);
+  gim.rotation.x=Math.PI/2; gim.position.set(1.55,0.86,-1.05); g.add(gim);
+  var pivot=new THREE.Group(); pivot.position.set(1.55,0.9,-1.05); g.add(pivot);
+  var lift=new THREE.Group(); pivot.add(lift);
+  var cw=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.3,20), M.steel);
+  cw.rotation.x=Math.PI/2; cw.position.set(0,0.05,-0.45); lift.add(cw);
+  var pts=[new THREE.Vector3(0,0,-0.2), new THREE.Vector3(0.02,0,0.5), new THREE.Vector3(-0.25,-0.02,1.3), new THREE.Vector3(-0.45,-0.06,2.0)];
+  var armTube=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,0.035,10), M.steel);
+  armTube.castShadow=true; lift.add(armTube);
+  var hs=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.09,0.42), M.dark);
+  hs.position.set(-0.47,-0.1,2.1); hs.rotation.y=0.25; lift.add(hs);
+  var cue=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.06,0.3), M.knob);
+  cue.position.set(2.0,0.62,-0.5); cue.userData={type:"cue", deck:side}; g.add(cue); pickables.push(cue);
+  pivot.rotation.y=-0.55;
+  var pl=decal(plateT,1.5,0.375); pl.rotation.x=-Math.PI/2;
+  pl.position.set(0.4,0.605,1.45); g.add(pl);
+  var stn=decal(stencilT(side==="A"?"SIDE A":"SIDE B"),0.9,0.34); stn.rotation.x=-Math.PI/2;
+  stn.position.set(-1.6,0.605,-1.3); stn.rotation.z=side==="A"?0.06:-0.05; g.add(stn);
+  if(side==="A"){
+    var hmS=decal(stickerT("HM","#c7b89a"),0.6,0.45); hmS.rotation.x=-Math.PI/2;
+    hmS.position.set(2.0,0.605,1.45); hmS.rotation.z=-0.35; g.add(hmS);
+  }
+  return {
+    side:side, group:g, px:px, platter:platter, rec:rec, recMats:[dMat,lMat], labMesh:lab, labIdx:0,
+    pivot:pivot, lift:lift, ssBtn:ss,
+    running:false, armDown:false, angVel:0, angle:0, prog:0, grab:false, grabVel:0, lastAng:0
+  };
+}
+decks.A=makeDeck("A"); decks.B=makeDeck("B");
+decks.A.running=true; decks.A.armDown=true;
+
+/* ---------- mixer ---------- */
+var mix=new THREE.Group(); scene.add(mix);
+mix.add(new THREE.Mesh(roundedBox(2.7,3.6,0.12,0.1), M.rubber));
+var mbody=new THREE.Mesh(roundedBox(2.5,3.4,0.4,0.12), M.plate);
+mbody.position.y=0.1; mbody.castShadow=true; mix.add(mbody);
+var mst=decal(stencilT("HM"),0.6,0.24); mst.rotation.x=-Math.PI/2; mst.position.set(0.85,0.57,1.55); mix.add(mst);
+var b45=decal(stickerT("45","#e8392c"),0.42,0.42); b45.rotation.x=-Math.PI/2; b45.position.set(-0.9,0.57,1.55); b45.rotation.z=0.3; mix.add(b45);
+var mfaders={};
+[["A",-0.62],["B",0.62]].forEach(function(cfg){
+  var rail=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.03,1.3), M.dark);
+  rail.position.set(cfg[1],0.52,0.35); mix.add(rail);
+  var k=new THREE.Mesh(roundedBox(0.4,0.18,0.1,0.04), M.knob);
+  k.position.set(cfg[1],0.56,0.1); k.castShadow=true;
+  k.userData={type:"chfader", deck:cfg[0], axis:"z", min:-0.3, max:1.0};
+  mix.add(k); pickables.push(k); mfaders[cfg[0]]=k;
+  var ei;
+  for(ei=0; ei<3; ei++){
+    var kn=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.1,20), M.knob);
+    kn.position.set(cfg[1],0.54,-0.5-ei*0.42); mix.add(kn);
+  }
+});
+var xrail=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.03,0.07), M.dark);
+xrail.position.set(0,0.52,1.25); mix.add(xrail);
+var xknob=new THREE.Mesh(roundedBox(0.22,0.34,0.12,0.04), M.knob);
+xknob.position.set(-0.62,0.56,1.25); xknob.castShadow=true;
+xknob.userData={type:"xfader", axis:"x", min:-0.62, max:0.62};
+mix.add(xknob); pickables.push(xknob);
+var vuMeshes={A:[],B:[]};
+[["A",-0.2],["B",0.2]].forEach(function(cfg){
+  var vi;
+  for(vi=0; vi<7; vi++){
+    var col= vi>4 ? 0xe8392c : (vi>2 ? 0xffb12b : 0x41d9c8);
+    var vm=new THREE.MeshStandardMaterial({color:col, emissive:col, emissiveIntensity:0.08});
+    var vb=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.03,0.09), vm);
+    vb.position.set(cfg[1],0.55,-0.1-vi*0.14);
+    mix.add(vb); vuMeshes[cfg[0]].push(vm);
+  }
+});
+
+/* ---------- window wall, city, rain, stacks, amp, lamp, clutter ---------- */
+var wallMat=new THREE.MeshStandardMaterial({color:0x0d0b18, metalness:0.1, roughness:0.9});
+[[-13,3],[13,3]].forEach(function(p){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(10,12), wallMat); m.position.set(p[0],p[1],-7.6); scene.add(m);
+});
+[[0,8.3,16,2.6],[0,-1.3,16,2.2]].forEach(function(p){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(p[2],p[3]), wallMat); m.position.set(p[0],p[1],-7.6); scene.add(m);
+});
+[[0,7.05],[0,-0.15]].forEach(function(p){
+  var f=new THREE.Mesh(new THREE.BoxGeometry(16.2,0.25,0.3), M.dark); f.position.set(p[0],p[1],-7.55); scene.add(f);
+});
+[[-8],[8],[-2.7],[2.7]].forEach(function(p,ix){
+  var f=new THREE.Mesh(new THREE.BoxGeometry(ix<2?0.25:0.14,7.2,ix<2?0.3:0.2), M.dark);
+  f.position.set(p[0],3.45,-7.55); scene.add(f);
+});
+var glass=new THREE.Mesh(new THREE.PlaneGeometry(15.8,7), M.glass);
+glass.position.set(0,3.45,-7.62); scene.add(glass);
+var sil=new THREE.Mesh(new THREE.PlaneGeometry(1.5,3), new THREE.MeshBasicMaterial({map:silT, transparent:true, opacity:0.5}));
+sil.position.set(3.4,2.4,-7.58); scene.add(sil);
+var sun=new THREE.Mesh(new THREE.CircleGeometry(3.4,48),
+  new THREE.MeshBasicMaterial({color:0xe8392c, transparent:true, opacity:0.92}));
+sun.position.set(0.8,4.6,-16); scene.add(sun);
+var ci;
+for(ci=0; ci<42; ci++){
+  var th=2.5+Math.random()*6.5;
+  var tw=new THREE.Mesh(new THREE.BoxGeometry(0.8+Math.random()*1.6, th, 0.8),
+    new THREE.MeshStandardMaterial({color:0x090812, roughness:0.9}));
+  tw.position.set(-16+Math.random()*32, th/2-1.2, -13-Math.random()*6);
+  scene.add(tw);
+  if(Math.random()<0.8){
+    var wn=new THREE.Mesh(new THREE.PlaneGeometry(0.16,0.2),
+      new THREE.MeshBasicMaterial({color: Math.random()<0.6 ? 0xffb12b : (Math.random()<0.5?0x41d9c8:0xff5c7a)}));
+    wn.position.set(tw.position.x+(Math.random()*0.7-0.35), 0.4+Math.random()*th*0.8, tw.position.z+0.45);
+    scene.add(wn);
+  }
+}
+var rainN=MOBILE?70:160;
+var rainG=new THREE.BufferGeometry(), rp=new Float32Array(rainN*3), rvv=new Float32Array(rainN), rix;
+for(rix=0; rix<rainN; rix++){
+  rp[rix*3]=-8+Math.random()*16; rp[rix*3+1]=Math.random()*8; rp[rix*3+2]=-8.2-Math.random()*3;
+  rvv[rix]=4+Math.random()*5;
+}
+rainG.setAttribute("position", new THREE.BufferAttribute(rp,3));
+var rain=new THREE.Points(rainG, new THREE.PointsMaterial({color:0x9fb7d8, size:0.07, transparent:true, opacity:0.5}));
+scene.add(rain);
+function stack(x, flip){
+  var g=new THREE.Group(); g.position.set(x,0,-4.6); g.rotation.y=flip?-0.22:0.22; scene.add(g);
+  var scoop=new THREE.Mesh(new THREE.BoxGeometry(3.3,2.7,2.2), M.cab);
+  scoop.position.y=-1.0; scoop.castShadow=true; g.add(scoop);
+  var mouth=new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,2.3,28,1,false,0,Math.PI), M.rubber);
+  mouth.rotation.z=Math.PI/2; mouth.rotation.y=Math.PI/2;
+  mouth.position.set(0,-1.35,1.11); g.add(mouth);
+  var mid=new THREE.Mesh(new THREE.BoxGeometry(3.1,1.7,2.0), M.cab);
+  mid.position.y=1.2; mid.castShadow=true; g.add(mid);
+  var si;
+  for(si=-1; si<=1; si+=2){
+    var cone2=new THREE.Mesh(new THREE.CylinderGeometry(0.52,0.2,0.3,24), M.rubber);
+    cone2.rotation.x=Math.PI/2; cone2.position.set(si*0.75,1.2,1.0); g.add(cone2);
+    var ring=new THREE.Mesh(new THREE.TorusGeometry(0.54,0.035,8,28), M.alu);
+    ring.position.set(si*0.75,1.2,1.05); g.add(ring);
+  }
+  var horn=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.22,0.9,4), M.cab);
+  horn.rotation.x=Math.PI/2; horn.rotation.y=Math.PI/4;
+  horn.position.set(0,2.5,0.7); g.add(horn);
+  var hb=new THREE.Mesh(new THREE.BoxGeometry(1.3,0.9,1.2), M.cab);
+  hb.position.set(0,2.5,-0.1); g.add(hb);
+  var st=decal(hifiT,2.6,0.5); st.position.set(0,-0.05,1.12); g.add(st);
+  return g;
+}
+stack(-8.6,false); stack(8.9,true);
+var crate=new THREE.Mesh(new THREE.BoxGeometry(1.7,1.0,1.3), M.cab);
+crate.position.set(8.0,-1.9,-2.9); crate.castShadow=true; scene.add(crate);
+var amp=new THREE.Mesh(roundedBox(1.6,1.1,0.5,0.06), M.plate);
+amp.position.set(8.0,-1.4,-2.9); scene.add(amp);
+var ti2;
+for(ti2=0; ti2<4; ti2++){
+  var valve=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.3,10),
+    new THREE.MeshStandardMaterial({color:0xffb95a, emissive:0xffa838, emissiveIntensity:1.8, transparent:true, opacity:0.9}));
+  valve.position.set(7.5+ti2*0.33,-0.72,-2.9); scene.add(valve);
+}
+var lampG=new THREE.Group(); lampG.position.set(-1.0,0,-1.9); scene.add(lampG);
+lampG.add(new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.3,0.14,20), M.dark));
+var seg1=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,3.4,10), M.steel);
+seg1.position.set(0.25,1.65,0.25); seg1.rotation.z=-0.15; seg1.rotation.x=-0.15; lampG.add(seg1);
+var seg2=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,2.6,10), M.steel);
+seg2.position.set(-0.55,4.4,-0.6); seg2.rotation.set(0.5,0,0.35); lampG.add(seg2);
+var shade=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.55,0.6,24,1,true), M.dark);
+shade.position.set(-0.2,5.0,0.6); shade.rotation.x=0.55; scene.add(shade);
+var bulb=new THREE.Mesh(new THREE.SphereGeometry(0.09,12,10),
+  new THREE.MeshStandardMaterial({color:0xffe6b0, emissive:0xffd080, emissiveIntensity:3.4}));
+bulb.position.set(-0.2,4.8,0.74); scene.add(bulb);
+var cone=new THREE.Mesh(new THREE.ConeGeometry(2.7,4.6,36,1,true),
+  new THREE.MeshBasicMaterial({map:coneT, transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, opacity:0.8}));
+cone.position.set(-0.35,2.55,0.45); cone.rotation.x=0.04; scene.add(cone);
+var dustN=MOBILE?30:60;
+var dustG=new THREE.BufferGeometry(), dp=new Float32Array(dustN*3), dj;
+for(dj=0; dj<dustN; dj++){
+  dp[dj*3]=-1.6+Math.random()*2.6; dp[dj*3+1]=0.4+Math.random()*4.2; dp[dj*3+2]=-0.6+Math.random()*2;
+}
+dustG.setAttribute("position", new THREE.BufferAttribute(dp,3));
+var dust=new THREE.Points(dustG, new THREE.PointsMaterial({map:dotT, color:0xffe2ae, size:0.055, transparent:true, opacity:0.75, depthWrite:false}));
+scene.add(dust);
+var flare=new THREE.Sprite(new THREE.SpriteMaterial({map:flareT, transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, opacity:0.85}));
+flare.position.copy(bulb.position); flare.scale.set(1.6,1.6,1); scene.add(flare);
+function tubeMesh(points, r, mat){
+  return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),40,r,8), mat);
+}
+var coil=[], cj;
+for(cj=0; cj<26; cj++){
+  var ca=cj*0.8;
+  coil.push(new THREE.Vector3(1.9+Math.cos(ca)*0.16, 0.08+cj*0.028, 2.1+Math.sin(ca)*0.16+cj*0.02));
+}
+coil.unshift(new THREE.Vector3(1.3,0.56,1.6));
+coil.push(new THREE.Vector3(2.6,0.2,2.9), new THREE.Vector3(2.7,-0.5,2.98));
+scene.add(tubeMesh(coil,0.028,M.rubber));
+var hpBand=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.05,10,24,Math.PI), M.rubber);
+hpBand.position.set(2.9,0.12,1.9); hpBand.rotation.set(Math.PI/2,0,0.6); scene.add(hpBand);
+var hc1=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.19,0.14,18),
+  new THREE.MeshStandardMaterial({color:0xe8392c, metalness:0.3, roughness:0.5}));
+hc1.position.set(2.62,0.08,1.68); hc1.rotation.z=1.2; scene.add(hc1);
+var hc2=hc1.clone(); hc2.position.set(3.18,0.08,2.12); scene.add(hc2);
+scene.add(tubeMesh([new THREE.Vector3(-2.2,0.1,-1.8), new THREE.Vector3(-1.2,0.3,-2.2), new THREE.Vector3(0.4,0.12,-2.0), new THREE.Vector3(1.4,0.26,-1.8)],0.022,
+  new THREE.MeshStandardMaterial({color:0xb03a30, roughness:0.6})));
+scene.add(tubeMesh([new THREE.Vector3(2.4,0.08,-1.9), new THREE.Vector3(3.6,0.3,-2.3), new THREE.Vector3(4.8,0.1,-1.9)],0.022,
+  new THREE.MeshStandardMaterial({color:0x3a7a6a, roughness:0.6})));
+var ad45=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,0.05,24),
+  new THREE.MeshStandardMaterial({color:0xe0a83c, metalness:0.6, roughness:0.4}));
+ad45.position.set(-5.6,0.06,1.9); scene.add(ad45);
+var brush=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.07,0.16), M.dark);
+brush.position.set(-5.9,0.07,2.4); brush.rotation.y=0.5; scene.add(brush);
+var sleeve=new THREE.Mesh(new THREE.BoxGeometry(2.6,2.6,0.06),
+  new THREE.MeshStandardMaterial({map:sleeveT, roughness:0.8}));
+sleeve.position.set(-6.6,0.95,-3.1); sleeve.rotation.set(-0.16,0.5,0); sleeve.castShadow=true; scene.add(sleeve);
+var spare1=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,0.03,48), vinylMat());
+spare1.position.set(6.1,0.045,2.1); scene.add(spare1);
+var spare2=spare1.clone(); spare2.position.y=0.085; spare2.rotation.y=0.9; scene.add(spare2);
+var mon=new THREE.Group(); mon.position.set(-6.3,0,0.2); mon.rotation.y=0.6; scene.add(mon);
+var mbox=new THREE.Mesh(roundedBox(1.7,1.2,0.55,0.08), M.caseShell); mbox.castShadow=true; mon.add(mbox);
+trims(mon,1.7,1.2,0.56);
+var mscr=new THREE.Mesh(new THREE.PlaneGeometry(1.45,0.92), new THREE.MeshBasicMaterial({map:monT}));
+mscr.position.set(0,0.66,0.31); mscr.rotation.x=-0.1; mon.add(mscr);
+
+/* ---------- hands ---------- */
+function makeHand(side){
+  var g=new THREE.Group();
+  var palm=new THREE.Mesh(roundedBox(0.36,0.4,0.11,0.05), M.glove);
+  palm.castShadow=true; g.add(palm);
+  var sleeve2=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.2,1.7,16), M.sleeve);
+  sleeve2.rotation.x=Math.PI/2; sleeve2.position.set(0,0.06,1.15); g.add(sleeve2);
+  var ci2;
+  for(ci2=0; ci2<3; ci2++){
+    var cuff=new THREE.Mesh(new THREE.TorusGeometry(0.17+ci2*0.02,0.035,10,20), M.rib);
+    cuff.position.set(0,0.06,0.5+ci2*0.11); g.add(cuff);
+  }
+  var fingers=new THREE.Group(), fi;
+  for(fi=0; fi<4; fi++){
+    var f=new THREE.Mesh(new THREE.CapsuleGeometry(0.042,0.24,4,8), M.glove);
+    f.rotation.x=Math.PI/2;
+    f.position.set(-0.13+fi*0.087, 0.02, -0.3);
+    fingers.add(f);
+    var kn=new THREE.Mesh(new THREE.SphereGeometry(0.048,8,8), M.glove);
+    kn.position.set(-0.13+fi*0.087, 0.06, -0.21);
+    g.add(kn);
+  }
+  g.add(fingers);
+  var thumb=new THREE.Mesh(new THREE.CapsuleGeometry(0.045,0.2,4,8), M.glove);
+  thumb.rotation.z=Math.PI/2; thumb.rotation.y=0.5*(side==="L"?1:-1);
+  thumb.position.set(0.2*(side==="L"?1:-1), 0.02, -0.1); g.add(thumb);
+  if(side==="L"){
+    var strap=new THREE.Mesh(new THREE.TorusGeometry(0.19,0.045,10,22), M.rubber);
+    strap.position.set(0,0.06,0.42); g.add(strap);
+    var face=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.035,20), M.steel);
+    face.position.set(0,0.23,0.42); g.add(face);
+    var dial=new THREE.Mesh(new THREE.CircleGeometry(0.095,20), new THREE.MeshBasicMaterial({map:clockT}));
+    dial.rotation.x=-Math.PI/2; dial.position.set(0,0.25,0.42); g.add(dial);
+  }
+  g.rotation.y=(side==="L"?0.18:-0.18);
+  scene.add(g);
+  return {
+    g:g, fingers:fingers,
+    pos:new THREE.Vector3(side==="L"?-1.7:1.7, 1.15, 3.4),
+    target:new THREE.Vector3(side==="L"?-1.7:1.7, 1.15, 3.4),
+    rest:new THREE.Vector3(side==="L"?-1.7:1.7, 1.15, 3.4),
+    grip:0, gripT:0, seed:side==="L"?1.7:4.2, follow:null, followObj:null
+  };
+}
+var handL=makeHand("L"), handR=makeHand("R");
+function handTo(h,v,grip){ h.target.copy(v); if(grip!==undefined) h.gripT=grip; }
+function deckWorld(d, local){ return d.group.localToWorld(local.clone()); }
+function handOf(k){ return k==="A" ? handL : handR; }
+function otherHand(k){ return k==="A" ? handR : handL; }
+
+/* ---------- tweens + sequences ---------- */
+var tweens=[];
+function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+function tween(set, dur, onDone){ tweens.push({set:set, dur:dur, t:0, onDone:onDone}); }
+var seqs=[];
+function runSeq(steps){ seqs.push({t:0, steps:steps.map(function(s){ return {t:s.t, fn:s.fn, done:false}; })}); }
+var CAMS={
+  wide:{p:new THREE.Vector3(0,6.6,9.4), l:new THREE.Vector3(0,0.5,-0.4)},
+  deckA:{p:new THREE.Vector3(-5.9,3.7,4.6), l:new THREE.Vector3(-3.55,0.7,-0.1)},
+  deckB:{p:new THREE.Vector3(5.9,3.7,4.6), l:new THREE.Vector3(3.55,0.7,-0.1)},
+  mixer:{p:new THREE.Vector3(0,3.5,4.4), l:new THREE.Vector3(0,0.5,0.7)}
+};
+var camKey="wide", camPos=CAMS.wide.p.clone(), camLook=CAMS.wide.l.clone();
+function camTo(k, cut){
+  camKey=k;
+  if(cut){ camPos.copy(CAMS[k].p); camLook.copy(CAMS[k].l); }
+}
+function recSetOpacity(d,o){ d.recMats.forEach(function(m){ m.opacity=o; }); }
+function swapRecord(inK, hand, fast){
+  var d=decks[inK], f=fast?0.62:1;
+  var home=new THREE.Vector3(d.px,0.78,0);
+  var up=new THREE.Vector3(d.px,1.46,0.3);
+  var out=new THREE.Vector3(d.px+(inK==="A"?-1.9:1.9), 1.9, 2.1);
+  hand.follow={deck:inK, off:new THREE.Vector3(0,0.17,0)};
+  hand.gripT=1;
+  tween(function(v){ d.rec.position.lerpVectors(home, up, ease(v)); }, 0.55*f, function(){
+    tween(function(v){ d.rec.position.lerpVectors(up, out, ease(v)); recSetOpacity(d,1-v); }, 0.7*f, function(){
+      d.labIdx=(d.labIdx+1)%RLBL[inK].length;
+      d.labMesh.material.map=RLBL[inK][d.labIdx];
+      d.labMesh.material.needsUpdate=true;
+      tween(function(v){ d.rec.position.lerpVectors(out, up, ease(v)); recSetOpacity(d,v); }, 0.7*f, function(){
+        tween(function(v){ d.rec.position.lerpVectors(up, home, ease(v)); }, 0.55*f, function(){
+          hand.follow=null; hand.gripT=0.2;
+        });
+      });
+    });
+  });
+}
+function pressBtn(d){
+  var b=d.ssBtn, y0=b.position.y;
+  tween(function(v){ b.position.y=y0-0.05*Math.sin(v*Math.PI); }, 0.3);
+}
+var fading=false, fadeIn=null, lastAct=0;
+
+/* ---------- public API ---------- */
+var API={
+  ok:true,
+  ctl:{},
+  prepare:function(inK, cb){
+    lastAct=now3();
+    var dIn=decks[inK], hIn=handOf(inK);
+    runSeq([
+      {t:0.0, fn:function(){ camTo(inK==="A"?"deckA":"deckB", true); }},
+      {t:0.2, fn:function(){ swapRecord(inK, hIn, false); }},
+      {t:3.0, fn:function(){ handTo(hIn, deckWorld(dIn, new THREE.Vector3(-1.95,1.0,1.3)), 0.5); }},
+      {t:3.5, fn:function(){ pressBtn(dIn); dIn.running=true; }},
+      {t:4.1, fn:function(){ handTo(hIn, deckWorld(dIn, new THREE.Vector3(1.7,1.15,-0.7)), 0.4); }},
+      {t:4.7, fn:function(){ dIn.armDown=true; }},
+      {t:5.2, fn:function(){ handTo(hIn, new THREE.Vector3(inK==="A"?-0.95:0.95,1.1,2.1), 0.3); if(cb) cb(); }}
+    ]);
+  },
+  fadeBegin:function(inK){
+    lastAct=now3();
+    fading=true; fadeIn=inK;
+    camTo("mixer", false);
+    var hIn=handOf(inK);
+    hIn.followObj=xknob; hIn.gripT=0.85;
+  },
+  setFade:function(x, inK){
+    var t01 = (inK==="B") ? x : (1-x);
+    xknob.position.x=-0.62+1.24*t01;
+  },
+  finish:function(outK){
+    lastAct=now3();
+    var dOut=decks[outK], hOut=handOf(outK), hIn=otherHand(outK);
+    runSeq([
+      {t:0.0, fn:function(){ handTo(hOut, deckWorld(dOut, new THREE.Vector3(1.7,1.15,-0.7)), 0.4); }},
+      {t:0.6, fn:function(){ dOut.armDown=false; }},
+      {t:1.1, fn:function(){ handTo(hOut, deckWorld(dOut, new THREE.Vector3(-1.95,1.0,1.3)), 0.5); }},
+      {t:1.5, fn:function(){ pressBtn(dOut); dOut.running=false; }},
+      {t:2.1, fn:function(){ fading=false; hIn.followObj=null; handTo(hIn, hIn.rest, 0); handTo(hOut, hOut.rest, 0); }},
+      {t:2.3, fn:function(){ camTo("wide", true); }}
+    ]);
+  },
+  quick:function(k){
+    lastAct=now3();
+    var d=decks[k], h=handOf(k);
+    runSeq([
+      {t:0.0, fn:function(){ camTo(k==="A"?"deckA":"deckB", true); d.armDown=false; }},
+      {t:0.3, fn:function(){ swapRecord(k, h, true); }},
+      {t:2.1, fn:function(){ d.running=true; d.armDown=true; }},
+      {t:2.5, fn:function(){ handTo(h, h.rest, 0); }},
+      {t:2.8, fn:function(){ camTo("wide", true); }}
+    ]);
+  },
+  first:function(k){
+    lastAct=now3();
+    var d=decks[k], h=handOf(k);
+    runSeq([
+      {t:0.3, fn:function(){ handTo(h, deckWorld(d, new THREE.Vector3(-1.95,1.0,1.3)), 0.5); }},
+      {t:0.9, fn:function(){ pressBtn(d); d.running=true; }},
+      {t:1.5, fn:function(){ handTo(h, deckWorld(d, new THREE.Vector3(1.7,1.15,-0.7)), 0.4); }},
+      {t:2.1, fn:function(){ d.armDown=true; }},
+      {t:2.7, fn:function(){ handTo(h, h.rest, 0); }}
+    ]);
+  },
+  setLevels:function(a,b){ levels.A=a; levels.B=b; },
+  setProgress:function(k,p){ if(decks[k]) decks[k].prog=Math.max(0,Math.min(1,p)); }
+};
+var levels={A:0,B:0};
+function now3(){ return performance.now()/1000; }
+
+/* ---------- optional interaction (real controls) ---------- */
+var ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+var dragging=null, orbit={on:false,x:0,y:0}, yaw=0, pitchCam=0, userHold=0;
+function setPtr(e){
+  var r=canvas.getBoundingClientRect();
+  ptr.x=((e.clientX-r.left)/r.width)*2-1;
+  ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+}
+var vTmp=new THREE.Vector3();
+function planeHit(y, out){
+  ray.setFromCamera(ptr,cam);
+  var t=(y-ray.ray.origin.y)/ray.ray.direction.y;
+  out.copy(ray.ray.direction).multiplyScalar(t).add(ray.ray.origin);
+  return out;
+}
+canvas.addEventListener("pointerdown", function(e){
+  setPtr(e); ray.setFromCamera(ptr,cam);
+  var hits=ray.intersectObjects(pickables,false);
+  if(hits.length){
+    userHold=4;
+    var o=hits[0].object, u=o.userData, d;
+    if(u.type==="record"){
+      d=decks[u.deck]; d.grab=true; d.grabVel=0;
+      var wp=d.rec.getWorldPosition(new THREE.Vector3());
+      planeHit(wp.y, vTmp);
+      d.lastAng=Math.atan2(vTmp.z-wp.z, vTmp.x-wp.x);
+      dragging={type:"record", deck:u.deck};
+    } else if(u.type==="startstop"){
+      d=decks[u.deck]; d.running=!d.running; pressBtn(d);
+      if(API.ctl.startstop) API.ctl.startstop(u.deck, d.running);
+    } else if(u.type==="cue"){
+      d=decks[u.deck]; d.armDown=!d.armDown;
+      if(API.ctl.cue) API.ctl.cue(u.deck, d.armDown);
+    } else {
+      dragging={type:u.type, deck:u.deck, obj:o, u:u};
+    }
+    try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+    e.preventDefault();
+  } else {
+    orbit.on=true; orbit.x=e.clientX; orbit.y=e.clientY;
+  }
+});
+canvas.addEventListener("pointermove", function(e){
+  setPtr(e);
+  if(dragging && dragging.type==="record"){
+    userHold=4;
+    var d=decks[dragging.deck];
+    var wp=d.rec.getWorldPosition(new THREE.Vector3());
+    planeHit(wp.y, vTmp);
+    var a=Math.atan2(vTmp.z-wp.z, vTmp.x-wp.x);
+    var da=a-d.lastAng;
+    if(da>Math.PI) da-=Math.PI*2; if(da<-Math.PI) da+=Math.PI*2;
+    d.lastAng=a; d.angle-=da; d.grabVel=-da;
+    if(API.ctl.scratch) API.ctl.scratch(da);
+  } else if(dragging && dragging.obj){
+    userHold=4;
+    var u=dragging.u, o=dragging.obj;
+    planeHit(o.getWorldPosition(new THREE.Vector3()).y, vTmp);
+    if(u.axis==="x"){
+      o.position.x=Math.max(u.min, Math.min(u.max, vTmp.x - mix.position.x));
+      if(u.type==="xfader" && !fading && API.ctl.fade){ API.ctl.fade((o.position.x+0.62)/1.24); }
+    } else {
+      var parent=(u.type==="pitch") ? decks[u.deck].group : mix;
+      o.position.z=Math.max(u.min, Math.min(u.max, vTmp.z - parent.position.z));
+      if(u.type==="chfader" && API.ctl.ch){
+        API.ctl.ch(u.deck, Math.max(0, Math.min(1, (1.0-o.position.z)/1.3)));
+      }
+    }
+  } else if(orbit.on){
+    yaw += (e.clientX-orbit.x)*0.004;
+    pitchCam += (e.clientY-orbit.y)*0.003;
+    yaw=Math.max(-0.6, Math.min(0.6, yaw));
+    pitchCam=Math.max(-0.25, Math.min(0.35, pitchCam));
+    orbit.x=e.clientX; orbit.y=e.clientY;
+  }
+});
+function endDrag(){
+  if(dragging && dragging.type==="record"){
+    var d=decks[dragging.deck]; d.grab=false;
+    if(API.ctl.scratchEnd) API.ctl.scratchEnd();
+  }
+  dragging=null; orbit.on=false;
+}
+canvas.addEventListener("pointerup", endDrag);
+canvas.addEventListener("pointercancel", endDrag);
+
+/* ---------- lens pass ---------- */
+var rt=new THREE.WebGLRenderTarget(4,4, MOBILE?{}:{samples:4});
+var postScene=new THREE.Scene();
+var postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+var postMat=new THREE.ShaderMaterial({
+  uniforms:{ tD:{value:rt.texture}, uTime:{value:0}, uRes:{value:new THREE.Vector2(4,4)} },
+  vertexShader:"varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.0,1.0); }",
+  fragmentShader:[
+    "varying vec2 vUv; uniform sampler2D tD; uniform float uTime; uniform vec2 uRes;",
+    "void main(){",
+    "  vec2 uv=vUv; vec2 c=uv-0.5; float d=dot(c,c);",
+    "  float b=d*0.014;",
+    "  vec3 col=texture2D(tD,uv).rgb*0.6;",
+    "  col+=0.1*texture2D(tD,uv+vec2(b,0.0)).rgb;",
+    "  col+=0.1*texture2D(tD,uv-vec2(b,0.0)).rgb;",
+    "  col+=0.1*texture2D(tD,uv+vec2(0.0,b)).rgb;",
+    "  col+=0.1*texture2D(tD,uv-vec2(0.0,b)).rgb;",
+    "  float g=fract(sin(dot(uv*uRes+mod(uTime,10.0)*61.0, vec2(12.9898,78.233)))*43758.5453);",
+    "  col+=(g-0.5)*0.05*(0.45+d*2.2);",
+    "  col*=1.0-d*1.05;",
+    "  col=pow(col, vec3(0.985,1.0,1.03));",
+    "  gl_FragColor=vec4(col,1.0);",
+    "}"
+  ].join("\n"),
+  depthTest:false, depthWrite:false
+});
+postMat.toneMapped=false;
+postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), postMat));
+
+/* ---------- loop ---------- */
+var BASE=Math.PI*2*(33.333/60);
+function fit(){
+  var w=window.innerWidth, h=window.innerHeight;
+  renderer.setSize(w,h,false);
+  var pr=renderer.getPixelRatio();
+  rt.setSize(Math.floor(w*pr), Math.floor(h*pr));
+  postMat.uniforms.uRes.value.set(w,h);
+  cam.aspect=w/Math.max(1,h); cam.updateProjectionMatrix();
+}
+window.addEventListener("resize", fit); fit();
+var last=performance.now(), idleSince=0;
+renderer.setAnimationLoop(function(){
+  var now=performance.now(), real=(now-last)/1000; last=now;
+  var rdt=Math.min(0.5, real);
+  var dt=Math.min(0.1, real);
+  var t=now/1000;
+  if(userHold>0) userHold-=rdt;
+  /* sequences */
+  var si2;
+  for(si2=seqs.length-1; si2>=0; si2--){
+    var sq=seqs[si2]; sq.t+=rdt;
+    var done=true, k2;
+    for(k2=0;k2<sq.steps.length;k2++){
+      var st=sq.steps[k2];
+      if(!st.done && sq.t>=st.t){ st.done=true; st.fn(); }
+      if(!st.done) done=false;
+    }
+    if(done) seqs.splice(si2,1);
+  }
+  /* idle micro-touch */
+  if(seqs.length===0 && !fading && userHold<=0){
+    idleSince+=rdt;
+    if(idleSince>14){
+      idleSince=0;
+      var hI = decks.A.running ? handR : handL;
+      var kx = decks.A.running ? 0.62 : -0.62;
+      handTo(hI, new THREE.Vector3(kx,1.1,-0.15), 0.5);
+      (function(hh){ setTimeout(function(){ handTo(hh, hh.rest, 0); }, 1600); })(hI);
+    }
+  } else idleSince=0;
+  /* tweens */
+  var ti;
+  for(ti=tweens.length-1; ti>=0; ti--){
+    var tw=tweens[ti]; tw.t+=rdt;
+    var v=Math.min(1, tw.t/tw.dur);
+    tw.set(v);
+    if(v>=1){ tweens.splice(ti,1); if(tw.onDone) tw.onDone(); }
+  }
+  /* decks */
+  ["A","B"].forEach(function(k){
+    var d=decks[k];
+    var target=d.running ? BASE : 0;
+    if(d.grab){ d.angVel=d.grabVel/Math.max(dt,0.008); }
+    else{
+      var accel=d.running ? 7 : 5;
+      d.angVel += (target-d.angVel)*Math.min(1, accel*dt);
+      d.angle += d.angVel*dt;
+    }
+    d.rec.rotation.y=-d.angle;
+    d.platter.rotation.y=-d.angle;
+    d.lift.rotation.x += ((d.armDown?0:-0.1) - d.lift.rotation.x)*0.12;
+    var pivTarget = d.armDown ? (-0.55 - d.prog*0.28) : -0.05;
+    d.pivot.rotation.y += (pivTarget - d.pivot.rotation.y)*0.08;
+  });
+  /* VU from engine levels */
+  ["A","B"].forEach(function(k,ix){
+    var lvl=levels[k]*(0.5+0.5*Math.max(0, Math.sin(t*(ix?8.6:6.2)+ix*2)))+levels[k]*0.25;
+    var lit=Math.min(7, Math.floor(lvl*8));
+    var vj;
+    for(vj=0; vj<7; vj++){ vuMeshes[k][vj].emissiveIntensity = vj<lit ? 1.4 : 0.08; }
+  });
+  /* hands */
+  [handL, handR].forEach(function(h){
+    if(h.follow){ var d2=decks[h.follow.deck]; h.target.copy(deckWorld(d2, d2.rec.position.clone().add(h.follow.off))); }
+    if(h.followObj){ h.target.copy(h.followObj.getWorldPosition(new THREE.Vector3())).add(new THREE.Vector3(0,0.16,0.06)); }
+    var kk=1-Math.exp(-6*dt);
+    h.pos.lerp(h.target, kk);
+    h.grip += (h.gripT-h.grip)*Math.min(1,8*dt);
+    h.g.position.copy(h.pos);
+    h.g.position.y += Math.sin(t*2.3+h.seed)*0.013;
+    h.g.position.x += Math.sin(t*3.1+h.seed*2)*0.008;
+    h.fingers.rotation.x = -0.15 - h.grip*0.78;
+  });
+  /* rain, dust, flare */
+  var rp2=rain.geometry.attributes.position.array, rk;
+  for(rk=0; rk<rainN; rk++){
+    rp2[rk*3+1]-=rvv[rk]*dt;
+    if(rp2[rk*3+1]<-1.2) rp2[rk*3+1]=7.8;
+  }
+  rain.geometry.attributes.position.needsUpdate=true;
+  var dp2=dust.geometry.attributes.position.array, dk;
+  for(dk=0; dk<dustN; dk++){
+    dp2[dk*3]+=Math.sin(t*0.6+dk)*0.0009;
+    dp2[dk*3+1]+=Math.sin(t*0.4+dk*1.7)*0.0012 - 0.0008;
+    if(dp2[dk*3+1]<0.3) dp2[dk*3+1]=4.4;
+  }
+  dust.geometry.attributes.position.needsUpdate=true;
+  flare.scale.setScalar(1.5+Math.sin(t*2.1)*0.12);
+  /* camera */
+  var ck=CAMS[camKey], kc=1-Math.exp(-2.1*dt);
+  camPos.lerp(ck.p, kc); camLook.lerp(ck.l, kc);
+  var off=new THREE.Vector3().subVectors(camPos, camLook);
+  off.applyAxisAngle(new THREE.Vector3(0,1,0), yaw + Math.sin(t*0.16)*0.04);
+  cam.position.copy(camLook).add(off);
+  cam.position.y += pitchCam*3 + Math.sin(t*0.21)*0.07;
+  cam.position.x += Math.sin(t*0.9)*0.03;
+  cam.lookAt(camLook);
+  /* lens */
+  postMat.uniforms.uTime.value=t;
+  renderer.setRenderTarget(rt);
+  renderer.render(scene,cam);
+  renderer.setRenderTarget(null);
+  renderer.render(postScene,postCam);
+});
+return API;
+}catch(err){
+  document.getElementById("glFallback").classList.add("on");
+  return stub;
+}
+})();
+</script>
+<script>
+/* ================= HOME MUSIC ENGINE v3 : drives the rig ================= */
 (function(){
 "use strict";
 
 var $ = function(id){ return document.getElementById(id); };
-var SIMPLE = window.matchMedia("(pointer:coarse)").matches; /* touch devices: single-deck mode */
-var XFADE_LEAD = 9;      /* seconds before track end to begin transition */
-var FADE_DUR = 6000;     /* ms */
+var RIG = window.RIG || {ok:false, ctl:{}, prepare:function(k,cb){ if(cb) setTimeout(cb,300); },
+  fadeBegin:function(){}, setFade:function(){}, finish:function(){}, quick:function(){},
+  first:function(){}, setLevels:function(){}, setProgress:function(){}};
+var SIMPLE = window.matchMedia("(pointer:coarse)").matches; /* touch devices: single player, rig still performs */
+var XFADE_LEAD = 12;     /* seconds before track end to begin the changeover (rig needs ~5s to swap + 6s fade) */
+var FADE_DUR = 6000;     /* ms, the audible crossfade; the rig hand rides the knob in sync */
 
 /* ---------------- FX : web audio dub kit ---------------- */
 var FX = {
-  ctx:null, master:null, echoIn:null, send:null,
+  ctx:null, master:null, echoIn:null,
   init: function(){
     if(this.ctx) return;
     try{
@@ -973,7 +1527,6 @@ var FX = {
       this.ctx = new AC();
       this.master = this.ctx.createGain(); this.master.gain.value = 0.85;
       this.master.connect(this.ctx.destination);
-      /* feedback echo chain */
       var delay = this.ctx.createDelay(1.5); delay.delayTime.value = 0.36;
       var fb = this.ctx.createGain(); fb.gain.value = 0.52;
       var lp = this.ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 1700;
@@ -1069,6 +1622,35 @@ var FX = {
       setTimeout(function(){ try{ck.src.stop();}catch(e){} }, 700);
     }
   },
+  /* vinyl scratch layer: the stream cannot be scratched, this noise bed answers the hand */
+  _scr:null,
+  scratch: function(da){
+    if(!this.ctx) return;
+    this.resume();
+    var c=this.ctx, t=c.currentTime;
+    if(!this._scr){
+      var len=c.sampleRate*1.2, buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+      for(var i=0;i<len;i++){ d[i]=Math.random()*2-1; }
+      var src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+      var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.Q.value=1.6; bp.frequency.value=900;
+      var g=c.createGain(); g.gain.value=0.0001;
+      src.connect(bp); bp.connect(g); g.connect(this.master);
+      var s=c.createGain(); s.gain.value=0.35; g.connect(s); s.connect(this.echoIn);
+      src.start();
+      this._scr={src:src,bp:bp,g:g};
+    }
+    var mag=Math.min(0.5, Math.abs(da)*2.4);
+    this._scr.bp.frequency.setTargetAtTime(420+Math.min(2600, Math.abs(da)*5200), t, 0.02);
+    this._scr.g.gain.cancelScheduledValues(t);
+    this._scr.g.gain.setValueAtTime(Math.max(0.0001,mag), t);
+    this._scr.g.gain.linearRampToValueAtTime(0.0001, t+0.22);
+  },
+  scratchEnd: function(){
+    if(!this.ctx || !this._scr) return;
+    var t=this.ctx.currentTime;
+    this._scr.g.gain.cancelScheduledValues(t);
+    this._scr.g.gain.setTargetAtTime(0.0001, t, 0.05);
+  },
   transitionFx: function(){
     var self=this;
     self.stab();
@@ -1077,59 +1659,6 @@ var FX = {
     if(Math.random()<0.5){ setTimeout(function(){ self.phone(); }, 2100); }
   }
 };
-
-/* ---------------- DJ visual engine ---------------- */
-var visDeck = "L";
-var DJVIS = (function(){
-  var angles={L:0,R:0}, speed={L:0,R:0}, target={L:0,R:0}, running=false;
-  function el(id){ return document.getElementById(id); }
-  function loop(){
-    ["L","R"].forEach(function(d){
-      var t=target[d];
-      if(speed[d] < t){ speed[d] = Math.min(t, speed[d] + 0.07); }
-      else if(speed[d] > t){ speed[d] = Math.max(t, speed[d]*0.962 - 0.003); }
-      if(speed[d] > 0.0004){
-        angles[d] = (angles[d] + speed[d]*2.2) % 360;
-        var g = el("rec"+d);
-        if(g) g.setAttribute("transform", "rotate(" + angles[d].toFixed(2) + ")");
-      }
-    });
-    requestAnimationFrame(loop);
-  }
-  return {
-    start: function(){ if(!running){ running=true; requestAnimationFrame(loop); } },
-    spinUp: function(d){ target[d] = 1.18; },
-    brake: function(d){ target[d] = 0; },
-    arm: function(d,on){ var a=el("tonearm"+d); if(a) a.classList.toggle("play", !!on); },
-    record: function(d,show){ var r=el("rec"+d); if(r) r.classList.toggle("off", !show); },
-    loadDisc: function(d, cb){
-      var b=el("booth"), f=el("discFly");
-      if(b){ b.classList.add("cratePop"); if(d==="L") b.classList.add("liftL"); }
-      if(f){ f.classList.remove("flyL","flyR"); void f.getBoundingClientRect(); f.classList.add(d==="L"?"flyL":"flyR"); }
-      setTimeout(function(){
-        if(f) f.classList.remove("flyL","flyR");
-        if(b) b.classList.remove("cratePop","liftL");
-        DJVIS.record(d, true);
-        if(cb) cb();
-      }, d==="L" ? 1300 : 1100);
-    },
-    setFade: function(x, inDeck){  /* x 0..1 progress toward the incoming deck */
-      var p = (inDeck === "R") ? x : (1 - x);   /* 0 full-left, 1 full-right */
-      document.documentElement.style.setProperty("--xf", ((p - 0.5) * 84).toFixed(1) + "px");
-      document.documentElement.style.setProperty("--fr", ((p - 0.5) * 13).toFixed(2) + "deg");
-    }
-  };
-})();
-function animFade(inDeck, dur, done){
-  var t0 = performance.now();
-  (function step(now){
-    var x = Math.min(1, (now - t0) / dur);
-    DJVIS.setFade(x, inDeck);
-    if(x < 1) requestAnimationFrame(step); else if(done) done();
-  })(performance.now());
-}
-
-window.HMDBG = { djvis: DJVIS, fade: animFade };  /* console hook for live debugging */
 
 /* ---------------- scheduling ---------------- */
 function blockKeyFor(h){ if(h>=6 && h<13) return "morning"; if(h>=13 && h<20) return "afternoon"; return "night"; }
@@ -1154,7 +1683,6 @@ function shuffle(arr){
 }
 function buildQueue(){
   queue = shuffle(tracksForBlock(currentBlock).slice());
-  /* soften same-artist adjacency */
   for(var i=1;i<queue.length;i++){
     if(queue[i].a === queue[i-1].a){
       for(var j=i+1;j<queue.length;j++){
@@ -1171,23 +1699,79 @@ function nextTrack(){
   return t;
 }
 
-/* ---------------- YouTube players ---------------- */
+/* ---------------- YouTube players + mix state ---------------- */
 var apiReady=false, started=false, radioOn=false;
-var P = { A:{yt:null, slot:"slotA", ready:false}, B:{yt:null, slot:"slotB", ready:false} };
+var P = { A:{k:"A", yt:null, slot:"slotA", ready:false}, B:{k:"B", yt:null, slot:"slotB", ready:false} };
 var activeKey="A";
+var rigDeck="A";             /* which rig deck currently holds the live stream */
 var masterVol = 80;
 var muted=false;
 var transitioning=false;
 var retryCount=0;
 var lastT=0, lastStamp=0;
+var chMult={A:1,B:1};        /* rig channel faders */
+var gate={A:1,B:1};          /* rig tonearm lifts: arm up means silence */
+var manualMix=null;          /* rig crossfader when the viewer grabs it between changeovers */
 
 try{ var sv = localStorage.getItem("hm_vol"); if(sv!==null){ masterVol = Math.max(0, Math.min(100, parseInt(sv,10)||80)); } }catch(e){}
 
 function other(k){ return k==="A" ? "B" : "A"; }
-function fadeVol(p, f){ /* f 0..1 */
-  if(p.yt && p.ready){ try{ p.yt.setVolume(Math.round(masterVol * f)); }catch(e){} }
-  p.fade = f;
+function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
+function playerOfDeck(dk){ return SIMPLE ? (dk===rigDeck ? P.A : null) : P[dk]; }
+function applyVol(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return;
+  var dk = deckOfPlayer(k);
+  var f = (p.fade==null?1:p.fade);
+  if(manualMix!=null && !transitioning){
+    f = (dk==="A") ? Math.cos(manualMix*Math.PI/2) : Math.sin(manualMix*Math.PI/2);
+  }
+  var v = masterVol * f * chMult[dk] * gate[dk];
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, v)))); }catch(e){}
 }
+function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
+function audibleLevel(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return 0;
+  var st=-9; try{ st=p.yt.getPlayerState(); }catch(e){ return 0; }
+  if(st!==1 || muted) return 0;
+  var dk = deckOfPlayer(k);
+  var f = (p.fade==null?1:p.fade);
+  if(manualMix!=null && !transitioning){
+    f = (dk==="A") ? Math.cos(manualMix*Math.PI/2) : Math.sin(manualMix*Math.PI/2);
+  }
+  return (masterVol/100) * f * chMult[dk] * gate[dk];
+}
+
+/* rig controls answer back into the real mix */
+RIG.ctl.startstop = function(dk, running){
+  var p = playerOfDeck(dk); if(!p || !p.ready) return;
+  try{ running ? p.yt.playVideo() : p.yt.pauseVideo(); }catch(e){}
+};
+RIG.ctl.cue = function(dk, down){
+  gate[dk] = down ? 1 : 0;
+  applyVol("A"); applyVol("B");
+};
+RIG.ctl.fade = function(t01){
+  manualMix = Math.max(0, Math.min(1, t01));
+  applyVol("A"); applyVol("B");
+};
+RIG.ctl.ch = function(dk, v){
+  chMult[dk] = Math.max(0, Math.min(1, v));
+  applyVol("A"); applyVol("B");
+};
+RIG.ctl.scratch = function(da){ FX.scratch(da); };
+RIG.ctl.scratchEnd = function(){ FX.scratchEnd(); };
+
+/* feed the VU meters and the tonearm creep */
+setInterval(function(){
+  if(!radioOn) return;
+  var la=0, lb=0;
+  ["A","B"].forEach(function(k){
+    var v = audibleLevel(k);
+    if(deckOfPlayer(k)==="A"){ la=Math.max(la,v); } else { lb=Math.max(lb,v); }
+  });
+  RIG.setLevels(la, lb);
+}, 280);
+
 window.onYouTubeIframeAPIReady = function(){
   apiReady = true;
   makePlayer("A"); if(!SIMPLE) makePlayer("B");
@@ -1218,10 +1802,9 @@ function apiFail(){
   $("standbyMsg").textContent = "cannot reach YouTube from this network. the radio needs it to spin.";
 }
 
-/* start sequence: user pressed play -> intro runs -> radio starts */
+/* start sequence: user pressed play, intro runs, radio starts */
 var pendingFirst = null;
 function maybeStart(){
-  /* preload the first tune muted while the MC talks, so it is buffered when we fade in */
   if(!pendingFirst || !P.A.ready || started) return;
   started = true;
   try{
@@ -1245,10 +1828,7 @@ function beginRadio(){
     }catch(e){}
     if(!firstLogged && current){
       firstLogged = true; pushHistory(current);
-      DJVIS.start();
-      visDeck = (activeKey === "A") ? "L" : "R";
-      DJVIS.setFade(1, visDeck);
-      DJVIS.loadDisc(visDeck, function(){ DJVIS.arm(visDeck, true); DJVIS.spinUp(visDeck); });
+      RIG.first(deckOfPlayer(activeKey));
     }
     setTimeout(checkAudible, 1600);
   }
@@ -1272,8 +1852,7 @@ $("needle") && $("needle").addEventListener("click", function(){
 });
 
 function onState(k, st){
-  var p = P[k];
-  if(st === 1){ /* playing */
+  if(st === 1){
     if(k === activeKey){
       $("standby").classList.add("off");
       $("slot"+k).classList.add("live");
@@ -1289,7 +1868,6 @@ function onYtError(k, code){
   var bad = p.pendingTrack || (k===activeKey ? current : null);
   if(bad){ deadIds[bad.v] = true; }
   if(transitioning && k !== activeKey){
-    /* incoming deck failed: pick another record */
     transitioning = false;
     if(retryCount++ < 4){ startTransition(); }
   } else if(k === activeKey){
@@ -1298,13 +1876,7 @@ function onYtError(k, code){
   }
 }
 
-/* hard cut (errors, manual skip) */
-function quickSwapVisual(){
-  var d = visDeck;
-  DJVIS.arm(d, false); DJVIS.brake(d);
-  DJVIS.loadDisc(d, function(){ DJVIS.arm(d, true); DJVIS.spinUp(d); });
-  flashLines();
-}
+/* hard cut (errors, manual skip): the rig does a fast same-deck swap */
 function hardNextAudio(t){
   var p = P[activeKey];
   p.pendingTrack = t;
@@ -1313,70 +1885,90 @@ function hardNextAudio(t){
 }
 function hardNext(){
   var t = nextTrack(); if(!t) return;
+  manualMix = null;
   hardNextAudio(t);
-  quickSwapVisual();
+  RIG.quick(deckOfPlayer(activeKey));
 }
 
-/* crossfade transition */
+/* the changeover: the rig walks to the idle deck, swaps the record, drops the
+   needle, then rides the crossfader while the audio does the same 6s ramp */
 function startTransition(){
   if(transitioning || !radioOn) return;
   var t = nextTrack(); if(!t) return;
+  manualMix = null;
+
   if(SIMPLE){
     transitioning = true;
-    var inD = (visDeck === "L") ? "R" : "L", outD = visDeck;
-    DJVIS.arm(outD, false); DJVIS.brake(outD);
-    DJVIS.loadDisc(inD, function(){ DJVIS.arm(inD, true); DJVIS.spinUp(inD); });
+    var inD = other(rigDeck), outD = rigDeck;
+    var prepped = false;
+    RIG.prepare(inD, function(){ prepped = true; });
     FX.transitionFx();
-    animFade(inD, 1700);
-    setTimeout(function(){
-      DJVIS.record(outD, false);
-      visDeck = inD;
-      transitioning = false;
-      hardNextAudio(t);
-      flashLines();
-    }, 1800);
+    var waited = 0;
+    (function waitPrep(){
+      if(!transitioning) return;
+      if(prepped){ go(); }
+      else if((waited += 250) > 9000){ go(); }
+      else setTimeout(waitPrep, 250);
+    })();
+    function go(){
+      RIG.fadeBegin(inD);
+      var t0 = performance.now(), swapped=false;
+      (function step(now){
+        if(!transitioning){ return; }
+        var x = Math.min(1, (now - t0) / 1900);
+        RIG.setFade(x, inD);
+        if(x >= 0.5 && !swapped){ swapped=true; hardNextAudio(t); }
+        if(x < 1){ requestAnimationFrame(step); }
+        else{
+          RIG.finish(outD);
+          rigDeck = inD;
+          transitioning = false;
+          lastT=0; lastStamp=Date.now();
+        }
+      })(performance.now());
+    }
     return;
   }
+
   var inc = P[other(activeKey)];
   if(!inc.ready){ hardNext(); return; }
   transitioning = true;
   inc.pendingTrack = t;
   fadeVol(inc, 0);
   try{ inc.yt.unMute(); inc.yt.loadVideoById(t.v); }catch(e){}
-  var inD = (other(activeKey) === "A") ? "L" : "R";
-  var outD = (activeKey === "A") ? "L" : "R";
-  DJVIS.loadDisc(inD, function(){ DJVIS.arm(inD, true); DJVIS.spinUp(inD); });
+  var inK = other(activeKey), outK = activeKey;
+  var prepped = false;
+  RIG.prepare(inK, function(){ prepped = true; });
   FX.transitionFx();
   var waited=0;
-  (function waitPlay(){
+  (function waitBoth(){
     var st=-9; try{ st = inc.yt.getPlayerState(); }catch(e){}
-    if(!transitioning) return;            /* aborted by error handler */
-    if(st === 1){ ramp(); }
-    else if((waited += 250) > 12000){ transitioning=false; hardNext(); }
-    else setTimeout(waitPlay, 250);
+    if(!transitioning) return;            /* aborted by the error handler */
+    if(st === 1 && prepped){ ramp(); }
+    else if((waited += 250) > 15000){ transitioning=false; hardNext(); }
+    else setTimeout(waitBoth, 250);
   })();
   function ramp(){
-    var out = P[activeKey], t0 = performance.now(), mid=false;
+    var out = P[outK], t0 = performance.now(), mid=false;
+    RIG.fadeBegin(inK);
     function step(now){
       var x = Math.min(1, (now - t0) / FADE_DUR);
       fadeVol(out, Math.cos(x * Math.PI/2));
       fadeVol(inc, Math.sin(x * Math.PI/2));
-      DJVIS.setFade(x, inD);
+      RIG.setFade(x, inK);
       if(x >= 0.45 && !mid){
         mid = true;
-        $("slot"+other(activeKey)).classList.add("live");
-        $("slot"+activeKey).classList.remove("live");
-        flashLines();
+        $("slot"+inK).classList.add("live");
+        $("slot"+outK).classList.remove("live");
         setNow(t, true);
       }
       if(x < 1){ requestAnimationFrame(step); }
       else{
         try{ out.yt.stopVideo(); }catch(e){}
         out.pendingTrack = null;
-        DJVIS.arm(outD, false); DJVIS.brake(outD);
-        setTimeout(function(){ DJVIS.record(outD, false); }, 1400);
-        activeKey = other(activeKey);
-        visDeck = inD;
+        RIG.finish(outK);
+        activeKey = inK;
+        rigDeck = inK;
         transitioning = false;
         lastT=0; lastStamp=Date.now();
       }
@@ -1394,6 +1986,7 @@ setInterval(function(){
   if(st === 1){
     if(cur !== lastT){ lastT=cur; lastStamp=Date.now(); }
     else if(Date.now() - lastStamp > 14000){ hardNext("stalled"); return; }
+    if(dur > 0){ RIG.setProgress(deckOfPlayer(activeKey), cur/dur); }
     if(dur > 40 && (dur - cur) <= XFADE_LEAD){ startTransition(); }
   }
 }, 600);
@@ -1403,9 +1996,6 @@ function applyBlockTheme(){
   var b = BLOCKS[currentBlock];
   document.body.style.setProperty("--blk", b.accent);
   $("blockLabel").textContent = b.label + " " + b.range + (OVERRIDE ? " (override)" : "");
-  var lL=document.getElementById("labL"), lR=document.getElementById("labR");
-  if(lL) lL.setAttribute("fill", b.accent);
-  if(lR) lR.setAttribute("fill", "#f4ecd9");
 }
 setInterval(function(){
   if(OVERRIDE) return;
@@ -1468,10 +2058,6 @@ function pushHistory(t){
   ul.insertBefore(li, ul.firstChild);
   while(ul.children.length > 60){ ul.removeChild(ul.lastChild); }
 }
-function flashLines(){
-  var s=$("speedlines"); s.classList.add("on");
-  setTimeout(function(){ s.classList.remove("on"); }, 380);
-}
 var toastTimer=null;
 function toast(msg){
   var el=$("toast"); el.textContent=msg; el.classList.add("on");
@@ -1483,7 +2069,7 @@ var volEl = $("vol"); volEl.value = masterVol;
 volEl.addEventListener("input", function(){
   masterVol = parseInt(volEl.value,10);
   try{ localStorage.setItem("hm_vol", String(masterVol)); }catch(e){}
-  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ fadeVol(p, p.fade==null?1:p.fade); } });
+  applyVol("A"); applyVol("B");
   FX.setVol(masterVol/100);
 });
 FX.setVol(masterVol/100);
@@ -1561,6 +2147,10 @@ $("enter").addEventListener("click", function(){
   maybeStart();
   runIntro();
 });
+
+window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
+  return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE };
+}};
 
 })();
 </script>
