@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Music</title>
+<meta name="description" content="Home Music. A 24-hour selector: dub to jungle to techno, programmed by the clock.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+/* Layout concept: a night broadcast booth seen from the floor. Video wall up top,
+   DJ silhouette at the decks below it, data panels like pirate-radio teletext. */
+:root{
+  --ink:#07070e;
+  --panel:#0d0d19;
+  --panel2:#131022;
+  --line:#242138;
+  --paper:#f4ecd9;
+  --dim:#8d90b0;
+  --red:#e8392c;
+  --red-deep:#7e140f;
+  --amber:#ffb12b;
+  --teal:#41d9c8;
+  --violet:#8d7bff;
+  --display:'Anton', 'Arial Narrow', sans-serif;
+  --mono:'IBM Plex Mono', 'Courier New', monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--mono);
+  font-size:14px;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+::selection{background:var(--red); color:var(--paper)}
+a{color:var(--amber); text-decoration:none}
+a:hover{color:var(--paper)}
+button{font-family:var(--mono)}
+:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
+
+/* ---------- atmosphere layers ---------- */
+#noise{
+  position:fixed; inset:-50%; z-index:60; pointer-events:none; opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.2s steps(3) infinite;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)} 33%{transform:translate(-2%,1%)}
+  66%{transform:translate(1%,-2%)} 100%{transform:translate(0,0)}
+}
+#scan{
+  position:fixed; inset:0; z-index:59; pointer-events:none; opacity:.5;
+  background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 3px);
+}
+#vignette{
+  position:fixed; inset:0; z-index:58; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+}
+@media (prefers-reduced-motion: reduce){
+  #noise{animation:none}
+  *{animation-duration:.001s !important; transition-duration:.001s !important}
+}
+
+/* ---------- splash ---------- */
+#splash{
+  position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(circle 300px at 50% 36%, rgba(232,57,44,.28), rgba(232,57,44,0) 70%),
+    linear-gradient(to bottom, #07070e 0 62%, #0c0a18 62% 100%);
+  transition:opacity .9s ease;
+  padding:24px 16px;
+}
+#splash::before{ /* red sun */
+  content:""; position:absolute; left:50%; top:36%; width:260px; height:260px;
+  transform:translate(-50%,-50%); border-radius:50%;
+  background:radial-gradient(circle at 42% 38%, #ff6a4e, var(--red) 55%, var(--red-deep));
+  box-shadow:0 0 90px 12px rgba(232,57,44,.45);
+}
+#splash::after{ /* grid floor */
+  content:""; position:absolute; left:0; right:0; bottom:0; height:38%;
+  background:
+    repeating-linear-gradient(to top, rgba(141,123,255,.22) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(to right, rgba(141,123,255,.14) 0 1px, transparent 1px 56px);
+  transform:perspective(380px) rotateX(55deg);
+  transform-origin:50% 100%;
+  mask-image:linear-gradient(to top, #000 55%, transparent);
+  -webkit-mask-image:linear-gradient(to top, #000 55%, transparent);
+}
+.sp-inner{position:relative; z-index:2; text-align:center; max-width:720px; width:100%}
+.sp-bar{width:72px; height:5px; background:var(--red); margin:0 auto 16px; box-shadow:0 0 16px rgba(232,57,44,.8)}
+.sp-title{
+  font-family:var(--display); font-size:clamp(56px, 13vw, 128px); line-height:.92; margin:0;
+  text-transform:uppercase; color:var(--paper); letter-spacing:.01em;
+  text-shadow:4px 4px 0 var(--red), 8px 8px 0 rgba(126,20,15,.55);
+  transform:skewX(-4deg);
+}
+.sp-sub{color:var(--dim); letter-spacing:.3em; font-size:11px; margin:18px 0 30px; text-transform:uppercase}
+#enter{
+  cursor:pointer; border:2px solid var(--amber); color:var(--amber); background:rgba(255,177,43,.07);
+  font-size:15px; letter-spacing:.28em; padding:16px 34px; text-transform:uppercase;
+  box-shadow:0 0 0 rgba(255,177,43,.0);
+  animation:pulse 1.6s ease-in-out infinite;
+}
+#enter:hover{background:var(--amber); color:var(--ink)}
+@keyframes pulse{50%{box-shadow:0 0 26px rgba(255,177,43,.45)}}
+.sp-note{color:var(--dim); font-size:11px; margin-top:16px; letter-spacing:.12em}
+/* MC sequence */
+#mc{display:none; min-height:220px}
+#mc.on{display:block}
+.mc-line{
+  font-family:var(--display); text-transform:uppercase; color:var(--paper);
+  font-size:clamp(22px, 4.6vw, 40px); line-height:1.2; letter-spacing:.03em;
+  opacity:0; transform:translateY(10px) skewX(-3deg);
+}
+.mc-line.big{font-size:clamp(46px, 10vw, 96px); color:var(--amber); text-shadow:3px 3px 0 var(--red)}
+.mc-line.show{opacity:1; transform:translateY(0) skewX(-3deg); transition:all .18s ease-out}
+#skipIntro{
+  display:none; margin-top:26px; background:none; border:1px solid var(--line); color:var(--dim);
+  letter-spacing:.2em; padding:8px 16px; cursor:pointer; font-size:11px;
+}
+#skipIntro.on{display:inline-block}
+#skipIntro:hover{color:var(--paper); border-color:var(--dim)}
+#splash.off{opacity:0; pointer-events:none}
+
+/* ---------- app frame ---------- */
+#app{display:none; min-height:100%; flex-direction:column}
+#app.on{display:flex}
+#top{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:12px 20px; border-bottom:1px solid var(--line);
+  background:linear-gradient(to bottom, rgba(13,13,25,.92), rgba(13,13,25,.75));
+  position:sticky; top:env(safe-area-inset-top, 0px); z-index:40; backdrop-filter:blur(4px);
+}
+.brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+.brand b{font-family:var(--display); font-weight:400; font-size:22px; letter-spacing:.04em; color:var(--paper); text-shadow:2px 2px 0 var(--red)}
+.brand span{color:var(--teal); font-size:10px; letter-spacing:.4em; white-space:nowrap}
+.onair{display:flex; align-items:center; gap:9px; color:var(--dim); font-size:11px; letter-spacing:.18em; text-transform:uppercase; text-align:center}
+.onair .dot{width:9px; height:9px; border-radius:50%; background:var(--red); box-shadow:0 0 10px var(--red); animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.35}}
+#blockLabel{color:var(--paper)}
+#clock{font-size:15px; color:var(--amber); letter-spacing:.14em; font-variant-numeric:tabular-nums}
+
+/* ---------- stage ---------- */
+#stage{
+  position:relative; flex:1; display:flex; flex-direction:column; align-items:center;
+  padding:26px 16px 0; overflow:hidden;
+  background:
+    radial-gradient(circle 420px at 50% 230px, rgba(232,57,44,.13), transparent 70%),
+    linear-gradient(to bottom, #07070e, #0a0916 60%, #0d0b1c);
+}
+#citySvg{position:absolute; left:50%; top:0; transform:translateX(-50%); width:1500px; max-width:none; height:460px; z-index:0; opacity:.9; pointer-events:none}
+.wall{position:relative; z-index:2; width:min(860px, 100%); display:flex; justify-content:center}
+.bezel{
+  position:relative; width:100%; aspect-ratio:16/9; background:#000;
+  border:3px solid #221f33; border-radius:10px; overflow:hidden;
+  box-shadow:0 0 0 1px #060610, 0 0 42px rgba(141,123,255,.16), 0 22px 60px rgba(0,0,0,.6);
+}
+.bezel .corner{position:absolute; width:14px; height:14px; border:2px solid var(--amber); z-index:6; pointer-events:none}
+.corner.tl{top:6px; left:6px; border-right:0; border-bottom:0}
+.corner.tr{top:6px; right:6px; border-left:0; border-bottom:0}
+.corner.bl{bottom:6px; left:6px; border-right:0; border-top:0}
+.corner.br{bottom:6px; right:6px; border-left:0; border-top:0}
+.yt-slot{position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease}
+.yt-slot.live{opacity:1}
+.yt-slot iframe{width:100%; height:100%}
+#standby{
+  position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; gap:10px;
+  align-items:center; justify-content:center; background:
+    repeating-linear-gradient(45deg, #0b0a14 0 18px, #0e0c1a 18px 36px);
+  color:var(--dim); letter-spacing:.3em; font-size:12px; text-transform:uppercase; text-align:center;
+  transition:opacity .8s ease;
+}
+#standby .big{font-family:var(--display); font-size:30px; color:var(--paper); letter-spacing:.08em; text-shadow:2px 2px 0 var(--red)}
+#standby.off{opacity:0; pointer-events:none}
+#needle{
+  position:absolute; inset:0; z-index:7; display:none; align-items:center; justify-content:center;
+  background:rgba(7,7,14,.82); cursor:pointer; border:0; width:100%; color:var(--amber);
+  font-size:14px; letter-spacing:.3em; text-transform:uppercase;
+}
+#needle.on{display:flex}
+
+/* booth : ink line art */
+#booth{position:relative; z-index:3; width:min(1150px, 106%); margin-top:-34px; pointer-events:none}
+#boothSvg{width:100%; height:auto; display:block}
+#djHead{animation:bob 1.15s ease-in-out infinite; transform-box:fill-box; transform-origin:center bottom}
+@keyframes bob{50%{transform:translateY(2.5px)}}
+.tonearm{transform-box:view-box; transition:transform 1.5s cubic-bezier(.45,.02,.2,1)}
+#tonearmL{transform-origin:428px 172px}
+#tonearmR{transform-origin:1034px 172px}
+#tonearmL.play,#tonearmR.play{transform:rotate(13deg)}
+.rec{transition:opacity .9s ease}
+.rec.off{opacity:0}
+#foreR{transform-box:view-box; transform-origin:698px 256px; transform:rotate(var(--fr,0deg))}
+#handR{transform-box:view-box; transform:translateX(var(--xf,0px))}
+#xfKnob{transform-box:view-box; transform:translate(620px,307.5px) translateX(var(--xf,0px))}
+#foreL{transform-box:view-box; transform-origin:532px 252px; transition:transform .8s ease}
+#booth.liftL #foreL{transform:rotate(-9deg)}
+#crateTop{transform-box:view-box; transition:transform .5s ease}
+#booth.cratePop #crateTop{transform:translateY(-12px)}
+#discFly{transform-box:view-box; transform:translate(1128px,352px) scale(.5); opacity:0}
+#discFly.flyL{animation:flyL 1.25s cubic-bezier(.35,.1,.3,1) forwards}
+#discFly.flyR{animation:flyR 1.05s cubic-bezier(.35,.1,.3,1) forwards}
+@keyframes flyL{
+  0%{transform:translate(1128px,352px) scale(.5); opacity:0}
+  12%{opacity:1}
+  55%{transform:translate(700px,150px) scale(.8)}
+  100%{transform:translate(268px,234px) scale(1); opacity:1}
+}
+@keyframes flyR{
+  0%{transform:translate(1128px,352px) scale(.5); opacity:0}
+  14%{opacity:1}
+  55%{transform:translate(1010px,170px) scale(.8)}
+  100%{transform:translate(874px,234px) scale(1); opacity:1}
+}
+.vu{animation:vu .5s steps(2) infinite}
+.vu:nth-child(2){animation-duration:.34s}
+.vu:nth-child(3){animation-duration:.42s}
+@keyframes vu{50%{opacity:.15}}
+#speedlines{
+  position:absolute; inset:-6% -2%; z-index:4; opacity:0; pointer-events:none;
+  transition:opacity .12s;
+  background:repeating-conic-gradient(from 3deg, transparent 0 11deg, rgba(244,236,217,.5) 11deg 12.6deg);
+  -webkit-mask-image:radial-gradient(circle, transparent 30%, #000 62%);
+  mask-image:radial-gradient(circle, transparent 30%, #000 62%);
+}
+#speedlines.on{opacity:.75}
+.beacon{animation:blink 2.2s infinite}
+
+/* ---------- now playing ---------- */
+#now{
+  position:relative; z-index:5; width:min(860px, 100%);
+  margin:-6px auto 0; padding:18px 20px 16px;
+  background:linear-gradient(135deg, var(--panel), var(--panel2));
+  border:1px solid var(--line); border-left:4px solid var(--blk, var(--amber));
+}
+.chiprow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+#gChip{
+  font-size:10px; letter-spacing:.26em; text-transform:uppercase; padding:4px 10px;
+  color:var(--ink); background:var(--blk, var(--amber)); font-weight:700;
+}
+#tYear{color:var(--dim); font-size:12px; letter-spacing:.2em}
+#tArtist{font-family:var(--display); font-weight:400; font-size:clamp(26px, 4.4vw, 40px); margin:8px 0 0; line-height:1.03; text-transform:uppercase; letter-spacing:.015em}
+#tTitle{color:var(--amber); font-size:clamp(15px, 2.4vw, 19px); margin:4px 0 10px; letter-spacing:.04em}
+#tBlurb{color:var(--paper); opacity:.82; margin:0 0 14px; max-width:66ch; font-size:13.5px}
+.t-links{display:flex; gap:12px; flex-wrap:wrap}
+.t-links a{
+  border:1px solid var(--line); padding:7px 13px; font-size:11px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--paper); background:rgba(255,255,255,.03);
+}
+.t-links a:hover{border-color:var(--amber); color:var(--amber)}
+
+/* ---------- control bar ---------- */
+#ctrl{
+  z-index:5; width:min(860px, 100%); margin:10px auto 26px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  color:var(--dim); font-size:11px; letter-spacing:.14em;
+}
+#ctrl .grp{display:flex; align-items:center; gap:9px}
+#vol{accent-color:var(--amber); width:140px}
+.tbtn{
+  cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
+  padding:7px 12px; letter-spacing:.2em; font-size:11px; text-transform:uppercase;
+}
+.tbtn:hover,.tbtn.on{color:var(--amber); border-color:var(--amber)}
+#ctrl .spacer{flex:1}
+
+/* ---------- panels ---------- */
+.panel{
+  position:fixed; top:0; bottom:0; width:min(360px, 92vw); z-index:70;
+  background:rgba(10,10,20,.97); border-color:var(--line);
+  padding:calc(18px + env(safe-area-inset-top, 0px)) 20px 24px; overflow-y:auto;
+  transition:transform .35s ease;
+}
+#genrePanel{left:0; border-right:1px solid var(--line); transform:translateX(-102%)}
+#histPanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
+.panel.on{transform:translateX(0)}
+.panel h3{
+  font-family:var(--display); font-weight:400; letter-spacing:.06em; font-size:20px;
+  margin:4px 0 2px; text-transform:uppercase; text-shadow:2px 2px 0 var(--red)
+}
+.panel .pclose{position:absolute; top:14px; right:14px; background:none; border:1px solid var(--line); color:var(--dim); cursor:pointer; padding:4px 9px}
+.panel .psub{color:var(--dim); font-size:10px; letter-spacing:.3em; text-transform:uppercase; margin:0 0 14px}
+#gName{color:var(--amber); font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin:14px 0 6px}
+#gNote{color:var(--paper); opacity:.85; font-size:13px}
+#gTrackCount{color:var(--dim); font-size:11px; margin-top:12px}
+.g-links{display:flex; flex-direction:column; gap:8px; margin-top:18px}
+.g-links a{font-size:11px; letter-spacing:.14em; text-transform:uppercase; border:1px solid var(--line); padding:8px 11px; color:var(--paper); background:rgba(255,255,255,.03)}
+.g-links a:hover{border-color:var(--amber); color:var(--amber)}
+#histList{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+#histList li{border-bottom:1px dashed var(--line); padding-bottom:10px}
+#histList .h-time{color:var(--dim); font-size:10px; letter-spacing:.2em}
+#histList .h-art{color:var(--paper); font-weight:700; font-size:13px}
+#histList .h-tit{color:var(--amber); font-size:12px}
+#histList .h-links{margin-top:3px; font-size:10px; letter-spacing:.14em}
+#histList .h-links a{margin-right:12px}
+.h-empty{color:var(--dim); font-size:12px}
+
+/* ---------- toast + footer ---------- */
+#toast{
+  position:fixed; left:50%; bottom:28px; transform:translate(-50%, 90px); z-index:75;
+  visibility:hidden;
+  background:var(--panel2); border:1px solid var(--amber); color:var(--amber);
+  padding:11px 20px; font-size:11px; letter-spacing:.26em; text-transform:uppercase;
+  transition:transform .4s ease; max-width:92vw; text-align:center;
+}
+#toast.on{transform:translate(-50%, 0); visibility:visible}
+footer{
+  border-top:1px solid var(--line); color:var(--dim); font-size:10.5px; letter-spacing:.1em;
+  padding:14px 20px calc(16px + env(safe-area-inset-bottom, 0px)); display:flex; gap:8px 22px; flex-wrap:wrap; justify-content:center;
+  background:var(--panel);
+}
+footer b{color:var(--paper); font-weight:500}
+
+/* ---------- responsive ---------- */
+@media (max-width:700px){
+  #top{padding:10px 12px}
+  .brand b{font-size:17px; white-space:nowrap}
+  .brand span{display:none}
+  .onair{font-size:9px; letter-spacing:.06em; gap:6px}
+  .onair .lbl{display:none}
+  #clock{font-size:13px}
+  #booth{margin-top:-12px}
+  #now{padding:14px 14px 13px}
+  #ctrl{gap:10px}
+  #vol{width:100px}
+}
+</style>
+</head>
+<body>
+<div id="noise"></div>
+<div id="scan"></div>
+<div id="vignette"></div>
+
+<!-- ============ SPLASH ============ -->
+<div id="splash">
+  <div class="sp-inner">
+    <div id="spIdle">
+      <div class="sp-bar"></div>
+      <h1 class="sp-title">Home<br>Music</h1>
+      <div class="sp-sub">A 24-hour selector &middot; dub to jungle to techno</div>
+      <button id="enter" type="button">Press play</button>
+      <div class="sp-note">sound up. the selector knows what time it is.</div>
+    </div>
+    <div id="mc" aria-live="polite"></div>
+    <button id="skipIntro" type="button">skip the intro &raquo;</button>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <header id="top">
+    <div class="brand"><b>HOME MUSIC</b><span>24-hour selector</span></div>
+    <div class="onair"><span class="dot"></span><span class="lbl">on air &middot; </span><span id="blockLabel">&hellip;</span></div>
+    <div id="clock">--:--</div>
+  </header>
+
+  <main id="stage">
+    <svg id="citySvg" viewBox="0 0 1500 460" aria-hidden="true">
+      <circle cx="750" cy="120" r="150" fill="#e8392c" opacity="0.16"/>
+      <circle cx="750" cy="120" r="108" fill="#e8392c" opacity="0.2"/>
+      <g fill="#0a0916">
+        <rect x="0" y="250" width="90" height="210"/><rect x="95" y="300" width="70" height="160"/>
+        <rect x="170" y="210" width="60" height="250"/><rect x="235" y="280" width="95" height="180"/>
+        <rect x="335" y="240" width="55" height="220"/><rect x="395" y="310" width="80" height="150"/>
+        <rect x="480" y="200" width="70" height="260"/><rect x="555" y="270" width="60" height="190"/>
+        <rect x="885" y="260" width="65" height="200"/><rect x="955" y="210" width="75" height="250"/>
+        <rect x="1035" y="300" width="60" height="160"/><rect x="1100" y="235" width="85" height="225"/>
+        <rect x="1190" y="290" width="60" height="170"/><rect x="1255" y="220" width="70" height="240"/>
+        <rect x="1330" y="275" width="90" height="185"/><rect x="1425" y="240" width="75" height="220"/>
+      </g>
+      <g stroke="#1c1930" stroke-width="3">
+        <line x1="205" y1="210" x2="205" y2="150"/><line x1="515" y1="200" x2="515" y2="130"/>
+        <line x1="995" y1="210" x2="995" y2="140"/><line x1="1290" y1="220" x2="1290" y2="160"/>
+      </g>
+      <g fill="#e8392c">
+        <circle class="beacon" cx="205" cy="148" r="4"/><circle class="beacon" cx="515" cy="128" r="4"/>
+        <circle class="beacon" cx="995" cy="138" r="4"/><circle class="beacon" cx="1290" cy="158" r="4"/>
+      </g>
+      <g fill="#ffb12b" opacity="0.5">
+        <rect x="185" y="230" width="7" height="9"/><rect x="200" y="252" width="7" height="9"/>
+        <rect x="495" y="222" width="7" height="9"/><rect x="520" y="244" width="7" height="9"/>
+        <rect x="505" y="286" width="7" height="9"/><rect x="250" y="300" width="7" height="9"/>
+        <rect x="285" y="322" width="7" height="9"/><rect x="975" y="238" width="7" height="9"/>
+        <rect x="1000" y="262" width="7" height="9"/><rect x="1120" y="258" width="7" height="9"/>
+        <rect x="1145" y="282" width="7" height="9"/><rect x="1270" y="246" width="7" height="9"/>
+        <rect x="1352" y="296" width="7" height="9"/><rect x="60" y="276" width="7" height="9"/>
+      </g>
+      <g fill="#41d9c8" opacity="0.45">
+        <rect x="350" y="262" width="7" height="9"/><rect x="415" y="330" width="7" height="9"/>
+        <rect x="575" y="292" width="7" height="9"/><rect x="905" y="282" width="7" height="9"/>
+        <rect x="1210" y="312" width="7" height="9"/><rect x="1445" y="262" width="7" height="9"/>
+        <rect x="140" y="320" width="7" height="9"/>
+      </g>
+    </svg>
+
+    <div class="wall">
+      <div class="bezel">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="yt-slot" id="slotA"><div id="ytA"></div></div>
+        <div class="yt-slot" id="slotB"><div id="ytB"></div></div>
+        <div id="standby">
+          <div class="big">Home Music</div>
+          <div id="standbyMsg">tuning&hellip;</div>
+        </div>
+        <button id="needle" type="button">touch to drop the needle</button>
+      </div>
+    </div>
+
+    <!-- ============ BOOTH : ink line art ============ -->
+    <div id="booth">
+      <div id="speedlines"></div>
+      <svg id="boothSvg" viewBox="0 0 1240 470" aria-hidden="true">
+        <defs>
+          <pattern id="hx" width="7" height="7" patternUnits="userSpaceOnUse">
+            <path d="M0 7 L7 0" stroke="#ecdfc3" stroke-width="1" opacity="0.28"/>
+          </pattern>
+          <pattern id="hx2" width="6" height="6" patternUnits="userSpaceOnUse">
+            <path d="M0 6 L6 0 M0 0 L6 6" stroke="#ecdfc3" stroke-width="0.8" opacity="0.22"/>
+          </pattern>
+          <radialGradient id="djGlow" cx="50%" cy="42%" r="55%">
+            <stop offset="0%" stop-color="#ffb12b" stop-opacity="0.16"/>
+            <stop offset="55%" stop-color="#e8392c" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#e8392c" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="620" cy="190" rx="250" ry="165" fill="url(#djGlow)"/>
+
+        <!-- speakers -->
+        <g stroke="#ecdfc3" fill="none" stroke-width="2.5">
+          <rect x="10" y="148" width="96" height="160" fill="#0b0a14"/>
+          <circle cx="58" cy="196" r="30"/><circle cx="58" cy="196" r="12" fill="url(#hx)"/>
+          <circle cx="58" cy="262" r="26"/><circle cx="58" cy="262" r="10" fill="url(#hx)"/>
+          <rect x="26" y="292" width="64" height="8" rx="4" opacity="0.6"/>
+          <rect x="1134" y="148" width="96" height="160" fill="#0b0a14"/>
+          <circle cx="1182" cy="196" r="30"/><circle cx="1182" cy="196" r="12" fill="url(#hx)"/>
+          <circle cx="1182" cy="262" r="26"/><circle cx="1182" cy="262" r="10" fill="url(#hx)"/>
+          <rect x="1150" y="292" width="64" height="8" rx="4" opacity="0.6"/>
+        </g>
+
+        <!-- ============ DJ (original character, ink style) ============ -->
+        <g id="dj">
+          <!-- left headphone cup (behind hair) -->
+          <rect x="566" y="92" width="20" height="32" rx="9" fill="#0b0a14" stroke="#e8392c" stroke-width="3"/>
+          <!-- torso -->
+          <path d="M 468 308 C 474 232 500 196 544 184 C 570 176 584 160 588 144 L 652 144 C 656 160 670 176 696 184 C 740 196 766 232 772 308 Z"
+                fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+          <path d="M 472 300 C 476 250 492 214 520 196 L 520 300 Z" fill="url(#hx)"/>
+          <path d="M 588 150 L 566 196 M 652 150 L 674 196" stroke="#ecdfc3" stroke-width="2" opacity="0.6" fill="none"/>
+          <path d="M 620 198 L 620 300" stroke="#ecdfc3" stroke-width="1.6" stroke-dasharray="3 5" opacity="0.5" fill="none"/>
+          <path d="M 500 234 C 516 222 532 212 546 198 M 740 234 C 724 222 708 212 694 198" stroke="#ecdfc3" stroke-width="1.5" opacity="0.45" fill="none"/>
+          <rect x="586" y="214" width="30" height="18" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.5" opacity="0.8"/>
+          <text x="601" y="227" text-anchor="middle" font-size="10" fill="#ecdfc3" opacity="0.85" style="font-family:'IBM Plex Mono',monospace">HM</text>
+
+          <!-- head -->
+          <g id="djHead">
+            <path d="M 578 100 L 584 68 L 596 84 L 604 56 L 616 78 L 628 52 L 638 76 L 650 60 L 656 84 L 666 72 L 668 100
+                     C 668 118 662 132 650 140 L 638 148 C 622 152 606 148 598 140 C 586 130 578 116 578 100 Z"
+                  fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+            <path d="M 584 110 L 600 108 L 598 136 L 588 127 Z" fill="url(#hx)"/>
+            <path d="M 596 84 L 600 97 M 616 78 L 618 93 M 638 76 L 636 91 M 654 84 L 650 97" stroke="#ecdfc3" stroke-width="1.3" fill="none" opacity="0.5"/>
+            <path d="M 604 110 C 608 107 613 107 617 110 M 627 110 C 631 107 636 107 640 110" stroke="#ecdfc3" stroke-width="2.2" fill="none"/>
+            <path d="M 608 114 L 614 114 M 629 114 L 635 114" stroke="#ecdfc3" stroke-width="1.8" fill="none" opacity="0.9"/>
+            <path d="M 621 104 L 622 112 M 622 112 L 620 122 L 627 124" stroke="#ecdfc3" stroke-width="1.6" fill="none" opacity="0.8"/>
+            <path d="M 613 134 L 632 132" stroke="#ecdfc3" stroke-width="2" fill="none" opacity="0.9"/>
+            <path d="M 648 118 C 646 127 641 133 635 138" stroke="#ecdfc3" stroke-width="1.4" fill="none" opacity="0.55"/>
+            <path d="M 598 139 C 604 144 614 147 624 146" stroke="#ecdfc3" stroke-width="1.2" fill="none" opacity="0.4"/>
+            <!-- headphone band + right cup -->
+            <path d="M 580 84 C 592 46 650 46 662 86" fill="none" stroke="#ecdfc3" stroke-width="4"/>
+            <path d="M 585 86 C 596 56 646 56 657 88" fill="none" stroke="#ecdfc3" stroke-width="1.3" opacity="0.5"/>
+            <rect x="652" y="92" width="22" height="34" rx="9" fill="#0b0a14" stroke="#e8392c" stroke-width="3"/>
+            <circle cx="663" cy="109" r="6" fill="none" stroke="#e8392c" stroke-width="2" opacity="0.85"/>
+          </g>
+          <!-- headphone cable to mixer -->
+          <path d="M 663 128 C 700 190 600 262 536 306" fill="none" stroke="#ecdfc3" stroke-width="1.8" opacity="0.6"/>
+
+          <!-- left arm reaching the left deck -->
+          <path d="M 564 192 C 536 204 520 226 522 252 L 544 258 C 544 234 556 214 578 202 Z"
+                fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
+          <g id="foreL">
+            <path d="M 544 256 C 500 272 420 262 352 236 L 356 222 C 420 246 492 254 536 240 Z"
+                  fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
+            <g id="handL">
+              <path d="M 356 226 C 352 214 336 214 334 226 C 332 236 341 245 353 241 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+              <path d="M 342 226 L 326 219 M 343 232 L 326 233 M 343 238 L 329 246" stroke="#ecdfc3" stroke-width="1.8" fill="none"/>
+            </g>
+          </g>
+
+          <!-- right arm to the crossfader -->
+          <path d="M 676 192 C 702 206 712 228 708 254 L 688 258 C 688 234 676 214 656 202 Z"
+                fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
+          <g id="foreR">
+            <path d="M 708 254 C 696 280 668 296 628 302 L 624 288 C 652 282 678 268 688 252 Z"
+                  fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
+          </g>
+          <g id="handR">
+            <path d="M 612 298 C 614 287 631 285 635 294 L 631 306 C 622 302 618 302 616 307 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+            <path d="M 616 304 L 616 316 M 624 302 L 624 317 M 632 301 L 631 315 M 612 303 L 605 311" stroke="#ecdfc3" stroke-width="1.8" fill="none"/>
+          </g>
+        </g>
+
+        <!-- ============ table ============ -->
+        <path d="M 60 308 L 1180 308 L 1215 470 L 25 470 Z" fill="#100e1e" stroke="#ecdfc3" stroke-width="2.5"/>
+        <line x1="60" y1="308" x2="1180" y2="308" stroke="#ffb12b" stroke-width="1.8" opacity="0.65"/>
+        <path d="M 48 368 L 1192 368" stroke="#ecdfc3" stroke-width="1.2" opacity="0.25"/>
+        <path d="M 36 428 L 1204 428" stroke="#ecdfc3" stroke-width="1.2" opacity="0.18"/>
+        <path d="M 70 312 L 48 466 M 1170 312 L 1192 466" stroke="#ecdfc3" stroke-width="1.4" opacity="0.3"/>
+        <path d="M 90 320 L 250 320 L 236 420 L 76 420 Z" fill="url(#hx)" opacity="0.5"/>
+        <path d="M 990 320 L 1150 320 L 1164 420 L 1004 420 Z" fill="url(#hx)" opacity="0.5"/>
+        <!-- cables on the table front -->
+        <g fill="none" stroke="#ecdfc3" stroke-width="2" opacity="0.45">
+          <path d="M 300 342 C 420 382 560 374 612 344"/>
+          <path d="M 640 344 C 720 386 860 382 940 346"/>
+          <path d="M 196 312 C 206 332 238 336 258 318"/>
+        </g>
+
+        <!-- ============ deck L ============ -->
+        <g transform="translate(150,128)">
+          <rect x="3" y="3" width="328" height="200" rx="10" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+          <rect x="13" y="13" width="308" height="180" rx="6" fill="none" stroke="#ecdfc3" stroke-width="1.2" opacity="0.3"/>
+          <g fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.55">
+            <circle cx="20" cy="20" r="2.8"/><circle cx="314" cy="20" r="2.8"/>
+            <circle cx="20" cy="186" r="2.8"/><circle cx="314" cy="186" r="2.8"/>
+          </g>
+          <circle cx="118" cy="106" r="86" fill="none" stroke="#ecdfc3" stroke-width="2.5"/>
+          <circle cx="118" cy="106" r="80" fill="none" stroke="#ecdfc3" stroke-width="1.6" stroke-dasharray="2 6" opacity="0.85"/>
+          <circle cx="118" cy="106" r="74" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(118,106)">
+            <g id="recL" class="rec">
+              <circle r="70" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+              <g fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.22">
+                <circle r="64"/><circle r="58"/><circle r="52"/><circle r="46"/><circle r="40"/>
+              </g>
+              <circle r="32" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
+              <circle id="labL" r="21" fill="#e8392c"/>
+              <circle r="3" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1"/>
+              <line x1="0" y1="-19" x2="0" y2="-9" stroke="#f4ecd9" stroke-width="2.5"/>
+            </g>
+          </g>
+          <rect x="24" y="168" width="14" height="22" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
+          <circle class="strobedot" cx="31" cy="175" r="2.6" fill="#e8392c"/>
+          <rect x="56" y="176" width="24" height="16" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
+          <rect x="90" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
+          <rect x="108" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
+          <circle cx="115" cy="184" r="1.6" fill="#ecdfc3"/>
+          <rect x="56" y="20" width="18" height="12" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.7"/>
+          <rect x="296" y="64" width="8" height="104" rx="4" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
+          <g stroke="#ecdfc3" stroke-width="1" opacity="0.5">
+            <line x1="288" y1="70" x2="294" y2="70"/><line x1="288" y1="86" x2="294" y2="86"/>
+            <line x1="284" y1="116" x2="294" y2="116"/><line x1="288" y1="102" x2="294" y2="102"/>
+            <line x1="288" y1="134" x2="294" y2="134"/><line x1="288" y1="150" x2="294" y2="150"/>
+            <line x1="288" y1="166" x2="294" y2="166"/>
+          </g>
+          <rect x="288" y="108" width="24" height="13" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+          <line x1="300" y1="108" x2="300" y2="121" stroke="#ecdfc3" stroke-width="1"/>
+          <circle cx="278" cy="44" r="20" fill="none" stroke="#ecdfc3" stroke-width="2"/>
+          <circle cx="278" cy="44" r="10" fill="none" stroke="#ecdfc3" stroke-width="2"/>
+          <line x1="262" y1="70" x2="268" y2="88" stroke="#ecdfc3" stroke-width="3"/>
+          <circle cx="261" cy="68" r="3" fill="#ecdfc3"/>
+          <g id="tonearmL" class="tonearm">
+            <line x1="278" y1="44" x2="296" y2="31" stroke="#ecdfc3" stroke-width="3.5"/>
+            <circle cx="301" cy="28" r="8.5" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+            <path d="M 278 44 C 270 76 258 92 240 112 S 214 136 206 146" fill="none" stroke="#ecdfc3" stroke-width="3"/>
+            <path d="M 206 146 l -14 10 l -6 -9 l 14 -10 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+            <line x1="196" y1="155" x2="191" y2="161" stroke="#ecdfc3" stroke-width="2"/>
+            <line x1="216" y1="136" x2="222" y2="130" stroke="#ecdfc3" stroke-width="2" opacity="0.7"/>
+          </g>
+        </g>
+
+        <!-- ============ deck R ============ -->
+        <g transform="translate(756,128)">
+          <rect x="3" y="3" width="328" height="200" rx="10" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+          <rect x="13" y="13" width="308" height="180" rx="6" fill="none" stroke="#ecdfc3" stroke-width="1.2" opacity="0.3"/>
+          <g fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.55">
+            <circle cx="20" cy="20" r="2.8"/><circle cx="314" cy="20" r="2.8"/>
+            <circle cx="20" cy="186" r="2.8"/><circle cx="314" cy="186" r="2.8"/>
+          </g>
+          <circle cx="118" cy="106" r="86" fill="none" stroke="#ecdfc3" stroke-width="2.5"/>
+          <circle cx="118" cy="106" r="80" fill="none" stroke="#ecdfc3" stroke-width="1.6" stroke-dasharray="2 6" opacity="0.85"/>
+          <circle cx="118" cy="106" r="74" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(118,106)">
+            <g id="recR" class="rec off">
+              <circle r="70" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+              <g fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.22">
+                <circle r="64"/><circle r="58"/><circle r="52"/><circle r="46"/><circle r="40"/>
+              </g>
+              <circle r="32" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.4"/>
+              <circle id="labR" r="21" fill="#f4ecd9"/>
+              <circle r="3" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1"/>
+              <line x1="0" y1="-19" x2="0" y2="-9" stroke="#0b0a14" stroke-width="2.5"/>
+            </g>
+          </g>
+          <rect x="24" y="168" width="14" height="22" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
+          <circle class="strobedot" cx="31" cy="175" r="2.6" fill="#e8392c"/>
+          <rect x="56" y="176" width="24" height="16" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
+          <rect x="90" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
+          <rect x="108" y="179" width="14" height="11" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
+          <circle cx="97" cy="184" r="1.6" fill="#ecdfc3"/>
+          <rect x="56" y="20" width="18" height="12" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4" opacity="0.7"/>
+          <rect x="296" y="64" width="8" height="104" rx="4" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
+          <g stroke="#ecdfc3" stroke-width="1" opacity="0.5">
+            <line x1="288" y1="70" x2="294" y2="70"/><line x1="288" y1="86" x2="294" y2="86"/>
+            <line x1="284" y1="116" x2="294" y2="116"/><line x1="288" y1="102" x2="294" y2="102"/>
+            <line x1="288" y1="134" x2="294" y2="134"/><line x1="288" y1="150" x2="294" y2="150"/>
+            <line x1="288" y1="166" x2="294" y2="166"/>
+          </g>
+          <rect x="288" y="96" width="24" height="13" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+          <line x1="300" y1="96" x2="300" y2="109" stroke="#ecdfc3" stroke-width="1"/>
+          <circle cx="278" cy="44" r="20" fill="none" stroke="#ecdfc3" stroke-width="2"/>
+          <circle cx="278" cy="44" r="10" fill="none" stroke="#ecdfc3" stroke-width="2"/>
+          <line x1="262" y1="70" x2="268" y2="88" stroke="#ecdfc3" stroke-width="3"/>
+          <circle cx="261" cy="68" r="3" fill="#ecdfc3"/>
+          <g id="tonearmR" class="tonearm">
+            <line x1="278" y1="44" x2="296" y2="31" stroke="#ecdfc3" stroke-width="3.5"/>
+            <circle cx="301" cy="28" r="8.5" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+            <path d="M 278 44 C 270 76 258 92 240 112 S 214 136 206 146" fill="none" stroke="#ecdfc3" stroke-width="3"/>
+            <path d="M 206 146 l -14 10 l -6 -9 l 14 -10 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+            <line x1="196" y1="155" x2="191" y2="161" stroke="#ecdfc3" stroke-width="2"/>
+            <line x1="216" y1="136" x2="222" y2="130" stroke="#ecdfc3" stroke-width="2" opacity="0.7"/>
+          </g>
+        </g>
+
+        <!-- ============ mixer ============ -->
+        <g transform="translate(516,172)">
+          <rect x="3" y="3" width="202" height="152" rx="8" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+          <rect x="11" y="11" width="186" height="136" rx="5" fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.3"/>
+          <g fill="none" stroke="#ecdfc3" stroke-width="1.2" opacity="0.5">
+            <circle cx="16" cy="16" r="2.4"/><circle cx="192" cy="16" r="2.4"/>
+            <circle cx="16" cy="142" r="2.4"/><circle cx="192" cy="142" r="2.4"/>
+          </g>
+          <g fill="none" stroke="#ecdfc3" stroke-width="1.8">
+            <circle cx="40" cy="30" r="8"/><line x1="40" y1="24" x2="40" y2="30"/>
+            <circle cx="40" cy="56" r="7"/><line x1="40" y1="51" x2="40" y2="56"/>
+            <circle cx="40" cy="78" r="7"/><line x1="35" y1="73" x2="40" y2="78"/>
+            <circle cx="40" cy="100" r="7"/><line x1="45" y1="95" x2="40" y2="100"/>
+            <circle cx="168" cy="30" r="8"/><line x1="168" y1="24" x2="168" y2="30"/>
+            <circle cx="168" cy="56" r="7"/><line x1="173" y1="51" x2="168" y2="56"/>
+            <circle cx="168" cy="78" r="7"/><line x1="168" y1="71" x2="168" y2="78"/>
+            <circle cx="168" cy="100" r="7"/><line x1="163" y1="95" x2="168" y2="100"/>
+          </g>
+          <rect x="33" y="114" width="14" height="9" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
+          <rect x="161" y="114" width="14" height="9" rx="2" fill="none" stroke="#ecdfc3" stroke-width="1.4"/>
+          <rect x="75" y="34" width="6" height="76" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
+          <rect x="127" y="34" width="6" height="76" rx="3" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
+          <rect x="69" y="58" width="18" height="9" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1.8"/>
+          <rect x="121" y="46" width="18" height="9" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="1.8"/>
+          <g>
+            <rect class="vu" x="96" y="30" width="7" height="4" fill="#e8392c"/>
+            <rect class="vu" x="96" y="37" width="7" height="4" fill="#ffb12b"/>
+            <rect x="96" y="44" width="7" height="4" fill="#41d9c8" opacity="0.75"/>
+            <rect x="96" y="51" width="7" height="4" fill="#41d9c8" opacity="0.45"/>
+            <rect class="vu" x="107" y="30" width="7" height="4" fill="#e8392c"/>
+            <rect class="vu" x="107" y="37" width="7" height="4" fill="#ffb12b"/>
+            <rect x="107" y="44" width="7" height="4" fill="#41d9c8" opacity="0.75"/>
+            <rect x="107" y="51" width="7" height="4" fill="#41d9c8" opacity="0.45"/>
+          </g>
+          <circle cx="104" cy="74" r="7" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
+          <line x1="104" y1="68" x2="104" y2="74" stroke="#ecdfc3" stroke-width="1.6"/>
+          <circle cx="104" cy="100" r="8" fill="none" stroke="#ecdfc3" stroke-width="1.8"/>
+          <line x1="99" y1="94" x2="104" y2="100" stroke="#ecdfc3" stroke-width="1.6"/>
+          <rect x="54" y="132" width="100" height="7" rx="3" fill="none" stroke="#ecdfc3" stroke-width="2"/>
+          <circle cx="16" cy="140" r="3.5" fill="none" stroke="#ecdfc3" stroke-width="1.6"/>
+        </g>
+        <!-- crossfader knob (positioned by CSS vars) -->
+        <g id="xfKnob">
+          <rect x="-8" y="-11" width="16" height="22" rx="2" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.2"/>
+          <line x1="0" y1="-11" x2="0" y2="11" stroke="#ecdfc3" stroke-width="1.2"/>
+        </g>
+
+        <!-- ============ record crate ============ -->
+        <g transform="translate(1092,318)">
+          <path d="M 2 20 L 18 2 L 136 2 L 120 20 Z" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2"/>
+          <rect x="2" y="20" width="118" height="74" rx="3" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+          <rect x="2" y="20" width="118" height="74" rx="3" fill="url(#hx)" opacity="0.35"/>
+          <g fill="#0b0a14" stroke="#ecdfc3" stroke-width="1.5">
+            <rect x="12" y="-32" width="10" height="56" transform="rotate(-8 17 -4)"/>
+            <rect x="26" y="-34" width="10" height="58" transform="rotate(-4 31 -5)"/>
+            <rect x="40" y="-35" width="10" height="59"/>
+            <rect x="54" y="-34" width="10" height="58" transform="rotate(3 59 -5)"/>
+            <g id="crateTop"><rect x="68" y="-36" width="11" height="60" transform="rotate(6 73 -6)" stroke="#e8392c"/></g>
+            <rect x="84" y="-33" width="10" height="57" transform="rotate(9 89 -4)"/>
+            <rect x="98" y="-30" width="10" height="54" transform="rotate(12 103 -3)"/>
+          </g>
+        </g>
+
+        <!-- flying record for the swap -->
+        <g id="discFly">
+          <circle r="70" fill="#0b0a14" stroke="#ecdfc3" stroke-width="2.5"/>
+          <g fill="none" stroke="#ecdfc3" stroke-width="1" opacity="0.25">
+            <circle r="60"/><circle r="48"/><circle r="38"/>
+          </g>
+          <circle r="21" fill="#e8392c"/>
+          <circle r="3" fill="#0b0a14"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ============ NOW PLAYING ============ -->
+    <section id="now" aria-live="polite">
+      <div class="chiprow">
+        <span id="gChip">&hellip;</span>
+        <span id="tYear"></span>
+      </div>
+      <h2 id="tArtist">Warming up the amps</h2>
+      <div id="tTitle">&nbsp;</div>
+      <p id="tBlurb">The selector is checking the clock and pulling tonight's crate.</p>
+      <div class="t-links">
+        <a id="aYT" href="#" target="_blank" rel="noopener">&#9654; YouTube</a>
+        <a id="aSP" href="#" target="_blank" rel="noopener">&#9678; Spotify</a>
+        <a id="aSrc" href="#" target="_blank" rel="noopener" hidden>&#9636; Liner source</a>
+      </div>
+    </section>
+
+    <div id="ctrl">
+      <div class="grp">
+        <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
+        <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
+      </div>
+      <div class="spacer"></div>
+      <div class="grp">
+        <button class="tbtn" id="genreBtn" type="button">The sound</button>
+        <button class="tbtn" id="histBtn" type="button">Session log</button>
+      </div>
+    </div>
+  </main>
+
+  <aside id="genrePanel" class="panel" aria-label="about this genre">
+    <button class="pclose" data-close="genrePanel" type="button">&times;</button>
+    <h3>The Sound</h3>
+    <p class="psub">what you are hearing, and why</p>
+    <div id="gName">&hellip;</div>
+    <p id="gNote">&hellip;</p>
+    <div id="gTrackCount"></div>
+    <div class="g-links">
+      <a id="gWiki" href="#" target="_blank" rel="noopener">This genre on Wikipedia &nearr;</a>
+      <a id="gIshkur" href="https://music.ishkur.com/" target="_blank" rel="noopener">The full genre map: Ishkur's Guide &nearr;</a>
+    </div>
+  </aside>
+
+  <aside id="histPanel" class="panel" aria-label="session history">
+    <button class="pclose" data-close="histPanel" type="button">&times;</button>
+    <h3>Session Log</h3>
+    <p class="psub">everything played since you tuned in</p>
+    <ul id="histList"><li class="h-empty">Nothing yet. The needle just dropped.</li></ul>
+  </aside>
+
+  <div id="toast" role="status"></div>
+
+  <footer>
+    <span><b>HOME MUSIC</b> &middot; broadcast from the living room</span>
+    <span>programme follows your clock: morning 06-13 &middot; afternoon 13-20 &middot; night 20-06</span>
+    <span>tracks stream via YouTube &middot; every tune linked to YouTube + Spotify</span>
+    <span>liner notes compiled from Wikipedia, Discogs, AllMusic and the music press &middot; genre map: Ishkur's Guide &middot; the DJ is one of ours</span>
+    <span>selector shortcuts: [&rarr;] next &middot; [m] mute</span>
+  </footer>
+</div>
+<script>
+/* ================= PROGRAMME DATA ================= */
+const BLOCKS = {
+  morning:   { label: "MORNING PROGRAMME",   range: "06:00 - 13:00", accent: "#ffb12b",
+               genres: ["reggae","dub","lofi","ambient","ambient_techno"] },
+  afternoon: { label: "AFTERNOON PROGRAMME", range: "13:00 - 20:00", accent: "#41d9c8",
+               genres: ["lofi_house","liquid","intelligent_dnb","atmospheric_jungle","breakbeat"] },
+  night:     { label: "NIGHT PROGRAMME",     range: "20:00 - 06:00", accent: "#e8392c",
+               genres: ["hypnotic_techno","deep_house","ragga_jungle","dubstep"] }
+};
+
+const ISHKUR = "https://music.ishkur.com/";
+
+const GENRES = {
+  reggae: { name: "Roots Reggae", w: "https://en.wikipedia.org/wiki/Roots_reggae", note: "Kingston, the eternal downbeat. Roots reggae is church for people whose church has a bassline: one drop drums, bubbling organ, singers testifying about Babylon while the sun climbs. Island Records sold it to the world in the seventies; the world has been trying to slow down to it ever since. Morning coffee was never more righteous." },
+  dub: { name: "Dub", w: "https://en.wikipedia.org/wiki/Dub_music", note: "Dub is the song taken apart and reassembled as weather. Around 1973 King Tubby and Lee Perry discovered the mixing desk was an instrument: drop the vocal, drown the drums in echo, let the bass walk around the room like it pays rent. Every remix in existence descends from these board rides. Breathe in the smoke." },
+  lofi: { name: "Lo-fi Beats", w: "https://en.wikipedia.org/wiki/Lofi_hip-hop", note: "The beat tape as comfort food. Dilla taught the drums to limp, Nujabes taught them to pray, and twenty years of bedroom producers taught them to loop forever under rain sounds and anime stills. The hiss is the point, the wobble is the point, your homework is optional. This is music that holds your hand." },
+  ambient: { name: "Ambient", w: "https://en.wikipedia.org/wiki/Ambient_music", note: "Music to disappear into. Eno named it in an airport, Japan perfected it in the bubble years, Aphex made it weep. No drums to chase, no chorus to wait for, just air pressure arranged beautifully. Let it run while the kettle does its thing. If you think nothing is happening, listen closer: everything is." },
+  ambient_techno: { name: "Ambient Techno", w: "https://en.wikipedia.org/wiki/Ambient_techno", note: "Early nineties Britain: the rave is over, the sun is rising, and nobody wants the machines to stop. So the machines learn to whisper. Warp called it electronic listening music; bedrooms called it coming down safely. 303s floating in reverb, breakbeats wrapped in cotton. The dancefloor, remembered from your sofa." },
+  lofi_house: { name: "Lo-fi House", w: "https://en.wikipedia.org/wiki/Lo-fi_house", note: "House music filmed on VHS. Mid 2010s: producers run their drum machines through tape mud, name themselves after sitcoms, and upload it all with one weird thumbnail. The YouTube algorithm falls in love. Underneath the hiss it is pure longing, pianos and pitched vocals asking if 1992 can come back. It can't. Press play anyway." },
+  liquid: { name: "Liquid Drum & Bass", w: "https://en.wikipedia.org/wiki/Liquid_drum_and_bass", note: "Drum and bass after a hot shower. The breaks still sprint at 170 but everything on top is silk: seventh chords, soul vocals, basslines that glide instead of bite. Bukem drew the blueprint, Fabio named it liquid funk, and whole record shops smelled of incense for a decade. Rolling, always rolling." },
+  intelligent_dnb: { name: "Intelligent Drum & Bass", w: "https://en.wikipedia.org/wiki/Drum_and_bass", note: "The mid-nineties moment when jungle put on headphones and got cosmic. It shed the ragga shouts, kept the breaks, added Detroit chords and whale-song pads. The name was always a bit much; the music mostly earned it. Metalheadz and Good Looking ran the school, and the homework was atmosphere." },
+  atmospheric_jungle: { name: "Atmospheric Jungle", w: "https://en.wikipedia.org/wiki/Jungle_music", note: "Jungle with its eyes closed. The Amen break still tears through the mix, but above it: oceans, choirs, synth pads the size of weather systems. Made for the 4am drive home while the rave still rings in your coat. Good Looking and Moving Shadow pressed the classics; the sunrise did the mastering." },
+  breakbeat: { name: "Breakbeat", w: "https://en.wikipedia.org/wiki/Breakbeat", note: "The straight kick is a tyranny and breakbeat never signed up. Funk drummers chopped into new shapes, basslines with a smirk, the sound of Britain discovering sampling and immediately misbehaving. From chill-out tents to car chases, it swaggers where house merely walks. All breaks, no brakes." },
+  hypnotic_techno: { name: "Hypnotic Techno", w: "https://en.wikipedia.org/wiki/Minimal_techno", note: "Techno stripped to pulse and intent. Detroit minimal, Berlin dub, one loop examined under laboratory light until it starts to breathe. Nothing drops; everything deepens. Night-shift music: for driving, for coding, for staring at the city feeling like the main character. Trust the loop." },
+  deep_house: { name: "Deep House", w: "https://en.wikipedia.org/wiki/Deep_house", note: "Chicago, after hours. Larry Heard put jazz chords inside a drum machine in 1986 and accidentally invented introspection at 120 BPM. Deep house is slow-burning, warm-blooded, slightly melancholy, the sound of a room where everyone dances facing inward. Lights low, drinks sweating, feelings imminent." },
+  ragga_jungle: { name: "Ragga Jungle", w: "https://en.wikipedia.org/wiki/Jungle_music", note: "1994, London pirate radio, air-raid sirens. Jungle splices dancehall vocals onto double-time Amen breaks and the city loses its mind. MCs chat over telephone noises, rewinds every thirty seconds, moral panic in the tabloids, pure joy in the dance. The most energy ever pressed to vinyl. Brace." },
+  dubstep: { name: "Dubstep", w: "https://en.wikipedia.org/wiki/Dubstep", note: "South London, early 2000s: garage slowed down, hollowed out, and sent to the basement. Croydon record shops, FWD at Plastic People, sub-bass you feel in your sternum before you hear it. Space is the instrument; the silence between the hits is where the dread lives. Meditate at 140." }
+};
+
+/* v: YouTube id (verified against live search results).
+   s: exact Spotify link where verified, else null (search link built at runtime).
+   b: liner note; every concrete claim sourced via Wikipedia / Discogs / AllMusic / music press (2026-10-01).
+   w: source article for the track, where one exists. */
+const TRACKS = [
+  /* ---- morning : reggae ---- */
+  { g:"reggae", a:"Bob Marley & The Wailers", t:"Natural Mystic", y:1977, v:"2U91ELKMNlE", s:"https://open.spotify.com/track/2QRq65qC4nVZ0NTmtc0IYO", w:"https://en.wikipedia.org/wiki/Natural_Mystic",
+    b:"It fades in like it was always playing somewhere and you only now tuned in. Opens Exodus, the album Time magazine named best of the 20th century; Greil Marcus called this its finest song." },
+  { g:"reggae", a:"Burning Spear", t:"Marcus Garvey", y:1975, v:"FROI6bS5Nvg", s:"https://open.spotify.com/track/0z69RArvZ1pPBRrkmPKDmW", w:"https://en.wikipedia.org/wiki/Marcus_Garvey_(album)",
+    b:"History class called to order over strutting horns. Spear's first recording with producer Jack Ruby, backed by the Black Disciples with Robbie Shakespeare on bass; meant as a sound-system exclusive, it became an instant hit." },
+  { g:"reggae", a:"Horace Andy", t:"Skylarking", y:1972, v:"hLUm-mU7bN0", s:"https://open.spotify.com/track/6RFSlrSkBhdLB0C2XoIFqf", w:"https://en.wikipedia.org/wiki/Skylarking_%28Horace_Andy_album%29",
+    b:"A voice that flutters like curtains in an open window, singing about idling your day away. Cut at Studio One for Coxsone Dodd, it topped the Jamaican chart and named Andy's debut album. Obey it." },
+  { g:"reggae", a:"The Congos", t:"Fisherman", y:1977, v:"mFTxmDy74LI", s:"https://open.spotify.com/track/00m6N23ZTNEtsg65N1WcDV", w:"https://en.wikipedia.org/wiki/Heart_of_the_Congos",
+    b:"The most haunted vocal blend Lee Perry ever caught at the Black Ark, opening Heart of the Congos. The original Jamaican pressing reportedly ran to a few hundred copies; the world caught up decades later." },
+  { g:"reggae", a:"Gregory Isaacs", t:"Night Nurse", y:1982, v:"k7A6Ugs0NFw", s:"https://open.spotify.com/track/7HfpyMo4GIIkVUBZrrbtwm", w:"https://en.wikipedia.org/wiki/Night_Nurse_(Gregory_Isaacs_song)",
+    b:"The Cool Ruler writing a love song disguised as a medical emergency, with the Roots Radics behind him and Wally Badarou on synth. Britain later borrowed it to advertise actual cold medicine. The song survived." },
+
+  /* ---- morning : dub ---- */
+  { g:"dub", a:"Augustus Pablo", t:"King Tubbys Meets Rockers Uptown", y:1976, v:"ICBcCDPWocg", s:"https://open.spotify.com/track/0Mx3BZtH58ASK4XFg9TKWB", w:"https://en.wikipedia.org/wiki/King_Tubby_Meets_Rockers_Uptown_%28song%29",
+    b:"Jacob Miller's 'Baby I Love You So' dismantled at Tubby's desk until only bass, smoke and melodica remain. Rolling Stone ranks it among the 500 greatest songs ever recorded, which for a dub B-side is a coup." },
+  { g:"dub", a:"Lee \"Scratch\" Perry & The Upsetters", t:"Disco Devil", y:1977, v:"vjC2WT7VOyE", s:"https://open.spotify.com/track/6vX22fwRmM4bI0WpWtAvuJ", w:null,
+    b:"Scratch drags Max Romeo's 'Chase the Devil' back through the Black Ark, adds three backing singers and mostly new lyrics, and taunts the devil for seven minutes. Decades on, it soundtracks a radio station inside Grand Theft Auto V." },
+  { g:"dub", a:"Scientist", t:"Dance of the Vampires", y:1981, v:"iCpPaTeL2BE", s:"https://open.spotify.com/track/3y3aIscR4N87VEtlUFYxyB", w:"https://en.wikipedia.org/wiki/Scientist_Rids_the_World_of_the_Evil_Curse_of_the_Vampires",
+    b:"A dub of Michael Prophet's 'You Are a No Good', rhythms by the Roots Radics at Channel One. The sleeve claims the album was mixed at King Tubby's at midnight on Friday 13 June 1981. The echo does the biting." },
+  { g:"dub", a:"King Tubby & The Aggrovators", t:"Dub Fi Gwan", y:1977, v:"qu3RXnGFQa8", s:"https://open.spotify.com/track/2F5xURcnbtkzmeIwRhcc3I", w:null,
+    b:"Bunny Lee production, 1977, riding the 'Keep On Moving' rhythm: Tubby strips the riddim to its skeleton and makes the skeleton skank. Later canonized on Blood and Fire's Dub Gone Crazy collection." },
+
+  /* ---- morning : lofi ---- */
+  { g:"lofi", a:"Nujabes", t:"Feather", y:2005, v:"hQ5x8pHoIPA", s:"https://open.spotify.com/track/2s6J8fjaiJRhZJ1eZIeBDt", w:"https://en.wikipedia.org/wiki/Modal_Soul",
+    b:"The opener of Modal Soul, on his own Hydeout label, with Cise Starr and Akin of CYNE floating over a piano hook lifted from Yusef Lateef. They call Nujabes the godfather of lo-fi hip hop; this is the sermon." },
+  { g:"lofi", a:"J Dilla", t:"Time: The Donut of the Heart", y:2006, v:"0vmhgotEByc", s:"https://open.spotify.com/track/7oeWitA7Lu8O76NrmhfgZ8", w:"https://en.wikipedia.org/wiki/Donuts_(album)",
+    b:"The Jackson 5 slowed to half speed until sweetness becomes ache. Donuts came out on Dilla's 32nd birthday, 7 February 2006; he left three days later. The beat tape as last testament." },
+  { g:"lofi", a:"jinsang", t:"affection.", y:2016, v:"LbHsWjX9dv4", s:"https://open.spotify.com/track/7MdZQXUBijQxcBkYz4G1Z5", w:null,
+    b:"Track 16 of life., 25 beats the Californian says he made between his last year of high school and now, built from dusty soul and jazz records. The study-beats universe in its purest, kindest form." },
+  { g:"lofi", a:"idealism", t:"controlla", y:2016, v:"DB0QHC3c0_Q", s:"https://open.spotify.com/track/1FlY15vdP570PJucy6JdYm", w:null,
+    b:"A Finnish bedroom reworking of the Drake hit of the same name, from the rainy evening EP, quietly racking up tens of millions of streams. Tape hiss like weather on the glass; melancholy you can file paperwork to." },
+
+  /* ---- morning : ambient ---- */
+  { g:"ambient", a:"Brian Eno", t:"1/1", y:1978, v:"LKZ3fGR2SDY", s:"https://open.spotify.com/track/3bCmDqflFBHijgJfvtqev5", w:"https://en.wikipedia.org/wiki/Ambient_1:_Music_for_Airports",
+    b:"The opening side of Music for Airports, grown from two pianists improvising without quite hearing each other; that is Robert Wyatt at the piano. Pitchfork calls the album the greatest ambient record ever made. Board nothing." },
+  { g:"ambient", a:"Aphex Twin", t:"Rhubarb", y:1994, v:"75O11W5EZAU", s:"https://open.spotify.com/track/3QIpnNYnUMe1lrr5LJTStk", w:"https://en.wikipedia.org/wiki/Selected_Ambient_Works_Volume_II",
+    b:"Officially an untitled track on Selected Ambient Works Volume II; 'Rhubarb' is the name fans gave the saddest, kindest synthesizer ever recorded. Thirty years on he rescored it for orchestra, which proves he knew." },
+  { g:"ambient", a:"Hiroshi Yoshimura", t:"Blink", y:1982, v:"aUCiqA4YyH4", s:"https://open.spotify.com/track/7t3VZQzCG5IW3PHRHT6Tip", w:"https://en.wikipedia.org/wiki/Music_for_Nine_Post_Cards",
+    b:"From Music for Nine Post Cards, home-recorded on keyboard and Fender Rhodes: notes placed like stones in a garden. Forgotten for decades, then resurrected when the YouTube algorithm fell for Japanese ambient in 2017." },
+  { g:"ambient", a:"Biosphere", t:"Poa Alpina", y:1997, v:"xc7atbM0k6g", s:"https://open.spotify.com/track/4K4kedXFAuW6gn8iwgGFTw", w:"https://en.wikipedia.org/wiki/Substrata_(album)",
+    b:"Named after an arctic grass, from Substrata, Geir Jenssen's nearly beatless album of cold electronics and stray acoustic guitar. Sounds like standing in tundra wind wearing a very good coat." },
+
+  /* ---- morning : ambient techno ---- */
+  { g:"ambient_techno", a:"Aphex Twin", t:"Xtal", y:1992, v:"sWcLccMuCA8", s:"https://open.spotify.com/track/5neBqQFKrcfL6CpifYu8b4", w:"https://en.wikipedia.org/wiki/Selected_Ambient_Works_85%E2%80%9392",
+    b:"The first track of Selected Ambient Works 85-92, the record Fact later named the greatest album of the nineties. A sampled choir sighs, a beat tiptoes, and an entire genre grows up inside one bedroom." },
+  { g:"ambient_techno", a:"The Orb", t:"Little Fluffy Clouds", y:1990, v:"KNfjpmvbQG0", s:"https://open.spotify.com/track/1ROWnbzI8CFYDuZR2dF30k", w:"https://en.wikipedia.org/wiki/Little_Fluffy_Clouds",
+    b:"Rickie Lee Jones describes Arizona skies; The Orb builds a hot-air balloon around her from Steve Reich and Harry Nilsson's drummer. Reich noticed and asked for a cut of the publishing. Sampling as landscape painting." },
+  { g:"ambient_techno", a:"Global Communication", t:"14 31", y:1994, v:"SlxTlBPvJD8", s:"https://open.spotify.com/track/0GU7HXMGewpD83cGv6a5YH", w:"https://en.wikipedia.org/wiki/76:14",
+    b:"A clock ticking inside heaven. Every title on 76:14 is just its running time, and The Guardian called the album an unfathomably beautiful out-of-time masterpiece. Tom Middleton and Mark Pritchard, gentlemen." },
+  { g:"ambient_techno", a:"B12", t:"Soundtrack of Space", y:1993, v:"myE-khYL6iM", s:null, w:"https://en.wikipedia.org/wiki/Electro-Soma",
+    b:"The opener of Electro-Soma, fourth release in Warp's Artificial Intelligence series alongside Aphex, Autechre and Speedy J: techno built for the chair, not the floor. B12 drift among satellites." },
+
+  /* ---- afternoon : lofi house ---- */
+  { g:"lofi_house", a:"DJ Boring", t:"Winona", y:2016, v:"SrMcYg17D2I", s:"https://open.spotify.com/track/3ilkEyg6OCtd9qCnOJkPzU", w:null,
+    b:"Built entirely in the box by a producer with no studio, around a sampled interview where Winona Ryder recalls being told she was not pretty enough for acting. Uploaded late 2016; the algorithm never recovered." },
+  { g:"lofi_house", a:"Mall Grab", t:"Guap", y:2015, v:"QE_Vi0EQpHA", s:"https://open.spotify.com/track/5FHFQT1NffiTNocI4dhK0h", w:null,
+    b:"From Feel U, Mall Grab's debut on Collect-Call, which promptly sold out; drums caked in beautiful mud, joy unbothered. Yaeji loved it enough to cover it on her first EP." },
+  { g:"lofi_house", a:"Ross From Friends", t:"Talk To Me You'll Understand", y:2015, v:"8tKKNV5sXUs", s:"https://open.spotify.com/track/4Z4i631BesV0P6LTvfLAdL", w:null,
+    b:"Japanese city pop (Hi-Fi Set) spliced with Dru Hill, pushed through fog until it becomes a hook. Pitchfork noted the recommendation algorithm cannot stop serving it, as if haze were a ranking signal." },
+  { g:"lofi_house", a:"DJ Seinfeld", t:"U", y:2017, v:"VmK9oHGVRVw", s:"https://open.spotify.com/track/2tYctbOGPK2OZ2g2wKipgj", w:null,
+    b:"From Time Spent Away From U, an album described as an extended post-heartbreak love letter delivered via the dancefloor. Pitchfork heard Bruce Hornsby through the world's saddest, drunkest jukebox. Exactly." },
+  { g:"lofi_house", a:"Baltra", t:"Fade Away", y:2016, v:"4FyTx_yeHXo", s:"https://open.spotify.com/track/5KkRMv91vbi3rJ44HDpeih", w:null,
+    b:"The vocal dissolves exactly as advertised. Released on 96 and Forever in 2016, it went internet-sensation sized on YouTube and SoundCloud and started pulling Baltra across the Atlantic to play shows." },
+
+  /* ---- afternoon : liquid ---- */
+  { g:"liquid", a:"LTJ Bukem", t:"Horizons", y:1995, v:"Y4jhRqh9XFg", s:null, w:"https://en.wikipedia.org/wiki/Logical_Progression",
+    b:"Dawn poured over drum and bass: the melody borrowed from Lemon Sol's 'Sunflash', the spoken words from Maya Angelou's 1993 inauguration poem. Bukem's most celebrated record, and liquid's founding document." },
+  { g:"liquid", a:"High Contrast", t:"If We Ever", y:2007, v:"Pz1W1OLkw14", s:"https://open.spotify.com/track/6HhdFRM9un1Ojpz1A98pVi", w:null,
+    b:"Hospital Records at full gallop: disco strings at 170 with Diane Charlemagne, the voice of Inner City Life, carrying the hook. Hands in the air, for people who read liner notes." },
+  { g:"liquid", a:"Netsky", t:"Memory Lane", y:2010, v:"cG7cRDcPY3k", s:"https://open.spotify.com/track/2A9jHLZ1sXrfAKcItrdO8Y", w:null,
+    b:"A Belgian teenager who had been sending Hospital demos over instant messenger finally gets his first release on the label, and it is the warmest anthem liquid ever allowed itself. Resistance is pointless; roll with it." },
+  { g:"liquid", a:"Seba", t:"Painted Skies", y:2010, v:"kROLuASuuKM", s:"https://open.spotify.com/track/5JpeCgMkmBKIV1Y93EUf2G", w:null,
+    b:"Stockholm serenity at 170 on Seba's own Secret Operations label, paired with a Kirsty Hawkshaw collaboration. He came up on Bukem's Good Looking in 1996 and never lost the glow. Pads like weather fronts." },
+
+  /* ---- afternoon : intelligent dnb ---- */
+  { g:"intelligent_dnb", a:"PFM", t:"One & Only", y:1995, v:"AsRoKnr-Rxg", s:"https://open.spotify.com/track/4n8BqyKlGtuoO4b2HXTEpS", w:"https://en.wikipedia.org/wiki/Logical_Progression",
+    b:"Looking Good Records, 1995, a vocal warm enough to make junglists blush; later enshrined on Bukem's landmark Logical Progression compilation. The year drum and bass decided tenderness could roll too." },
+  { g:"intelligent_dnb", a:"Goldie", t:"Inner City Life", y:1994, v:"i-P98B2skts", s:"https://open.spotify.com/track/4qw7xhiy8rWGDeffgSj7Ez", w:"https://en.wikipedia.org/wiki/Inner_City_Life",
+    b:"Diane Charlemagne turns the breakbeat into an aria over a sampled Ike Turner drum groove. The first single from Timeless; NME ranked it among the best songs of 1994, and it has refused to age since." },
+  { g:"intelligent_dnb", a:"Alex Reece", t:"Pulp Fiction", y:1995, v:"P1_n_9RVnrk", s:"https://open.spotify.com/track/6rdX0la76j3RGwtZ3id80o", w:null,
+    b:"That bassline, plus a trumpet lifted from Coolio and bass from MC Solaar. It was untitled until Fabio, a Tarantino fan, named it; Goldie heard him play it and took it straight to Metalheadz. The two-step blueprint." },
+  { g:"intelligent_dnb", a:"Photek", t:"Ni Ten Ichi Ryu", y:1997, v:"UBPPO2t1C2Q", s:null, w:null,
+    b:"The title is Musashi's two-swords technique, and the track honours it: surgical breaks, ice-water atmosphere, not one sound wasted. AllMusic heard the minimalistic paranoia of a kung-fu sword fight. Irresistible, they said." },
+
+  /* ---- afternoon : atmospheric jungle ---- */
+  { g:"atmospheric_jungle", a:"LTJ Bukem", t:"Music", y:1993, v:"m1IvkYFCdV4", s:null, w:"https://en.wikipedia.org/wiki/Logical_Progression",
+    b:"Subtitled Happy Raw on its 1993 Good Looking pressing: ocean pads and a break like rain on glass, the soulful alternative to hardcore's sturm und drang. The genre's gentlest manifesto." },
+  { g:"atmospheric_jungle", a:"Foul Play", t:"Being With You (Foul Play Remix)", y:1994, v:"xbhWi6if9Eo", s:"https://open.spotify.com/track/6STgT3r9g6YO7ClzswJHdi", w:null,
+    b:"Foul Play remix themselves into heaven on a Moving Shadow ten-inch: the original's Mary J. Blige and Ryuichi Sakamoto samples sublimated into diva ghosts and sub-bass undertow. 1994, lit in amber." },
+  { g:"atmospheric_jungle", a:"Peshay", t:"Piano Tune", y:1994, v:"3865VN7RGcY", s:null, w:null,
+    b:"A piano line falling through the Amen break and Lyn Collins's 'Think' like light through blinds. Good Looking, 1994; peers and press still cite it as one of the most influential early atmospheric sides." },
+  { g:"atmospheric_jungle", a:"Essence of Aura", t:"So This Is Love", y:1995, v:"lAdIz0HgfQw", s:"https://open.spotify.com/track/2QPUOQEyuJzJ7RsUJUGy8u", w:null,
+    b:"Moving Shadow, July 1995, with the title question sampled from Cinderella herself, Ilene Woods. Rolling breaks, strings, and the answer is obviously yes." },
+
+  /* ---- afternoon : breakbeat ---- */
+  { g:"breakbeat", a:"The Future Sound of London", t:"Papua New Guinea", y:1991, v:"wfWMv8Y1V5E", s:"https://open.spotify.com/track/0xU0sRzX4liMDli3ktdDR4", w:"https://en.wikipedia.org/wiki/Papua_New_Guinea_(song)",
+    b:"Lisa Gerrard's voice, borrowed from Dead Can Dance, lifted into a breakbeat sunrise over a Meat Beat Manifesto bassline. UK top 30 in 1992: the moment rave realized it could be beautiful and illegal at once." },
+  { g:"breakbeat", a:"Hybrid", t:"Finished Symphony", y:1999, v:"vuWAO9QSG2Y", s:"https://open.spotify.com/track/3JF1AViQOMDH3zoO0aBhl2", w:"https://en.wikipedia.org/wiki/Finished_Symphony",
+    b:"Welsh breakbeats flown over the Russian Federal Orchestra, with a Gorecki motif folded in. Melodrama with a laminated flight case, and it still soars." },
+  { g:"breakbeat", a:"The Chemical Brothers", t:"Star Guitar", y:2002, v:"cbOhvzVOaJA", s:"https://open.spotify.com/track/7nBE8CCq6CpMUxfhODQApq", w:"https://en.wikipedia.org/wiki/Star_Guitar",
+    b:"The acoustic flicker of Bowie's 'Starman' turned into a UK number 8. Watch Michel Gondry's video, one continuous shot from a train window where the landscape plays the drums, and journeys never un-sync again." },
+  { g:"breakbeat", a:"Propellerheads", t:"Spybreak!", y:1997, v:"rgtf61Gw4u8", s:"https://open.spotify.com/track/5HWR5bZ3SBN6zA6zHJS3Y6", w:"https://en.wikipedia.org/wiki/Spybreak!",
+    b:"A heist score waiting for its heist: it grazed the UK Top 40 in 1997, then The Matrix borrowed it for the lobby shootout and settled the matter. Horns, breaks, swagger." },
+
+  /* ---- night : hypnotic techno ---- */
+  { g:"hypnotic_techno", a:"Jeff Mills", t:"The Bells", y:1996, v:"S340RiB4kWs", s:"https://open.spotify.com/track/0ISxyAhfop0MoMeAUw72RN", w:null,
+    b:"Made in 1994, released on Purpose Maker in 1996; before that Mills played it from a custom-cut 13-inch no one else owned. He says it has appeared in every set he has played since. Three notes, one riot." },
+  { g:"hypnotic_techno", a:"Plastikman", t:"Spastik", y:1993, v:"6TYsOMYaz6E", s:"https://open.spotify.com/track/5iYgociEUIfE5f5z84Xhi1", w:"https://en.wikipedia.org/wiki/Spastik",
+    b:"Nine minutes of Roland 808 percussion whipped into vertigo; the credits thank 'Rob And His Beagle'. Mixmag readers voted it the seventh greatest dance record ever. Rhythm as hypnosis, certified." },
+  { g:"hypnotic_techno", a:"Basic Channel", t:"Phylyps Trak", y:1993, v:"RmQ8xGELTX4", s:"https://open.spotify.com/track/4KsL7ddeairY2OMs8OFRSR", w:null,
+    b:"Berlin runs Detroit through a chain of smoke: BC 02, October 1993, its first pressing recorded live in a Potsdam washhouse, mixed hands-on-faders like deep Jamaican dub. Weather systems courting." },
+  { g:"hypnotic_techno", a:"Robert Hood", t:"Minus", y:1994, v:"_K-LwhsoGhU", s:"https://open.spotify.com/track/0YLEO6hUj8uO3RrJTHMPkD", w:"https://en.wikipedia.org/wiki/Internal_Empire",
+    b:"From Internal Empire on Tresor, cut at Hood's M-Plant studio in Detroit: one idea, perfectly machined, driven at night speed. Richie Hawtin later named his Minus label after this track. Less, used as a weapon." },
+
+  /* ---- night : deep house ---- */
+  { g:"deep_house", a:"Mr. Fingers", t:"Can You Feel It", y:1986, v:"1N9Wnqz8Rh8", s:"https://open.spotify.com/track/366NZufdu1fOK0MsIxvwS9", w:"https://en.wikipedia.org/wiki/Can_You_Feel_It_(Larry_Heard_song)",
+    b:"Larry Heard, a Juno-60 and a 909, recorded in one pass between two cassette decks; Chicago DJs preached Martin Luther King over the top. Deep house begins here, and the question remains rhetorical." },
+  { g:"deep_house", a:"Pépé Bradock", t:"Deep Burnt", y:1999, v:"lQHk5ET3kQU", s:null, w:null,
+    b:"A French B-side that outlived every A-side of its year, looping Freddie Hubbard's 'Little Sunflower' into a slow-motion embrace. Bradock himself calls it cubism for ravers." },
+  { g:"deep_house", a:"Kerri Chandler", t:"Bar A Thym", y:2005, v:"hNr8RgWl4eM", s:"https://open.spotify.com/track/6ZfF8Yn9qgfAekLIXnLpav", w:null,
+    b:"NRK, 2005: thudding kicks, tick-tock hats and one ever-climbing synth riff, pure voltage under strobe light. Mixmag files it among the essential Kerri Chandler productions, which is a crowded shelf." },
+  { g:"deep_house", a:"Moodymann", t:"I Can't Kick This Feeling When It Hits", y:1996, v:"0KrFelB-0Hw", s:null, w:null,
+    b:"Chic's 'I Want Your Love' lifted into Detroit dusk on KDJ number six, later gathered onto Silentintroduction. Kenny Dixon Jr. smokes the edges off disco, and the feeling, famously, cannot be kicked." },
+  { g:"deep_house", a:"Larry Heard presents Mr. White", t:"The Sun Can't Compare", y:2006, v:"tdIQTEYXDP4", s:"https://open.spotify.com/track/4ATWRf0Pu5E8oAXCJUBvAe", w:null,
+    b:"Heard again, twenty years after Can You Feel It, with Mr. White's voice over eight minutes Resident Advisor called mesmerizing, emotional acid house. Neon on wet asphalt; night-drive scripture." },
+
+  /* ---- night : ragga jungle ---- */
+  { g:"ragga_jungle", a:"Shy FX & UK Apachi", t:"Original Nuttah", y:1994, v:"7VfWmeBo0vs", s:"https://open.spotify.com/track/74V4K9dL0gxWe0F6BOBAyK", w:"https://en.wikipedia.org/wiki/Original_Nuttah",
+    b:"Recorded in two takes over Shy FX's 'Gangsta Kid', opening with a Goodfellas sample, and one of the first jungle tunes to crack the UK top 40. London, 1994: a city boiling over with joy." },
+  { g:"ragga_jungle", a:"M-Beat feat. General Levy", t:"Incredible", y:1994, v:"GDwNn8bJ2CQ", s:"https://open.spotify.com/track/6jJbVZ3yHb4vZwJgQyTOa3", w:"https://en.wikipedia.org/wiki/Incredible_(M-Beat_song)",
+    b:"The first jungle record to reach the UK top ten, gold-certified, Levy's chat adapted from his own 'Wickedest General'. The crossover that scandalized the scene and converted everyone else. Booyaka." },
+  { g:"ragga_jungle", a:"Conquering Lion", t:"Code Red", y:1994, v:"bo_T4yg80vg", s:"https://open.spotify.com/track/0fTHMT2hHppGd9Qer2yb3V", w:null,
+    b:"Conquering Lion is Rebel MC, the future Congo Natty, with dancehall royalty Super Cat on the mic; Island's Mango label picked it up for major release. Rewind culture in its natural habitat." },
+  { g:"ragga_jungle", a:"Remarc", t:"R.I.P.", y:1994, v:"9-r4DYlvV5Q", s:"https://open.spotify.com/track/1SHNtEYq8rz1MnCpAQVHnP", w:null,
+    b:"Remarc chops the Amen like it owes him money, with a Gregory Isaacs vocal lifted for the hook. Suburban Base pressed it; Planet Mu later collected it on Sound Murderer. Violence has rarely been this grinnable." },
+
+  /* ---- night : dubstep ---- */
+  { g:"dubstep", a:"Skream", t:"Midnight Request Line", y:2005, v:"lcMAbnZy8l8", s:"https://open.spotify.com/track/6saiu3uHwIpzPl8GKtRRNR", w:null,
+    b:"Tempa, Halloween 2005: the Croydon teenager's tune the LA Times later called dubstep's most recognizable crossover hit, with a key change The Wire compared to Derrick May. The request line is still open." },
+  { g:"dubstep", a:"Burial", t:"Archangel", y:2007, v:"c7jP-vich30", s:"https://open.spotify.com/track/1aaIYTqoRDzRUilU2Q6vTe", w:"https://en.wikipedia.org/wiki/Untrue_(album)",
+    b:"A Ray J vocal pitched until it grieves, leading Untrue on Hyperdub, November 2007: night buses, rain static, a whole decade's loneliness in one tune." },
+  { g:"dubstep", a:"Digital Mystikz", t:"Anti War Dub", y:2006, v:"G9H3i0T1iN4", s:"https://open.spotify.com/track/2McvwBtG5WHCOsM2AHWXoZ", w:null,
+    b:"DMZ 007, around two thousand copies pressed and never repressed, by Mala's own account. It slipped into Children of Men without making the soundtrack album. Meditation at war volume; it still stops rooms." },
+  { g:"dubstep", a:"Benga & Coki", t:"Night", y:2008, v:"rNStVlJWy88", s:"https://open.spotify.com/track/0unwEQ4UFfqBOKhHgeTwVp", w:"https://en.wikipedia.org/wiki/Diary_of_an_Afro_Warrior",
+    b:"The wobble heard round the world: a 2007 basement anthem that crossed into every genre's record bag, grazed the UK singles chart and sat top five on Pete Tong's dance chart into 2008." }
+];
+
+/* MC intro script (sound design + text; no synthetic voice) */
+const MC_LINES = [
+  { t:"BIG UP YOUR CHEST.",              fx:"stab"  },
+  { t:"SELECTA LOCKED IN.",              fx:"stab"  },
+  { t:"INNA DI MORNING, INNA DI MIDNIGHT,", fx:"phone" },
+  { t:"YOU ARE NOW TUNED TO",            fx:"stab"  },
+  { t:"HOME MUSIC",  big:true,           fx:"siren" },
+  { t:"STRICTLY VIBES. PULL UP!",        fx:"sweep" }
+];
+</script>
+<script>
+/* ================= HOME MUSIC ENGINE ================= */
+(function(){
+"use strict";
+
+var $ = function(id){ return document.getElementById(id); };
+var SIMPLE = window.matchMedia("(pointer:coarse)").matches; /* touch devices: single-deck mode */
+var XFADE_LEAD = 9;      /* seconds before track end to begin transition */
+var FADE_DUR = 6000;     /* ms */
+
+/* ---------------- FX : web audio dub kit ---------------- */
+var FX = {
+  ctx:null, master:null, echoIn:null, send:null,
+  init: function(){
+    if(this.ctx) return;
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain(); this.master.gain.value = 0.85;
+      this.master.connect(this.ctx.destination);
+      /* feedback echo chain */
+      var delay = this.ctx.createDelay(1.5); delay.delayTime.value = 0.36;
+      var fb = this.ctx.createGain(); fb.gain.value = 0.52;
+      var lp = this.ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 1700;
+      delay.connect(lp); lp.connect(fb); fb.connect(delay);
+      var wet = this.ctx.createGain(); wet.gain.value = 0.9;
+      delay.connect(wet); wet.connect(this.master);
+      this.echoIn = delay;
+    }catch(e){ this.ctx = null; }
+  },
+  resume: function(){ if(this.ctx && this.ctx.state === "suspended"){ this.ctx.resume(); } },
+  setVol: function(v){ if(this.master) this.master.gain.value = 0.85 * v; },
+  env: function(g, t0, a, peak, rel){
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.linearRampToValueAtTime(peak, t0 + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + rel);
+  },
+  stab: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, g=c.createGain();
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=900; bp.Q.value=1.1;
+    g.connect(bp);
+    var dry=c.createGain(); dry.gain.value=0.35; bp.connect(dry); dry.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.75; bp.connect(s); s.connect(this.echoIn);
+    [220, 261.6, 329.6].forEach(function(f,i){
+      var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f; o.detune.value=(i-1)*7;
+      o.connect(g); o.start(t); o.stop(t+0.4);
+    });
+    this.env(g, t, 0.01, 0.5, 0.3);
+  },
+  phone: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this, pairs=[[697,1209],[770,1336],[852,1477],[941,1336],[770,1209]];
+    pairs.forEach(function(p,i){
+      var t=c.currentTime + i*0.13, g=c.createGain();
+      var dry=c.createGain(); dry.gain.value=0.5; g.connect(dry); dry.connect(self.master);
+      var s=c.createGain(); s.gain.value=0.5; g.connect(s); s.connect(self.echoIn);
+      p.forEach(function(f){
+        var o=c.createOscillator(); o.type="sine"; o.frequency.value=f;
+        o.connect(g); o.start(t); o.stop(t+0.12);
+      });
+      self.env(g, t, 0.005, 0.16, 0.1);
+    });
+  },
+  siren: function(dur){
+    if(!this.ctx) return;
+    dur = dur || 1.6;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="square"; o.frequency.value=620;
+    var lfo=c.createOscillator(); lfo.type="sine"; lfo.frequency.value=5.5;
+    var lg=c.createGain(); lg.gain.value=240; lfo.connect(lg); lg.connect(o.frequency);
+    var g=c.createGain(); o.connect(g);
+    var dry=c.createGain(); dry.gain.value=0.07; g.connect(dry); dry.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.8; g.connect(s); s.connect(this.echoIn);
+    o.start(t); lfo.start(t); o.stop(t+dur+0.1); lfo.stop(t+dur+0.1);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.3, t+0.08);
+    g.gain.setValueAtTime(0.3, t+dur-0.25);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  },
+  sweep: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(980, t+0.7);
+    var g=c.createGain(); o.connect(g);
+    var s=c.createGain(); s.gain.value=0.8; g.connect(s); s.connect(this.echoIn);
+    var dry=c.createGain(); dry.gain.value=0.12; g.connect(dry); dry.connect(this.master);
+    o.start(t); o.stop(t+0.85);
+    this.env(g, t, 0.04, 0.35, 0.75);
+  },
+  rewind: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(55, t+0.45);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.5; g.connect(s); s.connect(this.echoIn);
+    o.start(t); o.stop(t+0.5);
+    this.env(g, t, 0.01, 0.22, 0.42);
+  },
+  crackle: function(on){
+    if(!this.ctx) return;
+    if(on){
+      if(this._ck) return;
+      var c=this.ctx, len=c.sampleRate*2, buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+      for(var i=0;i<len;i++){ d[i] = (Math.random() < 0.0018) ? (Math.random()*2-1)*0.8 : (Math.random()*2-1)*0.012; }
+      var src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+      var g=c.createGain(); g.gain.value=0.16; src.connect(g); g.connect(this.master);
+      src.start(); this._ck={src:src,g:g};
+    }else if(this._ck){
+      var ck=this._ck; this._ck=null;
+      ck.g.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime+0.6);
+      setTimeout(function(){ try{ck.src.stop();}catch(e){} }, 700);
+    }
+  },
+  transitionFx: function(){
+    var self=this;
+    self.stab();
+    setTimeout(function(){ self.siren(1.25); }, 420);
+    setTimeout(function(){ self.stab(); }, 1500);
+    if(Math.random()<0.5){ setTimeout(function(){ self.phone(); }, 2100); }
+  }
+};
+
+/* ---------------- DJ visual engine ---------------- */
+var visDeck = "L";
+var DJVIS = (function(){
+  var angles={L:0,R:0}, speed={L:0,R:0}, target={L:0,R:0}, running=false;
+  function el(id){ return document.getElementById(id); }
+  function loop(){
+    ["L","R"].forEach(function(d){
+      var t=target[d];
+      if(speed[d] < t){ speed[d] = Math.min(t, speed[d] + 0.07); }
+      else if(speed[d] > t){ speed[d] = Math.max(t, speed[d]*0.962 - 0.003); }
+      if(speed[d] > 0.0004){
+        angles[d] = (angles[d] + speed[d]*2.2) % 360;
+        var g = el("rec"+d);
+        if(g) g.setAttribute("transform", "rotate(" + angles[d].toFixed(2) + ")");
+      }
+    });
+    requestAnimationFrame(loop);
+  }
+  return {
+    start: function(){ if(!running){ running=true; requestAnimationFrame(loop); } },
+    spinUp: function(d){ target[d] = 1.18; },
+    brake: function(d){ target[d] = 0; },
+    arm: function(d,on){ var a=el("tonearm"+d); if(a) a.classList.toggle("play", !!on); },
+    record: function(d,show){ var r=el("rec"+d); if(r) r.classList.toggle("off", !show); },
+    loadDisc: function(d, cb){
+      var b=el("booth"), f=el("discFly");
+      if(b){ b.classList.add("cratePop"); if(d==="L") b.classList.add("liftL"); }
+      if(f){ f.classList.remove("flyL","flyR"); void f.getBoundingClientRect(); f.classList.add(d==="L"?"flyL":"flyR"); }
+      setTimeout(function(){
+        if(f) f.classList.remove("flyL","flyR");
+        if(b) b.classList.remove("cratePop","liftL");
+        DJVIS.record(d, true);
+        if(cb) cb();
+      }, d==="L" ? 1300 : 1100);
+    },
+    setFade: function(x, inDeck){  /* x 0..1 progress toward the incoming deck */
+      var p = (inDeck === "R") ? x : (1 - x);   /* 0 full-left, 1 full-right */
+      document.documentElement.style.setProperty("--xf", ((p - 0.5) * 84).toFixed(1) + "px");
+      document.documentElement.style.setProperty("--fr", ((p - 0.5) * 13).toFixed(2) + "deg");
+    }
+  };
+})();
+function animFade(inDeck, dur, done){
+  var t0 = performance.now();
+  (function step(now){
+    var x = Math.min(1, (now - t0) / dur);
+    DJVIS.setFade(x, inDeck);
+    if(x < 1) requestAnimationFrame(step); else if(done) done();
+  })(performance.now());
+}
+
+window.HMDBG = { djvis: DJVIS, fade: animFade };  /* console hook for live debugging */
+
+/* ---------------- scheduling ---------------- */
+function blockKeyFor(h){ if(h>=6 && h<13) return "morning"; if(h>=13 && h<20) return "afternoon"; return "night"; }
+var OVERRIDE = (function(){
+  try{
+    var m = window.location.search.match(/[?&]block=(morning|afternoon|night)/);
+    return m ? m[1] : null;
+  }catch(e){ return null; }
+})();
+var currentBlock = OVERRIDE || blockKeyFor(new Date().getHours());
+var deadIds = {};
+var queue = [];
+var current = null;
+
+function tracksForBlock(bk){
+  var gs = BLOCKS[bk].genres;
+  return TRACKS.filter(function(t){ return gs.indexOf(t.g) >= 0 && !deadIds[t.v]; });
+}
+function shuffle(arr){
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; }
+  return arr;
+}
+function buildQueue(){
+  queue = shuffle(tracksForBlock(currentBlock).slice());
+  /* soften same-artist adjacency */
+  for(var i=1;i<queue.length;i++){
+    if(queue[i].a === queue[i-1].a){
+      for(var j=i+1;j<queue.length;j++){
+        if(queue[j].a !== queue[i-1].a){ var tmp=queue[i]; queue[i]=queue[j]; queue[j]=tmp; break; }
+      }
+    }
+  }
+}
+function nextTrack(){
+  if(!queue.length) buildQueue();
+  if(!queue.length) return null;
+  var t = queue.shift();
+  if(current && t && t.v === current.v && queue.length){ queue.push(t); t = queue.shift(); }
+  return t;
+}
+
+/* ---------------- YouTube players ---------------- */
+var apiReady=false, started=false, radioOn=false;
+var P = { A:{yt:null, slot:"slotA", ready:false}, B:{yt:null, slot:"slotB", ready:false} };
+var activeKey="A";
+var masterVol = 80;
+var muted=false;
+var transitioning=false;
+var retryCount=0;
+var lastT=0, lastStamp=0;
+
+try{ var sv = localStorage.getItem("hm_vol"); if(sv!==null){ masterVol = Math.max(0, Math.min(100, parseInt(sv,10)||80)); } }catch(e){}
+
+function other(k){ return k==="A" ? "B" : "A"; }
+function fadeVol(p, f){ /* f 0..1 */
+  if(p.yt && p.ready){ try{ p.yt.setVolume(Math.round(masterVol * f)); }catch(e){} }
+  p.fade = f;
+}
+window.onYouTubeIframeAPIReady = function(){
+  apiReady = true;
+  makePlayer("A"); if(!SIMPLE) makePlayer("B");
+};
+function makePlayer(k){
+  var p = P[k];
+  p.yt = new YT.Player("yt"+k, {
+    width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:0, disablekb:1, fs:0, iv_load_policy:3, modestbranding:1, rel:0, playsinline:1 },
+    events:{
+      onReady: function(){ p.ready=true; if(k==="A"){ maybeStart(); } },
+      onStateChange: function(e){ onState(k, e.data); },
+      onError: function(e){ onYtError(k, e.data); }
+    }
+  });
+}
+function loadApi(){
+  var s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = function(){ apiFail(); };
+  document.head.appendChild(s);
+  setTimeout(function(){ if(!apiReady) apiFail(); }, 9000);
+}
+var apiFailed = false;
+function apiFail(){
+  if(apiReady) return;
+  apiFailed = true;
+  $("standbyMsg").textContent = "cannot reach YouTube from this network. the radio needs it to spin.";
+}
+
+/* start sequence: user pressed play -> intro runs -> radio starts */
+var pendingFirst = null;
+function maybeStart(){
+  /* preload the first tune muted while the MC talks, so it is buffered when we fade in */
+  if(!pendingFirst || !P.A.ready || started) return;
+  started = true;
+  try{
+    P.A.yt.mute();
+    P.A.yt.loadVideoById(pendingFirst.v);
+  }catch(e){}
+}
+var firstLogged = false;
+function beginRadio(){
+  radioOn = true;
+  var p = P[activeKey];
+  $("standbyMsg").textContent = "dropping the needle…";
+  function go(){
+    if(!p.ready){ if(!apiFailed){ setTimeout(go, 300); } return; }
+    if(!started){ started=true; try{ p.yt.mute(); p.yt.loadVideoById(pendingFirst.v); }catch(e){} }
+    try{
+      p.yt.unMute(); muted=false;
+      fadeVol(p, 1);
+      p.yt.seekTo(0, true);
+      p.yt.playVideo();
+    }catch(e){}
+    if(!firstLogged && current){
+      firstLogged = true; pushHistory(current);
+      DJVIS.start();
+      visDeck = (activeKey === "A") ? "L" : "R";
+      DJVIS.setFade(1, visDeck);
+      DJVIS.loadDisc(visDeck, function(){ DJVIS.arm(visDeck, true); DJVIS.spinUp(visDeck); });
+    }
+    setTimeout(checkAudible, 1600);
+  }
+  go();
+}
+function checkAudible(){
+  var p = P[activeKey];
+  if(!p.ready){ setTimeout(checkAudible, 800); return; }
+  var st=-9, mu=false;
+  try{ st = p.yt.getPlayerState(); mu = p.yt.isMuted(); }catch(e){}
+  if(st !== 1 || mu){ $("needle").classList.add("on"); }
+}
+$("needle") && $("needle").addEventListener("click", function(){
+  var p = P[activeKey];
+  try{ p.yt.unMute(); muted=false; fadeVol(p,1); p.yt.playVideo(); }catch(e){}
+  FX.resume();
+  $("needle").classList.remove("on");
+});
+
+function onState(k, st){
+  var p = P[k];
+  if(st === 1){ /* playing */
+    if(k === activeKey){
+      $("standby").classList.add("off");
+      $("slot"+k).classList.add("live");
+      lastT = 0; lastStamp = Date.now();
+    }
+    retryCount = 0;
+  }
+  if(st === 0 && k === activeKey && !transitioning){ hardNext("ended"); }
+}
+function onYtError(k, code){
+  var p = P[k];
+  var bad = p.pendingTrack || (k===activeKey ? current : null);
+  if(bad){ deadIds[bad.v] = true; }
+  if(transitioning && k !== activeKey){
+    /* incoming deck failed: pick another record */
+    transitioning = false;
+    if(retryCount++ < 4){ startTransition(); }
+  } else if(k === activeKey){
+    if(retryCount++ < 5){ hardNext("error"); }
+    else { $("standbyMsg").textContent = "too many dead links in a row. check the connection."; $("standby").classList.remove("off"); }
+  }
+}
+
+/* hard cut (errors, manual skip) */
+function quickSwapVisual(){
+  var d = visDeck;
+  DJVIS.arm(d, false); DJVIS.brake(d);
+  DJVIS.loadDisc(d, function(){ DJVIS.arm(d, true); DJVIS.spinUp(d); });
+  flashLines();
+}
+function hardNextAudio(t){
+  var p = P[activeKey];
+  p.pendingTrack = t;
+  setNow(t, true);
+  try{ p.yt.loadVideoById(t.v); p.yt.unMute(); fadeVol(p,1); }catch(e){}
+}
+function hardNext(){
+  var t = nextTrack(); if(!t) return;
+  hardNextAudio(t);
+  quickSwapVisual();
+}
+
+/* crossfade transition */
+function startTransition(){
+  if(transitioning || !radioOn) return;
+  var t = nextTrack(); if(!t) return;
+  if(SIMPLE){
+    transitioning = true;
+    var inD = (visDeck === "L") ? "R" : "L", outD = visDeck;
+    DJVIS.arm(outD, false); DJVIS.brake(outD);
+    DJVIS.loadDisc(inD, function(){ DJVIS.arm(inD, true); DJVIS.spinUp(inD); });
+    FX.transitionFx();
+    animFade(inD, 1700);
+    setTimeout(function(){
+      DJVIS.record(outD, false);
+      visDeck = inD;
+      transitioning = false;
+      hardNextAudio(t);
+      flashLines();
+    }, 1800);
+    return;
+  }
+  var inc = P[other(activeKey)];
+  if(!inc.ready){ hardNext(); return; }
+  transitioning = true;
+  inc.pendingTrack = t;
+  fadeVol(inc, 0);
+  try{ inc.yt.unMute(); inc.yt.loadVideoById(t.v); }catch(e){}
+  var inD = (other(activeKey) === "A") ? "L" : "R";
+  var outD = (activeKey === "A") ? "L" : "R";
+  DJVIS.loadDisc(inD, function(){ DJVIS.arm(inD, true); DJVIS.spinUp(inD); });
+  FX.transitionFx();
+  var waited=0;
+  (function waitPlay(){
+    var st=-9; try{ st = inc.yt.getPlayerState(); }catch(e){}
+    if(!transitioning) return;            /* aborted by error handler */
+    if(st === 1){ ramp(); }
+    else if((waited += 250) > 12000){ transitioning=false; hardNext(); }
+    else setTimeout(waitPlay, 250);
+  })();
+  function ramp(){
+    var out = P[activeKey], t0 = performance.now(), mid=false;
+    function step(now){
+      var x = Math.min(1, (now - t0) / FADE_DUR);
+      fadeVol(out, Math.cos(x * Math.PI/2));
+      fadeVol(inc, Math.sin(x * Math.PI/2));
+      DJVIS.setFade(x, inD);
+      if(x >= 0.45 && !mid){
+        mid = true;
+        $("slot"+other(activeKey)).classList.add("live");
+        $("slot"+activeKey).classList.remove("live");
+        flashLines();
+        setNow(t, true);
+      }
+      if(x < 1){ requestAnimationFrame(step); }
+      else{
+        try{ out.yt.stopVideo(); }catch(e){}
+        out.pendingTrack = null;
+        DJVIS.arm(outD, false); DJVIS.brake(outD);
+        setTimeout(function(){ DJVIS.record(outD, false); }, 1400);
+        activeKey = other(activeKey);
+        visDeck = inD;
+        transitioning = false;
+        lastT=0; lastStamp=Date.now();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+}
+
+/* watchdog */
+setInterval(function(){
+  if(!radioOn || transitioning) return;
+  var p = P[activeKey]; if(!p.ready) return;
+  var st=-9, cur=0, dur=0;
+  try{ st=p.yt.getPlayerState(); cur=p.yt.getCurrentTime(); dur=p.yt.getDuration(); }catch(e){ return; }
+  if(st === 1){
+    if(cur !== lastT){ lastT=cur; lastStamp=Date.now(); }
+    else if(Date.now() - lastStamp > 14000){ hardNext("stalled"); return; }
+    if(dur > 40 && (dur - cur) <= XFADE_LEAD){ startTransition(); }
+  }
+}, 600);
+
+/* block changes */
+function applyBlockTheme(){
+  var b = BLOCKS[currentBlock];
+  document.body.style.setProperty("--blk", b.accent);
+  $("blockLabel").textContent = b.label + " " + b.range + (OVERRIDE ? " (override)" : "");
+  var lL=document.getElementById("labL"), lR=document.getElementById("labR");
+  if(lL) lL.setAttribute("fill", b.accent);
+  if(lR) lR.setAttribute("fill", "#f4ecd9");
+}
+setInterval(function(){
+  if(OVERRIDE) return;
+  var bk = blockKeyFor(new Date().getHours());
+  if(bk !== currentBlock){
+    currentBlock = bk;
+    buildQueue();
+    applyBlockTheme();
+    toast("PROGRAMME CHANGE · " + BLOCKS[bk].label);
+    FX.siren(1.2);
+  }
+}, 20000);
+
+/* clock */
+function tickClock(){
+  var d=new Date();
+  $("clock").textContent = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ---------------- UI ---------------- */
+function spotifyLink(t){
+  return t.s ? t.s : "https://open.spotify.com/search/" + encodeURIComponent(t.a + " " + t.t);
+}
+function setNow(t, push){
+  current = t;
+  var g = GENRES[t.g];
+  $("gChip").textContent = g.name;
+  $("tYear").textContent = t.y ? String(t.y) : "";
+  $("tArtist").textContent = t.a;
+  $("tTitle").textContent = t.t;
+  $("tBlurb").textContent = t.b;
+  $("aYT").href = "https://www.youtube.com/watch?v=" + t.v;
+  $("aSP").href = spotifyLink(t);
+  var src = $("aSrc");
+  if(t.w){ src.href = t.w; src.hidden = false; } else { src.hidden = true; }
+  $("gName").textContent = g.name;
+  $("gNote").textContent = g.note;
+  var gw = $("gWiki");
+  if(g.w){ gw.href = g.w; gw.hidden = false; } else { gw.hidden = true; }
+  var n = TRACKS.filter(function(x){ return x.g===t.g; }).length;
+  $("gTrackCount").textContent = n + " records from this sound in tonight's crate.";
+  document.title = t.a + " · Home Music";
+  if(push){ pushHistory(t); }
+}
+function pushHistory(t){
+  var ul = $("histList");
+  var empty = ul.querySelector(".h-empty"); if(empty) empty.remove();
+  var d=new Date();
+  var li = document.createElement("li");
+  var tm = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  li.innerHTML = '<div class="h-time">' + tm + ' · ' + GENRES[t.g].name.toUpperCase() + '</div>' +
+    '<div class="h-art"></div><div class="h-tit"></div>' +
+    '<div class="h-links"><a target="_blank" rel="noopener">YOUTUBE</a><a target="_blank" rel="noopener">SPOTIFY</a></div>';
+  li.querySelector(".h-art").textContent = t.a;
+  li.querySelector(".h-tit").textContent = t.t + (t.y ? " (" + t.y + ")" : "");
+  var as = li.querySelectorAll(".h-links a");
+  as[0].href = "https://www.youtube.com/watch?v=" + t.v;
+  as[1].href = spotifyLink(t);
+  ul.insertBefore(li, ul.firstChild);
+  while(ul.children.length > 60){ ul.removeChild(ul.lastChild); }
+}
+function flashLines(){
+  var s=$("speedlines"); s.classList.add("on");
+  setTimeout(function(){ s.classList.remove("on"); }, 380);
+}
+var toastTimer=null;
+function toast(msg){
+  var el=$("toast"); el.textContent=msg; el.classList.add("on");
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ el.classList.remove("on"); }, 3400);
+}
+
+/* volume + mute */
+var volEl = $("vol"); volEl.value = masterVol;
+volEl.addEventListener("input", function(){
+  masterVol = parseInt(volEl.value,10);
+  try{ localStorage.setItem("hm_vol", String(masterVol)); }catch(e){}
+  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ fadeVol(p, p.fade==null?1:p.fade); } });
+  FX.setVol(masterVol/100);
+});
+FX.setVol(masterVol/100);
+function toggleMute(){
+  muted = !muted;
+  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ muted ? p.yt.mute() : p.yt.unMute(); }catch(e){} } });
+  $("muteBtn").classList.toggle("on", muted);
+  $("muteBtn").textContent = muted ? "Unmute" : "Mute";
+}
+$("muteBtn").addEventListener("click", toggleMute);
+
+/* panels */
+function bindPanel(btnId, panelId){
+  $(btnId).addEventListener("click", function(){
+    var p=$(panelId), was=p.classList.contains("on");
+    document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+    if(!was) p.classList.add("on");
+  });
+}
+bindPanel("genreBtn","genrePanel"); bindPanel("histBtn","histPanel");
+document.querySelectorAll(".pclose").forEach(function(b){
+  b.addEventListener("click", function(){ $(b.getAttribute("data-close")).classList.remove("on"); });
+});
+document.addEventListener("keydown", function(e){
+  if(e.target && (e.target.tagName==="INPUT")) return;
+  if(e.key === "Escape"){ document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); }); }
+  if(!radioOn) return;
+  if(e.key === "ArrowRight"){ FX.rewind(); setTimeout(hardNext, 350); }
+  if(e.key === "m" || e.key === "M"){ toggleMute(); }
+});
+
+/* ---------------- intro ---------------- */
+var introTimers=[], introDone=false;
+function runIntro(){
+  var mc=$("mc");
+  $("spIdle").style.display="none";
+  mc.classList.add("on");
+  FX.crackle(true);
+  var times=[300, 1650, 3000, 4400, 5600, 7350];
+  MC_LINES.forEach(function(line,i){
+    introTimers.push(setTimeout(function(){
+      var div=document.createElement("div");
+      div.className="mc-line" + (line.big ? " big" : "");
+      div.textContent=line.t;
+      mc.appendChild(div);
+      void div.offsetWidth; div.classList.add("show");
+      if(line.fx==="stab") FX.stab();
+      if(line.fx==="phone") FX.phone();
+      if(line.fx==="siren") FX.siren(1.9);
+      if(line.fx==="sweep") FX.sweep();
+    }, times[i]));
+  });
+  introTimers.push(setTimeout(finishIntro, 9400));
+  setTimeout(function(){ $("skipIntro").classList.add("on"); }, 1500);
+}
+function finishIntro(){
+  if(introDone) return; introDone=true;
+  introTimers.forEach(clearTimeout);
+  FX.crackle(false);
+  $("splash").classList.add("off");
+  setTimeout(function(){ $("splash").style.display="none"; }, 1000);
+  beginRadio();
+}
+$("skipIntro").addEventListener("click", finishIntro);
+
+/* ---------------- enter ---------------- */
+$("enter").addEventListener("click", function(){
+  FX.init(); FX.resume();
+  FX.stab();   /* immediate audible confirmation that sound works */
+  $("app").classList.add("on");
+  buildQueue(); applyBlockTheme();
+  pendingFirst = nextTrack();
+  setNow(pendingFirst, false);
+  loadApi();
+  maybeStart();
+  runIntro();
+});
+
+})();
+</script>
+</body>
+</html>
