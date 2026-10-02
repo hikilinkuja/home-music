@@ -953,7 +953,7 @@ var API={
                                 FIG.carry=null; decks[inK].disc=true; decks[inK].prog=0; FIG.hand=null; }); }},
       {t:5.95, fn:function(){ decks[inK].run=true; }},
       {t:6.15, fn:function(){ FIG.hand={x:DECK[inK].x+9,y:BTOP-9}; cutIn("needle",2.0); }},
-      {t:7.15, fn:function(){ decks[inK].armDown=true; }},
+      {t:7.15, fn:function(){ decks[inK].armDown=true; if(window.HMFX) window.HMFX.needle(); }},
       {t:7.55, fn:function(){ FIG.hand={x:DECK[inK].x+11,y:BTOP-3};
                               pitchShow={from:(meta&&meta.bpm)||118, to:m.bpm};
                               cutIn("pitch",2.8); }},
@@ -1006,7 +1006,7 @@ var API={
       {t:2.30, fn:function(){ handTw({x:DECK[k].x,y:BTOP-6},0.4, function(){
                                 FIG.carry=null; decks[k].disc=true; decks[k].prog=0; }); }},
       {t:2.85, fn:function(){ decks[k].run=true; FIG.hand={x:DECK[k].x+9,y:BTOP-9}; cutIn("needle",1.5); }},
-      {t:3.70, fn:function(){ decks[k].armDown=true; }},
+      {t:3.70, fn:function(){ decks[k].armDown=true; if(window.HMFX) window.HMFX.needle(); }},
       {t:4.10, fn:function(){ FIG.hand={x:DECK[k].x+11,y:BTOP-3};
                               pitchShow={from:(meta&&meta.bpm)||120, to:m.bpm}; cutIn("pitch",1.8); }},
       {t:5.90, fn:function(){ FIG.hand=null; walkTo(MIX.x,0.6); }},
@@ -1214,6 +1214,39 @@ var FX = {
       self.bubble(b0+1*beat); self.bubble(b0+3*beat);
     });
   },
+  needleDrop: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, self=this;
+    /* toque surdo do braco a pousar */
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(82,t); o.frequency.exponentialRampToValueAtTime(48, t+0.07);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.12);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.18, t+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.11);
+    /* estalido do contacto */
+    var len=Math.floor(c.sampleRate*0.05), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.4); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1400;
+    var g2=c.createGain(); g2.gain.value=0.2;
+    src.connect(hp); hp.connect(g2); g2.connect(this.master);
+    var s2=c.createGain(); s2.gain.value=0.5; g2.connect(s2); s2.connect(this.echoIn);
+    src.start(t+0.03);
+    /* chiado do sulco a assentar */
+    var ln2=Math.floor(c.sampleRate*2.2), b2=c.createBuffer(1,ln2,c.sampleRate), d2=b2.getChannelData(0);
+    for(var j=0;j<ln2;j++){ d2[j]=(Math.random()*2-1)*0.5 + ((Math.random()<0.004)?(Math.random()*2-1)*1.6:0); }
+    var sr2=c.createBufferSource(); sr2.buffer=b2;
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=5200; bp.Q.value=0.8;
+    var g3=c.createGain();
+    sr2.connect(bp); bp.connect(g3); g3.connect(this.master);
+    sr2.start(t+0.06);
+    g3.gain.setValueAtTime(0.0001,t+0.06);
+    g3.gain.linearRampToValueAtTime(0.085, t+0.3);
+    g3.gain.setValueAtTime(0.085, t+1.2);
+    g3.gain.exponentialRampToValueAtTime(0.0001, t+2.2);
+  },
   sub: function(){
     if(!this.ctx) return;
     var c=this.ctx, t=c.currentTime;
@@ -1412,6 +1445,9 @@ function audibleLevel(k){
 /* feed the VU meters and the tonearm creep */
 setInterval(function(){
   if(!radioOn) return;
+  /* o botao segue sempre o estado real */
+  var mb=$("muteBtn");
+  if(mb){ var want = muted ? "Unmute" : "Mute"; if(mb.textContent!==want){ mb.textContent=want; mb.classList.toggle("on", muted); } }
   var la=0, lb=0;
   ["A","B"].forEach(function(k){
     var v = audibleLevel(k);
@@ -1475,16 +1511,20 @@ function beginRadio(){
     if(!started){ setTimeout(go, 500); return; }
     try{
       p.yt.unMute(); muted=false;
-      fadeVol(p, 1);
+      fadeVol(p, 0);
       p.yt.seekTo(0, true);
       p.yt.playVideo();
     }catch(e){}
     if(!firstLogged && current){
       firstLogged = true; pushHistory(current);
+      firstRampPending = true;
+      FX.crackle(true);
       if(RIG.setNext) RIG.setNext(metaFor(current));
       RIG.first(deckOfPlayer(activeKey));
+      /* rede de seguranca: se o gancho da agulha nao disparar, a rampa entra na mesma */
+      setTimeout(function(){ if(firstRampPending && window.HMFX){ window.HMFX.needle(); } }, 9500);
     }
-    setTimeout(checkAudible, 1600);
+    setTimeout(checkAudible, 11000);
   }
   go();
 }
@@ -1819,6 +1859,20 @@ $("enter").addEventListener("click", function(){
   maybeStart();
   runIntro();
 });
+
+var firstRampPending=false;
+function rampInFirst(){
+  if(!firstRampPending) return;
+  firstRampPending=false;
+  var p=P[activeKey], t0=performance.now(), DURR=1800;
+  (function st2(now){
+    var x=Math.min(1,(now-t0)/DURR);
+    fadeVol(p, Math.sin(x*Math.PI/2));
+    if(x<1) requestAnimationFrame(st2);
+    else { FX.crackle(false); }
+  })(performance.now());
+}
+window.HMFX = { needle: function(){ FX.needleDrop(); rampInFirst(); } };
 
 window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
   return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE };
