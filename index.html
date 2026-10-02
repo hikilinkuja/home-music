@@ -768,7 +768,7 @@ var M={
   felt:new THREE.MeshStandardMaterial({color:0xffffff, map:feltT, metalness:0, roughness:0.95}),
   btn:new THREE.MeshStandardMaterial({color:0x1a1727, metalness:0.4, roughness:0.5}),
   knob:new THREE.MeshStandardMaterial({color:0xd7dae8, metalness:0.7, roughness:0.35}),
-  glove:new THREE.MeshStandardMaterial({color:0x1a1524, metalness:0.05, roughness:0.8}),
+  glove:new THREE.MeshStandardMaterial({color:0x96704f, metalness:0.0, roughness:0.72}),
   sleeve:new THREE.MeshStandardMaterial({color:0x100d18, metalness:0.05, roughness:0.95}),
   rib:new THREE.MeshStandardMaterial({color:0x221c33, metalness:0.1, roughness:0.9}),
   cab:new THREE.MeshStandardMaterial({color:0x151126, metalness:0.2, roughness:0.75, map:wornA}),
@@ -1130,6 +1130,7 @@ function makeHand(side){
   return {
     g:g, fingers:fingers, side:side,
     pos:new THREE.Vector3(side==="L"?-1.5:1.5, 1.5, -1.3),
+    vel:new THREE.Vector3(),
     target:new THREE.Vector3(side==="L"?-1.5:1.5, 1.5, -1.3),
     rest:new THREE.Vector3(side==="L"?-1.5:1.5, 1.5, -1.3),
     restMode:true,
@@ -1143,91 +1144,113 @@ function deckWorld(d, local){ return d.group.localToWorld(local.clone()); }
 function handOf(k){ return k==="A" ? handL : handR; }
 function otherHand(k){ return k==="A" ? handR : handL; }
 
-/* ---------- the resident : a whole person at the decks ---------- */
-var skinM=new THREE.MeshStandardMaterial({color:0x8d6750, metalness:0.0, roughness:0.78});
-var jacketM=M.sleeve, darkM=M.rubber;
+/* ---------- the resident : lanky selector, all flow ---------- */
+var skinM=new THREE.MeshStandardMaterial({color:0x96704f, metalness:0.0, roughness:0.72});
+var skinD=new THREE.MeshStandardMaterial({color:0x7e5c40, metalness:0.0, roughness:0.78});
+var shirtM=new THREE.MeshStandardMaterial({color:0x24304a, metalness:0.05, roughness:0.85, map:wornB});
+var teeM=new THREE.MeshStandardMaterial({color:0x15121f, metalness:0.02, roughness:0.92});
+var capM=new THREE.MeshStandardMaterial({color:0x101722, metalness:0.08, roughness:0.72});
+var darkM=M.rubber;
 var dj=new THREE.Group(); dj.position.set(0,0,-2.8); dj.scale.setScalar(0.8); scene.add(dj);
-var bodyX=0, bodyXT=0, bodyBob=0;
-/* legs, mostly lost in the dark behind the cases */
-[-0.55,0.55].forEach(function(lx){
-  var leg=new THREE.Mesh(new THREE.CapsuleGeometry(0.34,2.6,4,10), darkM);
-  leg.position.set(lx,-1.55,0); dj.add(leg);
+var bodyX=0, bodyXT=0;
+var hips=new THREE.Group(); dj.add(hips);
+[-0.48,0.48].forEach(function(lx){
+  var leg=new THREE.Mesh(new THREE.CapsuleGeometry(0.3,2.7,4,10), teeM);
+  leg.position.set(lx,-1.6,0); hips.add(leg);
 });
-var belt=new THREE.Mesh(new THREE.CylinderGeometry(0.95,0.9,0.5,14), darkM);
-belt.position.y=-0.05; dj.add(belt);
-/* chest pivots at the hips so the whole torso can lean over the table */
+var belt=new THREE.Mesh(new THREE.CylinderGeometry(0.82,0.78,0.44,14), darkM);
+belt.position.y=-0.05; hips.add(belt);
+/* chest pivots at the hips so the whole torso can lean over the booth */
 var chest=new THREE.Group(); chest.position.y=0.1; dj.add(chest);
-var torsoPts=[], tpDef=[[0.62,0.0],[0.85,0.35],[0.78,1.1],[0.8,1.9],[0.95,2.7],[1.12,3.4],[1.18,3.8],[1.02,4.1],[0.6,4.3],[0.3,4.38]];
+var torsoPts=[], tpDef=[[0.55,0.0],[0.74,0.3],[0.66,1.1],[0.66,2.0],[0.8,2.8],[0.98,3.5],[1.04,3.85],[0.9,4.1],[0.52,4.3],[0.26,4.38]];
 tpDef.forEach(function(p){ torsoPts.push(new THREE.Vector2(p[0],p[1])); });
-var torso=new THREE.Mesh(new THREE.LatheGeometry(torsoPts,22), jacketM);
-torso.scale.set(1.08,1,0.74);
+var torso=new THREE.Mesh(new THREE.LatheGeometry(torsoPts,22), teeM);
+torso.scale.set(1.02,1,0.7);
 torso.position.y=0.05; torso.castShadow=true; chest.add(torso);
-var zipT=new THREE.Mesh(new THREE.BoxGeometry(0.07,2.2,0.08), M.rib);
-zipT.position.set(0,2.6,0.72); chest.add(zipT);
-var hmTee=decal(stencilT("HM"),0.7,0.26);
-hmTee.position.set(0.48,3.15,0.74); hmTee.rotation.x=-0.1; chest.add(hmTee);
+/* open short-sleeve shirt: two front panels hanging loose */
 [-1,1].forEach(function(sx){
-  var pad=new THREE.Mesh(new THREE.SphereGeometry(0.42,14,12), jacketM);
-  pad.scale.set(1.05,0.85,0.95); pad.position.set(sx*1.18,3.92,0.05); pad.castShadow=true; chest.add(pad);
+  var panel=new THREE.Mesh(roundedBox(0.72,3.4,0.1,0.08), shirtM);
+  panel.rotation.x=Math.PI/2;
+  panel.position.set(sx*0.62,2.15,0.62+0.06*sx*sx);
+  panel.rotation.z=sx*0.1; panel.rotation.y=sx*0.3;
+  panel.castShadow=true; chest.add(panel);
+  var back=new THREE.Mesh(roundedBox(1.7,3.2,0.1,0.08), shirtM);
+  if(sx<0){ back.rotation.x=Math.PI/2; back.position.set(0,2.3,-0.62); back.rotation.y=Math.PI; chest.add(back); }
 });
-var collar=new THREE.Mesh(new THREE.TorusGeometry(0.52,0.14,10,20), M.rib);
-collar.rotation.x=Math.PI/2; collar.position.set(0,4.28,0.08); chest.add(collar);
-var neck=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.42,0.8,12), skinM);
-neck.position.set(0,4.5,0.12); chest.add(neck);
-/* head: beanie, headphones, shadowed face */
-var head=new THREE.Group(); head.position.set(0,5.0,0.18); head.scale.setScalar(1.5); chest.add(head);
-var skull=new THREE.Mesh(new THREE.SphereGeometry(0.56,18,14), skinM);
-skull.scale.set(0.92,1.08,0.98); skull.castShadow=true; head.add(skull);
-var jaw=new THREE.Mesh(new THREE.CylinderGeometry(0.33,0.27,0.38,12), skinM);
-jaw.position.set(0,-0.36,0.12); head.add(jaw);
-var nose=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.16,0.14), skinM);
-nose.position.set(0,-0.16,0.52); head.add(nose);
+/* chain */
+var chain=new THREE.Mesh(new THREE.TorusGeometry(0.42,0.035,8,22,Math.PI), new THREE.MeshStandardMaterial({color:0xd9c06a, metalness:0.9, roughness:0.3, envMapIntensity:1.6}));
+chain.position.set(0,3.75,0.52); chain.rotation.set(0.5,0,Math.PI); chest.add(chain);
+var hmTee=decal(stencilT("HM"),0.62,0.24);
+hmTee.position.set(0,3.0,0.72); hmTee.rotation.x=-0.1; chest.add(hmTee);
 [-1,1].forEach(function(sx){
-  var eye=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.07,0.06),
+  var pad=new THREE.Mesh(new THREE.SphereGeometry(0.4,14,12), shirtM);
+  pad.scale.set(1.05,0.8,0.92); pad.position.set(sx*1.12,3.9,0.05); pad.castShadow=true; chest.add(pad);
+});
+var neck=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.75,12), skinM);
+neck.position.set(0,4.45,0.14); chest.add(neck);
+/* head: cap forward, chin beard, one-ear headphones, a grin */
+var head=new THREE.Group(); head.position.set(0,5.0,0.2); head.scale.setScalar(1.5); chest.add(head);
+var skull=new THREE.Mesh(new THREE.SphereGeometry(0.54,18,14), skinM);
+skull.scale.set(0.9,1.04,0.96); skull.castShadow=true; head.add(skull);
+var jaw=new THREE.Mesh(new THREE.CylinderGeometry(0.31,0.24,0.42,12), skinM);
+jaw.position.set(0,-0.34,0.14); head.add(jaw);
+var beard=new THREE.Mesh(new THREE.ConeGeometry(0.15,0.26,10), darkM);
+beard.rotation.x=Math.PI; beard.position.set(0,-0.6,0.3); head.add(beard);
+var stache=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.06,0.1), darkM);
+stache.position.set(0,-0.33,0.45); head.add(stache);
+var grin=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.045,0.06), new THREE.MeshStandardMaterial({color:0xe8e0ce, roughness:0.4}));
+grin.position.set(0,-0.44,0.42); head.add(grin);
+var nose=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.17,0.15), skinD);
+nose.position.set(0,-0.14,0.5); head.add(nose);
+[-1,1].forEach(function(sx){
+  var eye=new THREE.Mesh(new THREE.BoxGeometry(0.17,0.06,0.05),
     new THREE.MeshStandardMaterial({color:0x0a0810, roughness:0.4}));
-  eye.position.set(sx*0.22,0.02,0.52); head.add(eye);
+  eye.position.set(sx*0.21,0.04,0.5); head.add(eye);
 });
-var brow=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.13,0.16), darkM);
-brow.position.set(0,0.16,0.48); head.add(brow);
-var beanie=new THREE.Mesh(new THREE.SphereGeometry(0.6,16,12,0,Math.PI*2,0,Math.PI*0.55), darkM);
-beanie.position.set(0,0.12,0); beanie.castShadow=true; head.add(beanie);
-var fold=new THREE.Mesh(new THREE.TorusGeometry(0.56,0.1,10,20), M.rib);
-fold.rotation.x=Math.PI/2-0.12; fold.position.set(0,0.28,0.02); head.add(fold);
+/* baseball cap: dome, button, brim out front */
+var capDome=new THREE.Mesh(new THREE.SphereGeometry(0.58,18,12,0,Math.PI*2,0,Math.PI*0.52), capM);
+capDome.position.set(0,0.16,-0.03); capDome.rotation.x=-0.1; capDome.castShadow=true; head.add(capDome);
+var capBtn=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8), capM);
+capBtn.position.set(0,0.72,0); head.add(capBtn);
+var brim=new THREE.Mesh(new THREE.CylinderGeometry(0.52,0.55,0.05,20,1,false,-Math.PI*0.42,Math.PI*0.84), capM);
+brim.position.set(0,0.38,0.3); brim.rotation.x=0.14; head.add(brim);
+var capHM=decal(stencilT("HM"),0.34,0.17);
+capHM.position.set(0,0.4,0.52); capHM.rotation.x=-0.18; head.add(capHM);
+/* headphones: one cup on the left ear, band across, right cup flipped up off the ear */
 var hpM=new THREE.MeshStandardMaterial({color:0xe8392c, metalness:0.3, roughness:0.5});
-var band=new THREE.Mesh(new THREE.TorusGeometry(0.62,0.075,10,24,Math.PI), M.rubber);
-band.rotation.x=-0.12;
-band.position.set(0,0.3,0); head.add(band);
-[-1,1].forEach(function(sx){
-  var cup=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.28,0.18,16), hpM);
-  cup.rotation.z=Math.PI/2; cup.position.set(sx*0.62,-0.05,0); head.add(cup);
-});
+var band=new THREE.Mesh(new THREE.TorusGeometry(0.62,0.07,10,24,Math.PI), M.rubber);
+band.rotation.x=-0.1; band.rotation.z=0.16; band.position.set(0,0.28,0); head.add(band);
+var cupL=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.27,0.17,16), hpM);
+cupL.rotation.z=Math.PI/2; cupL.position.set(-0.6,-0.08,0); head.add(cupL);
+var cupR=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.25,0.16,16), hpM);
+cupR.rotation.z=Math.PI/2; cupR.rotation.x=0.5; cupR.position.set(0.62,0.3,-0.12); head.add(cupR);
 var hpWire=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-  new THREE.Vector3(0.62,-0.2,0), new THREE.Vector3(0.9,-1.0,0.2), new THREE.Vector3(0.6,-1.9,0.1)
+  new THREE.Vector3(-0.62,-0.22,0), new THREE.Vector3(-0.9,-1.0,0.2), new THREE.Vector3(-0.55,-1.9,0.1)
 ]),12,0.022,6), M.rubber);
 head.add(hpWire);
-/* arms: solved every frame between the shoulders and wherever the hands are */
-var shoulderL=new THREE.Object3D(); shoulderL.position.set(-1.3,3.9,0.3); chest.add(shoulderL);
-var shoulderR=new THREE.Object3D(); shoulderR.position.set(1.3,3.9,0.3); chest.add(shoulderR);
-var ARM_L1=2.05, ARM_L2=1.95;
+/* arms: short sleeves, skin forearms, solved every frame to the hands */
+var shoulderL=new THREE.Object3D(); shoulderL.position.set(-1.2,3.85,0.32); chest.add(shoulderL);
+var shoulderR=new THREE.Object3D(); shoulderR.position.set(1.2,3.85,0.32); chest.add(shoulderR);
+var ARM_L1=2.05, ARM_L2=2.0;
 function armMeshes(side){
-  var up=new THREE.Mesh(new THREE.CapsuleGeometry(0.26,ARM_L1-0.55,4,10), jacketM);
+  var up=new THREE.Mesh(new THREE.CapsuleGeometry(0.26,ARM_L1-0.7,4,10), shirtM);
   up.castShadow=true; scene.add(up);
-  var fo=new THREE.Mesh(new THREE.CapsuleGeometry(0.2,ARM_L2-0.55,4,10), jacketM);
+  var cuff=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.3,0.18,14), shirtM);
+  cuff.position.y=-ARM_L1/2+0.22; up.add(cuff);
+  var fo=new THREE.Mesh(new THREE.CapsuleGeometry(0.17,ARM_L2-0.5,4,10), skinM);
   fo.castShadow=true; scene.add(fo);
-  var ci3;
-  for(ci3=0; ci3<2; ci3++){
-    var cuff=new THREE.Mesh(new THREE.TorusGeometry(0.22-ci3*0.02,0.045,8,16), M.rib);
-    cuff.rotation.x=Math.PI/2; cuff.position.y=ARM_L2/2-0.34-ci3*0.16; fo.add(cuff);
-  }
   if(side==="L"){
-    var strap=new THREE.Mesh(new THREE.TorusGeometry(0.23,0.045,8,18), M.rubber);
-    strap.rotation.x=Math.PI/2; strap.position.y=ARM_L2/2-0.56; fo.add(strap);
-    var wface=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.12,0.05,16), M.steel);
-    wface.rotation.z=Math.PI/2; wface.position.set(0.26,ARM_L2/2-0.56,0); fo.add(wface);
-    var dial=new THREE.Mesh(new THREE.CircleGeometry(0.1,18), new THREE.MeshBasicMaterial({map:clockT}));
-    dial.rotation.y=Math.PI/2; dial.position.set(0.3,ARM_L2/2-0.56,0); fo.add(dial);
+    var strap=new THREE.Mesh(new THREE.TorusGeometry(0.2,0.04,8,18), M.rubber);
+    strap.rotation.x=Math.PI/2; strap.position.y=ARM_L2/2-0.42; fo.add(strap);
+    var wface=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.05,16), M.steel);
+    wface.rotation.z=Math.PI/2; wface.position.set(0.19,ARM_L2/2-0.42,0); fo.add(wface);
+    var dial=new THREE.Mesh(new THREE.CircleGeometry(0.09,18), new THREE.MeshBasicMaterial({map:clockT}));
+    dial.rotation.y=Math.PI/2; dial.position.set(0.23,ARM_L2/2-0.42,0); fo.add(dial);
+  } else {
+    var bead=new THREE.Mesh(new THREE.TorusGeometry(0.19,0.035,8,16), new THREE.MeshStandardMaterial({color:0xd9c06a, metalness:0.85, roughness:0.35}));
+    bead.rotation.x=Math.PI/2; bead.position.y=ARM_L2/2-0.4; fo.add(bead);
   }
-  var el=new THREE.Mesh(new THREE.SphereGeometry(0.22,10,8), jacketM);
+  var el=new THREE.Mesh(new THREE.SphereGeometry(0.19,10,8), skinM);
   scene.add(el);
   return {up:up, fo:fo, el:el};
 }
@@ -1250,7 +1273,7 @@ function solveArm(arm, S, W, side){
   ikV.normalize();
   var a=(ARM_L1*ARM_L1-ARM_L2*ARM_L2+d*d)/(2*d);
   var hh=Math.sqrt(Math.max(0.02, ARM_L1*ARM_L1-a*a));
-  ikP.set(side==="L"?-1:1, -0.62, -0.3);
+  ikP.set(side==="L"?-0.35:0.35, -1, -0.12);
   ikP.addScaledVector(ikV, -ikP.dot(ikV)).normalize();
   ikE.copy(S).addScaledVector(ikV,a).addScaledVector(ikP,hh);
   placeSeg(arm.up, S, ikE);
@@ -1258,6 +1281,9 @@ function solveArm(arm, S, W, side){
   placeSeg(arm.fo, ikE, ikW);
   return ikW;
 }
+/* a soft practical so the face reads against the window */
+var faceFill=new THREE.PointLight(0xffd9a8, 9, 9, 2);
+faceFill.position.set(0.7,4.9,-0.9); scene.add(faceFill);
 var shWp=new THREE.Vector3(), headIdle=new THREE.Vector3();
 var headTgt=new THREE.Vector3(0,1.0,0.6), headLook=new THREE.Vector3(0,1.0,0.6);
 /* a soft practical so the face reads against the window */
@@ -1450,6 +1476,7 @@ function fit(){
 }
 window.addEventListener("resize", fit); fit();
 var last=performance.now(), idleSince=0;
+var gIx=0, phoneTilt=0, gTmp=new THREE.Vector3(), gOff=new THREE.Vector3(), sprT=new THREE.Vector3();
 var idleCamT=0, idleCamIx=0, IDLE_CAMS=["wide","deckA","mixer","face","wide","deckB","mixer"];
 renderer.setAnimationLoop(function(){
   var now=performance.now(), real=(now-last)/1000; last=now;
@@ -1469,17 +1496,29 @@ renderer.setAnimationLoop(function(){
     }
     if(done) seqs.splice(si2,1);
   }
-  /* idle micro-touch */
+  /* idle gestures: knob ride, headphone check, a point to the room */
   if(seqs.length===0 && !fading && userHold<=0){
     idleSince+=rdt;
-    if(idleSince>14){
+    if(idleSince>11){
       idleSince=0;
+      var gKind=(gIx++)%3;
       var hI = decks.A.running ? handR : handL;
-      var kx = decks.A.running ? 0.62 : -0.62;
-      handTo(hI, new THREE.Vector3(kx,1.1,-0.15), 0.5);
-      (function(hh){ setTimeout(function(){ handRest(hh); }, 1600); })(hI);
+      var sgn = (hI===handR) ? 1 : -1;
+      if(gKind===0){
+        handTo(hI, new THREE.Vector3(sgn*0.62,1.0,-0.4), 0.6);
+        (function(hh){ setTimeout(function(){ handRest(hh); }, 1900); })(hI);
+      } else if(gKind===1){
+        head.getWorldPosition(gTmp);
+        handTo(handL, gTmp.add(gOff.set(-0.85,0.05,0.35)), 0.7);
+        phoneTilt=1;
+        setTimeout(function(){ handRest(handL); }, 1700);
+      } else {
+        handTo(hI, new THREE.Vector3(bodyX*0.8+sgn*1.5, 3.6, 1.4), 0.15);
+        (function(hh){ setTimeout(function(){ handRest(hh); }, 1300); })(hI);
+      }
     }
   } else idleSince=0;
+  phoneTilt=Math.max(0, phoneTilt-rdt*0.7);
   /* tweens */
   var ti;
   for(ti=tweens.length-1; ti>=0; ti--){
@@ -1524,8 +1563,8 @@ renderer.setAnimationLoop(function(){
   var bdx=bodyXT-bodyX;
   bodyX += bdx*Math.min(1, 2.2*dt);
   var walk=Math.min(1, Math.abs(bdx)*2);
-  dj.position.x = bodyX;
-  dj.position.y = -pulse*0.07*lvl2 - walk*Math.abs(Math.sin(t*7))*0.07;
+  dj.position.x = bodyX + Math.sin(barPh*0.5)*0.12*lvl2;
+  dj.position.y = -pulse*(0.05+0.09*lvl2) - walk*Math.abs(Math.sin(t*7))*0.07;
   var fz=Math.max(handL.pos.z, handR.pos.z);
   var leanT=Math.max(0.12, Math.min(0.6, 0.2+(fz+1.4)*0.17));
   chest.rotation.x += (leanT-chest.rotation.x)*Math.min(1,3*dt);
@@ -1533,12 +1572,15 @@ renderer.setAnimationLoop(function(){
   var busyH = (bl&&!br) ? handL : ((br&&!bl) ? handR : null);
   var twT = busyH ? Math.max(-0.3, Math.min(0.3, (busyH.pos.x-bodyX)*0.08)) : 0;
   chest.rotation.y += (twT-chest.rotation.y)*Math.min(1,3*dt);
-  chest.rotation.z = Math.sin(barPh)*0.04*lvl2;
+  chest.rotation.z = (Math.sin(barPh)*0.055 + (Math.sin(barPh*0.5)>0?1:-1)*pulse*0.02)*lvl2;
+  hips.rotation.z = -chest.rotation.z*0.5;
   if(busyH){ headIdle.set(busyH.pos.x, busyH.pos.y+1.5, busyH.pos.z+2.2); headTgt.lerp(headIdle, Math.min(1,4*dt)); }
   else { headIdle.set(bodyX*0.3, 3.1, 6.0); headTgt.lerp(headIdle, Math.min(1,2*dt)); }
   headLook.lerp(headTgt, Math.min(1,5*dt));
   head.lookAt(headLook);
-  head.rotateX(pulse*(0.07+0.13*lvl2)-0.04);
+  var ghost=Math.pow(Math.max(0,Math.sin(beatPh*2-0.9)),4);
+  head.rotateX(pulse*(0.07+0.15*lvl2) + ghost*0.07*lvl2 - 0.04);
+  if(phoneTilt>0){ head.rotateZ(-0.4*Math.min(1,phoneTilt*2)); }
   [handL, handR].forEach(function(h){
     if(h.restMode){
       h.target.set(bodyX+(h.side==="L"?-1.1:1.1), 0.9, -1.5);
@@ -1546,8 +1588,11 @@ renderer.setAnimationLoop(function(){
     }
     if(h.follow){ var d2=decks[h.follow.deck]; h.target.copy(deckWorld(d2, d2.rec.position.clone().add(h.follow.off))); }
     if(h.followObj){ h.target.copy(h.followObj.getWorldPosition(new THREE.Vector3())).add(new THREE.Vector3(0,0.09,0)); }
-    var kk=1-Math.exp(-6*dt);
-    h.pos.lerp(h.target, kk);
+    var st2=Math.min(dt,0.05);
+    sprT.subVectors(h.target, h.pos);
+    h.vel.addScaledVector(sprT, 120*st2);
+    h.vel.multiplyScalar(Math.exp(-11*st2));
+    h.pos.addScaledVector(h.vel, st2);
     h.grip += (h.gripT-h.grip)*Math.min(1,8*dt);
     var S=(h===handL?shoulderL:shoulderR).getWorldPosition(shWp);
     /* pass 1: aim at the spot to learn the approach direction */
@@ -1559,9 +1604,11 @@ renderer.setAnimationLoop(function(){
     /* pass 2: pull the wrist back so the fingertips land on the spot */
     var ext=0.62*(1-0.5*h.grip);
     ikW.set(h.pos.x-ikD.x*ext, h.pos.y+0.07+0.1*h.grip, h.pos.z-ikD.z*ext);
+    if(Math.abs(ikW.x)<7.2 && Math.abs(ikW.z)<2.3){ ikW.y=Math.max(ikW.y, 0.84); }
     var W=solveArm(h===handL?armL:armR, S, ikW, h.side);
+    var eDrop=Math.max(0, Math.min(1, (ikE.y-W.y)*0.45));
     h.g.position.copy(W);
-    h.g.rotation.set(-0.18-0.3*h.grip, yawH, 0);
+    h.g.rotation.set(-0.1-0.4*eDrop-0.25*h.grip, yawH, 0);
     h.fingers.rotation.x = -0.12 - h.grip*0.8;
   });
   /* idle camera director: keep cutting between views while nothing is staged */
