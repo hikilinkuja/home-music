@@ -64,11 +64,13 @@ button{font-family:var(--mono)}
   text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
 #tapHint.on{display:block}
 @keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
-/* a camada vj da abertura: plasma liquido mate, por cima do palco, por baixo do veu */
+/* a camada vj da abertura: plasma liquido mate, por cima do palco, por baixo do veu;
+   sem pixelated: o upscale bilinear da a suavidade liquida */
 #vj{position:fixed; inset:0; z-index:2; width:100vw; height:100vh; display:none;
-  image-rendering:pixelated; background:#000; opacity:1; transition:opacity 2.4s linear}
+  background:#000; opacity:1; transition:opacity 2.6s linear}
 #vj.on{display:block}
 #vj.out{opacity:0}
+#mc{transition:opacity 1.4s ease}
 #mc{display:none; text-align:left; min-height:200px}
 #mc.on{display:block}
 .mc-line{
@@ -1570,7 +1572,7 @@ function beginRadio(){
     if(!firstLogged && current){
       firstLogged = true; pushHistory(current);
       firstRampPending = true;
-      FX.crackle(true);
+      /* o crackle so entra quando a agulha toca o disco: antes disso, silencio */
       if(RIG.setNext) RIG.setNext(metaFor(current));
       RIG.first(deckOfPlayer(activeKey));
       /* rede de seguranca: se o gancho da agulha nao disparar, a rampa entra na mesma */
@@ -1871,11 +1873,12 @@ document.addEventListener("keydown", function(e){
    Toca em streaming, inteira e sem cortes, do Internet Archive; aos 23 s a
    coreografia arranca para a agulha pousar com os 30 s; o veu negro clareia
    ao ritmo do proprio relogio da faixa. */
-var INTRO_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
-var INTRO_LEN=30, INTRO_PREP=23, INTRO_FADE=28, INTRO_HARDEND=45;
+var P1_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var P2_SRC="https://archive.org/download/DPH010/06_Rakoon_Tubbys_Dub_Lesson.mp3";
+var INTRO_LEN=30, P1_FADE=28.5, P2_START=10, P2_PREP=25.15, P2_FADE=28.5, HARD1=42, HARD2=34;
 var MC_AT=[6, 10.5, 15, 19, 23, 26.2];
-var introTimers=[], introDone=false, introTick=null, introAudio=null;
-var mcShown=0, beginCalled=false, introFading=false;
+var introTimers=[], introDone=false, introTick=null, introAudio=null, introAudio2=null;
+var mcShown=0, beginCalled=false, introFading=false, phase=1, endSeqDone=false;
 function showLine(i){
   var line=MC_LINES[i], mc=$("mc");
   var div=document.createElement("div");
@@ -1888,54 +1891,54 @@ function startRadioUnderIntro(){
   if(beginCalled) return; beginCalled=true;
   beginRadio();
 }
-function introFadeOut(len, cb){
-  if(!introAudio){ if(cb) cb(); return; }
-  if(introFading){ if(cb) cb(); return; }
-  introFading=true;
-  var v0=introAudio.volume, t0=performance.now();
-  (function st3(now){
-    var x=Math.min(1,(now-t0)/(len*1000));
-    try{ introAudio.volume=v0*(1-x); }catch(e){}
-    if(x<1) requestAnimationFrame(st3);
-    else { try{ introAudio.pause(); }catch(e){} if(cb) cb(); }
-  })(performance.now());
-}
-/* ---- a camada vj: plasma liquido mate, energia a crescer com a faixa ---- */
-var vjOn=false, vjG=null, vjImg=null, vjPal=[], vjLast=0;
-var VJW=160, VJH=90;
+/* ---- a camada vj: plasma liquido mate, cor continua e deformacao de dominio ---- */
+var vjOn=false, vjG=null, vjImg=null, vjStops=[], vjLast=0;
+var VJW=192, VJH=108;
 function vjInit(){
   var c=$("vj");
   vjG=c.getContext("2d");
+  c.width=VJW; c.height=VJH;
   vjImg=vjG.createImageData(VJW,VJH);
-  ["#030309","#090716","#110d26","#1b1438","#2c1f42","#44301f","#5e4120","#7a5422"]
-  .forEach(function(h){ vjPal.push([parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]); });
+  ["#030309","#0d0a22","#1c1340","#3a2a4e","#5a4020","#7a5422"]
+  .forEach(function(h){ vjStops.push([parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]); });
+}
+function introClock(){
+  if(phase===2) return (introAudio2 && introAudio2.currentTime)||P2_START;
+  return (introAudio && introAudio.currentTime)||0;
 }
 function vjFrame(ts){
   if(!vjOn) return;
   requestAnimationFrame(vjFrame);
   if(ts-vjLast<40) return;           /* ~25 fps */
   vjLast=ts;
-  var at=(introAudio && introAudio.currentTime)||0;
+  var at=introClock();
   var t=ts/1000;
-  var energy=0.16+0.84*Math.min(1, at/26);
-  var vib=1+0.13*Math.sin(at*2*Math.PI*1.25);
-  var cx=VJW*0.5+Math.sin(t*0.19)*34, cy=VJH*0.5+Math.cos(t*0.14)*20;
-  var sp=t*(0.35+energy*0.75);
-  var d=vjImg.data, n=vjPal.length;
+  var energy=(phase===2)?1:0.16+0.84*Math.min(1, at/26);
+  var vib=1+0.11*Math.sin(at*2*Math.PI*1.25);
+  var cx=VJW*0.5+Math.sin(t*0.16)*44, cy=VJH*0.5+Math.cos(t*0.12)*26;
+  var sp=t*(0.3+energy*0.6);
+  var d=vjImg.data, n=vjStops.length;
   for(var y=0;y<VJH;y++){
-    var dy=(y-cy)*1.6;
+    var wy=y+7*Math.sin(y*0.021+sp*0.7);
+    var dy=(y-cy)*1.55;
     for(var x=0;x<VJW;x++){
+      /* deformacao de dominio: as coordenadas fluem antes de medir o campo */
+      var wx=x+9*Math.sin(y*0.045+sp*0.85)+5*Math.sin(x*0.02-sp*0.5);
       var dx=x-cx;
-      var v=Math.sin(x*0.055+sp*0.9)
-           +Math.sin(y*0.081-sp*0.62)
-           +Math.sin((x*0.031+y*0.047)+sp*0.5)
-           +Math.sin(Math.sqrt(dx*dx+dy*dy)*0.115-sp*1.5)*vib;
+      var v=Math.sin(wx*0.047+sp*0.8)
+           +Math.sin(wy*0.07-sp*0.55)
+           +Math.sin((wx*0.027+wy*0.04)+sp*0.42)
+           +Math.sin(Math.sqrt(dx*dx+dy*dy)*0.1-sp*1.35)*vib;
       v=(v+4)/8;
-      v=Math.pow(v, 2.1-1.0*energy);
-      var lv=v*(n-1)*energy + ((x&1)^(y&1))*0.18;
-      var li=lv<0?0:(lv>n-1?n-1:lv|0);
-      var p=(y*VJW+x)*4, c2=vjPal[li];
-      d[p]=c2[0]; d[p+1]=c2[1]; d[p+2]=c2[2]; d[p+3]=255;
+      v=Math.pow(v, 2.0-0.95*energy)*energy;
+      /* cor continua pela rampa de paradas, sem quantizar: liquido e sem emendas */
+      var f=v*(n-1); if(f<0)f=0; if(f>n-1.001)f=n-1.001;
+      var i0=f|0, fr=f-i0, a2=vjStops[i0], b2=vjStops[i0+1];
+      var p=(y*VJW+x)*4;
+      d[p]  =a2[0]+(b2[0]-a2[0])*fr;
+      d[p+1]=a2[1]+(b2[1]-a2[1])*fr;
+      d[p+2]=a2[2]+(b2[2]-a2[2])*fr;
+      d[p+3]=255;
     }
   }
   vjG.putImageData(vjImg,0,0);
@@ -1966,6 +1969,71 @@ function waitGesture(){
   document.addEventListener("pointerdown", go2, {once:true});
   document.addEventListener("keydown", go2, {once:true});
 }
+function fadeAudio(a, len, cb){
+  if(!a){ if(cb) cb(); return; }
+  introFading=true;
+  var v0=a.volume, t0=performance.now();
+  (function st4(now){
+    var x=Math.min(1,(now-t0)/(len*1000));
+    try{ a.volume=v0*(1-x); }catch(e){}
+    if(x<1) requestAnimationFrame(st4);
+    else { try{ a.pause(); }catch(e){} if(cb) cb(); }
+  })(performance.now());
+}
+/* parte 2: Tubby's Dub Lesson entra nos 10 s; as frases saem, fica o plasma */
+var p2Started=false, p2Fading=false;
+function startP2(){
+  if(p2Started || introDone) return; p2Started=true; phase=2;
+  $("mc").style.opacity="0";
+  var cr=$("introCredit");
+  cr.style.opacity="0";
+  setTimeout(function(){
+    cr.innerHTML="<b>opening tune, part two</b><br>Rakoon, Tubby's Dub Lesson<br>Explorations in Dub &middot; Dubophonic 2013 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive";
+    cr.style.opacity="1";
+  }, 1300);
+  if(!introAudio2){ endSequence(); return; }
+  function go3(){
+    try{ introAudio2.currentTime=P2_START; }catch(e){}
+    introAudio2.volume=0;
+    introAudio2.play().then(function(){
+      var target=Math.max(0, Math.min(1, masterVol/100)), t0=performance.now();
+      (function up(now){
+        var x=Math.min(1,(now-t0)/900);
+        try{ introAudio2.volume=target*x; }catch(e){}
+        if(x<1 && !introDone) requestAnimationFrame(up);
+      })(performance.now());
+    }).catch(function(){ startRadioUnderIntro(); endSequence(); });
+  }
+  if(introAudio2.readyState>=1){ go3(); }
+  else{
+    introAudio2.addEventListener("loadedmetadata", go3, {once:true});
+    setTimeout(function(){ if(!introDone && introAudio2.readyState<1){ startRadioUnderIntro(); endSequence(); } }, 5000);
+  }
+}
+/* o fim: silencio, a luz sobe no palco, a agulha pousa, a musica cresce */
+function endSequence(){
+  if(endSeqDone) return; endSeqDone=true;
+  startRadioUnderIntro();
+  var veil=$("introVeil");
+  vjFade();
+  $("splash").classList.add("off");
+  setTimeout(function(){ $("splash").style.display="none"; }, 1500);
+  $("app").classList.remove("intro");
+  veil.classList.add("on");
+  veil.style.transition="none"; veil.style.opacity="0.88";
+  void veil.offsetWidth;
+  var t0=performance.now();
+  (function lift(now){
+    var x=Math.min(1,(now-t0)/4200);
+    veil.style.opacity=String((0.88*(1-x)).toFixed(3));
+    if(x<1){ requestAnimationFrame(lift); }
+    else { veil.classList.remove("on"); veil.style.transition=""; introDone=true; cleanupIntro(); }
+  })(performance.now());
+}
+function cleanupIntro(){
+  introTimers.forEach(clearTimeout);
+  if(introTick){ clearInterval(introTick); introTick=null; }
+}
 function runIntro(){
   $("splash").classList.add("dark");
   var veil=$("introVeil");
@@ -1974,37 +2042,49 @@ function runIntro(){
   vjStart();
   setTimeout(function(){ if(!introDone) $("skipIntro").classList.add("on"); }, 1500);
   setTimeout(function(){ if(!introDone) $("introCredit").classList.add("on"); }, 2600);
-  introAudio=new Audio(INTRO_SRC);
+  introAudio=new Audio(P1_SRC);
   introAudio.preload="auto";
   try{ introAudio.volume=Math.max(0, Math.min(1, masterVol/100)); }catch(e){}
-  introAudio.addEventListener("error", function(){ finishIntro(); });
+  introAudio.addEventListener("error", function(){ if(phase===1 && !p2Started) finishIntro(); });
   introAudio.play().catch(function(err){
     if(err && err.name==="NotAllowedError"){ waitGesture(); }
     else { finishIntro(); }
   });
+  /* a segunda faixa comeca a carregar ja */
+  introAudio2=new Audio(P2_SRC);
+  introAudio2.preload="auto";
+  introAudio2.addEventListener("error", function(){ if(phase===2 && !endSeqDone){ startRadioUnderIntro(); endSequence(); } });
   /* sem progresso em 8 s (e sem espera por gesto): a emissao nao fica presa ao arquivo */
   introTimers.push(setTimeout(function(){
-    if(!introDone && !awaitingGesture && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
+    if(!introDone && !awaitingGesture && phase===1 && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
   }, 8000));
+  var p1Fading=false;
   introTick=setInterval(function(){
     if(introDone) return;
-    var t=(introAudio && introAudio.currentTime)||0;
-    veil.style.opacity=veilK(t).toFixed(3);
-    while(mcShown<MC_LINES.length && t>=MC_AT[mcShown]){ showLine(mcShown); mcShown++; }
-    if(t>=INTRO_PREP) startRadioUnderIntro();
-    if(t>=INTRO_FADE && (firstLogged || t>=INTRO_HARDEND) && !introFading){
-      vjFade();
-      introFadeOut(3.0, finishIntro);
+    if(phase===1){
+      var t=(introAudio && introAudio.currentTime)||0;
+      veil.style.opacity=veilK(t).toFixed(3);
+      while(mcShown<MC_LINES.length && t>=MC_AT[mcShown]){ showLine(mcShown); mcShown++; }
+      if(!p1Fading && t>=P1_FADE){ p1Fading=true; fadeAudio(introAudio, 1.5, startP2); }
+      if(t>=HARD1){ p1Fading=true; fadeAudio(introAudio, 0.6, startP2); }
+    } else {
+      var t2=(introAudio2 && introAudio2.currentTime)||0;
+      if(t2>=P2_PREP) startRadioUnderIntro();
+      if(!p2Fading && t2>=P2_FADE && (firstLogged || t2>=HARD2)){
+        p2Fading=true;
+        fadeAudio(introAudio2, 1.5, endSequence);
+      }
+      if(t2>=HARD2+2 && !endSeqDone){ endSequence(); }
     }
-    if(t>=INTRO_HARDEND+4) finishIntro();
   }, 120);
 }
 function finishIntro(){
+  /* o salto: despacha tudo e entrega a emissao */
   if(introDone) return; introDone=true;
   awaitingGesture=false;
-  introTimers.forEach(clearTimeout);
-  if(introTick) clearInterval(introTick);
-  if(introAudio && !introFading) introFadeOut(0.45);
+  cleanupIntro();
+  if(introAudio) fadeAudio(introAudio, 0.45);
+  if(introAudio2) fadeAudio(introAudio2, 0.45);
   if(vjOn && !$("vj").classList.contains("out")) vjFade();
   var veil=$("introVeil");
   veil.style.opacity="0";
@@ -2035,15 +2115,16 @@ var firstRampPending=false;
 function rampInFirst(){
   if(!firstRampPending) return;
   firstRampPending=false;
-  var p=P[activeKey], t0=performance.now(), DURR=1800;
+  /* lenta e constante: 4,5 s em linha reta */
+  var p=P[activeKey], t0=performance.now(), DURR=4500;
   (function st2(now){
     var x=Math.min(1,(now-t0)/DURR);
-    fadeVol(p, Math.sin(x*Math.PI/2));
+    fadeVol(p, x);
     if(x<1) requestAnimationFrame(st2);
     else { FX.crackle(false); }
   })(performance.now());
 }
-window.HMFX = { needle: function(){ FX.needleDrop(); rampInFirst(); } };
+window.HMFX = { needle: function(){ FX.needleDrop(); FX.crackle(true); rampInFirst(); } };
 
 window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
   return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE };
