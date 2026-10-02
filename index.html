@@ -81,6 +81,16 @@ button{font-family:var(--mono)}
 }
 #skipIntro.on{display:block}
 #skipIntro:hover{color:var(--amber); border-color:var(--amber)}
+/* o disco de abertura: veu negro que clareia com a musica */
+#introVeil{position:fixed; inset:0; z-index:79; background:#000; opacity:0;
+  pointer-events:none; transition:opacity .3s linear; display:none}
+#introVeil.on{display:block}
+#splash.dark{background:transparent}
+#introCredit{position:fixed; left:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  z-index:81; display:none; color:var(--dim); font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; text-align:left; line-height:1.9; opacity:0; transition:opacity 1.2s ease}
+#introCredit.on{display:block; opacity:1}
+#introCredit b{color:var(--amber); font-weight:500}
 
 /* ---------- top bar ---------- */
 #app{display:none}
@@ -220,6 +230,7 @@ button{font-family:var(--mono)}
 </head>
 <body>
 <!-- ============ SPLASH ============ -->
+<div id="introVeil"></div>
 <div id="splash">
   <div class="sp-inner">
     <div id="spIdle">
@@ -231,6 +242,7 @@ button{font-family:var(--mono)}
     </div>
     <div id="mc" aria-live="polite"></div>
     <button id="skipIntro" type="button">skip the intro &raquo;</button>
+    <div id="introCredit"><b>opening tune</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive</div>
   </div>
 </div>
 
@@ -296,7 +308,7 @@ button{font-family:var(--mono)}
       <a id="gIshkur" href="https://music.ishkur.com/" target="_blank" rel="noopener">The full genre map: Ishkur's Guide &nearr;</a>
     </div>
     <div class="credits">
-      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. The rite of the 45, performed whole under the moon: jacket out of the stash, record out of its paper sleeve, the cover on display while it plays, needle down, tempo set, the fade, and the spent record sleeved and shelved again. Every step is a drawn pose fired by the radio's own engine. Just watch. Shortcuts: [&rarr;] next &middot; [m] mute.
+      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. Opening tune: Koncrete Roots, Sound Killah, from Dub ina Midlands (Dubophonic, 2014), licensed CC BY-NC-ND 4.0, streamed whole and unedited from the Internet Archive. The rite of the 45, performed whole under the moon: jacket out of the stash, record out of its paper sleeve, the cover on display while it plays, needle down, tempo set, the fade, and the spent record sleeved and shelved again. Every step is a drawn pose fired by the radio's own engine. Just watch. Shortcuts: [&rarr;] next &middot; [m] mute.
     </div>
   </aside>
 
@@ -1820,11 +1832,13 @@ volEl.addEventListener("input", function(){
   try{ localStorage.setItem("hm_vol", String(masterVol)); }catch(e){}
   applyVol("A"); applyVol("B");
   FX.setVol(masterVol/100);
+  if(introAudio && !introFading){ try{ introAudio.volume=masterVol/100; }catch(e){} }
 });
 FX.setVol(masterVol/100);
 function toggleMute(){
   muted = !muted;
   ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ muted ? p.yt.mute() : p.yt.unMute(); }catch(e){} } });
+  if(introAudio){ try{ introAudio.muted = muted; }catch(e){} }
   $("muteBtn").classList.toggle("on", muted);
   $("muteBtn").textContent = muted ? "Unmute" : "Mute";
 }
@@ -1850,45 +1864,87 @@ document.addEventListener("keydown", function(e){
   if(e.key === "m" || e.key === "M"){ toggleMute(); }
 });
 
-/* ---------------- intro ---------------- */
-var introTimers=[], introDone=false;
+/* ---------------- intro: o disco de abertura ----------------
+   Koncrete Roots, Sound Killah (Dub ina Midlands, Dubophonic 2014, CC BY-NC-ND 4.0).
+   Toca em streaming, inteira e sem cortes, do Internet Archive; aos 23 s a
+   coreografia arranca para a agulha pousar com os 30 s; o veu negro clareia
+   ao ritmo do proprio relogio da faixa. */
+var INTRO_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var INTRO_LEN=30, INTRO_PREP=23, INTRO_FADE=28, INTRO_HARDEND=45;
+var MC_AT=[6, 10.5, 15, 19, 23, 26.2];
+var introTimers=[], introDone=false, introTick=null, introAudio=null;
+var mcShown=0, beginCalled=false, introFading=false;
+function showLine(i){
+  var line=MC_LINES[i], mc=$("mc");
+  var div=document.createElement("div");
+  div.className="mc-line" + (line.big ? " big" : "");
+  div.textContent=line.t;
+  mc.appendChild(div);
+  void div.offsetWidth; div.classList.add("show");
+}
+function startRadioUnderIntro(){
+  if(beginCalled) return; beginCalled=true;
+  beginRadio();
+}
+function introFadeOut(len, cb){
+  if(!introAudio){ if(cb) cb(); return; }
+  if(introFading){ if(cb) cb(); return; }
+  introFading=true;
+  var v0=introAudio.volume, t0=performance.now();
+  (function st3(now){
+    var x=Math.min(1,(now-t0)/(len*1000));
+    try{ introAudio.volume=v0*(1-x); }catch(e){}
+    if(x<1) requestAnimationFrame(st3);
+    else { try{ introAudio.pause(); }catch(e){} if(cb) cb(); }
+  })(performance.now());
+}
 function runIntro(){
-  var mc=$("mc");
   $("spIdle").style.display="none";
-  mc.classList.add("on");
-  FX.crackle(true);
-  FX.oneDrop();
-  var times=[300, 1650, 3000, 4400, 5600, 7350];
-  MC_LINES.forEach(function(line,i){
-    introTimers.push(setTimeout(function(){
-      var div=document.createElement("div");
-      div.className="mc-line" + (line.big ? " big" : "");
-      div.textContent=line.t;
-      mc.appendChild(div);
-      void div.offsetWidth; div.classList.add("show");
-      if(line.fx==="stab"){ FX.bubble(); FX.rim(0.12,true); }
-      if(line.fx==="phone") FX.phone();
-      if(line.fx==="siren"){ FX.horn(); FX.sub(); FX.kick(0.05); }
-      if(line.fx==="sweep") FX.sweep();
-    }, times[i]));
-  });
-  introTimers.push(setTimeout(finishIntro, 9400));
+  $("splash").classList.add("dark");
+  var veil=$("introVeil");
+  veil.classList.add("on"); veil.style.opacity="1";
+  $("mc").classList.add("on");
   setTimeout(function(){ $("skipIntro").classList.add("on"); }, 1500);
+  setTimeout(function(){ if(!introDone) $("introCredit").classList.add("on"); }, 2600);
+  introAudio=new Audio(INTRO_SRC);
+  introAudio.preload="auto";
+  try{ introAudio.volume=Math.max(0, Math.min(1, masterVol/100)); }catch(e){}
+  introAudio.addEventListener("error", function(){ finishIntro(); });
+  introAudio.play().catch(function(){ finishIntro(); });
+  /* sem progresso em 7,5 s: a emissao nao fica a espera do arquivo */
+  introTimers.push(setTimeout(function(){
+    if(!introDone && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
+  }, 7500));
+  introTick=setInterval(function(){
+    if(introDone) return;
+    var t=(introAudio && introAudio.currentTime)||0;
+    var k=Math.max(0, 1-(t/INTRO_LEN));
+    veil.style.opacity=Math.pow(k,1.15).toFixed(3);
+    while(mcShown<MC_LINES.length && t>=MC_AT[mcShown]){ showLine(mcShown); mcShown++; }
+    if(t>=INTRO_PREP) startRadioUnderIntro();
+    if(t>=INTRO_FADE && (firstLogged || t>=INTRO_HARDEND) && !introFading){
+      introFadeOut(3.0, finishIntro);
+    }
+    if(t>=INTRO_HARDEND+4) finishIntro();
+  }, 120);
 }
 function finishIntro(){
   if(introDone) return; introDone=true;
   introTimers.forEach(clearTimeout);
-  FX.crackle(false);
+  if(introTick) clearInterval(introTick);
+  if(introAudio && !introFading) introFadeOut(0.45);
+  var veil=$("introVeil");
+  veil.style.opacity="0";
+  setTimeout(function(){ veil.classList.remove("on"); }, 600);
   $("splash").classList.add("off");
   setTimeout(function(){ $("splash").style.display="none"; }, 1000);
-  beginRadio();
+  startRadioUnderIntro();
 }
 $("skipIntro").addEventListener("click", finishIntro);
 
 /* ---------------- enter ---------------- */
 $("enter").addEventListener("click", function(){
   FX.init(); FX.resume();
-  FX.kick(); FX.rim(0.02,true);  /* confirmacao audivel imediata: one drop */
   $("app").classList.add("on");
   buildQueue(); applyBlockTheme();
   pendingFirst = nextTrack();
