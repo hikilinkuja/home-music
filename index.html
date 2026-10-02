@@ -636,7 +636,7 @@ function stars(){
     var tw=((i*13+Math.floor(now*2))%19)===0;
     PX(sx,sy, tw?C.starB:C.star);
   }
-  PX(58,30,C.paper); R(56,32,5,1,C.paper); R(58,30,1,5,C.paper);
+  PX(30,12,C.paper); R(28,14,5,1,C.paper); R(30,12,1,5,C.paper);
   PX(290,22,C.paper); R(288,24,5,1,C.paper); R(290,22,1,5,C.paper);
 }
 function moon(){
@@ -659,59 +659,95 @@ function city(){
   R(62,94,16,WATY-94,C.K);
 }
 function drawSoundsystem(){
+  /* a muralha de tres colunas: a cadeia de vias dos sistemas de dub,
+     de baixo para cima scoop sobre scoop, kick bin, medios, cornetas,
+     regua de bullets e o stencil; control tower a parte, ligada por cabo */
   var lvl=Math.min(1, levels.A+levels.B);
   var pu=Math.pow(Math.max(0,Math.sin(beatPh)),2)*lvl;
   var pu2=Math.pow(Math.max(0,Math.sin(beatPh+2.1)),2)*lvl;
+  function cab(x,y,w,h,face){
+    R(x,y,w,h,face); R(x,y,w,1,C.rockL); R(x,y,1,h,"#1c1838"); R(x+w-1,y,1,h,"#05040c");
+    PX(x+1,y+1,"#2a2448"); PX(x+w-2,y+1,"#2a2448"); PX(x+1,y+h-2,"#2a2448"); PX(x+w-2,y+h-2,"#2a2448");
+  }
   function cone(cx,cy,r,hot){
     DISC(cx,cy,r,"#0a0918");
     g.fillStyle="#2a2348";
     for(var a=-r;a<=r;a++){ var hh=Math.floor(Math.sqrt(r*r-a*a)); PX(cx+a,cy-hh,"#2a2348"); PX(cx+a,cy+hh,"#15112a"); }
     DISC(cx,cy,Math.max(1,Math.floor(r*0.4)),"#141128");
     PX(cx,cy, hot?C.amber:"#3a2f18");
-    if(hot && r>4){ DISC(cx,cy,2,"#5a4620"); PX(cx,cy,C.moonL); }
   }
-  function cab(x,y,w,h,face){
-    R(x,y,w,h,face); R(x,y,w,1,C.rockL); R(x,y,1,h,"#1c1838"); R(x+w-1,y,1,h,"#05040c");
-    PX(x+1,y+1,"#2a2448"); PX(x+w-2,y+1,"#2a2448"); PX(x+1,y+h-2,"#2a2448"); PX(x+w-2,y+h-2,"#2a2448");
+  function scoopBox(x,y,w,h,hot){
+    cab(x,y,w,h,"#0d0b1a");
+    var mw=Math.floor(w*0.62), mh=Math.floor(h*0.5);
+    var mx=x+Math.floor((w-mw)/2), my=y+h-mh-2;
+    R(mx-1,my-1,mw+2,mh+2,"#1a1632");
+    R(mx,my,mw,mh, hot?"#0a0620":"#020106");
+    R(mx,my+Math.floor(mh*0.45),mw,2, hot?"#2a2254":"#15122a");
+    R(mx+Math.floor(mw/2)-1,my,2,mh,"#100d22");
+    PX(x+3,y+3,"#3a3160"); PX(x+w-4,y+3,"#3a3160");
   }
-  /* ---- torre grande a esquerda: scoop duplo, dois medios, cornetas, tweeters ---- */
-  var x=6, w=48, base=WATY;
-  cab(x,base-30,w,30,"#0e0c1e");
-  cone(x+13,base-15,10, pu>0.35);
-  cone(x+35,base-15,10, pu2>0.35);
-  D2(x+3,base-27,w-6,4,"#1a1530",2);
-  cab(x,base-50,w,20,"#0d0b1c");
-  cone(x+12,base-40,7, pu>0.25);
-  cone(x+35,base-40,7, pu2>0.25);
-  cab(x,base-64,w,14,"#0e0c1e");
-  [x+10,x+30].forEach(function(hx,i){
-    LINE(hx,base-57,hx+9,base-61,C.rockL,1);
-    LINE(hx,base-57,hx+9,base-53,C.rockL,1);
-    R(hx+9,base-61,2,9,"#161330");
-    PX(hx-2,base-57,(i?pu2:pu)>0.5?C.teal:"#1c3a34");
+  function kickBin(x,y,w,h,hot){
+    cab(x,y,w,h,"#0e0c1e");
+    R(x+3,y+3,w-6,h-6,"#0a0918");
+    D2(x+3,y+3,w-6,h-6, hot?"#2a2454":"#1e1a38",2);
+    DISC(x+Math.floor(w/2),y+Math.floor(h/2),Math.floor(Math.min(w,h)*0.32), hot?"#0d0a20":"#070512");
+  }
+  function midBox(x,y,w,h,hot){
+    cab(x,y,w,h,"#0d0b1c");
+    cone(x+Math.floor(w*0.3), y+Math.floor(h/2), Math.floor(h*0.34), hot);
+    cone(x+Math.floor(w*0.7), y+Math.floor(h/2), Math.floor(h*0.34), false);
+    D2(x+2,y+2,w-4,2,"#191536",2);
+  }
+  function hornRow(x,y,w,n,hot){
+    var hw=Math.floor(w/n);
+    for(var i=0;i<n;i++){
+      var hx=x+i*hw;
+      g.fillStyle="#0e0c1e";
+      g.beginPath(); g.moveTo(hx+2,y+10); g.lineTo(hx+hw-2,y+10); g.lineTo(hx+hw-5,y+3); g.lineTo(hx+5,y+3); g.closePath(); g.fill();
+      R(hx+Math.floor(hw/2)-2,y+10,4,3,"#161330");
+      R(hx+5,y+3,hw-10,1,"#241d44");
+      PX(hx+Math.floor(hw/2),y+6, (hot&&i===0)?C.teal:"#16322c");
+    }
+  }
+  function bulletRow(x,y,n){
+    for(var i=0;i<n;i++){
+      var bx=x+i*9;
+      R(bx,y,6,4,"#141130");
+      PX(bx+6,y+1,"#241d44"); PX(bx+6,y+2,"#241d44");
+      PX(bx+2,y+1,(pu>0.55&&i%2===0)||(pu2>0.55&&i%2===1)?C.moonL:"#2a2448");
+    }
+  }
+  var base=WATY, colw=30;
+  for(var c2=0;c2<3;c2++){
+    var x=4+c2*(colw+3);
+    var hotc=(c2===1)?(pu2>0.3):(pu>0.3);
+    scoopBox(x,base-24,colw,24, hotc);
+    scoopBox(x,base-46,colw,22, (c2===1)?(pu>0.3):(pu2>0.3));
+    kickBin(x,base-62,colw,16, hotc&&pu>0.55);
+    midBox(x,base-76,colw,14, (c2===1?pu2:pu)>0.35);
+    hornRow(x,base-89,colw,2, (c2===1?pu2:pu)>0.5);
+    R(x+1,base-89,1,89,"#181530"); R(x+colw-2,base-89,1,89,"#181530");
+  }
+  bulletRow(16,base-95,8);
+  T3("HOME MUSIC HI-FI", 20, base-101, "#3a3160");
+  R(18,base-102,68,1,"#241d3c");
+  /* cabos da muralha para a cabina */
+  LINE(98,base-30, BOOTH.x+6, PLATY-2, "#141130",1);
+  LINE(98,base-52, BOOTH.x+2, PLATY-4, "#100d26",1);
+  /* ---- control tower na margem direita: preamp, sirene e candeeiro ---- */
+  var tx=280, tb=WATY;
+  R(tx,tb-16,22,16,"#0d0b1c"); R(tx,tb-16,22,1,C.rockL);
+  R(tx-2,tb-20,26,4,"#15122a");
+  R(tx+1,tb-27,20,7,"#0a0918");
+  [3,8,13,18].forEach(function(k,i){
+    PX(tx+k,tb-24, (Math.floor(beatPh*0.6)%4)===i&&lvl>0.05 ? C.moonL : C.amber);
   });
-  cab(x+6,base-72,w-12,8,"#0d0b1c");
-  for(var tw=0; tw<4; tw++){ PX(x+12+tw*8, base-68, (pu>0.6&&tw%2===0)||(pu2>0.6&&tw%2===1)?C.moonL:"#2a2448"); }
-  R(x+2,base-72,1,72,"#181530"); R(x+w-3,base-72,1,72,"#181530");
-  T3("HM HI-FI", x+8, base-80, "#3a3160");
-  R(x+6,base-81,36,1,"#241d3c"); 
-  /* cabos ate a cabina */
-  LINE(x+w-2,base-28, BOOTH.x+6, PLATY-2, "#141130",1);
-  LINE(x+w-2,base-46, BOOTH.x+2, PLATY-4, "#100d26",1);
-  /* ---- torre gemea a direita, um palmo mais baixa ---- */
-  var rx=272, rw=42, rb=WATY;
-  cab(rx,rb-26,rw,26,"#0e0c1e");
-  cone(rx+12,rb-13,9, pu2>0.35);
-  cone(rx+31,rb-13,9, pu>0.35);
-  cab(rx,rb-44,rw,18,"#0d0b1c");
-  cone(rx+12,rb-35,6, pu2>0.25);
-  cone(rx+30,rb-35,6, pu>0.25);
-  cab(rx,rb-56,rw,12,"#0e0c1e");
-  LINE(rx+12,rb-50,rx+21,rb-54,C.rockL,1); LINE(rx+12,rb-50,rx+21,rb-46,C.rockL,1);
-  R(rx+21,rb-54,2,8,"#161330");
-  PX(rx+30,rb-50, pu>0.5?C.red:"#3a1c18");
-  R(rx+2,rb-56,1,56,"#181530"); R(rx+rw-3,rb-56,1,56,"#181530");
-  T3("HI-FI", rx+12, rb-64, "#3a3160");
+  PX(tx+17,tb-26, (Math.floor(now)%4===0)?C.red:"#5a2420");
+  R(tx+3,tb-33,8,5,"#15122a"); PX(tx+6,tb-31,C.red);
+  R(tx+14,tb-31,1,4,"#241d44"); DISC(tx+14,tb-33,2,C.moonL); PX(tx+14,tb-33,C.paper);
+  R(tx+2,tb-16,1,16,"#181530"); R(tx+19,tb-16,1,16,"#05040c");
+  /* cabo da cabina para a control tower */
+  LINE(BOOTH.x+BOOTH.w-4, PLATY-2, tx+2, tb-14, "#141130",1);
 }
 function waterScene(){
   R(0,WATY,320,180-WATY,C.water);
@@ -726,8 +762,10 @@ function waterScene(){
   g.fillStyle="#100d20";
   R(FIG.x-1, WATY+2, 3, 10, "#100d20");
   R(BOOTH.x+10, WATY+2, BOOTH.w-20, 2, "#0e0c1e");
-  R(10, WATY+2, 40, 3, "#0d0b1e"); R(276, WATY+2, 34, 3, "#0d0b1e");
-  PX(19, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e"); PX(41, WATY+4, levels.B>0.05?"#4a3a1c":"#0d0b1e");
+  R(6, WATY+2, 92, 3, "#0d0b1e"); R(278, WATY+2, 26, 2, "#0d0b1e");
+  PX(19, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e"); PX(52, WATY+4, levels.B>0.05?"#4a3a1c":"#0d0b1e");
+  PX(85, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e");
+  PX(294, WATY+3, "#4a3e20");
   PX(DECK.A.x, WATY+3, levels.A>0.05?"#5a2a28":"#100d20");
   PX(DECK.B.x, WATY+3, levels.B>0.05?"#5a4a20":"#100d20");
   R(60,WATY+8,56,1,C.ripple); R(150,WATY+14,70,1,C.ripple); R(40,WATY+22,70,1,C.ripple); R(210,WATY+24,60,1,C.ripple);
