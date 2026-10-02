@@ -1879,6 +1879,9 @@ var INTRO_LEN=30, P1_FADE=28.5, P2_START=10, P2_PREP=25.15, P2_FADE=28.5, HARD1=
 var MC_AT=[6, 10.5, 15, 19, 23, 26.2];
 var introTimers=[], introDone=false, introTick=null, introAudio=null, introAudio2=null;
 var mcShown=0, beginCalled=false, introFading=false, phase=1, endSeqDone=false;
+/* diagnostico da abertura, visivel em window.HMI */
+window.HMI={log:[]};
+function hmi(ev){ try{ HMI.log.push((performance.now()/1000).toFixed(1)+" "+ev); }catch(e){} }
 function showLine(i){
   var line=MC_LINES[i], mc=$("mc");
   var div=document.createElement("div");
@@ -1984,6 +1987,7 @@ function fadeAudio(a, len, cb){
 var p2Started=false, p2Fading=false;
 function startP2(){
   if(p2Started || introDone) return; p2Started=true; phase=2;
+  hmi("startP2 rs="+(introAudio2?introAudio2.readyState:"x"));
   $("mc").style.opacity="0";
   var cr=$("introCredit");
   cr.style.opacity="0";
@@ -2002,17 +2006,18 @@ function startP2(){
         try{ introAudio2.volume=target*x; }catch(e){}
         if(x<1 && !introDone) requestAnimationFrame(up);
       })(performance.now());
-    }).catch(function(){ startRadioUnderIntro(); endSequence(); });
+    }).catch(function(e2){ hmi("p2 play catch "+(e2&&e2.name)); startRadioUnderIntro(); endSequence(); });
   }
   if(introAudio2.readyState>=1){ go3(); }
   else{
     introAudio2.addEventListener("loadedmetadata", go3, {once:true});
-    setTimeout(function(){ if(!introDone && introAudio2.readyState<1){ startRadioUnderIntro(); endSequence(); } }, 5000);
+    setTimeout(function(){ if(!introDone && introAudio2.readyState<1){ hmi("p2 meta timeout"); startRadioUnderIntro(); endSequence(); } }, 5000);
   }
 }
 /* o fim: silencio, a luz sobe no palco, a agulha pousa, a musica cresce */
 function endSequence(){
   if(endSeqDone) return; endSeqDone=true;
+  hmi("endSequence");
   startRadioUnderIntro();
   var veil=$("introVeil");
   vjFade();
@@ -2053,7 +2058,7 @@ function runIntro(){
   /* a segunda faixa comeca a carregar ja */
   introAudio2=new Audio(P2_SRC);
   introAudio2.preload="auto";
-  introAudio2.addEventListener("error", function(){ if(phase===2 && !endSeqDone){ startRadioUnderIntro(); endSequence(); } });
+  introAudio2.addEventListener("error", function(){ hmi("p2 error ev"); if(phase===2 && !endSeqDone){ startRadioUnderIntro(); endSequence(); } });
   /* sem progresso em 8 s (e sem espera por gesto): a emissao nao fica presa ao arquivo */
   introTimers.push(setTimeout(function(){
     if(!introDone && !awaitingGesture && phase===1 && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
@@ -2069,12 +2074,13 @@ function runIntro(){
       if(t>=HARD1){ p1Fading=true; fadeAudio(introAudio, 0.6, startP2); }
     } else {
       var t2=(introAudio2 && introAudio2.currentTime)||0;
+      HMI.p2t=t2;
       if(t2>=P2_PREP) startRadioUnderIntro();
       if(!p2Fading && t2>=P2_FADE && (firstLogged || t2>=HARD2)){
-        p2Fading=true;
+        p2Fading=true; hmi("p2 fade @"+t2.toFixed(1));
         fadeAudio(introAudio2, 1.5, endSequence);
       }
-      if(t2>=HARD2+2 && !endSeqDone){ endSequence(); }
+      if(t2>=HARD2+2 && !endSeqDone){ hmi("p2 hard @"+t2.toFixed(1)); endSequence(); }
     }
   }, 120);
 }
