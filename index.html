@@ -98,6 +98,10 @@ button{font-family:var(--mono)}
 /* ---------- top bar ---------- */
 #app{display:none}
 #app.on{display:block}
+/* durante a abertura, a moldura da radio fica invisivel (sem display:none,
+   para o leitor montar); entra em fade quando o veu abre */
+#top,#hud,#needle{transition:opacity 1.4s ease}
+#app.intro #top, #app.intro #hud, #app.intro #needle, #app.intro #toast{opacity:0; pointer-events:none}
 #top{
   position:fixed; left:0; right:0; top:0; z-index:40;
   display:flex; align-items:center; justify-content:space-between; gap:14px;
@@ -2007,6 +2011,7 @@ function finishIntro(){
   setTimeout(function(){ veil.classList.remove("on"); }, 600);
   $("splash").classList.add("off");
   setTimeout(function(){ $("splash").style.display="none"; }, 1000);
+  $("app").classList.remove("intro");
   startRadioUnderIntro();
 }
 $("skipIntro").addEventListener("click", finishIntro);
@@ -2017,6 +2022,7 @@ document.addEventListener("keydown", function(){ FX.resume(); }, {once:true});
 (function autoStart(){
   FX.init();
   $("app").classList.add("on");
+  $("app").classList.add("intro");
   buildQueue(); applyBlockTheme();
   pendingFirst = nextTrack();
   setNow(pendingFirst, false);
