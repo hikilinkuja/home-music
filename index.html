@@ -60,12 +60,15 @@ button{font-family:var(--mono)}
   text-shadow:3px 3px 0 #000, 0 0 18px rgba(255,177,43,.25);
 }
 .sp-sub{color:var(--teal); font-size:11px; letter-spacing:.3em; text-transform:uppercase; margin-bottom:30px}
-#enter{
-  cursor:pointer; border:2px solid var(--amber); color:var(--amber); background:rgba(6,5,17,.6);
-  font-size:13px; letter-spacing:.34em; text-transform:uppercase; padding:14px 30px;
-}
-#enter:hover{background:var(--amber); color:#060511}
-.sp-note{margin-top:18px; color:var(--dim); font-size:10px; letter-spacing:.24em; text-transform:uppercase}
+#tapHint{display:none; margin-top:30px; color:var(--amber); font-size:11px; letter-spacing:.34em;
+  text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
+#tapHint.on{display:block}
+@keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
+/* a camada vj da abertura: plasma liquido mate, por cima do palco, por baixo do veu */
+#vj{position:fixed; inset:0; z-index:2; width:100vw; height:100vh; display:none;
+  image-rendering:pixelated; background:#000; opacity:1; transition:opacity 2.4s linear}
+#vj.on{display:block}
+#vj.out{opacity:0}
 #mc{display:none; text-align:left; min-height:200px}
 #mc.on{display:block}
 .mc-line{
@@ -230,17 +233,12 @@ button{font-family:var(--mono)}
 </head>
 <body>
 <!-- ============ SPLASH ============ -->
+<canvas id="vj" width="160" height="90"></canvas>
 <div id="introVeil"></div>
 <div id="splash">
   <div class="sp-inner">
-    <div id="spIdle">
-      <div class="sp-bar"></div>
-      <h1 class="sp-title">Home Music</h1>
-      <div class="sp-sub">A 24-hour selector under the moon &middot; dub to jungle to techno</div>
-      <button id="enter" type="button">Press play</button>
-      <div class="sp-note">sound up. the selector knows what time it is.</div>
-    </div>
     <div id="mc" aria-live="polite"></div>
+    <div id="tapHint" role="button" tabindex="0">tap for sound</div>
     <button id="skipIntro" type="button">skip the intro &raquo;</button>
     <div id="introCredit"><b>opening tune</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive</div>
   </div>
@@ -1898,31 +1896,100 @@ function introFadeOut(len, cb){
     else { try{ introAudio.pause(); }catch(e){} if(cb) cb(); }
   })(performance.now());
 }
+/* ---- a camada vj: plasma liquido mate, energia a crescer com a faixa ---- */
+var vjOn=false, vjG=null, vjImg=null, vjPal=[], vjLast=0;
+var VJW=160, VJH=90;
+function vjInit(){
+  var c=$("vj");
+  vjG=c.getContext("2d");
+  vjImg=vjG.createImageData(VJW,VJH);
+  ["#030309","#090716","#110d26","#1b1438","#2c1f42","#44301f","#5e4120","#7a5422"]
+  .forEach(function(h){ vjPal.push([parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]); });
+}
+function vjFrame(ts){
+  if(!vjOn) return;
+  requestAnimationFrame(vjFrame);
+  if(ts-vjLast<40) return;           /* ~25 fps */
+  vjLast=ts;
+  var at=(introAudio && introAudio.currentTime)||0;
+  var t=ts/1000;
+  var energy=0.16+0.84*Math.min(1, at/26);
+  var vib=1+0.13*Math.sin(at*2*Math.PI*1.25);
+  var cx=VJW*0.5+Math.sin(t*0.19)*34, cy=VJH*0.5+Math.cos(t*0.14)*20;
+  var sp=t*(0.35+energy*0.75);
+  var d=vjImg.data, n=vjPal.length;
+  for(var y=0;y<VJH;y++){
+    var dy=(y-cy)*1.6;
+    for(var x=0;x<VJW;x++){
+      var dx=x-cx;
+      var v=Math.sin(x*0.055+sp*0.9)
+           +Math.sin(y*0.081-sp*0.62)
+           +Math.sin((x*0.031+y*0.047)+sp*0.5)
+           +Math.sin(Math.sqrt(dx*dx+dy*dy)*0.115-sp*1.5)*vib;
+      v=(v+4)/8;
+      v=Math.pow(v, 2.1-1.0*energy);
+      var lv=v*(n-1)*energy + ((x&1)^(y&1))*0.18;
+      var li=lv<0?0:(lv>n-1?n-1:lv|0);
+      var p=(y*VJW+x)*4, c2=vjPal[li];
+      d[p]=c2[0]; d[p+1]=c2[1]; d[p+2]=c2[2]; d[p+3]=255;
+    }
+  }
+  vjG.putImageData(vjImg,0,0);
+}
+function vjStart(){ if(vjOn) return; vjInit(); vjOn=true; $("vj").classList.add("on"); requestAnimationFrame(vjFrame); }
+function vjFade(){ $("vj").classList.add("out"); setTimeout(vjStop, 2600); }
+function vjStop(){ vjOn=false; var c=$("vj"); c.classList.remove("on"); c.classList.remove("out"); }
+
+/* o veu negro: escuro ate aos 9 s, depois abre com a faixa */
+function veilK(t){
+  if(t<=9) return 1;
+  var u=Math.min(1,(t-9)/(INTRO_LEN-9));
+  var s=u*u*(3-2*u);
+  return 1-s;
+}
+var awaitingGesture=false;
+function waitGesture(){
+  if(awaitingGesture || introDone) return;
+  awaitingGesture=true;
+  $("tapHint").classList.add("on");
+  function go2(){
+    if(!awaitingGesture) return;
+    awaitingGesture=false;
+    $("tapHint").classList.remove("on");
+    FX.resume();
+    if(introAudio && introAudio.paused){ introAudio.play().catch(function(){ finishIntro(); }); }
+  }
+  document.addEventListener("pointerdown", go2, {once:true});
+  document.addEventListener("keydown", go2, {once:true});
+}
 function runIntro(){
-  $("spIdle").style.display="none";
   $("splash").classList.add("dark");
   var veil=$("introVeil");
   veil.classList.add("on"); veil.style.opacity="1";
   $("mc").classList.add("on");
-  setTimeout(function(){ $("skipIntro").classList.add("on"); }, 1500);
+  vjStart();
+  setTimeout(function(){ if(!introDone) $("skipIntro").classList.add("on"); }, 1500);
   setTimeout(function(){ if(!introDone) $("introCredit").classList.add("on"); }, 2600);
   introAudio=new Audio(INTRO_SRC);
   introAudio.preload="auto";
   try{ introAudio.volume=Math.max(0, Math.min(1, masterVol/100)); }catch(e){}
   introAudio.addEventListener("error", function(){ finishIntro(); });
-  introAudio.play().catch(function(){ finishIntro(); });
-  /* sem progresso em 7,5 s: a emissao nao fica a espera do arquivo */
+  introAudio.play().catch(function(err){
+    if(err && err.name==="NotAllowedError"){ waitGesture(); }
+    else { finishIntro(); }
+  });
+  /* sem progresso em 8 s (e sem espera por gesto): a emissao nao fica presa ao arquivo */
   introTimers.push(setTimeout(function(){
-    if(!introDone && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
-  }, 7500));
+    if(!introDone && !awaitingGesture && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
+  }, 8000));
   introTick=setInterval(function(){
     if(introDone) return;
     var t=(introAudio && introAudio.currentTime)||0;
-    var k=Math.max(0, 1-(t/INTRO_LEN));
-    veil.style.opacity=Math.pow(k,1.15).toFixed(3);
+    veil.style.opacity=veilK(t).toFixed(3);
     while(mcShown<MC_LINES.length && t>=MC_AT[mcShown]){ showLine(mcShown); mcShown++; }
     if(t>=INTRO_PREP) startRadioUnderIntro();
     if(t>=INTRO_FADE && (firstLogged || t>=INTRO_HARDEND) && !introFading){
+      vjFade();
       introFadeOut(3.0, finishIntro);
     }
     if(t>=INTRO_HARDEND+4) finishIntro();
@@ -1930,9 +1997,11 @@ function runIntro(){
 }
 function finishIntro(){
   if(introDone) return; introDone=true;
+  awaitingGesture=false;
   introTimers.forEach(clearTimeout);
   if(introTick) clearInterval(introTick);
   if(introAudio && !introFading) introFadeOut(0.45);
+  if(vjOn && !$("vj").classList.contains("out")) vjFade();
   var veil=$("introVeil");
   veil.style.opacity="0";
   setTimeout(function(){ veil.classList.remove("on"); }, 600);
@@ -1942,9 +2011,11 @@ function finishIntro(){
 }
 $("skipIntro").addEventListener("click", finishIntro);
 
-/* ---------------- enter ---------------- */
-$("enter").addEventListener("click", function(){
-  FX.init(); FX.resume();
+/* ---------------- arranque automatico: sem ecra de press play ---------------- */
+document.addEventListener("pointerdown", function(){ FX.resume(); }, {once:true});
+document.addEventListener("keydown", function(){ FX.resume(); }, {once:true});
+(function autoStart(){
+  FX.init();
   $("app").classList.add("on");
   buildQueue(); applyBlockTheme();
   pendingFirst = nextTrack();
@@ -1952,7 +2023,7 @@ $("enter").addEventListener("click", function(){
   loadApi();
   maybeStart();
   runIntro();
-});
+})();
 
 var firstRampPending=false;
 function rampInFirst(){
