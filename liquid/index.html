@@ -68,9 +68,12 @@ button{font-family:var(--mono)}
   font-size:8px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
 .vp-top .dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
 .vp-screen{position:relative; width:300px; height:200px; background:#000; border:1px solid var(--line)}
-.yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s}
+.yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
 .yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
+/* crop: engole as barras pretas dos rips (conteudo 4:3 dentro de video 16:9) */
+.vp-screen.fill .yt-slot iframe{position:absolute; width:136%; height:136%; left:50%; top:50%;
+  transform:translate(-50%,-50%)}
 #standby{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:6px; background:rgba(4,3,12,.92); z-index:3; transition:opacity .6s}
 #standby.off{opacity:0; pointer-events:none}
@@ -255,7 +258,7 @@ button{font-family:var(--mono)}
 #tapHint{display:block; margin-top:26px; color:var(--amber); font-size:11px; letter-spacing:.34em;
   text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
 @keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
-#mc{display:none; text-align:left; min-height:200px; transition:opacity 1.4s ease}
+#mc{display:none; text-align:left; min-height:200px; width:min(88vw,440px); transition:opacity 1.4s ease}
 #mc.on{display:block}
 .mc-line{font-size:14px; letter-spacing:.14em; color:var(--paper); opacity:0; transform:translateY(8px);
   transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase}
@@ -463,6 +466,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
     <div class="vp-ctrl">
       <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
       <button class="tbtn" id="skipBtn" type="button" title="earn the skip">Skip</button>
+      <button class="tbtn" id="cropBtn" type="button" title="crop away the black bars of the video">Crop</button>
       <button class="tbtn" id="wakeBtn" type="button" title="keep the screen awake so the music keeps playing">Screen on</button>
       <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
     </div>
@@ -838,7 +842,11 @@ window.RIG={
   setFade:function(x){ LV.xf=x; },
   finish:function(){},
   quick:function(){ setTimeout(function(){ if(window.HMFX) HMFX.needle(); }, 700); },
-  first:function(){ setTimeout(function(){ if(window.HMFX) HMFX.needle(); }, 1100); },
+  first:function(){ setTimeout(function(){
+    /* a sala liquida ja fez o som da agulha na abertura: aqui so entra a rampa */
+    if(window.HM && HM.rampOnly) HM.rampOnly();
+    else if(window.HMFX) HMFX.needle();
+  }, 150); },
   setLevels:function(a,b){ LV.A=a||0; LV.B=b||0; },
   setProgress:function(p){ LV.prog=p||0; },
   setTempo:function(bpm){ if(bpm>0) LV.bpm=bpm; }
@@ -2221,6 +2229,10 @@ window.HM={
     })();
   }
 };
+window.HM.rampOnly=function(){
+  /* arma a rampa do primeiro disco sem repetir o foley da agulha */
+  if(firstRampPending){ firstRampPending=false; FX.crackleBurst(1.2); rampInFirst(); }
+};
 /* modo de estaleiro (?dev na morada): espreitar a fila e saltar sem o quebra-cabecas */
 window.HMDEV={
   on: /(^|[?&])dev(=|&|$)/.test(location.search),
@@ -2283,6 +2295,43 @@ function showLine(i){
   mc.appendChild(div);
   void div.offsetWidth; div.classList.add("show");
 }
+/* a agulha a serio: assenta com um baque, raspa o sulco, e so quando a raspadela
+   acaba e que a musica comeca a subir, como num prato verdadeiro */
+var ACT=null;
+function actx(){
+  if(!ACT){ try{ ACT=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if(ACT && ACT.state==="suspended"){ try{ ACT.resume(); }catch(e){} }
+  return ACT;
+}
+function realNeedle(){
+  var ac=actx(); if(!ac) return;
+  var t=ac.currentTime;
+  /* baque surdo da agulha a assentar */
+  var o=ac.createOscillator(), og=ac.createGain();
+  o.type="sine"; o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t+.11);
+  og.gain.setValueAtTime(.5, t); og.gain.exponentialRampToValueAtTime(.001, t+.16);
+  o.connect(og).connect(ac.destination); o.start(t); o.stop(t+.18);
+  /* raspadela aspera do sulco de entrada (0,55 s) */
+  var len=Math.floor(ac.sampleRate*.55), b=ac.createBuffer(1, len, ac.sampleRate), d=b.getChannelData(0);
+  for(var i=0;i<len;i++){
+    var x=i/len;
+    d[i]=(Math.random()*2-1)*(.9-.5*x)*(Math.random()<.08?2.4:1);
+  }
+  var n=ac.createBufferSource(); n.buffer=b;
+  var nf=ac.createBiquadFilter(); nf.type="bandpass"; nf.frequency.value=2300; nf.Q.value=.5;
+  var ng=ac.createGain(); ng.gain.setValueAtTime(.4, t+.05); ng.gain.linearRampToValueAtTime(.12, t+.6);
+  n.connect(nf).connect(ng).connect(ac.destination); n.start(t+.05);
+  /* crepitar que se extingue (1,5 s): estalidos esparsos */
+  var len2=Math.floor(ac.sampleRate*1.5), b2=ac.createBuffer(1, len2, ac.sampleRate), d2=b2.getChannelData(0);
+  for(var j=0;j<len2;j++){
+    var y=j/len2;
+    d2[j]=(Math.random()<.004*(1-y*.7)) ? (Math.random()*2-1)*(1-y) : (Math.random()*2-1)*.015*(1-y);
+  }
+  var n2=ac.createBufferSource(); n2.buffer=b2;
+  var f2=ac.createBiquadFilter(); f2.type="bandpass"; f2.frequency.value=4600; f2.Q.value=.7;
+  var g2=ac.createGain(); g2.gain.value=.55;
+  n2.connect(f2).connect(g2).connect(ac.destination); n2.start(t+.5);
+}
 function sequenceIntoRadio(){
   if(intro.done) return; intro.done=true;
   if(intro.tick){ clearInterval(intro.tick); intro.tick=null; }
@@ -2290,11 +2339,12 @@ function sequenceIntoRadio(){
   $("splash").classList.add("off");
   $("introCredit").classList.remove("on");
   $("skipIntro").style.display="none";
-  /* um segundo de sulco vazio; depois a agulha (via RIG.first) e a rampa de 8 s */
+  /* 1 s de silencio; 2 s de agulha e raspadela; e so entao a musica sobe */
+  setTimeout(function(){ realNeedle(); }, 1000);
   setTimeout(function(){
     if(window.HM) HM.begin();
-    setTimeout(function(){ if(window.LVfx) LVfx.unveil(8000); }, 1100);
-  }, 1000);
+    setTimeout(function(){ if(window.LVfx) LVfx.unveil(8000); }, 200);
+  }, 3000);
 }
 function fadeOutIntro(ms){
   if(intro.fading || intro.done) return; intro.fading=true;
@@ -2310,6 +2360,7 @@ function fadeOutIntro(ms){
 }
 function startIntro(){
   if(intro.started || intro.done) return; intro.started=true;
+  actx();
   if(window.HM){ HM.fxResume(); if(HM.prime) HM.prime(); }
   $("tapHint").style.display="none";
   $("mc").classList.add("on");
@@ -2692,6 +2743,25 @@ if(DESK){
     var open=bl.classList.toggle("open");
     bm.textContent=open ? "less" : "more";
   });
+})();
+
+/* ---------------- 6b. crop do monitor: comer as barras pretas dos rips ---------------- */
+(function(){
+  var btn=$("cropBtn"); if(!btn) return;
+  var scr=document.querySelector(".vp-screen");
+  var on=true;
+  try{ var sv=localStorage.getItem("hm_fill"); if(sv==="0") on=false; }catch(e){}
+  function paint(){
+    scr.classList.toggle("fill", on);
+    btn.textContent = on ? "Fit" : "Crop";
+    btn.title = on ? "show the whole video frame" : "crop away the black bars of the video";
+  }
+  btn.addEventListener("click", function(){
+    on=!on;
+    try{ localStorage.setItem("hm_fill", on?"1":"0"); }catch(e){}
+    paint();
+  });
+  paint();
 })();
 
 /* ---------------- 7. telemovel: a dica do ecra fechado (uma vez) ---------------- */
