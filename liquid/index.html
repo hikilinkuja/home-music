@@ -91,6 +91,12 @@ button{font-family:var(--mono)}
   max-height:calc(100vh - 90px); overflow:auto; background:rgba(6,5,17,.93);
   border:1px solid var(--line); padding:16px; display:none}
 .panel.on{display:block}
+#genrePanel{width:min(640px,94vw)}
+@media (min-width:720px){
+  #genrePanel #gExt{display:grid; grid-template-columns:1fr 1fr; gap:2px 20px; align-items:start}
+  #genrePanel #gExt blockquote{grid-column:1/-1}
+  #genrePanel #gExt .gx-note{grid-column:1/-1}
+}
 .panel h3{margin:0 0 2px; font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--amber)}
 .psub{margin:0 0 12px; color:var(--dim); font-size:10px; letter-spacing:.14em; text-transform:uppercase}
 .pclose{position:absolute; right:10px; top:8px; cursor:pointer; background:none; border:none;
@@ -119,7 +125,7 @@ button{font-family:var(--mono)}
   opacity:0; pointer-events:none; transition:opacity .35s}
 #fieldName.on{opacity:1}
 
-/* ---------- mobile: opcao A, full bleed ---------- */
+/* ---------- mobile: opcao A, full bleed (cartao e leitor lado a lado) ---------- */
 @media (max-width:760px){
   #top{padding:10px 10px; gap:8px; flex-wrap:wrap}
   .brand b{font-size:12px; letter-spacing:.22em}
@@ -127,27 +133,25 @@ button{font-family:var(--mono)}
   .onair .lbl{display:none}
   #blockLabel{display:none}
   #clock{font-size:11px}
-  .hdr-btns{gap:5px}
+  .hdr-btns{gap:5px; flex-wrap:wrap}
   .tbtn{font-size:8px; padding:6px 8px}
   .vidpanel{right:10px; bottom:10px; width:200px}
   .vp-screen{width:200px; height:200px}
   .vp-ctrl{padding:6px 6px}
-  #vol{max-width:70px}
-  #needle{right:10px; bottom:266px}
-  #now{left:12px; right:222px; bottom:14px; max-width:none}
-  #tArtist{font-size:19px}
-  #tTitle{font-size:12px}
+  #vol{max-width:64px}
+  #needle{right:10px; bottom:276px; z-index:33}
+  #now{left:10px; right:222px; bottom:14px; max-width:none; z-index:32}
+  .chiprow{flex-wrap:wrap; gap:6px}
+  #tArtist{font-size:16px; line-height:1.15}
+  #tTitle{font-size:11px; margin:3px 0 6px}
   #tBlurb{display:none}
-  .t-links{gap:6px}
+  .t-links{flex-direction:column; align-items:flex-start; gap:4px}
   .t-links a,.t-links .tbtn{font-size:8px; padding:4px 6px; letter-spacing:.12em}
   .panel{top:48px; width:94vw; right:3vw}
+  #genrePanel{width:94vw}
   .drawer{inset:2% 2.5%}
   #toast{bottom:auto; top:52px}
-}
-@media (max-width:430px){
-  #now{right:12px; bottom:268px}
-  .vidpanel{right:50%; transform:translateX(50%)}
-  #needle{right:50%; transform:translateX(50%)}
+  #fieldName{top:96px}
 }
 
 /* ---------- the dance nearby + painel estendido ---------- */
@@ -189,6 +193,9 @@ button{font-family:var(--mono)}
 .dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 .dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
 .dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+.dw-tape iframe.scmini,.tape iframe.scmini{height:22px; border:none; background:transparent;
+  filter:invert(1) hue-rotate(180deg) saturate(1.5) contrast(0.92); opacity:.92; border-radius:2px}
+
 .dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
 .dw-yt iframe{width:100%; height:100%}
 .dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -232,11 +239,6 @@ button{font-family:var(--mono)}
   opacity:0; pointer-events:none; transition:opacity .4s}
 #toast.on{opacity:1}
 
-@media (max-width:820px){
-  #now{max-width:calc(100vw - 44px); bottom:260px}
-  .vidpanel{right:50%; transform:translateX(50%)}
-  #needle{right:50%; transform:translateX(50%)}
-}
 </style>
 </head>
 <body>
@@ -338,13 +340,13 @@ button{font-family:var(--mono)}
       <p class="dw-sub">sessions by the founders. the radio keeps playing under this shelf; press play on a tape and the radio steps aside until you close it.</p>
       <section class="dw-tape">
         <h4>liquid dnb for street market wandering <span>Weronika &middot; 15.06.2026 &middot; liquid dnb</span></h4>
-        <iframe title="liquid dnb for street market wandering, by Weronika" loading="lazy" allow="autoplay"
-          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+        <iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
       </section>
       <section class="dw-tape">
         <h4>UNDERGROUND BASS SOUNDz <span>Weronika &middot; 28.08.2026 &middot; uk bass / 140 / dubby</span></h4>
-        <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" loading="lazy" allow="autoplay"
-          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+        <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
       </section>
       <section class="dw-tape">
         <h4>Tubby's Lesson <span>the founders &middot; dub 1975-83</span></h4>
@@ -1705,6 +1707,12 @@ function mx2Player(cb){
     events:{
       onReady:function(e){ mx2.yt=e.target; mx2.ready=true; cb(); },
       onStateChange:function(e){
+        if(e.data===1 && !mx2.playing){
+          /* play nativo sobre o disco ja carregado */
+          mx2.playing=true; $("mxPlay2").textContent="Pause";
+          mx2SideRadio(true);
+          if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+        }
         if(e.data===0){
           if(mx2.i<MXT2.length-1){
             /* agulha fora, meio compasso de sulco, proximo disco */
@@ -1738,6 +1746,16 @@ $("mixBtn").addEventListener("click", function(){
     mx2.loadedFrames=true;
     d.querySelectorAll("iframe[data-src]").forEach(function(f){ f.src=f.getAttribute("data-src"); });
     mx2List();
+  }
+  /* primeiro disco ja no prato: carregado, a espera do play */
+  if(mx2.i<0 && !mx2.playing){
+    mx2Player(function(){
+      if(mx2.i>=0 || mx2.playing) return;
+      try{ mx2.yt.cueVideoById(MXT2[0].v); }catch(e){}
+      $("mxIdle2").style.display="none";
+      mx2.i=0; mx2List();
+      $("mxNow2").textContent="1/"+MXT2.length+" "+MXT2[0].a+" / "+MXT2[0].t;
+    });
   }
 });
 function mx2Close(){
