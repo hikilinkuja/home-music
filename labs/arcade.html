@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Music · Arcade Lab</title>
+<style>
+:root{--ink:#060511; --paper:#f4f1e7; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
+  --dim:#8d90b0; --line:#2b2745; --mono:"Courier New", ui-monospace, Menlo, monospace}
+*{box-sizing:border-box}
+body{margin:0; background:var(--ink); color:var(--paper); font-family:var(--mono);
+  font-size:14px; line-height:1.7; padding:0 16px 80px}
+.wrap{max-width:980px; margin:0 auto}
+header{padding:38px 0 8px}
+.k{font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:var(--teal)}
+h1{font-size:clamp(22px,4.4vw,34px); letter-spacing:.28em; text-transform:uppercase; margin:6px 0 4px;
+  text-shadow:3px 3px 0 rgba(232,57,44,.75)}
+.sub{color:var(--dim); font-size:11px; letter-spacing:.18em; text-transform:uppercase}
+.rule{height:2px; background:linear-gradient(90deg,var(--red),transparent); margin:22px 0 22px}
+.tbtn{cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:8px 12px; font-family:var(--mono)}
+.tbtn:hover{color:var(--amber); border-color:var(--amber)}
+.tbtn.on{color:var(--ink); background:var(--amber); border-color:var(--amber)}
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px}
+.game{display:none; border:1px solid var(--line); background:#0d0b1c; padding:20px}
+.game.on{display:block}
+.game h2{margin:0 0 4px; font-size:14px; letter-spacing:.26em; text-transform:uppercase; color:var(--amber)}
+.game .lede{color:var(--dim); font-size:11.5px; margin:0 0 16px; max-width:70ch}
+
+/* needle */
+#ndStage{display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start}
+#ndCover{position:relative; width:280px; height:158px; background:#000; border:1px solid var(--line); overflow:hidden}
+#ndYt{width:100%; height:100%}
+#ndMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,#0a0820 0 12px,#070617 12px 24px);
+  display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:10px;
+  letter-spacing:.3em; text-transform:uppercase; text-align:center; padding:10px}
+#ndOpts{flex:1; min-width:260px}
+.nd-opt{display:block; width:100%; text-align:left; margin:0 0 8px; padding:10px 12px}
+.nd-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
+.nd-opt.bad{color:var(--paper); background:rgba(232,57,44,.4); border-color:var(--red)}
+#ndScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:8px 0 0}
+#ndReveal{font-size:11.5px; color:#d7d3e4; margin:10px 0 0; min-height:38px}
+
+/* shift */
+#shBlocks{display:flex; gap:8px; margin:0 0 14px; flex-wrap:wrap}
+#shSlots{display:flex; gap:8px; flex-wrap:wrap; margin:0 0 14px}
+.sh-slot{width:132px; min-height:62px; border:1px dashed var(--line); padding:7px 9px; cursor:pointer}
+.sh-slot .gname{font-size:10.5px; letter-spacing:.08em; color:var(--paper)}
+.sh-slot .gbpm{font-size:9.5px; color:var(--dim)}
+.sh-slot.bad{border-color:var(--red)}
+.sh-slot.bad .gbpm{color:var(--red)}
+#shPool{display:flex; gap:7px; flex-wrap:wrap; margin:0 0 14px}
+#shMsg{font-size:11px; letter-spacing:.12em; min-height:20px; margin:0 0 10px; color:var(--dim)}
+#shMsg.ok{color:var(--teal)}
+#shNow{font-size:11.5px; color:var(--amber); min-height:20px; margin:8px 0 0}
+#shYt{width:0; height:0; overflow:hidden; position:absolute; left:-9999px}
+
+/* desk */
+#dkRow{display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start}
+.dk-col{min-width:230px; flex:1}
+.dk-ctl{margin:0 0 14px}
+.dk-ctl label{display:block; font-size:9px; letter-spacing:.26em; color:var(--teal);
+  text-transform:uppercase; margin-bottom:5px}
+.dk-ctl input[type=range]{width:100%; accent-color:var(--amber)}
+.dk-time{display:flex; gap:6px}
+#dkThrow{background:var(--red); border-color:var(--red); color:var(--paper); padding:14px 18px; font-size:11px}
+#dkThrow:active{background:var(--amber); border-color:var(--amber); color:var(--ink)}
+#dkVu{width:100%; height:54px; background:#07061a; border:1px solid var(--line)}
+#dkCredit{font-size:10px; color:var(--dim); line-height:1.8; margin-top:14px}
+#dkCredit b{color:var(--amber); font-weight:500}
+.keys{font-size:9.5px; color:var(--dim); letter-spacing:.14em; text-transform:uppercase; margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="k">Arcade lab &middot; three games on trial, nothing is wired into the station yet</div>
+  <h1>Home Music Arcade</h1>
+  <div class="sub">drop the needle &middot; selector's shift &middot; dub desk</div>
+</header>
+<div class="rule"></div>
+
+<nav class="tabs">
+  <button class="tbtn gtab on" data-g="nd" type="button">1 &middot; Drop the Needle</button>
+  <button class="tbtn gtab" data-g="sh" type="button">2 &middot; Selector's Shift</button>
+  <button class="tbtn gtab" data-g="dk" type="button">3 &middot; Dub Desk</button>
+</nav>
+
+<section class="game on" id="g-nd">
+  <h2>Drop the Needle</h2>
+  <p class="lede">The needle lands somewhere in the middle of a record from the station's own crates. Six seconds, then it lifts. Name the sound. Three wrong answers and the session ends.</p>
+  <div id="ndStage">
+    <div id="ndCover"><div id="ndYt"></div><div id="ndMask">the record is hidden<br>listen</div></div>
+    <div id="ndOpts">
+      <button class="tbtn" id="ndStart" type="button">Drop it</button>
+      <div id="ndChoices"></div>
+      <div id="ndReveal"></div>
+      <div id="ndScore"></div>
+    </div>
+  </div>
+</section>
+
+<section class="game" id="g-sh">
+  <h2>Selector's Shift</h2>
+  <p class="lede">Programme one hour of the station. Pick a block, then build a run of six genres from its crate. House rule: neighbouring genres may never jump more than 24 BPM. A valid shift goes on air: the booth plays one tune from each of your genres, in your order.</p>
+  <div id="shBlocks"></div>
+  <div id="shSlots"></div>
+  <div id="shPool"></div>
+  <div id="shMsg"></div>
+  <button class="tbtn" id="shAir" type="button" disabled>On air</button>
+  <button class="tbtn" id="shStop" type="button" style="display:none">Stop the shift</button>
+  <button class="tbtn" id="shClear" type="button">Clear</button>
+  <div id="shNow"></div>
+  <div id="shYt"></div>
+</section>
+
+<section class="game" id="g-dk">
+  <h2>Dub Desk</h2>
+  <p class="lede">The board as instrument, Tubby's way: pull the low end, open the echo, throw a phrase into space. Live performance processing in your browser; nothing is recorded, nothing is redistributed.</p>
+  <div id="dkRow">
+    <div class="dk-col">
+      <div class="dk-ctl"><button class="tbtn" id="dkPlay" type="button">Play the record</button></div>
+      <div class="dk-ctl"><label>echo send</label><input type="range" id="dkSend" min="0" max="100" value="22"></div>
+      <div class="dk-ctl"><label>echo feedback</label><input type="range" id="dkFb" min="0" max="82" value="55"></div>
+      <div class="dk-ctl"><label>echo time</label>
+        <div class="dk-time">
+          <button class="tbtn dkT on" data-t="0.28" type="button">tight</button>
+          <button class="tbtn dkT" data-t="0.42" type="button">skank</button>
+          <button class="tbtn dkT" data-t="0.56" type="button">wide</button>
+        </div>
+      </div>
+    </div>
+    <div class="dk-col">
+      <div class="dk-ctl"><label>space (spring)</label><input type="range" id="dkSpace" min="0" max="100" value="18"></div>
+      <div class="dk-ctl"><label>tone (low pass)</label><input type="range" id="dkLpf" min="0" max="100" value="100"></div>
+      <div class="dk-ctl"><label>bass</label><button class="tbtn" id="dkBass" type="button">Kill the bass</button></div>
+      <div class="dk-ctl"><label>the move</label><button id="dkThrow" class="tbtn" type="button">THROW &middot; echo out</button></div>
+    </div>
+    <div class="dk-col">
+      <canvas id="dkVu" width="300" height="54"></canvas>
+      <div class="keys">keys: [space] throw &middot; [b] bass &middot; [p] play</div>
+      <div id="dkCredit"><b>on the platter</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>played whole from the Internet Archive; the desk is yours, the record is theirs</div>
+    </div>
+  </div>
+</section>
+
+</div>
+<script src="arcade-data.js"></script>
+<script>
+"use strict";
+var $=function(id){ return document.getElementById(id); };
+document.querySelectorAll(".gtab").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".gtab").forEach(function(x){ x.classList.toggle("on", x===b); });
+    document.querySelectorAll(".game").forEach(function(g){ g.classList.remove("on"); });
+    $("g-"+b.getAttribute("data-g")).classList.add("on");
+  });
+});
+var ytReadyQ=[];
+window.onYouTubeIframeAPIReady=function(){ ytReadyQ.forEach(function(f){ f(); }); ytReadyQ=null; };
+function withYT(cb){ if(ytReadyQ===null){ cb(); } else { ytReadyQ.push(cb); } }
+(function(){ var s=document.createElement("script"); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s); })();
+
+/* ---------------- 1. drop the needle ---------------- */
+(function(){
+  var yt=null, ready=false, cur=null, lives=3, score=0, stopT=null;
+  function mkPlayer(cb){
+    if(yt){ cb(); return; }
+    withYT(function(){
+      yt=new YT.Player("ndYt", { width:"100%", height:"100%",
+        playerVars:{ autoplay:0, controls:0, rel:0, playsinline:1 },
+        events:{ onReady:function(){ ready=true; cb(); } } });
+    });
+  }
+  function pick(){ return TRACKS[Math.floor(Math.random()*TRACKS.length)]; }
+  function options(t){
+    var names={}, out=[GENRES[t.g].name];
+    names[t.g]=1;
+    var keys=Object.keys(GENRES);
+    while(out.length<4){
+      var k=keys[Math.floor(Math.random()*keys.length)];
+      if(!names[k]){ names[k]=1; out.push(GENRES[k].name); }
+    }
+    return out.sort(function(){ return Math.random()-0.5; });
+  }
+  function round(){
+    cur=pick();
+    $("ndReveal").textContent="";
+    var ch=$("ndChoices"); ch.innerHTML="";
+    options(cur).forEach(function(name){
+      var b=document.createElement("button");
+      b.className="tbtn nd-opt"; b.type="button"; b.textContent=name;
+      b.addEventListener("click", function(){ answer(b, name); });
+      ch.appendChild(b);
+    });
+    $("ndMask").innerHTML="the record is hidden<br>listening&hellip;";
+    mkPlayer(function(){
+      yt.loadVideoById({ videoId:cur.v, startSeconds:45 });
+      yt.playVideo();
+      clearTimeout(stopT);
+      stopT=setTimeout(function(){ try{ yt.pauseVideo(); }catch(e){} $("ndMask").innerHTML="the needle is up<br>name the sound"; }, 6000);
+    });
+    paint();
+  }
+  function answer(btn, name){
+    var good=GENRES[cur.g].name;
+    clearTimeout(stopT); try{ yt.pauseVideo(); }catch(e){}
+    document.querySelectorAll(".nd-opt").forEach(function(b){
+      if(b.textContent===good) b.classList.add("good");
+      b.disabled=true;
+    });
+    if(name===good){ score++; }
+    else { btn.classList.add("bad"); lives--; }
+    $("ndReveal").textContent="it was "+cur.a+" / "+cur.t+" ("+cur.y+"), "+good+".";
+    paint();
+    if(lives<=0){
+      $("ndStart").textContent="Session over. again?";
+      lives=3; score=0;
+    } else {
+      $("ndStart").textContent="Next record";
+    }
+  }
+  function paint(){ $("ndScore").textContent="score "+score+" · lives "+lives; }
+  $("ndStart").addEventListener("click", round);
+})();
+
+/* ---------------- 2. selector's shift ---------------- */
+(function(){
+  var block="afternoon", seq=[], yt=null, ready=false, playing=false, step=0, stepT=null;
+  var SLOTS=6, LIMIT=24;
+  function bpmOf(g){ return GBPM[g]||120; }
+  function paintBlocks(){
+    var el=$("shBlocks"); el.innerHTML="";
+    Object.keys(BLOCKS).forEach(function(k){
+      var b=document.createElement("button");
+      b.className="tbtn"+(k===block?" on":""); b.type="button";
+      b.textContent=BLOCKS[k].label.toLowerCase();
+      b.addEventListener("click", function(){ block=k; seq=[]; paintAll(); });
+      el.appendChild(b);
+    });
+  }
+  function paintPool(){
+    var el=$("shPool"); el.innerHTML="";
+    BLOCKS[block].genres.forEach(function(g){
+      var b=document.createElement("button");
+      b.className="tbtn"; b.type="button";
+      b.textContent=GENRES[g].name+" · "+bpmOf(g);
+      b.disabled = seq.length>=SLOTS;
+      b.addEventListener("click", function(){ if(seq.length<SLOTS){ seq.push(g); paintAll(); } });
+      el.appendChild(b);
+    });
+  }
+  function paintSlots(){
+    var el=$("shSlots"); el.innerHTML="";
+    var okAll = seq.length===SLOTS;
+    for(var i=0;i<SLOTS;i++){
+      var d=document.createElement("div");
+      d.className="sh-slot";
+      if(seq[i]){
+        var g=seq[i];
+        var bad = i>0 && Math.abs(bpmOf(g)-bpmOf(seq[i-1]))>LIMIT;
+        if(bad){ d.classList.add("bad"); okAll=false; }
+        d.innerHTML='<div class="gname">'+(i+1)+". "+GENRES[g].name+'</div>'+
+          '<div class="gbpm">'+bpmOf(g)+" bpm"+(bad?(" · jump "+Math.abs(bpmOf(g)-bpmOf(seq[i-1]))):"")+"</div>";
+        (function(ix){ d.addEventListener("click", function(){ seq.splice(ix,1); paintAll(); }); })(i);
+      } else {
+        d.innerHTML='<div class="gbpm">'+(i+1)+'. empty</div>';
+      }
+      el.appendChild(d);
+    }
+    $("shAir").disabled=!okAll;
+    $("shMsg").className= okAll ? "ok" : "";
+    $("shMsg").textContent = okAll ? "the shift holds. take it on air." :
+      (seq.length ? "click a slot to remove it; keep every jump inside 24 bpm." : "build the run: six genres, in order.");
+  }
+  function paintAll(){ paintBlocks(); paintPool(); paintSlots(); }
+  function trackFor(g){
+    var pool=TRACKS.filter(function(t){ return t.g===g; });
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+  function playStep(){
+    if(step>=seq.length){ stopShift(); $("shNow").textContent="the shift ran its hour. good hands."; return; }
+    var g=seq[step], t=trackFor(g);
+    $("shNow").textContent="on air "+(step+1)+"/"+SLOTS+": "+GENRES[g].name+" · "+t.a+" / "+t.t;
+    yt.loadVideoById({ videoId:t.v, startSeconds:40 });
+    yt.playVideo();
+    step++;
+    stepT=setTimeout(playStep, 18000);
+  }
+  function stopShift(){
+    playing=false; clearTimeout(stepT);
+    try{ yt.pauseVideo(); }catch(e){}
+    $("shAir").style.display=""; $("shStop").style.display="none";
+  }
+  $("shAir").addEventListener("click", function(){
+    function go(){ playing=true; step=0; $("shAir").style.display="none"; $("shStop").style.display=""; playStep(); }
+    if(yt && ready){ go(); return; }
+    withYT(function(){
+      yt=new YT.Player("shYt", { width:"1", height:"1",
+        playerVars:{ autoplay:0, controls:0, playsinline:1 },
+        events:{ onReady:function(){ ready=true; go(); } } });
+    });
+  });
+  $("shStop").addEventListener("click", function(){ stopShift(); $("shNow").textContent="shift stopped."; });
+  $("shClear").addEventListener("click", function(){ seq=[]; paintAll(); });
+  paintAll();
+})();
+
+/* ---------------- 3. dub desk ---------------- */
+(function(){
+  var SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+  var ac=null, el=null, nodes=null, playing=false, raf=0;
+  function ir(seconds){
+    var rate=ac.sampleRate, len=Math.floor(seconds*rate);
+    var buf=ac.createBuffer(2, len, rate);
+    for(var c=0;c<2;c++){
+      var d=buf.getChannelData(c);
+      for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len, 2.6); }
+    }
+    return buf;
+  }
+  function build(){
+    ac=new (window.AudioContext||window.webkitAudioContext)();
+    el=new Audio(SRC);
+    el.crossOrigin="anonymous"; el.loop=false;
+    var src=ac.createMediaElementSource(el);
+    var dry=ac.createGain(); dry.gain.value=1;
+    var send=ac.createGain(); send.gain.value=0.22;
+    var delay=ac.createDelay(2); delay.delayTime.value=0.42;
+    var fb=ac.createGain(); fb.gain.value=0.55;
+    var fbFilt=ac.createBiquadFilter(); fbFilt.type="bandpass"; fbFilt.frequency.value=1400; fbFilt.Q.value=0.6;
+    var wet=ac.createGain(); wet.gain.value=1;
+    var conv=ac.createConvolver(); conv.buffer=ir(2.4);
+    var convWet=ac.createGain(); convWet.gain.value=0.18;
+    var lpf=ac.createBiquadFilter(); lpf.type="lowpass"; lpf.frequency.value=18000;
+    var hpf=ac.createBiquadFilter(); hpf.type="highpass"; hpf.frequency.value=0;
+    var master=ac.createGain(); master.gain.value=0.95;
+    var ana=ac.createAnalyser(); ana.fftSize=512;
+    src.connect(dry); src.connect(send);
+    send.connect(delay); delay.connect(fbFilt); fbFilt.connect(fb); fb.connect(delay);
+    delay.connect(wet);
+    dry.connect(lpf); wet.connect(lpf);
+    lpf.connect(hpf);
+    hpf.connect(master);
+    master.connect(conv); conv.connect(convWet); convWet.connect(ac.destination);
+    master.connect(ana);
+    master.connect(ac.destination);
+    nodes={send:send, delay:delay, fb:fb, lpf:lpf, hpf:hpf, conv:convWet, ana:ana};
+    vu();
+  }
+  function vu(){
+    raf=requestAnimationFrame(vu);
+    var c=$("dkVu"), g=c.getContext("2d");
+    g.fillStyle="#07061a"; g.fillRect(0,0,c.width,c.height);
+    if(!nodes) return;
+    var data=new Uint8Array(nodes.ana.frequencyBinCount);
+    nodes.ana.getByteFrequencyData(data);
+    var bars=24, bw=c.width/bars;
+    for(var i=0;i<bars;i++){
+      var v=data[Math.floor(i*data.length/bars)]/255;
+      g.fillStyle = i<6 ? "#e8392c" : (i<14 ? "#ffb12b" : "#41d9c8");
+      g.fillRect(i*bw+2, c.height-(v*c.height), bw-4, v*c.height);
+    }
+  }
+  $("dkPlay").addEventListener("click", function(){
+    if(!ac) build();
+    if(ac.state==="suspended") ac.resume();
+    if(playing){ el.pause(); playing=false; this.textContent="Play the record"; }
+    else { el.play().catch(function(){}); playing=true; this.textContent="Lift the needle"; }
+  });
+  $("dkSend").addEventListener("input", function(){ if(nodes) nodes.send.gain.value=this.value/100; });
+  $("dkFb").addEventListener("input", function(){ if(nodes) nodes.fb.gain.value=this.value/100; });
+  $("dkSpace").addEventListener("input", function(){ if(nodes) nodes.conv.gain.value=this.value/100*0.6; });
+  $("dkLpf").addEventListener("input", function(){
+    if(!nodes) return;
+    var x=this.value/100;
+    nodes.lpf.frequency.value=400*Math.pow(45, x); /* 400 Hz a 18 kHz, curva log */
+  });
+  document.querySelectorAll(".dkT").forEach(function(b){
+    b.addEventListener("click", function(){
+      document.querySelectorAll(".dkT").forEach(function(x){ x.classList.toggle("on", x===b); });
+      if(nodes) nodes.delay.delayTime.value=parseFloat(b.getAttribute("data-t"));
+    });
+  });
+  var bassKilled=false;
+  function bass(){
+    bassKilled=!bassKilled;
+    if(nodes) nodes.hpf.frequency.value = bassKilled ? 230 : 0;
+    $("dkBass").classList.toggle("on", bassKilled);
+    $("dkBass").textContent = bassKilled ? "Bring the bass back" : "Kill the bass";
+  }
+  $("dkBass").addEventListener("click", bass);
+  function throwEcho(down){
+    if(!nodes) return;
+    if(down){ nodes._hold=nodes.send.gain.value; nodes.send.gain.value=1; }
+    else { nodes.send.gain.value = (typeof nodes._hold==="number") ? nodes._hold : ($("dkSend").value/100); }
+  }
+  $("dkThrow").addEventListener("pointerdown", function(){ throwEcho(true); });
+  $("dkThrow").addEventListener("pointerup", function(){ throwEcho(false); });
+  $("dkThrow").addEventListener("pointerleave", function(){ throwEcho(false); });
+  document.addEventListener("keydown", function(ev){
+    if(ev.target.tagName==="INPUT") return;
+    if(!$("g-dk").classList.contains("on")) return;
+    if(ev.key===" "){ ev.preventDefault(); throwEcho(true); }
+    if(ev.key==="b") bass();
+    if(ev.key==="p") $("dkPlay").click();
+  });
+  document.addEventListener("keyup", function(ev){
+    if(ev.key===" " && $("g-dk").classList.contains("on")) throwEcho(false);
+  });
+})();
+</script>
+</body>
+</html>
