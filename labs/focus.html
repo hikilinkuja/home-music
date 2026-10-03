@@ -39,7 +39,7 @@ body.idle .chrome{opacity:0; pointer-events:none}
 #temps{margin-left:auto; display:flex; gap:6px}
 
 /* consola lateral */
-#side{position:fixed; right:14px; top:60px; z-index:40; width:252px;
+#side{position:fixed; right:14px; top:60px; z-index:40; width:312px; max-height:calc(100vh - 80px); overflow-y:auto;
   background:rgba(5,4,16,.84); border:1px solid var(--line); padding:14px 14px 10px}
 #side h4{margin:14px 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
 #side h4:first-child{margin-top:0}
@@ -78,7 +78,7 @@ body.sealed #sealHint{display:block}
   font-size:13px; letter-spacing:.24em; color:rgba(255,177,43,.55)}
 #pomoFloat.show{display:block}
 body.noidle .chrome{opacity:1 !important; pointer-events:auto !important}
-.cfg{display:flex; align-items:center; gap:7px; margin:0 0 7px}
+.cfg{display:flex; align-items:center; gap:7px; margin:0 0 9px; flex-wrap:wrap}
 .cfg label{font-size:9px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase}
 .cfg select{background:#07061a; border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:10px; padding:3px 5px}
@@ -142,6 +142,8 @@ body.noidle .chrome{opacity:1 !important; pointer-events:auto !important}
     <input type="range" id="fCk" min="0" max="100" value="20"></div>
   <div class="fader"><label><span>rain on the window</span><span id="vRn">0</span></label>
     <input type="range" id="fRn" min="0" max="100" value="0"></div>
+  <div class="fader"><label><span>fireplace</span><span id="vFp">0</span></label>
+    <input type="range" id="fFp" min="0" max="100" value="0"></div>
   <div class="fader"><label><span>room tone</span><span id="vRm">14</span></label>
     <input type="range" id="fRm" min="0" max="100" value="14"></div>
 
@@ -307,7 +309,12 @@ $("blackRoom").addEventListener("change", function(){
 pomoPaint();
 
 /* ---------------- os cinco toques da casa (sintetizados, nada gravado) ---------------- */
-function rctx(){ sndInit(); return snd.ac; }
+function rctx(){
+  sndInit();
+  if(!snd.ac){ try{ snd.ac=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if(snd.ac && snd.ac.state==="suspended"){ try{ snd.ac.resume(); }catch(e){} }
+  return snd.ac;
+}
 function ringPlay(which){
   var ac=rctx(); if(!ac) return;
   var t=ac.currentTime+.02;
@@ -395,59 +402,50 @@ function ringsPaint(){
   }
 }
 
-/* ---------------- mesa de ruido da casa (gerada, nada gravado) ---------------- */
-var snd={ ac:null, ck:null, rn:null, rm:null, duck:1 };
-function noiseBuf(ac, secs, fn){
-  var len=Math.floor(ac.sampleRate*secs), b=ac.createBuffer(1, len, ac.sampleRate), d=b.getChannelData(0);
-  for(var i=0;i<len;i++){ d[i]=fn(i, len); }
-  return b;
+/* ---------------- mesa de ruido da casa: os discos escolhidos (CC0) ---------------- */
+var SMP={
+  ck:"https://cdn.freesound.org/previews/719/719879_7597896-hq.mp3",
+  rn:"https://cdn.freesound.org/previews/869/869851_19205925-hq.mp3",
+  fp:"https://cdn.freesound.org/previews/484/484338_5902878-hq.mp3"
+};
+var snd={ ac:null, els:{}, rm:null, duck:1 };
+function mkLoop(url){
+  var a=new Audio(url); a.loop=true; a.volume=0; a.preload="auto";
+  return a;
 }
 function sndInit(){
-  if(snd.ac) return;
-  var ac=snd.ac=new (window.AudioContext||window.webkitAudioContext)();
-  /* chuva: ruido branco filtrado, leve tremor */
-  var rnSrc=ac.createBufferSource();
-  rnSrc.buffer=noiseBuf(ac, 4, function(){ return Math.random()*2-1; });
-  rnSrc.loop=true;
-  var rnF=ac.createBiquadFilter(); rnF.type="bandpass"; rnF.frequency.value=2600; rnF.Q.value=0.4;
-  var rnG=ac.createGain(); rnG.gain.value=0;
-  rnSrc.connect(rnF).connect(rnG).connect(ac.destination); rnSrc.start();
-  /* room tone: brown noise fundo */
-  var last=0;
-  var rmSrc=ac.createBufferSource();
-  rmSrc.buffer=noiseBuf(ac, 4, function(){ last=(last+(Math.random()*2-1)*.02); last*=.998; return last*3.2; });
-  rmSrc.loop=true;
-  var rmF=ac.createBiquadFilter(); rmF.type="lowpass"; rmF.frequency.value=320;
-  var rmG=ac.createGain(); rmG.gain.value=0;
-  rmSrc.connect(rmF).connect(rmG).connect(ac.destination); rmSrc.start();
-  /* crackle: estalidos esparsos */
-  var ckG=ac.createGain(); ckG.gain.value=0;
-  var ckF=ac.createBiquadFilter(); ckF.type="bandpass"; ckF.frequency.value=4200; ckF.Q.value=0.8;
-  ckF.connect(ckG).connect(ac.destination);
-  (function pop(){
-    if(snd.ac){
-      var n=ac.createBufferSource();
-      n.buffer=noiseBuf(ac, 0.02, function(i,l){ return (Math.random()*2-1)*(1-i/l); });
-      var g=ac.createGain(); g.gain.value=(0.2+Math.random()*0.8);
-      n.connect(g).connect(ckF); n.start();
-    }
-    setTimeout(pop, 40+Math.random()*260);
-  })();
-  snd.ck=ckG; snd.rn=rnG; snd.rm=rmG;
+  if(snd.els.ck) return;
+  snd.els.ck=mkLoop(SMP.ck);
+  snd.els.rn=mkLoop(SMP.rn);
+  snd.els.fp=mkLoop(SMP.fp);
+  Object.keys(snd.els).forEach(function(k){ var p=snd.els[k].play(); if(p&&p.catch)p.catch(function(){}); });
+  /* room tone continua da casa: brown noise fundo, gerado */
+  try{
+    var ac=snd.ac=new (window.AudioContext||window.webkitAudioContext)();
+    var last=0, len=Math.floor(ac.sampleRate*4), b=ac.createBuffer(1,len,ac.sampleRate), d=b.getChannelData(0);
+    for(var i=0;i<len;i++){ last=(last+(Math.random()*2-1)*.02); last*=.998; d[i]=last*3.2; }
+    var src=ac.createBufferSource(); src.buffer=b; src.loop=true;
+    var f=ac.createBiquadFilter(); f.type="lowpass"; f.frequency.value=320;
+    var g=ac.createGain(); g.gain.value=0;
+    src.connect(f).connect(g).connect(ac.destination); src.start();
+    snd.rm=g;
+  }catch(e){}
   apply();
 }
 function apply(){
-  if(!snd.ac) return;
+  if(!snd.els.ck) return;
   var dk=snd.duck;
-  snd.ck.gain.value=($("fCk").value/100)*0.5*dk;
-  snd.rn.gain.value=($("fRn").value/100)*0.33*dk;
-  snd.rm.gain.value=($("fRm").value/100)*0.5*dk;
+  snd.els.ck.volume=Math.min(1, ($("fCk").value/100)*.9*dk);
+  snd.els.rn.volume=Math.min(1, ($("fRn").value/100)*.9*dk);
+  snd.els.fp.volume=Math.min(1, ($("fFp").value/100)*.9*dk);
+  if(snd.rm) snd.rm.gain.value=($("fRm").value/100)*.5*dk;
   $("vCk").textContent=$("fCk").value;
   $("vRn").textContent=$("fRn").value;
+  $("vFp").textContent=$("fFp").value;
   $("vRm").textContent=$("fRm").value;
 }
 function duck(on){ snd.duck = on ? 0.35 : 1; apply(); }
-["fCk","fRn","fRm"].forEach(function(id){
+["fCk","fRn","fFp","fRm"].forEach(function(id){
   $(id).addEventListener("input", function(){ sndInit(); apply(); });
   $(id).addEventListener("pointerdown", sndInit);
 });
@@ -484,10 +482,15 @@ function seal(on){
   } else {
     if(document.fullscreenElement) document.exitFullscreen().catch(function(){});
     if(wlock){ try{ wlock.release(); }catch(e){} wlock=null; }
+    document.body.classList.remove("idle");
   }
 }
 $("sealBtn").addEventListener("click", function(){ seal(true); });
 document.addEventListener("keydown", function(ev){ if(ev.key==="Escape" && sealed) seal(false); });
+/* o Esc nativo sai do ecra inteiro sem chegar ao teclado: apanhar a saida e quebrar o selo */
+document.addEventListener("fullscreenchange", function(){
+  if(!document.fullscreenElement && sealed) seal(false);
+});
 </script>
 </body>
 </html>
