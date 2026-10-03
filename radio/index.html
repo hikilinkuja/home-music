@@ -1,0 +1,3109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Music</title>
+<meta name="description" content="Home Music. A 24-hour selector: dub to jungle to techno, performed by the rig, programmed by the clock.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+/* Layout: a full-screen performing rig; the radio chrome floats over it. */
+:root{
+  --ink:#07070e;
+  --panel:#0d0d19;
+  --panel2:#131022;
+  --line:#242138;
+  --paper:#f4ecd9;
+  --dim:#8d90b0;
+  --red:#e8392c;
+  --red-deep:#7e140f;
+  --amber:#ffb12b;
+  --teal:#41d9c8;
+  --alu:#cdd2e4;
+  --display:'Anton', 'Arial Narrow', sans-serif;
+  --mono:'IBM Plex Mono', 'Courier New', monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--ink); color:var(--paper);
+  font-family:var(--mono); font-size:14px; line-height:1.5;
+  overflow:hidden;
+}
+::selection{background:var(--red); color:var(--paper)}
+a{color:var(--amber); text-decoration:none}
+a:hover{color:var(--paper)}
+button{font-family:var(--mono)}
+:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
+
+#px{position:fixed; inset:0; z-index:1; display:block; width:100vw; height:100vh;
+  object-fit:contain; image-rendering:pixelated; background:#080714; touch-action:none}
+
+/* ---------- splash + MC intro : sob a lua ---------- */
+#splash{
+  position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0.22) 0 2px, rgba(0,0,0,0) 2px 4px),
+    radial-gradient(circle at 74% 26%, rgba(255,177,43,0.16), rgba(0,0,0,0) 38%),
+    rgba(6,5,17,0.82);
+  transition:opacity 1s ease;
+}
+#splash.off{opacity:0; pointer-events:none}
+.sp-inner{text-align:center; padding:20px; max-width:560px}
+.sp-bar{width:84px; height:3px; background:var(--amber); margin:0 auto 20px; box-shadow:0 0 10px rgba(255,177,43,.6)}
+.sp-title{
+  font-family:var(--mono); font-weight:700; font-size:clamp(30px,7vw,44px); line-height:1.1;
+  letter-spacing:.34em; margin:0 0 10px; color:var(--paper); text-transform:uppercase;
+  text-shadow:3px 3px 0 #000, 0 0 18px rgba(255,177,43,.25);
+}
+.sp-sub{color:var(--teal); font-size:11px; letter-spacing:.3em; text-transform:uppercase; margin-bottom:30px}
+#tapHint{display:none; margin-top:30px; color:var(--amber); font-size:11px; letter-spacing:.34em;
+  text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
+#tapHint.on{display:block}
+@keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
+/* a camada vj da abertura: plasma liquido mate, por cima do palco, por baixo do veu;
+   sem pixelated: o upscale bilinear da a suavidade liquida */
+#vj{position:fixed; inset:0; z-index:2; width:100vw; height:100vh; display:none;
+  background:#000; opacity:1; transition:opacity 2.6s linear}
+#vj.on{display:block}
+#vj.out{opacity:0}
+#mc{transition:opacity 1.4s ease}
+#mc{display:none; text-align:left; min-height:200px}
+#mc.on{display:block}
+.mc-line{
+  font-size:14px; letter-spacing:.14em; color:var(--paper); opacity:0; transform:translateY(8px);
+  transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase;
+}
+.mc-line.show{opacity:1; transform:none}
+.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 #000}
+#skipIntro{
+  position:fixed; right:18px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:81;
+  display:none; cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
+  font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:8px 13px;
+}
+#skipIntro.on{display:block}
+#skipIntro:hover{color:var(--amber); border-color:var(--amber)}
+/* o disco de abertura: veu negro que clareia com a musica */
+#introVeil{position:fixed; inset:0; z-index:79; background:#000; opacity:0;
+  pointer-events:none; transition:opacity .3s linear; display:none}
+#introVeil.on{display:block}
+#splash.dark{background:transparent}
+#introCredit{position:fixed; left:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  z-index:81; display:none; color:var(--dim); font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; text-align:left; line-height:1.9; opacity:0; transition:opacity 1.2s ease}
+#introCredit.on{display:block; opacity:1}
+#introCredit b{color:var(--amber); font-weight:500}
+
+/* ---------- top bar ---------- */
+#app{display:none}
+#app.on{display:block}
+/* durante a abertura, a moldura da radio fica invisivel (sem display:none,
+   para o leitor montar); entra em fade quando o veu abre */
+#top,#hud,#needle{transition:opacity 1.4s ease}
+#app.intro #top, #app.intro #hud, #app.intro #needle, #app.intro #toast{opacity:0; pointer-events:none}
+#top{
+  position:fixed; left:0; right:0; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:calc(10px + env(safe-area-inset-top, 0px)) 18px 10px;
+  background:linear-gradient(to bottom, rgba(7,7,14,.88), rgba(7,7,14,0));
+}
+.brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+.brand b{font-family:var(--display); font-weight:400; font-size:22px; letter-spacing:.04em; color:var(--paper); text-shadow:2px 2px 0 var(--red); white-space:nowrap}
+.brand span{color:var(--teal); font-size:10px; letter-spacing:.34em; white-space:nowrap; text-transform:uppercase}
+.onair{display:flex; align-items:center; gap:9px; color:var(--dim); font-size:11px; letter-spacing:.18em; text-transform:uppercase; text-align:center}
+.onair .dot{width:9px; height:9px; border-radius:50%; background:var(--red); box-shadow:0 0 10px var(--red); animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.35}}
+#blockLabel{color:var(--paper)}
+.hdr-btns{display:flex; align-items:center; gap:8px}
+#clock{font-size:15px; color:var(--amber); letter-spacing:.14em; font-variant-numeric:tabular-nums; margin-right:6px}
+.tbtn{
+  cursor:pointer; background:rgba(7,7,14,.55); border:1px solid var(--line); color:var(--dim);
+  padding:6px 11px; letter-spacing:.18em; font-size:10px; text-transform:uppercase;
+  font-family:var(--mono); text-decoration:none; display:inline-flex; align-items:center;
+}
+.tbtn:hover,.tbtn.on{color:var(--amber); border-color:var(--amber)}
+
+/* ---------- HUD : monitor + now playing ---------- */
+#hud{
+  position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index:30; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; pointer-events:none;
+}
+#hud > *{pointer-events:auto}
+.vidpanel{
+  flex:0 0 356px; max-width:356px; background:var(--panel);
+  border:2px solid #3a3560; box-shadow:0 0 0 1px #090812, 0 14px 40px rgba(0,0,0,.6);
+  border-radius:8px; overflow:hidden;
+}
+.vp-top{display:flex; align-items:center; justify-content:space-between; padding:5px 9px;
+  border-bottom:1px solid var(--line); background:linear-gradient(#1b1830,#12101f)}
+.vp-top .lab{font-size:9px; letter-spacing:.26em; color:var(--dim); text-transform:uppercase}
+.vp-top .dot{width:7px; height:7px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); animation:blink 1.4s infinite}
+.vp-screen{position:relative; aspect-ratio:16/10; min-height:202px; background:#000}
+.yt-slot{position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease; pointer-events:none}
+.yt-slot.live{opacity:1; pointer-events:auto}
+.yt-slot iframe{width:100%; height:100%}
+#standby{
+  position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; gap:6px;
+  align-items:center; justify-content:center; text-align:center; padding:8px;
+  background:repeating-linear-gradient(45deg, #0b0a14 0 14px, #0e0c1a 14px 28px);
+  color:var(--dim); letter-spacing:.2em; font-size:10px; text-transform:uppercase;
+  transition:opacity .8s ease;
+}
+#standby .big{font-family:var(--display); font-size:20px; color:var(--paper); letter-spacing:.06em; text-shadow:2px 2px 0 var(--red)}
+#standby.off{opacity:0; pointer-events:none}
+.vp-ctrl{display:flex; align-items:center; gap:9px; padding:7px 9px; border-top:1px solid var(--line)}
+#vol{accent-color:var(--amber); width:100%; min-width:60px}
+#muteBtn{padding:5px 9px}
+
+#now{
+  flex:1 1 300px; min-width:272px; max-width:520px;
+  background:linear-gradient(135deg, rgba(13,13,25,.92), rgba(19,16,34,.92));
+  border:1px solid var(--line); border-left:4px solid var(--blk, var(--amber));
+  padding:12px 16px 12px; backdrop-filter:blur(5px);
+}
+.chiprow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+#gChip{font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:3px 9px; color:var(--ink); background:var(--blk, var(--amber)); font-weight:700}
+#tYear{color:var(--dim); font-size:12px; letter-spacing:.2em}
+#tBpm{color:var(--amber); font-size:10px; letter-spacing:.22em; border:1px solid rgba(255,177,43,.35); padding:2px 6px}
+#tArtist{font-family:var(--display); font-weight:400; font-size:clamp(22px, 3vw, 30px); margin:6px 0 0; line-height:1.05; text-transform:uppercase; letter-spacing:.015em}
+#tTitle{color:var(--amber); font-size:15px; margin:3px 0 7px; letter-spacing:.04em}
+#tBlurb{color:var(--paper); opacity:.82; margin:0 0 10px; font-size:12.5px; max-height:5.6em; overflow-y:auto}
+.t-links{display:flex; gap:9px; flex-wrap:wrap}
+.t-links a{
+  border:1px solid var(--line); padding:5px 10px; font-size:10px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--paper); background:rgba(255,255,255,.03);
+}
+.t-links a:hover{border-color:var(--amber); color:var(--amber)}
+
+#needle{
+  position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:60;
+  display:none; cursor:pointer; border:2px solid var(--amber); width:auto;
+  color:var(--amber); background:rgba(7,7,14,.9);
+  font-size:13px; letter-spacing:.3em; text-transform:uppercase; padding:16px 26px;
+}
+#needle.on{display:block}
+
+/* ---------- side panels ---------- */
+.panel{
+  position:fixed; top:0; bottom:0; width:min(380px, 94vw); z-index:70;
+  background:rgba(10,10,20,.97); border-color:var(--line);
+  padding:calc(18px + env(safe-area-inset-top, 0px)) 20px 24px; overflow-y:auto;
+  transition:transform .35s ease;
+}
+#genrePanel{left:0; border-right:1px solid var(--line); transform:translateX(-102%); width:min(640px,96vw)}
+@media (min-width:720px){
+  #genrePanel #gExt{display:grid; grid-template-columns:1fr 1fr; gap:2px 20px; align-items:start}
+  #genrePanel #gExt blockquote{grid-column:1/-1}
+  #genrePanel #gExt .gx-note{grid-column:1/-1}
+}
+#dancePanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
+#histPanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
+.panel.on, #genrePanel.on, #histPanel.on, #dancePanel.on{transform:translateX(0)}
+.panel h3{font-family:var(--display); font-weight:400; letter-spacing:.06em; font-size:20px; margin:4px 0 2px; text-transform:uppercase; text-shadow:2px 2px 0 var(--red)}
+.panel .pclose{position:absolute; top:14px; right:14px; background:none; border:1px solid var(--line); color:var(--dim); cursor:pointer; padding:4px 9px}
+.panel .psub{color:var(--dim); font-size:10px; letter-spacing:.3em; text-transform:uppercase; margin:0 0 14px}
+#gName{color:var(--amber); font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin:14px 0 6px}
+#gNote{color:var(--paper); opacity:.85; font-size:13px}
+#gTrackCount{color:var(--dim); font-size:11px; margin-top:12px}
+.g-links{display:flex; flex-direction:column; gap:8px; margin-top:18px}
+.g-links a{font-size:11px; letter-spacing:.14em; text-transform:uppercase; border:1px solid var(--line); padding:8px 11px; color:var(--paper); background:rgba(255,255,255,.03)}
+.g-links a:hover{border-color:var(--amber); color:var(--amber)}
+.credits{margin-top:26px; border-top:1px dashed var(--line); padding-top:14px; color:var(--dim); font-size:11px}
+.credits b{color:var(--paper); font-weight:500}
+#histList{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+#histList li{border-bottom:1px dashed var(--line); padding-bottom:10px}
+#histList .h-time{color:var(--dim); font-size:10px; letter-spacing:.2em}
+#histList .h-art{color:var(--paper); font-weight:700; font-size:13px}
+#histList .h-tit{color:var(--amber); font-size:12px}
+#histList .h-links{margin-top:3px; font-size:10px; letter-spacing:.14em}
+#histList .h-links a{margin-right:12px}
+.h-empty{color:var(--dim); font-size:12px}
+
+/* ---------- the dance nearby + painel estendido ---------- */
+.dance-row{display:flex; gap:8px; margin:0 0 12px}
+#danceCity{flex:1; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.08em}
+.dance-list{list-style:none; margin:0; padding:0}
+.dance-list li{padding:8px 0; border-bottom:1px dotted var(--line)}
+.dance-list a{color:var(--teal); text-decoration:none; font-size:12px}
+.dance-list a:hover{color:var(--amber)}
+.dance-note{color:var(--dim); font-size:10.5px; letter-spacing:.06em; line-height:1.7; margin-top:10px}
+.dance-meta{display:block; color:var(--dim); font-size:9.5px; letter-spacing:.08em; margin-top:2px}
+.dance-more{display:block; color:var(--amber); font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 0}
+
+#gExt{margin-top:16px; border-top:1px dashed var(--line); padding-top:12px}
+#gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
+  background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
+#gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:9.5px;
+  letter-spacing:.14em; text-transform:uppercase}
+#gExt blockquote cite a{color:var(--dim)}
+.gx-h{font-size:10px; letter-spacing:.26em; text-transform:uppercase; color:var(--amber); margin:12px 0 6px}
+.gx-list{list-style:none; margin:0; padding:0}
+.gx-list li{padding:5px 0; font-size:11.5px; border-bottom:1px dotted var(--line)}
+.gx-list li a{color:var(--teal); text-decoration:none}
+.gx-list li span{display:block; color:var(--dim); font-size:10px; letter-spacing:.08em}
+.gx-p{color:#c9c4d8; font-size:11.5px; line-height:1.65; margin:0}
+.gx-p a{color:var(--teal); text-decoration:none}
+.gx-note{color:var(--dim); font-size:10px; letter-spacing:.08em; margin:12px 0 0}
+
+
+/* ---------- a prateleira das mixtapes: gaveta sobre a emissao ---------- */
+.drawer{position:fixed; inset:3% 3.5%; z-index:74; display:none; overflow:auto;
+  background:rgba(6,5,17,.97); border:1px solid var(--amber); padding:0}
+.drawer.on{display:block}
+.dw-in{padding:24px 26px 30px; max-width:860px; margin:0 auto; position:relative}
+.dw-title{margin:0 0 4px; font-size:16px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+.dw-sub{margin:0 0 18px; color:var(--dim); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; line-height:1.8}
+.dw-tape{border:1px solid var(--line); background:rgba(13,11,28,.85); padding:14px 16px; margin:0 0 16px}
+.dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
+.dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
+.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+/* soundcloud: cromo nativo; o widget fica dobrado a 0px e so abre como ultimo recurso */
+.schost{height:0; overflow:hidden; transition:height .4s ease}
+.schost.unfold{height:166px; margin-top:8px}
+.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.scrow{display:flex; align-items:center; gap:10px; margin-top:9px}
+.scbar{flex:1; height:4px; background:rgba(244,241,231,.14); cursor:pointer; position:relative}
+.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber, #ffb12b)}
+.sctime{font-size:10px; letter-spacing:.08em; color:var(--dim); min-width:72px; text-align:right}
+.sclink{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
+.sclink:hover{color:var(--paper)}
+
+.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
+.dw-yt iframe{width:100%; height:100%}
+.dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:#04030c}
+.dw-ctl{display:flex; gap:8px; align-items:center; padding:9px 0 0}
+.dw-now{color:var(--amber); font-size:10px; letter-spacing:.1em}
+.dw-list{list-style:none; margin:10px 0 0; padding:0; counter-reset:dw}
+.dw-list li{counter-increment:dw; padding:6px 0; border-bottom:1px dotted var(--line);
+  font-size:11.5px; color:#c9c4d8; cursor:pointer}
+.dw-list li::before{content:counter(dw,decimal-leading-zero)"  "; color:var(--dim)}
+.dw-list li.on{color:var(--amber)}
+.dw-list li:hover{color:var(--amber)}
+
+/* ---------- earn the skip: o desafio do tempo ---------- */
+#skill{position:fixed; inset:0; z-index:80; display:none; align-items:center; justify-content:center;
+  background:rgba(3,2,10,.82)}
+#skill.on{display:flex}
+.sk-card{position:relative; width:min(380px, 92vw); background:#0b0918; border:1px solid var(--amber);
+  padding:22px 22px 18px; text-align:center}
+.sk-title{font-size:14px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin-bottom:6px}
+.sk-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); text-transform:uppercase; line-height:1.8; margin-bottom:14px}
+.sk-target{font-size:11px; letter-spacing:.2em; color:var(--paper); margin-bottom:12px}
+.sk-target b{color:var(--teal); font-size:15px}
+#skPad{width:100%; height:92px; cursor:pointer; background:rgba(255,177,43,.07); border:2px solid var(--amber);
+  color:var(--amber); font-size:16px; letter-spacing:.4em; text-transform:uppercase; font-family:var(--mono)}
+#skPad:active{background:var(--amber); color:#060511}
+#skPad:disabled{opacity:.35; cursor:not-allowed}
+.sk-meter{margin-top:10px; font-size:12px; letter-spacing:.2em; color:var(--paper)}
+.sk-meter b{color:var(--amber)}
+.sk-dots{display:flex; gap:7px; justify-content:center; margin-top:10px}
+.sk-dots i{width:9px; height:9px; background:#241d3c; display:block}
+.sk-dots i.f{background:var(--teal)}
+.sk-msg{min-height:18px; margin-top:12px; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
+.sk-msg.ok{color:var(--teal)} .sk-msg.bad{color:var(--red)}
+.sk-close{position:absolute; right:8px; top:6px; background:none; border:none; color:var(--dim);
+  font-size:16px; cursor:pointer}
+
+#toast{
+  position:fixed; left:50%; top:calc(64px + env(safe-area-inset-top, 0px)); transform:translate(-50%, -140px); z-index:75;
+  visibility:hidden;
+  background:var(--panel2); border:1px solid var(--amber); color:var(--amber);
+  padding:10px 18px; font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  transition:transform .4s ease; max-width:92vw; text-align:center;
+}
+#toast.on{transform:translate(-50%, 0); visibility:visible}
+
+@media (max-width:700px){
+  .brand b{font-size:17px}
+  .brand span{display:none}
+  .onair{display:none}
+  #clock{font-size:13px}
+  .vidpanel{flex-basis:328px; max-width:328px}
+  #now{min-width:200px}
+  #tBlurb{max-height:4.4em}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s !important; transition-duration:.001s !important}
+}
+</style>
+</head>
+<body>
+<!-- ============ SPLASH ============ -->
+<canvas id="vj" width="160" height="90"></canvas>
+<div id="introVeil"></div>
+<div id="splash">
+  <div class="sp-inner">
+    <div id="mc" aria-live="polite"></div>
+    <div id="tapHint" role="button" tabindex="0">tap for sound</div>
+    <button id="skipIntro" type="button">skip the intro &raquo;</button>
+    <div id="introCredit"><b>opening tune</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive</div>
+  </div>
+</div>
+
+<!-- ============ STAGE ============ -->
+<canvas id="px" width="320" height="180"></canvas>
+
+<!-- ============ APP CHROME ============ -->
+<div id="app">
+  <header id="top">
+    <div class="brand"><b>HOME MUSIC</b><span>24-hour selector</span></div>
+    <div class="onair"><span class="dot"></span><span class="lbl">on air &middot; </span><span id="blockLabel">&hellip;</span></div>
+    <div class="hdr-btns">
+      <div id="clock">--:--</div>
+      <button class="tbtn" id="genreBtn" type="button">The sound</button>
+      <button class="tbtn" id="histBtn" type="button">Session log</button>
+      <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
+      <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
+    </div>
+  </header>
+
+  <div id="hud">
+    <div class="vidpanel">
+      <div class="vp-top"><span class="lab">Live feed &middot; monitor 1</span><span class="dot"></span></div>
+      <div class="vp-screen">
+        <div class="yt-slot" id="slotA"><div id="ytA"></div></div>
+        <div class="yt-slot" id="slotB"><div id="ytB"></div></div>
+        <div id="standby">
+          <div class="big">Home Music</div>
+          <div id="standbyMsg">tuning&hellip;</div>
+        </div>
+      </div>
+      <div class="vp-ctrl">
+        <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
+        <button class="tbtn" id="skipBtn" type="button" title="earn the skip">Skip</button>
+        <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
+      </div>
+    </div>
+
+    <section id="now" aria-live="polite">
+      <div class="chiprow">
+        <span id="gChip">&hellip;</span>
+        <span id="tYear"></span>
+        <span id="tBpm"></span>
+      </div>
+      <h2 id="tArtist">Warming up the amps</h2>
+      <div id="tTitle">&nbsp;</div>
+      <p id="tBlurb">The selector is checking the clock and pulling tonight's crate.</p>
+      <div class="t-links">
+        <a id="aYT" href="#" target="_blank" rel="noopener">&#9654; YouTube</a>
+        <a id="aSP" href="#" target="_blank" rel="noopener">&#9678; Spotify</a>
+        <a id="aSrc" href="#" target="_blank" rel="noopener" hidden>&#9636; Liner source</a>
+        <button class="tbtn" id="danceBtn" type="button">&#9737; The dance nearby</button>
+      </div>
+    </section>
+  </div>
+
+  <button id="needle" type="button">touch to drop the needle</button>
+
+  <aside id="genrePanel" class="panel" aria-label="about this genre">
+    <button class="pclose" data-close="genrePanel" type="button">&times;</button>
+    <h3>The Sound</h3>
+    <p class="psub">what you are hearing, and why</p>
+    <div id="gName">&hellip;</div>
+    <p id="gNote">&hellip;</p>
+    <div id="gTrackCount"></div>
+    <div class="g-links">
+      <a id="gWiki" href="#" target="_blank" rel="noopener">This genre on Wikipedia &nearr;</a>
+      <a id="gIshkur" href="https://music.ishkur.com/" target="_blank" rel="noopener">The full genre map: Ishkur's Guide &nearr;</a>
+    </div>
+    <div id="gExt" hidden></div>
+    <div class="credits">
+      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. Opening tune: Koncrete Roots, Sound Killah, from Dub ina Midlands (Dubophonic, 2014), licensed CC BY-NC-ND 4.0, streamed whole and unedited from the Internet Archive. The rite of the 45, performed whole under the moon: jacket out of the stash, record out of its paper sleeve, the cover on display while it plays, needle down, tempo set, the fade, and the spent record sleeved and shelved again. Every step is a drawn pose fired by the radio's own engine. Just watch. Shortcuts: [&rarr;] next &middot; [m] mute.
+    </div>
+  </aside>
+
+  <aside id="dancePanel" class="panel" aria-label="events near you">
+    <button class="pclose" data-close="dancePanel" type="button">&times;</button>
+    <h3>The Dance Nearby</h3>
+    <p class="psub">rooms playing in this spirit, around you</p>
+    <div class="dance-row">
+      <input id="danceCity" type="text" placeholder="your city" aria-label="city">
+      <button class="tbtn" id="danceGo" type="button">Search</button>
+    </div>
+    <ul id="danceList" class="dance-list"></ul>
+    <p id="danceNote" class="dance-note"></p>
+  </aside>
+
+  <aside id="histPanel" class="panel" aria-label="session history">
+    <button class="pclose" data-close="histPanel" type="button">&times;</button>
+    <h3>Session Log</h3>
+    <p class="psub">everything played since you tuned in</p>
+    <ul id="histList"><li class="h-empty">Nothing yet. The needle just dropped.</li></ul>
+  </aside>
+
+
+  <div id="mixPanel" class="drawer" aria-label="mixtapes">
+    <div class="dw-in">
+      <button class="pclose" id="mixClose" type="button">&times;</button>
+      <h3 class="dw-title">Mixtapes</h3>
+      <p class="dw-sub">sessions by the founders. the radio keeps playing under this shelf; press play on a tape and the radio steps aside until you close it.</p>
+      <section class="dw-tape">
+        <h4>liquid dnb for street market wandering <span>Weronika &middot; 15.06.2026 &middot; liquid dnb</span></h4>
+        <div class="scrow">
+          <button class="tbtn scPlay" id="scPlay0" data-sc="0" type="button">Play</button>
+          <div class="scbar" id="scBar0" data-sc="0"><i class="scfill" id="scFill0"></i></div>
+          <span class="sctime" id="scTime0">--:-- / --:--</span>
+          <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-06-15" target="_blank" rel="noopener">SoundCloud &nearr;</a>
+        </div>
+        <div class="schost" id="scHost0"><iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
+      </section>
+      <section class="dw-tape">
+        <h4>UNDERGROUND BASS SOUNDz <span>Weronika &middot; 28.08.2026 &middot; uk bass / 140 / dubby</span></h4>
+        <div class="scrow">
+          <button class="tbtn scPlay" id="scPlay1" data-sc="1" type="button">Play</button>
+          <div class="scbar" id="scBar1" data-sc="1"><i class="scfill" id="scFill1"></i></div>
+          <span class="sctime" id="scTime1">--:-- / --:--</span>
+          <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-08-28" target="_blank" rel="noopener">SoundCloud &nearr;</a>
+        </div>
+        <div class="schost" id="scHost1"><iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
+      </section>
+      <section class="dw-tape">
+        <h4>Tubby's Lesson <span>the founders &middot; dub 1975-83</span></h4>
+        <div class="dw-yt"><div id="mxYt2"></div><div class="dw-idle" id="mxIdle2">seven records, needle lifted between each one</div></div>
+        <div class="dw-ctl">
+          <button class="tbtn" id="mxPlay2" type="button">Play</button>
+          <button class="tbtn" id="mxNext2" type="button">Next</button>
+          <span class="dw-now" id="mxNow2"></span>
+        </div>
+        <ol class="dw-list" id="mxList2"></ol>
+      </section>
+    </div>
+  </div>
+
+  <div id="skill" role="dialog" aria-label="earn the skip">
+    <div class="sk-card">
+      <button class="sk-close" id="skClose" type="button">&times;</button>
+      <div class="sk-title">Earn the skip</div>
+      <div class="sk-sub">no free rides on this station. tap the pulse of the tune now playing: eight taps, inside three BPM. half or double time counts.</div>
+      <div class="sk-target">TARGET <b id="skTarget">--</b> BPM</div>
+      <button id="skPad" type="button">Tap</button>
+      <div class="sk-meter">YOURS <b id="skBpm">--</b></div>
+      <div class="sk-dots" id="skDots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="sk-msg" id="skMsg"></div>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+</div>
+<script>
+/* ================= PROGRAMME DATA ================= */
+const BLOCKS = {
+  morning:   { label: "MORNING PROGRAMME",   range: "06:00 - 13:00", accent: "#ffb12b",
+               genres: ["reggae","dub","ska_rocksteady","lofi","ambient","ambient_techno","dub_techno"] },
+  afternoon: { label: "AFTERNOON PROGRAMME", range: "13:00 - 20:00", accent: "#41d9c8",
+               genres: ["lofi_house","liquid","intelligent_dnb","atmospheric_jungle","breakbeat","uk_garage","house"] },
+  night:     { label: "NIGHT PROGRAMME",     range: "20:00 - 06:00", accent: "#e8392c",
+               genres: ["hypnotic_techno","deep_house","house","dub_techno","uk_garage","ragga_jungle","oldskool_hardcore","dubstep"] }
+};
+
+const ISHKUR = "https://music.ishkur.com/";
+
+const GENRES = {
+  reggae: { name: "Roots Reggae", w: "https://en.wikipedia.org/wiki/Roots_reggae", note: "Kingston, the eternal downbeat. Roots reggae is church for people whose church has a bassline: one drop drums, bubbling organ, singers testifying about Babylon while the sun climbs. Island Records sold it to the world in the seventies; the world has been trying to slow down to it ever since. Morning coffee was never more righteous." },
+  dub: { name: "Dub", w: "https://en.wikipedia.org/wiki/Dub_music", note: "Dub is the song taken apart and reassembled as weather. Around 1973 King Tubby and Lee Perry discovered the mixing desk was an instrument: drop the vocal, drown the drums in echo, let the bass walk around the room like it pays rent. Every remix in existence descends from these board rides. Breathe in the smoke." },
+  lofi: { name: "Lo-fi Beats", w: "https://en.wikipedia.org/wiki/Lofi_hip-hop", note: "The beat tape as comfort food. Dilla taught the drums to limp, Nujabes taught them to pray, and twenty years of bedroom producers taught them to loop forever under rain sounds and anime stills. The hiss is the point, the wobble is the point, your homework is optional. This is music that holds your hand." },
+  ambient: { name: "Ambient", w: "https://en.wikipedia.org/wiki/Ambient_music", note: "Music to disappear into. Eno named it in an airport, Japan perfected it in the bubble years, Aphex made it weep. No drums to chase, no chorus to wait for, just air pressure arranged beautifully. Let it run while the kettle does its thing. If you think nothing is happening, listen closer: everything is." },
+  ambient_techno: { name: "Ambient Techno", w: "https://en.wikipedia.org/wiki/Ambient_techno", note: "Early nineties Britain: the rave is over, the sun is rising, and nobody wants the machines to stop. So the machines learn to whisper. Warp called it electronic listening music; bedrooms called it coming down safely. 303s floating in reverb, breakbeats wrapped in cotton. The dancefloor, remembered from your sofa." },
+  lofi_house: { name: "Lo-fi House", w: "https://en.wikipedia.org/wiki/Lo-fi_house", note: "House music filmed on VHS. Mid 2010s: producers run their drum machines through tape mud, name themselves after sitcoms, and upload it all with one weird thumbnail. The YouTube algorithm falls in love. Underneath the hiss it is pure longing, pianos and pitched vocals asking if 1992 can come back. It can't. Press play anyway." },
+  liquid: { name: "Liquid Drum & Bass", w: "https://en.wikipedia.org/wiki/Liquid_drum_and_bass", note: "Drum and bass after a hot shower. The breaks still sprint at 170 but everything on top is silk: seventh chords, soul vocals, basslines that glide instead of bite. Bukem drew the blueprint, Fabio named it liquid funk, and whole record shops smelled of incense for a decade. Rolling, always rolling." },
+  intelligent_dnb: { name: "Intelligent Drum & Bass", w: "https://en.wikipedia.org/wiki/Drum_and_bass", note: "The mid-nineties moment when jungle put on headphones and got cosmic. It shed the ragga shouts, kept the breaks, added Detroit chords and whale-song pads. The name was always a bit much; the music mostly earned it. Metalheadz and Good Looking ran the school, and the homework was atmosphere." },
+  atmospheric_jungle: { name: "Atmospheric Jungle", w: "https://en.wikipedia.org/wiki/Jungle_music", note: "Jungle with its eyes closed. The Amen break still tears through the mix, but above it: oceans, choirs, synth pads the size of weather systems. Made for the 4am drive home while the rave still rings in your coat. Good Looking and Moving Shadow pressed the classics; the sunrise did the mastering." },
+  breakbeat: { name: "Breakbeat", w: "https://en.wikipedia.org/wiki/Breakbeat", note: "The straight kick is a tyranny and breakbeat never signed up. Funk drummers chopped into new shapes, basslines with a smirk, the sound of Britain discovering sampling and immediately misbehaving. From chill-out tents to car chases, it swaggers where house merely walks. All breaks, no brakes." },
+  hypnotic_techno: { name: "Hypnotic Techno", w: "https://en.wikipedia.org/wiki/Minimal_techno", note: "Techno stripped to pulse and intent. Detroit minimal, Berlin dub, one loop examined under laboratory light until it starts to breathe. Nothing drops; everything deepens. Night-shift music: for driving, for coding, for staring at the city feeling like the main character. Trust the loop." },
+  deep_house: { name: "Deep House", w: "https://en.wikipedia.org/wiki/Deep_house", note: "Chicago, after hours. Larry Heard put jazz chords inside a drum machine in 1986 and accidentally invented introspection at 120 BPM. Deep house is slow-burning, warm-blooded, slightly melancholy, the sound of a room where everyone dances facing inward. Lights low, drinks sweating, feelings imminent." },
+  ragga_jungle: { name: "Ragga Jungle", w: "https://en.wikipedia.org/wiki/Jungle_music", note: "1994, London pirate radio, air-raid sirens. Jungle splices dancehall vocals onto double-time Amen breaks and the city loses its mind. MCs chat over telephone noises, rewinds every thirty seconds, moral panic in the tabloids, pure joy in the dance. The most energy ever pressed to vinyl. Brace." },
+  dubstep: { name: "Dubstep", w: "https://en.wikipedia.org/wiki/Dubstep", note: "South London, early 2000s: garage slowed down, hollowed out, and sent to the basement. Croydon record shops, FWD at Plastic People, sub-bass you feel in your sternum before you hear it. Space is the instrument; the silence between the hits is where the dread lives. Meditate at 140." },
+  dub_techno: { name: "Dub Techno", w: "https://en.wikipedia.org/wiki/Dub_techno", note: "Berlin hears King Tubby through a concrete wall. Basic Channel, 1993: two engineers press techno until only the echo remains, chords surfacing like weather fronts, hiss as holy as the kick. Every record sounds like the same gray ocean and that is the discipline. Detroit gave it pulse, Jamaica gave it space, Berlin gave it patience." },
+  oldskool_hardcore: { name: "Oldskool Hardcore", w: "https://en.wikipedia.org/wiki/Breakbeat_hardcore", note: "Britain 1992, a generation discovers the pitch control. Breakbeats sped past reason, pianos stabbing at heaven, toytown samples and air horns, all mixed on a borrowed Amiga. The tabloids panicked, the fields filled, and for about thirty months every record sounded like the best night of your life. Jungle was being born in here. Hold tight." },
+  focus_zen: { name: "Zen Focus", w: "https://en.wikipedia.org/wiki/Meditation_music", note: "The focus room's own crate: bansuri breath, handpan rings, kora strings and glitch-quiet electronics. Nothing here asks for your attention; it holds the door while you work. Plays only inside the focus room." },
+  uk_garage: { name: "UK Garage", w: "https://en.wikipedia.org/wiki/UK_garage", note: "London flips US garage into something swung and illegal-sounding. Two-step drums that refuse to land where you expect, bass that talks back, vocals chopped into confetti. Pirate radio raised it, champagne dances crowned it, dubstep and grime are its children. All silk shirts and sub pressure." },
+  house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
+  ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
+};
+
+/* v: YouTube id (verified against live search results).
+   s: exact Spotify link where verified, else null (search link built at runtime).
+   b: liner note; every concrete claim sourced via Wikipedia / Discogs / AllMusic / music press (2026-10-01).
+   w: source article for the track, where one exists. */
+const TRACKS = [
+
+  /* ---- hypnotic techno : Polar Inertia, Environment Control (pedido de Paulo) ---- */
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Environment Control", y:2024, v:"RPblvnQ4b9k", s:null, w:null,
+    b:"Title cut of the French collective's Environment Control: anonymous live project in industrial penumbra, techno as weather system. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Smothering Dreams", y:2024, v:"WMyqdwZwuaI", s:null, w:null,
+    b:"Eleven minutes of slow pressure; the album's deepest shaft. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"In Dark Territory", y:2024, v:"tW-XzUoJm18", s:null, w:null,
+    b:"Scouting by sonar: pulses answered by walls. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Breaking Waves", y:2024, v:"by7oVFZs65E", s:null, w:null,
+    b:"The tide arrives in greyscale; the kick is the undertow. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Deflection V", y:2024, v:"UZkoE_xt-14", s:null, w:null,
+    b:"Trajectories bent around an unseen mass. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Modeless Singularity", y:2024, v:"OF_aadABGqc", s:null, w:null,
+    b:"The loop examined until it opens. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Arctic Horizon", y:2024, v:"cwnBakuDyRU", s:null, w:null,
+    b:"Ten minutes of white line between sea and sky. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Interlude (Sound Stroke)", y:2024, v:"xVQFXurlQ0o", s:null, w:null,
+    b:"A short passage of struck air between chambers. House liner." },
+
+  /* ---- zen focus : a estante da sala de foco (so toca com o foco aberto) ---- */
+  { g:"focus_zen", a:"Buddha's Flute", t:"Dreaminess", y:2023, v:"I3d1mBBLKdU", s:"https://open.spotify.com/track/5HpCkmFk2Y38XC5ihhV5Za", w:null,
+    b:"Bansuri over still water: the breathing gate's own record, chosen by the founder." },
+  { g:"focus_zen", a:"Opto (Alva Noto & Opiate)", t:"File 1", y:2001, v:"_pbzinynLc8", s:null, w:null,
+    b:"Glitch at whisper level: Carsten Nicolai and Thomas Knak trading the smallest possible sounds." },
+  { g:"focus_zen", a:"ReWildYourSoul", t:"Wild Spaces (full album)", y:2024, v:"ZXY5sIQI-_s", s:null, w:null,
+    b:"Nature-steeped ambient, one unbroken sitting." },
+  { g:"focus_zen", a:"Papis & Jordan", t:"Kora & Balafon, Full Session 2 (Goat Trail)", y:2023, v:"XVObKeLrTR0", s:null, w:null,
+    b:"Forty minutes of kora strings and balafon wood, recorded on the trail." },
+
+  /* ---- morning : reggae ---- */
+  { g:"reggae", a:"Bob Marley & The Wailers", t:"Natural Mystic", y:1977, v:"2U91ELKMNlE", s:"https://open.spotify.com/track/2QRq65qC4nVZ0NTmtc0IYO", w:"https://en.wikipedia.org/wiki/Natural_Mystic",
+    b:"It fades in like it was always playing somewhere and you only now tuned in. Opens Exodus, the album Time magazine named best of the 20th century; Greil Marcus called this its finest song." },
+  { g:"reggae", a:"Burning Spear", t:"Marcus Garvey", y:1975, v:"FROI6bS5Nvg", s:"https://open.spotify.com/track/0z69RArvZ1pPBRrkmPKDmW", w:"https://en.wikipedia.org/wiki/Marcus_Garvey_(album)",
+    b:"History class called to order over strutting horns. Spear's first recording with producer Jack Ruby, backed by the Black Disciples with Robbie Shakespeare on bass; meant as a sound-system exclusive, it became an instant hit." },
+  { g:"reggae", a:"Horace Andy", t:"Skylarking", y:1972, v:"hLUm-mU7bN0", s:"https://open.spotify.com/track/6RFSlrSkBhdLB0C2XoIFqf", w:"https://en.wikipedia.org/wiki/Skylarking_%28Horace_Andy_album%29",
+    b:"A voice that flutters like curtains in an open window, singing about idling your day away. Cut at Studio One for Coxsone Dodd, it topped the Jamaican chart and named Andy's debut album. Obey it." },
+  { g:"reggae", a:"The Congos", t:"Fisherman", y:1977, v:"mFTxmDy74LI", s:"https://open.spotify.com/track/00m6N23ZTNEtsg65N1WcDV", w:"https://en.wikipedia.org/wiki/Heart_of_the_Congos",
+    b:"The most haunted vocal blend Lee Perry ever caught at the Black Ark, opening Heart of the Congos. The original Jamaican pressing reportedly ran to a few hundred copies; the world caught up decades later." },
+  { g:"reggae", a:"Gregory Isaacs", t:"Night Nurse", y:1982, v:"k7A6Ugs0NFw", s:"https://open.spotify.com/track/7HfpyMo4GIIkVUBZrrbtwm", w:"https://en.wikipedia.org/wiki/Night_Nurse_(Gregory_Isaacs_song)",
+    b:"The Cool Ruler writing a love song disguised as a medical emergency, with the Roots Radics behind him and Wally Badarou on synth. Britain later borrowed it to advertise actual cold medicine. The song survived." },
+
+  /* ---- morning : dub ---- */
+  { g:"dub", a:"Augustus Pablo", t:"King Tubbys Meets Rockers Uptown", y:1976, v:"ICBcCDPWocg", s:"https://open.spotify.com/track/0Mx3BZtH58ASK4XFg9TKWB", w:"https://en.wikipedia.org/wiki/King_Tubby_Meets_Rockers_Uptown_%28song%29",
+    b:"Jacob Miller's 'Baby I Love You So' dismantled at Tubby's desk until only bass, smoke and melodica remain. Rolling Stone ranks it among the 500 greatest songs ever recorded, which for a dub B-side is a coup." },
+  { g:"dub", a:"Lee \"Scratch\" Perry & The Upsetters", t:"Disco Devil", y:1977, v:"vjC2WT7VOyE", s:"https://open.spotify.com/track/6vX22fwRmM4bI0WpWtAvuJ", w:null,
+    b:"Scratch drags Max Romeo's 'Chase the Devil' back through the Black Ark, adds three backing singers and mostly new lyrics, and taunts the devil for seven minutes. Decades on, it soundtracks a radio station inside Grand Theft Auto V." },
+  { g:"dub", a:"Scientist", t:"Dance of the Vampires", y:1981, v:"iCpPaTeL2BE", s:"https://open.spotify.com/track/3y3aIscR4N87VEtlUFYxyB", w:"https://en.wikipedia.org/wiki/Scientist_Rids_the_World_of_the_Evil_Curse_of_the_Vampires",
+    b:"A dub of Michael Prophet's 'You Are a No Good', rhythms by the Roots Radics at Channel One. The sleeve claims the album was mixed at King Tubby's at midnight on Friday 13 June 1981. The echo does the biting." },
+
+  /* ---- morning : lofi ---- */
+  { g:"lofi", a:"Nujabes", t:"Feather", y:2005, v:"hQ5x8pHoIPA", s:"https://open.spotify.com/track/2s6J8fjaiJRhZJ1eZIeBDt", w:"https://en.wikipedia.org/wiki/Modal_Soul",
+    b:"The opener of Modal Soul, on his own Hydeout label, with Cise Starr and Akin of CYNE floating over a piano hook lifted from Yusef Lateef. They call Nujabes the godfather of lo-fi hip hop; this is the sermon." },
+  { g:"lofi", a:"J Dilla", t:"Time: The Donut of the Heart", y:2006, v:"0vmhgotEByc", s:"https://open.spotify.com/track/7oeWitA7Lu8O76NrmhfgZ8", w:"https://en.wikipedia.org/wiki/Donuts_(album)",
+    b:"The Jackson 5 slowed to half speed until sweetness becomes ache. Donuts came out on Dilla's 32nd birthday, 7 February 2006; he left three days later. The beat tape as last testament." },
+  { g:"lofi", a:"jinsang", t:"affection.", y:2016, v:"LbHsWjX9dv4", s:"https://open.spotify.com/track/7MdZQXUBijQxcBkYz4G1Z5", w:null,
+    b:"Track 16 of life., 25 beats the Californian says he made between his last year of high school and now, built from dusty soul and jazz records. The study-beats universe in its purest, kindest form." },
+  { g:"lofi", a:"idealism", t:"controlla", y:2016, v:"DB0QHC3c0_Q", s:"https://open.spotify.com/track/1FlY15vdP570PJucy6JdYm", w:null,
+    b:"A Finnish bedroom reworking of the Drake hit of the same name, from the rainy evening EP, quietly racking up tens of millions of streams. Tape hiss like weather on the glass; melancholy you can file paperwork to." },
+
+  /* ---- morning : ambient ---- */
+  { g:"ambient", a:"Brian Eno", t:"1/1", y:1978, v:"LKZ3fGR2SDY", s:"https://open.spotify.com/track/3bCmDqflFBHijgJfvtqev5", w:"https://en.wikipedia.org/wiki/Ambient_1:_Music_for_Airports",
+    b:"The opening side of Music for Airports, grown from two pianists improvising without quite hearing each other; that is Robert Wyatt at the piano. Pitchfork calls the album the greatest ambient record ever made. Board nothing." },
+  { g:"ambient", a:"Aphex Twin", t:"Rhubarb", y:1994, v:"75O11W5EZAU", s:"https://open.spotify.com/track/3QIpnNYnUMe1lrr5LJTStk", w:"https://en.wikipedia.org/wiki/Selected_Ambient_Works_Volume_II",
+    b:"Officially an untitled track on Selected Ambient Works Volume II; 'Rhubarb' is the name fans gave the saddest, kindest synthesizer ever recorded. Thirty years on he rescored it for orchestra, which proves he knew." },
+  { g:"ambient", a:"Hiroshi Yoshimura", t:"Blink", y:1982, v:"aUCiqA4YyH4", s:"https://open.spotify.com/track/7t3VZQzCG5IW3PHRHT6Tip", w:"https://en.wikipedia.org/wiki/Music_for_Nine_Post_Cards",
+    b:"From Music for Nine Post Cards, home-recorded on keyboard and Fender Rhodes: notes placed like stones in a garden. Forgotten for decades, then resurrected when the YouTube algorithm fell for Japanese ambient in 2017." },
+  { g:"ambient", a:"Biosphere", t:"Poa Alpina", y:1997, v:"xc7atbM0k6g", s:"https://open.spotify.com/track/4K4kedXFAuW6gn8iwgGFTw", w:"https://en.wikipedia.org/wiki/Substrata_(album)",
+    b:"Named after an arctic grass, from Substrata, Geir Jenssen's nearly beatless album of cold electronics and stray acoustic guitar. Sounds like standing in tundra wind wearing a very good coat." },
+
+  /* ---- morning : ambient techno ---- */
+  { g:"ambient_techno", a:"Aphex Twin", t:"Xtal", y:1992, v:"sWcLccMuCA8", s:"https://open.spotify.com/track/5neBqQFKrcfL6CpifYu8b4", w:"https://en.wikipedia.org/wiki/Selected_Ambient_Works_85%E2%80%9392",
+    b:"The first track of Selected Ambient Works 85-92, the record Fact later named the greatest album of the nineties. A sampled choir sighs, a beat tiptoes, and an entire genre grows up inside one bedroom." },
+  { g:"ambient_techno", a:"The Orb", t:"Little Fluffy Clouds", y:1990, v:"KNfjpmvbQG0", s:"https://open.spotify.com/track/1ROWnbzI8CFYDuZR2dF30k", w:"https://en.wikipedia.org/wiki/Little_Fluffy_Clouds",
+    b:"Rickie Lee Jones describes Arizona skies; The Orb builds a hot-air balloon around her from Steve Reich and Harry Nilsson's drummer. Reich noticed and asked for a cut of the publishing. Sampling as landscape painting." },
+  { g:"ambient_techno", a:"Global Communication", t:"14 31", y:1994, v:"SlxTlBPvJD8", s:"https://open.spotify.com/track/0GU7HXMGewpD83cGv6a5YH", w:"https://en.wikipedia.org/wiki/76:14",
+    b:"A clock ticking inside heaven. Every title on 76:14 is just its running time, and The Guardian called the album an unfathomably beautiful out-of-time masterpiece. Tom Middleton and Mark Pritchard, gentlemen." },
+  { g:"ambient_techno", a:"B12", t:"Soundtrack of Space", y:1993, v:"myE-khYL6iM", s:null, w:"https://en.wikipedia.org/wiki/Electro-Soma",
+    b:"The opener of Electro-Soma, fourth release in Warp's Artificial Intelligence series alongside Aphex, Autechre and Speedy J: techno built for the chair, not the floor. B12 drift among satellites." },
+
+  /* ---- afternoon : lofi house ---- */
+  { g:"lofi_house", a:"DJ Boring", t:"Winona", y:2016, v:"SrMcYg17D2I", s:"https://open.spotify.com/track/3ilkEyg6OCtd9qCnOJkPzU", w:null,
+    b:"Built entirely in the box by a producer with no studio, around a sampled interview where Winona Ryder recalls being told she was not pretty enough for acting. Uploaded late 2016; the algorithm never recovered." },
+  { g:"lofi_house", a:"Mall Grab", t:"Guap", y:2015, v:"QE_Vi0EQpHA", s:"https://open.spotify.com/track/5FHFQT1NffiTNocI4dhK0h", w:null,
+    b:"From Feel U, Mall Grab's debut on Collect-Call, which promptly sold out; drums caked in beautiful mud, joy unbothered. Yaeji loved it enough to cover it on her first EP." },
+  { g:"lofi_house", a:"Ross From Friends", t:"Talk To Me You'll Understand", y:2015, v:"8tKKNV5sXUs", s:"https://open.spotify.com/track/4Z4i631BesV0P6LTvfLAdL", w:null,
+    b:"Japanese city pop (Hi-Fi Set) spliced with Dru Hill, pushed through fog until it becomes a hook. Pitchfork noted the recommendation algorithm cannot stop serving it, as if haze were a ranking signal." },
+  { g:"lofi_house", a:"DJ Seinfeld", t:"U", y:2017, v:"VmK9oHGVRVw", s:"https://open.spotify.com/track/2tYctbOGPK2OZ2g2wKipgj", w:null,
+    b:"From Time Spent Away From U, an album described as an extended post-heartbreak love letter delivered via the dancefloor. Pitchfork heard Bruce Hornsby through the world's saddest, drunkest jukebox. Exactly." },
+  { g:"lofi_house", a:"Baltra", t:"Fade Away", y:2016, v:"4FyTx_yeHXo", s:"https://open.spotify.com/track/5KkRMv91vbi3rJ44HDpeih", w:null,
+    b:"The vocal dissolves exactly as advertised. Released on 96 and Forever in 2016, it went internet-sensation sized on YouTube and SoundCloud and started pulling Baltra across the Atlantic to play shows." },
+
+  /* ---- afternoon : liquid ---- */
+  { g:"liquid", a:"LTJ Bukem", t:"Horizons", y:1995, v:"Y4jhRqh9XFg", s:null, w:"https://en.wikipedia.org/wiki/Logical_Progression",
+    b:"Dawn poured over drum and bass: the melody borrowed from Lemon Sol's 'Sunflash', the spoken words from Maya Angelou's 1993 inauguration poem. Bukem's most celebrated record, and liquid's founding document." },
+  { g:"liquid", a:"High Contrast", t:"If We Ever", y:2007, v:"Pz1W1OLkw14", s:"https://open.spotify.com/track/6HhdFRM9un1Ojpz1A98pVi", w:null,
+    b:"Hospital Records at full gallop: disco strings at 170 with Diane Charlemagne, the voice of Inner City Life, carrying the hook. Hands in the air, for people who read liner notes." },
+  { g:"liquid", a:"Netsky", t:"Memory Lane", y:2010, v:"cG7cRDcPY3k", s:"https://open.spotify.com/track/2A9jHLZ1sXrfAKcItrdO8Y", w:null,
+    b:"A Belgian teenager who had been sending Hospital demos over instant messenger finally gets his first release on the label, and it is the warmest anthem liquid ever allowed itself. Resistance is pointless; roll with it." },
+  { g:"liquid", a:"Seba", t:"Painted Skies", y:2010, v:"kROLuASuuKM", s:"https://open.spotify.com/track/5JpeCgMkmBKIV1Y93EUf2G", w:null,
+    b:"Stockholm serenity at 170 on Seba's own Secret Operations label, paired with a Kirsty Hawkshaw collaboration. He came up on Bukem's Good Looking in 1996 and never lost the glow. Pads like weather fronts." },
+
+  /* ---- afternoon : intelligent dnb ---- */
+  { g:"intelligent_dnb", a:"PFM", t:"One & Only", y:1995, v:"AsRoKnr-Rxg", s:"https://open.spotify.com/track/4n8BqyKlGtuoO4b2HXTEpS", w:"https://en.wikipedia.org/wiki/Logical_Progression",
+    b:"Looking Good Records, 1995, a vocal warm enough to make junglists blush; later enshrined on Bukem's landmark Logical Progression compilation. The year drum and bass decided tenderness could roll too." },
+  { g:"intelligent_dnb", a:"Goldie", t:"Inner City Life", y:1994, v:"i-P98B2skts", s:"https://open.spotify.com/track/4qw7xhiy8rWGDeffgSj7Ez", w:"https://en.wikipedia.org/wiki/Inner_City_Life",
+    b:"Diane Charlemagne turns the breakbeat into an aria over a sampled Ike Turner drum groove. The first single from Timeless; NME ranked it among the best songs of 1994, and it has refused to age since." },
+  { g:"intelligent_dnb", a:"Alex Reece", t:"Pulp Fiction", y:1995, v:"P1_n_9RVnrk", s:"https://open.spotify.com/track/6rdX0la76j3RGwtZ3id80o", w:null,
+    b:"That bassline, plus a trumpet lifted from Coolio and bass from MC Solaar. It was untitled until Fabio, a Tarantino fan, named it; Goldie heard him play it and took it straight to Metalheadz. The two-step blueprint." },
+  { g:"intelligent_dnb", a:"Photek", t:"Ni Ten Ichi Ryu", y:1997, v:"UBPPO2t1C2Q", s:null, w:null,
+    b:"The title is Musashi's two-swords technique, and the track honours it: surgical breaks, ice-water atmosphere, not one sound wasted. AllMusic heard the minimalistic paranoia of a kung-fu sword fight. Irresistible, they said." },
+
+  /* ---- afternoon : atmospheric jungle ---- */
+  { g:"atmospheric_jungle", a:"LTJ Bukem", t:"Music", y:1993, v:"m1IvkYFCdV4", s:null, w:"https://en.wikipedia.org/wiki/Logical_Progression",
+    b:"Subtitled Happy Raw on its 1993 Good Looking pressing: ocean pads and a break like rain on glass, the soulful alternative to hardcore's sturm und drang. The genre's gentlest manifesto." },
+  { g:"atmospheric_jungle", a:"Foul Play", t:"Being With You (Foul Play Remix)", y:1994, v:"xbhWi6if9Eo", s:"https://open.spotify.com/track/6STgT3r9g6YO7ClzswJHdi", w:null,
+    b:"Foul Play remix themselves into heaven on a Moving Shadow ten-inch: the original's Mary J. Blige and Ryuichi Sakamoto samples sublimated into diva ghosts and sub-bass undertow. 1994, lit in amber." },
+  { g:"atmospheric_jungle", a:"Peshay", t:"Piano Tune", y:1994, v:"3865VN7RGcY", s:null, w:null,
+    b:"A piano line falling through the Amen break and Lyn Collins's 'Think' like light through blinds. Good Looking, 1994; peers and press still cite it as one of the most influential early atmospheric sides." },
+  { g:"atmospheric_jungle", a:"Essence of Aura", t:"So This Is Love", y:1995, v:"lAdIz0HgfQw", s:"https://open.spotify.com/track/2QPUOQEyuJzJ7RsUJUGy8u", w:null,
+    b:"Moving Shadow, July 1995, with the title question sampled from Cinderella herself, Ilene Woods. Rolling breaks, strings, and the answer is obviously yes." },
+
+  /* ---- afternoon : breakbeat ---- */
+  { g:"breakbeat", a:"The Future Sound of London", t:"Papua New Guinea", y:1991, v:"wfWMv8Y1V5E", s:"https://open.spotify.com/track/0xU0sRzX4liMDli3ktdDR4", w:"https://en.wikipedia.org/wiki/Papua_New_Guinea_(song)",
+    b:"Lisa Gerrard's voice, borrowed from Dead Can Dance, lifted into a breakbeat sunrise over a Meat Beat Manifesto bassline. UK top 30 in 1992: the moment rave realized it could be beautiful and illegal at once." },
+  { g:"breakbeat", a:"Hybrid", t:"Finished Symphony", y:1999, v:"vuWAO9QSG2Y", s:"https://open.spotify.com/track/3JF1AViQOMDH3zoO0aBhl2", w:"https://en.wikipedia.org/wiki/Finished_Symphony",
+    b:"Welsh breakbeats flown over the Russian Federal Orchestra, with a Gorecki motif folded in. Melodrama with a laminated flight case, and it still soars." },
+  { g:"breakbeat", a:"The Chemical Brothers", t:"Star Guitar", y:2002, v:"cbOhvzVOaJA", s:"https://open.spotify.com/track/7nBE8CCq6CpMUxfhODQApq", w:"https://en.wikipedia.org/wiki/Star_Guitar",
+    b:"The acoustic flicker of Bowie's 'Starman' turned into a UK number 8. Watch Michel Gondry's video, one continuous shot from a train window where the landscape plays the drums, and journeys never un-sync again." },
+  { g:"breakbeat", a:"Propellerheads", t:"Spybreak!", y:1997, v:"rgtf61Gw4u8", s:"https://open.spotify.com/track/5HWR5bZ3SBN6zA6zHJS3Y6", w:"https://en.wikipedia.org/wiki/Spybreak!",
+    b:"A heist score waiting for its heist: it grazed the UK Top 40 in 1997, then The Matrix borrowed it for the lobby shootout and settled the matter. Horns, breaks, swagger." },
+
+  /* ---- night : hypnotic techno ---- */
+  { g:"hypnotic_techno", a:"Jeff Mills", t:"The Bells", y:1996, v:"S340RiB4kWs", s:"https://open.spotify.com/track/0ISxyAhfop0MoMeAUw72RN", w:null,
+    b:"Made in 1994, released on Purpose Maker in 1996; before that Mills played it from a custom-cut 13-inch no one else owned. He says it has appeared in every set he has played since. Three notes, one riot." },
+  { g:"hypnotic_techno", a:"Plastikman", t:"Spastik", y:1993, v:"6TYsOMYaz6E", s:"https://open.spotify.com/track/5iYgociEUIfE5f5z84Xhi1", w:"https://en.wikipedia.org/wiki/Spastik",
+    b:"Nine minutes of Roland 808 percussion whipped into vertigo; the credits thank 'Rob And His Beagle'. Mixmag readers voted it the seventh greatest dance record ever. Rhythm as hypnosis, certified." },
+  { g:"hypnotic_techno", a:"Basic Channel", t:"Phylyps Trak", y:1993, v:"RmQ8xGELTX4", s:"https://open.spotify.com/track/4KsL7ddeairY2OMs8OFRSR", w:null,
+    b:"Berlin runs Detroit through a chain of smoke: BC 02, October 1993, its first pressing recorded live in a Potsdam washhouse, mixed hands-on-faders like deep Jamaican dub. Weather systems courting." },
+  { g:"hypnotic_techno", a:"Robert Hood", t:"Minus", y:1994, v:"_K-LwhsoGhU", s:"https://open.spotify.com/track/0YLEO6hUj8uO3RrJTHMPkD", w:"https://en.wikipedia.org/wiki/Internal_Empire",
+    b:"From Internal Empire on Tresor, cut at Hood's M-Plant studio in Detroit: one idea, perfectly machined, driven at night speed. Richie Hawtin later named his Minus label after this track. Less, used as a weapon." },
+
+  /* ---- night : deep house ---- */
+  { g:"deep_house", a:"Mr. Fingers", t:"Can You Feel It", y:1986, v:"1N9Wnqz8Rh8", s:"https://open.spotify.com/track/366NZufdu1fOK0MsIxvwS9", w:"https://en.wikipedia.org/wiki/Can_You_Feel_It_(Larry_Heard_song)",
+    b:"Larry Heard, a Juno-60 and a 909, recorded in one pass between two cassette decks; Chicago DJs preached Martin Luther King over the top. Deep house begins here, and the question remains rhetorical." },
+  { g:"deep_house", a:"Pépé Bradock", t:"Deep Burnt", y:1999, v:"lQHk5ET3kQU", s:null, w:null,
+    b:"A French B-side that outlived every A-side of its year, looping Freddie Hubbard's 'Little Sunflower' into a slow-motion embrace. Bradock himself calls it cubism for ravers." },
+  { g:"deep_house", a:"Kerri Chandler", t:"Bar A Thym", y:2005, v:"hNr8RgWl4eM", s:"https://open.spotify.com/track/6ZfF8Yn9qgfAekLIXnLpav", w:null,
+    b:"NRK, 2005: thudding kicks, tick-tock hats and one ever-climbing synth riff, pure voltage under strobe light. Mixmag files it among the essential Kerri Chandler productions, which is a crowded shelf." },
+  { g:"deep_house", a:"Moodymann", t:"I Can't Kick This Feeling When It Hits", y:1996, v:"0KrFelB-0Hw", s:null, w:null,
+    b:"Chic's 'I Want Your Love' lifted into Detroit dusk on KDJ number six, later gathered onto Silentintroduction. Kenny Dixon Jr. smokes the edges off disco, and the feeling, famously, cannot be kicked." },
+  { g:"deep_house", a:"Larry Heard presents Mr. White", t:"The Sun Can't Compare", y:2006, v:"tdIQTEYXDP4", s:"https://open.spotify.com/track/4ATWRf0Pu5E8oAXCJUBvAe", w:null,
+    b:"Heard again, twenty years after Can You Feel It, with Mr. White's voice over eight minutes Resident Advisor called mesmerizing, emotional acid house. Neon on wet asphalt; night-drive scripture." },
+
+  /* ---- night : ragga jungle ---- */
+  { g:"ragga_jungle", a:"Shy FX & UK Apachi", t:"Original Nuttah", y:1994, v:"7VfWmeBo0vs", s:"https://open.spotify.com/track/74V4K9dL0gxWe0F6BOBAyK", w:"https://en.wikipedia.org/wiki/Original_Nuttah",
+    b:"Recorded in two takes over Shy FX's 'Gangsta Kid', opening with a Goodfellas sample, and one of the first jungle tunes to crack the UK top 40. London, 1994: a city boiling over with joy." },
+  { g:"ragga_jungle", a:"M-Beat feat. General Levy", t:"Incredible", y:1994, v:"GDwNn8bJ2CQ", s:"https://open.spotify.com/track/6jJbVZ3yHb4vZwJgQyTOa3", w:"https://en.wikipedia.org/wiki/Incredible_(M-Beat_song)",
+    b:"The first jungle record to reach the UK top ten, gold-certified, Levy's chat adapted from his own 'Wickedest General'. The crossover that scandalized the scene and converted everyone else. Booyaka." },
+  { g:"ragga_jungle", a:"Conquering Lion", t:"Code Red", y:1994, v:"bo_T4yg80vg", s:"https://open.spotify.com/track/0fTHMT2hHppGd9Qer2yb3V", w:null,
+    b:"Conquering Lion is Rebel MC, the future Congo Natty, with dancehall royalty Super Cat on the mic; Island's Mango label picked it up for major release. Rewind culture in its natural habitat." },
+  { g:"ragga_jungle", a:"Remarc", t:"R.I.P.", y:1994, v:"9-r4DYlvV5Q", s:"https://open.spotify.com/track/1SHNtEYq8rz1MnCpAQVHnP", w:null,
+    b:"Remarc chops the Amen like it owes him money, with a Gregory Isaacs vocal lifted for the hook. Suburban Base pressed it; Planet Mu later collected it on Sound Murderer. Violence has rarely been this grinnable." },
+
+  /* ---- night : dubstep ---- */
+  { g:"dubstep", a:"Skream", t:"Midnight Request Line", y:2005, v:"lcMAbnZy8l8", s:"https://open.spotify.com/track/6saiu3uHwIpzPl8GKtRRNR", w:null,
+    b:"Tempa, Halloween 2005: the Croydon teenager's tune the LA Times later called dubstep's most recognizable crossover hit, with a key change The Wire compared to Derrick May. The request line is still open." },
+  { g:"dubstep", a:"Burial", t:"Archangel", y:2007, v:"c7jP-vich30", s:"https://open.spotify.com/track/1aaIYTqoRDzRUilU2Q6vTe", w:"https://en.wikipedia.org/wiki/Untrue_(album)",
+    b:"A Ray J vocal pitched until it grieves, leading Untrue on Hyperdub, November 2007: night buses, rain static, a whole decade's loneliness in one tune." },
+  { g:"dubstep", a:"Digital Mystikz", t:"Anti War Dub", y:2006, v:"G9H3i0T1iN4", s:"https://open.spotify.com/track/2McvwBtG5WHCOsM2AHWXoZ", w:null,
+    b:"DMZ 007, around two thousand copies pressed and never repressed, by Mala's own account. It slipped into Children of Men without making the soundtrack album. Meditation at war volume; it still stops rooms." },
+  { g:"dubstep", a:"Benga & Coki", t:"Night", y:2008, v:"rNStVlJWy88", s:"https://open.spotify.com/track/0unwEQ4UFfqBOKhHgeTwVp", w:"https://en.wikipedia.org/wiki/Diary_of_an_Afro_Warrior",
+    b:"The wobble heard round the world: a 2007 basement anthem that crossed into every genre's record bag, grazed the UK singles chart and sat top five on Pete Tong's dance chart into 2008." },
+
+  /* ---- import lot 1 (approved 2026-10-03): dub and roots, ratings verified on Discogs ---- */
+  { g:"dub", a:"King Tubby & The Aggrovators", t:"Dub Fi Gwan", y:1977, bpm:74, v:"qu3RXnGFQa8", s:"https://open.spotify.com/track/2F5xURcnbtkzmeIwRhcc3I", w:"https://www.whosampled.com/King-Tubby/Dub-Fi-Gwan/",
+    b:"Tubby riding the Keep On Moving riddim from the Bunny Lee stable, 1977. The 2018 seven-inch on 17 North Parade rates 4.65 on Discogs; WhoSampled maps the whole family tree. The board as instrument, lesson one." },
+  { g:"reggae", a:"Max Romeo & The Upsetters", t:"Chase the Devil", y:1976, bpm:76, v:"5_U9wsBVvqU", s:null, w:"https://en.wikipedia.org/wiki/Chase_the_Devil",
+    b:"From War Ina Babylon, Island 1976, Lee Perry at the Black Ark: 4.54 on Discogs across 1500 ratings. Sampled by The Prodigy for Out of Space and by Jay-Z and Kanye for Lucifer; Satan has been on the run for fifty years." },
+  { g:"dub", a:"Yabby You", t:"Deliver Me From My Enemies", y:1977, bpm:72, v:"uVXlm4He6Mc", s:null, w:"https://en.wikipedia.org/wiki/Deliver_Me_From_My_Enemies",
+    b:"The dub plate mix of the Grove Music title track, 1977, with Robbie Shakespeare and Sly Dunbar in the room: 4.58 on Discogs. Jesus Dread at the controls, conviction you can measure in hertz." },
+  { g:"reggae", a:"Pablo Gad", t:"Blood Suckers", y:1979, bpm:76, v:"ISIWjpRquGA", s:null, w:null,
+    b:"UK roots on Burning Sounds, 1979, from the album also known as Trafalgar Square: 4.52 on Discogs. London heaviness about Babylon's appetite; the bassline collects the debt." },
+  { g:"dub", a:"Twinkle Brothers", t:"Never Get Burn", y:1998, bpm:70, v:"lka4awAnubo", s:null, w:null,
+    b:"Norman Grant's Twinkle Music seven-inch, 1998, rated 4.92 on Discogs, the heaviest score in tonight's crate: steppers weight built for sound system use. Later than it sounds, exactly as heavy as it looks." },
+  { g:"reggae", a:"Johnnie Clarke", t:"Young Rebel", y:1983, bpm:74, v:"Dmujamx8Hww", s:null, w:null,
+    b:"Top Notch ten-inch, 1983, with Rebel's Dub on the flip: 4.59 on Discogs. The Bunny Lee school voice over a rockers drive, the last golden year before digital changed the rules." },
+  /* ======== deep house: a segunda leva, 25 pratas (aprovada 10/2026; ratings Discogs citados onde verificados) ======== */
+  { g:"deep_house", a:"Mr. Fingers", t:"Mystery of Love", y:1985, v:"5tqErnknRsE", s:null, w:"https://en.wikipedia.org/wiki/Larry_Heard",
+    b:"Larry Heard's first transmission, cut in a Chicago bedroom on a Juno and a drum machine. Before deep house had a name it had this bassline. Streamed from the artist's Topic channel." },
+  { g:"deep_house", a:"Kerri Chandler", t:"Rain", y:1998, v:"kqy4gpiTPaA", s:null, w:"https://en.wikipedia.org/wiki/Kerri_Chandler",
+    b:"New Jersey's kindest pair of hands behind an MPC: thunderstorm chords, a garage swing, melancholy you can dance to. From Kerri's own channel, original mix in full." },
+  { g:"deep_house", a:"Moodymann", t:"Shades of Jae", y:1997, v:"fNXyJooVVk4", s:null, w:"https://en.wikipedia.org/wiki/Moodymann",
+    b:"Kenny Dixon Jr. looping Detroit night air until it grooves. From the Silentintroduction era on Planet E: tape hiss, crowd murmur, one chord that refuses to resolve." },
+  { g:"deep_house", a:"Theo Parrish", t:"Falling Up (Carl Craig Remix)", y:2005, v:"29eZzAC2-xg", s:null, w:"https://en.wikipedia.org/wiki/Carl_Craig",
+    b:"Two Detroit schools shaking hands: Craig straightens Parrish's crooked groove into a 303-era pulse without losing the dirt. Served from Carl Craig's own channel, remastered." },
+  { g:"deep_house", a:"Omar-S", t:"Psychotic Photosynthesis", y:2007, v:"cpuke_gCGcg", s:null, w:"https://en.wikipedia.org/wiki/Omar-S",
+    b:"FXHE Detroit: one synth line growing like a vine through ten minutes, mixed as raw as the label's hand-stamped sleeves. Community upload at the full 12-inch length; no official stream exists." },
+  { g:"deep_house", a:"Chez Damier", t:"Can You Feel It (MK New York Dub)", y:1992, v:"8gPJv1osJlE", s:null, w:null,
+    b:"KMS Detroit, remixed by a young Marc Kinchen: the organ stab that launched a thousand garage dubs. Taken from the Topic channel, extended dub." },
+  { g:"deep_house", a:"Ron Trent", t:"Altered States", y:1990, v:"XS0KWyRm1T8", s:null, w:"https://en.wikipedia.org/wiki/Ron_Trent",
+    b:"Written as a teenager, released on Warehouse: fourteen minutes of Chicago trance before the word was spoiled. The full version, via Topic." },
+  { g:"deep_house", a:"DJ Sprinkles", t:"Grand Central, Part I (MCDE Bassline Dub)", y:2009, v:"_OqQSfdC0Zo", s:null, w:"https://en.wikipedia.org/wiki/Terre_Thaemlitz",
+    b:"Terre Thaemlitz's Midtown 120 Blues retold by Motor City Drum Ensemble as one long warm bassline. Mule Musiq 12-inch; community upload, as no official stream exists." },
+  { g:"deep_house", a:"STL", t:"Silent State", y:2008, v:"xr9NHek2Zkg", s:null, w:null,
+    b:"Stephan Laubner's hazy Hamburg masterwork on Smallville: twelve minutes of chords surfacing through static like light through fog. Via Topic, uncut." },
+  { g:"deep_house", a:"Isol\u00e9e", t:"Beau Mot Plage", y:1998, v:"mQy2V_3LRMQ", s:null, w:"https://en.wikipedia.org/wiki/Isol%C3%A9e",
+    b:"Playhouse, Frankfurt: a guitar lick chopped into sunlight. Discogs holds it at 4.59 from over a thousand ratings. Served by Classic Music Company, the single's UK home." },
+  { g:"deep_house", a:"\u00c2me", t:"Rej", y:2005, v:"N6uFc451SG0", s:null, w:null,
+    b:"Innervisions' founding stone: the arpeggio that taught the 2000s to feel again. The Rej EP sits at 4.56 on Discogs across 1,663 ratings. From the label's own channel." },
+  { g:"deep_house", a:"Henrik Schwarz", t:"Leave My Head Alone Brain", y:2005, v:"tyY9DtSG1Mg", s:null, w:null,
+    b:"A live hardware jam that keeps arguing with itself, title included. From Schwarz's own channel; the version the clubs wore out." },
+  { g:"deep_house", a:"Motor City Drum Ensemble", t:"Raw Cuts # 2", y:2008, v:"r0L5KQ5Efk8", s:null, w:null,
+    b:"Danilo Plessow's love letter to Detroit sampling culture: dusty loop, gospel ache, drums like a heartbeat heard through a wall. Via the artist's Topic channel." },
+  { g:"deep_house", a:"Soichi Terada & Nami Shimada", t:"Sunshower", y:1989, v:"zDIlsV81JgA", s:null, w:"https://en.wikipedia.org/wiki/Soichi_Terada",
+    b:"Tokyo deep house before the West was listening, rediscovered worldwide via Rush Hour's 2015 anthology. Larry Levan loved it enough to remix it. Upload from Creme Organization." },
+  { g:"deep_house", a:"Pal Joey presents Soho", t:"Hot Music", y:1990, v:"WTiu--jom4Y", s:null, w:null,
+    b:"New York's most sampled jazz-house riff: two bars of piano, a shaker, done. Hip hop borrowed it for decades and never gave it back. Via Topic." },
+  { g:"deep_house", a:"Boo Williams", t:"Mortal Trance", y:1996, v:"9G_qPxHX7cE", s:null, w:null,
+    b:"Relief Records, Chicago second wave: a trance in the old sense, one loop deepening like a spiral staircase. Via Topic." },
+  { g:"deep_house", a:"Gemini", t:"Crossing Mars (Remix)", y:1995, v:"exWavouwbQQ", s:null, w:null,
+    b:"Spencer Kincy, Chicago's vanished genius: interplanetary deep house, drums light as dust. Every record he touched is now scripture. Via Topic." },
+  { g:"deep_house", a:"Chez Damier & Ron Trent", t:"Morning Factory", y:1993, v:"Z9sd9BmIzks", s:null, w:null,
+    b:"Prescription Records' dawn shift: the chord that comes up like daylight over ten patient minutes. The label that treated house as sacrament. Via Topic." },
+  { g:"deep_house", a:"Floating Points", t:"Vacuum Boogie", y:2009, v:"AHF7njRL5ZY", s:null, w:"https://en.wikipedia.org/wiki/Floating_Points",
+    b:"Sam Shepherd's Eglo-era jazz hands inside a house frame, harmony stacked like a Rhodes dream. From the artist's own channel." },
+  { g:"deep_house", a:"Virgo Four", t:"It's a Crime", y:2011, v:"Okb2lSqqilw", s:null, w:null,
+    b:"Cut in Chicago around 1989, unheard until Rush Hour's Resurrection dug it out two decades later: boys with synths inventing tenderness. Community upload; no official stream exists." },
+  { g:"deep_house", a:"Andr\u00e9s", t:"New For U", y:2012, v:"YqmlXTN3GPQ", s:null, w:null,
+    b:"Detroit's DJ Dez lets one string loop roll for five minutes and the room falls in love every time. La Vida 12-inch; community upload at full length, no official stream exists." },
+  { g:"deep_house", a:"Blaze", t:"Lovelee Dae", y:1997, v:"U__y-jXbIqU", s:null, w:"https://en.wikipedia.org/wiki/Blaze_(band)",
+    b:"New Jersey spiritual house at its gentlest: 4.57 on Discogs across 1,234 ratings. Served from 4 To The Floor, the catalogue's official keeper." },
+  { g:"deep_house", a:"Vincent Floyd", t:"I Dream You", y:1991, v:"VdxyJBSdWWM", s:null, w:null,
+    b:"Dance Mania's quiet outlier: a whispered dream over night-drive chords, cult object for thirty years. Via Topic." },
+  { g:"deep_house", a:"Chaos In The CBD", t:"Midnight In Peckham", y:2015, v:"58vZujx6Amg", s:null, w:null,
+    b:"Two New Zealand brothers give south London its own Balearic midnight. Rhythm Section's defining release, from the label's channel." },
+  { g:"deep_house", a:"Lil' Louis", t:"French Kiss", y:1989, v:"rmOAVfEDyhA", s:null, w:"https://en.wikipedia.org/wiki/French_Kiss_(Lil_Louis_song)",
+    b:"Chicago's slow-down trick: the record that dares the DJ to ride the pitch fader to zero and back. A worldwide hit that is still, at heart, a dirty basement dub. Original Underground Mix via Topic." },
+
+  /* ======== lo-fi house: a segunda leva, 25 fitas (aprovada 10/2026) ======== */
+  { g:"lofi_house", a:"Mall Grab", t:"Liverpool Street In The Rain", y:2016, v:"9gDnGxcB0TU", s:null, w:null,
+    b:"Jordon Alexander's wet-window anthem on his own Looking For Trouble: piano through tape mud, grief you can jack to. From the artist's channel." },
+  { g:"lofi_house", a:"Mall Grab", t:"Sun Ra", y:2016, v:"TTVZWvbs0vk", s:null, w:null,
+    b:"The flip of the era: a jazz loop squinting into the sun. Served by Church, the label that pressed it." },
+  { g:"lofi_house", a:"DJ Seinfeld", t:"These Things Will Come To Be", y:2017, v:"LBoPLGH-jxs", s:null, w:null,
+    b:"From Time Spent Away From U: heartbreak house at its most hopeful, the title a promise kept by the chords. Official audio from the artist's channel." },
+  { g:"lofi_house", a:"Route 8", t:"This Raw Feeling", y:2015, v:"2Pj7Nkuz5TU", s:null, w:null,
+    b:"Lobster Theremin's Hungarian signing at his warmest: seven minutes of analogue haze that made the label's name. Via Topic." },
+  { g:"lofi_house", a:"Galcher Lustwerk", t:"Parlay", y:2013, v:"HxMLzZmZE3I", s:null, w:"https://en.wikipedia.org/wiki/Galcher_Lustwerk",
+    b:"White Material, New York: rapped under the breath over smoked-out house, the blueprint for a decade of blurry Soundcloud nights. Artist's own channel." },
+  { g:"lofi_house", a:"Anthony Naples", t:"Mad Disrespect", y:2012, v:"sbfAIOYGm7A", s:null, w:null,
+    b:"Mister Saturday Night's first record and Naples' debut: outsider house before the tag existed, warm, wrong and right. Via Topic." },
+  { g:"lofi_house", a:"Delroy Edwards", t:"4 Club Use Only", y:2012, v:"lqt6v3y8ONk", s:null, w:null,
+    b:"L.I.E.S. at its grubbiest: a Los Angeles tape deck doing Chicago in a broken mirror. The title is the manifesto. Via Topic." },
+  { g:"lofi_house", a:"Laurence Guy", t:"Saw You For The First Time", y:2017, v:"jLEci0zidu4", s:null, w:null,
+    b:"Church Records, London: one soul loop worn soft as an old jumper. The gentlest record the scene produced. Artist's own channel." },
+  { g:"lofi_house", a:"Traumprinz", t:"2 The Sky (DJ Metatron's What If There's No End And No Beginning Mix)", y:2016, v:"ycc_CHnA7x8", s:null, w:null,
+    b:"Giegling's recluse answers his own track under another name: ten minutes of rave euphoria heard from the far side of sleep. Community upload; Giegling keeps no official channel." },
+  { g:"lofi_house", a:"X-Coast", t:"Mango Bay", y:2017, v:"7IWOAXQt1Ic", s:null, w:null,
+    b:"Belgrade via New York: breakbeats under sunscreen, the summer hit of the cassette-house wave. Community upload at 12-inch length; no official stream exists." },
+  { g:"lofi_house", a:"Loods", t:"Image Nation", y:2018, v:"Gol04LmIsnA", s:null, w:null,
+    b:"Steel City Dance Discs' co-pilot gliding instead of punching: Sydney's answer to the fog. Via Topic." },
+  { g:"lofi_house", a:"dj poolboi", t:"it's good to hear your voice", y:2020, v:"L8pumpWmIPQ", s:null, w:null,
+    b:"Texas bedroom house with the reverb of a long-distance call: the title track of his breakthrough tape. Artist's own channel." },
+  { g:"lofi_house", a:"Seb Wildblood", t:"Jazz, Vol. 1", y:2016, v:"7L0a-wtI9lw", s:null, w:null,
+    b:"South London keys over dusty swing, from the Church co-founder who kept the scene's jazz heart beating. Artist's own channel." },
+  { g:"lofi_house", a:"Lake Haze", t:"Love In Lux", y:2017, v:"sfLMPYcdd4A", s:null, w:null,
+    b:"Lisbon's entry in the canon: acid lines through golden-hour haze on E-Beamz. Via Topic." },
+  { g:"lofi_house", a:"Subjoi", t:"All You Need", y:2019, v:"MflelzPZa5A", s:null, w:null,
+    b:"Shall Not Fade's house romantic: filtered disco warmth, hands-in-pockets euphoria. Artist's own channel." },
+  { g:"lofi_house", a:"Jack J", t:"Thirstin'", y:2014, v:"6sjZ4W7N9Tw", s:null, w:null,
+    b:"Mood Hut, Vancouver: dub-soft house that plays like a harbour breeze. The record that made slow cool again. Via Topic." },
+  { g:"lofi_house", a:"Project Pablo", t:"Closer", y:2016, v:"tur3WwdV36M", s:null, w:null,
+    b:"Montreal ease on SOBO: bassline like a bicycle downhill, chords waving from the porch. From the label's channel." },
+  { g:"lofi_house", a:"DJ Heure", t:"Mechta", y:2019, v:"2lf1mynoG_c", s:null, w:null,
+    b:"French-school dream house: pads stacked like evening clouds. Via the artist's Topic channel." },
+  { g:"lofi_house", a:"Hidden Spheres", t:"Waiting", y:2017, v:"pkMDdCjqF2s", s:null, w:null,
+    b:"Manchester warmth on Distant Hawaii: jazz chords waiting for someone who is clearly worth it. Served by Lobster Theremin." },
+  { g:"lofi_house", a:"Adryiano", t:"Feel Like", y:2019, v:"AcvnNsdNlkw", s:null, w:null,
+    b:"German groove science with a crooked grin: chopped vocal, rolling bass, no fat anywhere. Via Topic." },
+  { g:"lofi_house", a:"Sweely", t:"Take Me to My House", y:2020, v:"SOHL5Yt9gxQ", s:null, w:null,
+    b:"The French one-take wonder: hardware jams that swing harder than most people's edits. Via Topic." },
+  { g:"lofi_house", a:"Pender Street Steppers", t:"Our Time", y:2015, v:"QgzyIpgzAQU", s:null, w:null,
+    b:"The Mood Hut founders at their sweetest: boogie slowed to harbour pace. Via Topic." },
+  { g:"lofi_house", a:"Local Artist", t:"Head Right", y:2014, v:"FxYn6Zuti7c", s:null, w:null,
+    b:"Vancouver's in-house mystery man on Mood Hut: a loop so relaxed it is almost horizontal. From the label's channel." },
+  { g:"lofi_house", a:"COMPUTER DATA", t:"healing", y:2018, v:"NVEdr0OO_4U", s:null, w:null,
+    b:"Lower-case house for upper-case feelings: breakbeat lilt, pads like aloe. Artist's own channel." },
+  { g:"lofi_house", a:"DJ Boring", t:"Like Water", y:2021, v:"JUOJ-Xu6PK4", s:null, w:null,
+    b:"The Winona man grown up on Technicolour: trance strings surfacing through the hiss. From the label's official channel." },
+
+  /* ======== focus zen: pack 1, Bansuri Bliss (Buddha's Flute, 2023) + Malte Marten; so entram pela valvula do foco ======== */
+  { g:"focus_zen", a:"Buddha's Flute", t:"One Afternoon", y:2023, v:"Z-L3yyV1ioY", s:"https://open.spotify.com/track/6RwUxWwE7Sasy5N1ZTeJ1m", w:null,
+    b:"From Bansuri Bliss: the bamboo flute of the north Indian tradition, recorded close and left alone. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Peaceful Way", y:2023, v:"IZsssw1aluE", s:"https://open.spotify.com/track/0t7Ml8fdEUTWiPPd9f68c7", w:null,
+    b:"Bansuri Bliss: long tones over a drone, breath made audible. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Tranquil Forest", y:2023, v:"vjEwVRYF1ec", s:"https://open.spotify.com/track/2zNxHGyAqaCTebGEgblqfp", w:null,
+    b:"Bansuri Bliss: the flute walks, the forest answers. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Dim Lights", y:2023, v:"RD3HuUnUb78", s:"https://open.spotify.com/track/1qrkIudbF07EuhbULbxeR2", w:null,
+    b:"Bansuri Bliss: evening register, lamps half down. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Lowering Mind", y:2023, v:"lVWJbpOr7vA", s:"https://open.spotify.com/track/68l5hzKWZMCZGEtjIyUmso", w:null,
+    b:"Bansuri Bliss: a slow descent, thought by thought. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Feeling Calm", y:2023, v:"RfcQG7f6fFk", s:"https://open.spotify.com/track/3Rb9AFy8xhRXCywPpY1ezD", w:null,
+    b:"Bansuri Bliss: two minutes of settled air. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Aaraam", y:2023, v:"X_fhtQMIKz8", s:"https://open.spotify.com/track/2xPWNqsWtCoE8ZvZBAsSXK", w:null,
+    b:"Bansuri Bliss: aaraam is rest in Hindi; the track keeps its word. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Drifting Into Calmness", y:2023, v:"lc42tvJpmnE", s:"https://open.spotify.com/track/7uDIp6VVSSdHz4UQ2t9C3H", w:null,
+    b:"Bansuri Bliss: the title is the instruction. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Acceptance", y:2023, v:"nE0VIZpiItI", s:"https://open.spotify.com/track/1e736vjubjRbKsse77957S", w:null,
+    b:"Bansuri Bliss: a phrase repeated until it stops asking. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"The Riddle of Dreams", y:2023, v:"kjJ2A4HtMqE", s:"https://open.spotify.com/track/1ntSLZULN4GpToi0HezXAA", w:null,
+    b:"Bansuri Bliss: the flute wonders, the drone knows. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Calm Journey", y:2023, v:"W1z5vEa1hH0", s:"https://open.spotify.com/track/1dWCE9xBzOgCuUj44AqjV0", w:null,
+    b:"Bansuri Bliss: travel at walking pace. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Evening Peace", y:2023, v:"Lpi99v9L-JA", s:"https://open.spotify.com/track/0LQYwQTSWDjBMgSgK0EosT", w:null,
+    b:"Bansuri Bliss: the day closed gently. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Path to Serenity", y:2023, v:"YEv4y_QPs5w", s:"https://open.spotify.com/track/1p97eeApHOkfkDQ0w2uFmR", w:null,
+    b:"Bansuri Bliss: stepwise melody, nowhere to be. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Yoga Depth", y:2023, v:"HcRZS9yhkuQ", s:"https://open.spotify.com/track/6XpfCzoyjSCcGvEJ7rJntC", w:null,
+    b:"Bansuri Bliss: held notes for held poses. Via Topic." },
+  { g:"focus_zen", a:"Buddha's Flute", t:"Breath of Life", y:2023, v:"X3X6eSUMHes", s:"https://open.spotify.com/track/1iLxiQJjLkD8jXTRPlGdxn", w:null,
+    b:"Bansuri Bliss: in, out, repeat. Via Topic." },
+  { g:"focus_zen", a:"Malte Marten", t:"Calming Handpan (1111 Hz)", y:2025, v:"po56_O3cvvE", s:"https://open.spotify.com/track/4O2dDOzgPn5kHv7F5DG0j9", w:null,
+    b:"From Healing Frequencies 2: the handpan's bell-metal patience, tuned low and warm. Via Topic." },
+  { g:"focus_zen", a:"Malte Marten", t:"Echoes of Silence (1111 Hz)", y:2025, v:"CboeE_FP3eA", s:"https://open.spotify.com/track/2aLHHp4zw4iJxgIPHoGAr9", w:null,
+    b:"Healing Frequencies 2: struck once, left ringing. Via Topic." },
+  { g:"focus_zen", a:"Malte Marten", t:"Deep Healing (1111 Hz)", y:2025, v:"ByQ9u-QiUAk", s:"https://open.spotify.com/track/0YebL6A7SzMTLXJUefmYJt", w:null,
+    b:"Healing Frequencies 2: slow hands on steel, room left in every bar. Via Topic." },
+
+  /* ======== focus zen: as cinco fitas longas de lo-fi, uploads oficiais fixados ======== */
+  { g:"focus_zen", a:"Lofi Girl", t:"1 A.M Study Session", y:2021, v:"lTRiuFIWV54", s:null, w:"https://en.wikipedia.org/wiki/Lofi_Girl",
+    b:"The channel's signature hour: lofi hip hop sequenced for the small hours, from the official Lofi Girl upload. One hour, one sitting." },
+  { g:"focus_zen", a:"Lofi Girl", t:"Best of lofi hip hop 2021", y:2021, v:"n61ULEU7CO0", s:null, w:"https://en.wikipedia.org/wiki/Lofi_Girl",
+    b:"Six hours of the year's quietest hits, official upload: the long haul shelf for marathon sessions." },
+  { g:"focus_zen", a:"Chillhop Music", t:"Chillhop Essentials Fall 2026", y:2026, v:"dYuNh58nLt8", s:null, w:null,
+    b:"The seasonal compilation in full mix form, jazz chords over falling leaves, from the official Chillhop channel." },
+  { g:"focus_zen", a:"College Music", t:"College Music Records Yearmix 2021", y:2021, v:"oFpwgZ2yFpE", s:null, w:null,
+    b:"An hour of the label's own releases: chillout, vocal lofi and jazz, official upload." },
+  { g:"focus_zen", a:"the bootleg boy", t:"LATE NIGHT RIDE (1 hour)", y:2019, v:"PSwg0ri3JpE", s:null, w:null,
+    b:"Sad beats for empty motorways, the channel's defining tape in its one-hour cut, from the bootleg boy's own second channel." },
+];
+
+/* extended sound notes: outside writing first, our words only as mortar.
+   Sample for dub; the other sixteen follow the same shape. */
+const GEXT = {
+  reggae: {
+    quote: { t: "Roots reggae is a subgenre of reggae that deals with the everyday lives and aspirations of Africans and those in the African Diaspora, including the spiritual side of Rastafari, black liberation, revolution and the honouring of God, called Jah by Rastafarians.",
+             src: "Wikipedia, Roots reggae (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Roots_reggae" }
+  },
+  lofi: {
+    quote: { t: "Low fidelity is a music or production quality in which elements usually regarded as imperfections in the context of a recording or performance are present, sometimes as a deliberate stylistic choice.",
+             src: "Wikipedia, Lo-fi music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Lo-fi_music" }
+  },
+  ambient: {
+    quote: { t: "Ambient music is a genre of music that emphasizes tone and atmosphere over traditional musical structure or rhythm.",
+             src: "Wikipedia, Ambient music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Ambient_music" }
+  },
+  ambient_techno: {
+    quote: { t: "Ambient techno is a subgenre of techno that incorporates the atmospheric textures of ambient music with the rhythmic elements and production of techno. It was pioneered by 1990s electronic artists such as Aphex Twin, Carl Craig, The Orb, The Future Sound of London, the Black Dog, Pete Namlook and Biosphere.",
+             src: "Wikipedia, Ambient techno (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Ambient_techno" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  lofi_house: {
+    quote: { t: "Outsider house is a subgenre of house music, combining elements of deep house, techno, noise, and ambient, with artists embracing lo-fi techniques rather than the polished cleanliness of mainstream deep house.",
+             src: "Wikipedia, Outsider house (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Outsider_house" }
+  },
+  liquid: {
+    quote: { t: "Liquid drum and bass, liquid DnB, melodic drum and bass, liquid funk, or sometimes just liquid is a subgenre of drum and bass. While it uses similar basslines and bar layouts to other styles, it contains fewer bar-oriented samples and more instrumental layers, harmonies, melodies and ambiance, producing a sentimental atmosphere directed at home listeners as well as nightclub and rave audiences.",
+             src: "Wikipedia, Liquid drum and bass (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Liquid_drum_and_bass" }
+  },
+  intelligent_dnb: {
+    quote: { t: "Drum and bass is a genre of electronic dance music that emerged in the United Kingdom in the early 1990s. It is characterised by fast breakbeats with heavy bass and sub-bass lines, samples, and synthesizers.",
+             src: "Wikipedia, Drum and bass (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Drum_and_bass" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  atmospheric_jungle: {
+    quote: { t: "Jungle is a genre of electronic music that developed in the 1990s out of the UK rave scene and Jamaican sound system culture. Emerging from breakbeat hardcore, the style is characterised by rapid breakbeats, heavily syncopated percussive loops, samples and synthesised effects, combined with the deep basslines, melodies and vocal samples found in dub, reggae and dancehall, as well as hip-hop and funk.",
+             src: "Wikipedia, Jungle (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Jungle_music" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  breakbeat: {
+    quote: { t: "Breakbeat is a broad type of electronic music that uses drum breaks, often sampled from early recordings of funk, jazz, and R&B. Breakbeats have been used in styles such as Florida breaks, hip-hop, jungle, drum and bass, big beat, breakbeat hardcore, and UK garage styles.",
+             src: "Wikipedia, Breakbeat (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Breakbeat" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  hypnotic_techno: {
+    quote: { t: "Minimal techno is a subgenre of techno music. It is characterized by a stripped-down aesthetic that exploits the use of repetition and understated development.",
+             src: "Wikipedia, Minimal techno (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Minimal_techno" },
+    eph: { img: "https://archive.org/download/00-tresor-globus-1996-club-flyer-front/00%20tresor%20globus%201996%20club%20flyer%20front.jpg", cap: "Club flyer, Tresor Globus, Berlin 1996", u: "https://archive.org/details/00-tresor-globus-1996-club-flyer-front" }
+  },
+  deep_house: {
+    quote: { t: "Deep house is a subgenre of house music that originated in the 1980s, initially fusing elements of Chicago house with the lush chords of 1980s jazz-funk and touches of soul music. Its origins are attributed to the early recordings of Larry Heard, including his influential track Can You Feel It.",
+             src: "Wikipedia, Deep house (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Deep_house" }
+  },
+  ragga_jungle: {
+    quote: { t: "Jungle is a genre of electronic music that developed in the 1990s out of the UK rave scene and Jamaican sound system culture. Emerging from breakbeat hardcore, the style is characterised by rapid breakbeats, heavily syncopated percussive loops, samples and synthesised effects, combined with the deep basslines, melodies and vocal samples found in dub, reggae and dancehall.",
+             src: "Wikipedia, Jungle (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Jungle_music" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  dubstep: {
+    quote: { t: "Dubstep is a genre of electronic dance music that originated in South London in the early 2000s. The style, whose roots trace to the Jamaican sound system party scene in the early 1980s, emerged as a UK garage offshoot that blended 2-step rhythms and sparse dub production, as well as incorporating elements of broken beat, grime, and drum and bass.",
+             src: "Wikipedia, Dubstep (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dubstep" }
+  },
+  dub_techno: {
+    quote: { t: "Dub techno is a subgenre of electronic music that originated in the early 1990s, blending the repetitive, minimal structures of techno with the echo-laden, spacey production techniques of dub music. It is notable for its deep, atmospheric soundscapes, chorded layers of elaborate basslines, slowly developing musical phrases featuring heavy delay and reverb effects.",
+             src: "Wikipedia, Dub techno (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dub_techno" },
+    eph: { img: "https://archive.org/download/00-tresor-globus-1996-club-flyer-front/00%20tresor%20globus%201996%20club%20flyer%20front.jpg", cap: "Club flyer, Tresor Globus, Berlin 1996", u: "https://archive.org/details/00-tresor-globus-1996-club-flyer-front" }
+  },
+  oldskool_hardcore: {
+    quote: { t: "Breakbeat hardcore is a music genre that spawned from the UK rave scene during the early 1990s. It combines four-on-the-floor rhythms with breakbeats usually sampled from hip-hop.",
+             src: "Wikipedia, Breakbeat hardcore (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Breakbeat_hardcore" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  ska_rocksteady: {
+    quote: { t: "Rocksteady is a music genre that originated in Jamaica around 1966. A successor of ska and a precursor to reggae, rocksteady was the dominant style of music in Jamaica for nearly two years, performed by many of the artists who helped establish reggae.",
+             src: "Wikipedia, Rocksteady (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Rocksteady" }
+  },
+  uk_garage: {
+    quote: { t: "UK garage, abbreviated as UKG, is a genre of electronic music which originated in England in the early to mid-1990s. It is defined by percussive, shuffled rhythms with syncopated hi-hats, cymbals, and snares, and may include either 4/4 house kick patterns or more irregular 2-step rhythms.",
+             src: "Wikipedia, UK garage (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/UK_garage" }
+  },
+  house: {
+    quote: { t: "House music, or simply house, is a type of electronic dance music which is characterized by a repetitive four-on-the-floor beat and a typical tempo of 115 to 130 beats per minute. It was created in Chicago by DJs and music producers from the city's queer Black underground club culture.",
+             src: "Wikipedia, House music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/House_music" }
+  },
+  dub: {
+    quote: { t: "Dub is a musical style that grew out of reggae in the late 1960s and early 1970s. It is commonly considered a subgenre of reggae, though it has developed to extend beyond that style.",
+             src: "Wikipedia, Dub music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dub_music" },
+    quote2: { t: "King Tubby interchanged the vocals and the instrumental, playing the vocals first, then playing the riddim, then mixing them together.",
+              src: "Wikipedia, Dub music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dub_music" },
+    records: [
+      { n: "Max Romeo & The Upsetters, War Ina Babylon (Island, 1976)", r: "4.54/5 on Discogs, 1511 ratings", u: "https://www.discogs.com/master/490972-Max-Romeo-The-Upsetters-War-Ina-Babylon" },
+      { n: "Yabby You, Deliver Me From My Enemies (Grove Music, 1977)", r: "4.58/5 on Discogs, 211 ratings", u: "https://www.discogs.com/master/310731-The-Yabby-You-Vibration-Deliver-Me-From-My-Enemies" },
+      { n: "Pablo Gad, Blood Suckers (Burning Sounds, 1979)", r: "4.52/5 on Discogs, 114 ratings", u: "https://www.discogs.com/master/176657-Pablo-Gad-Blood-Suckers" }
+    ],
+    lineage: { t: "Dub Fi Gwan rides Lord Tanamo's Keep On Moving; WhoSampled traces the riddim's descendants across five decades.",
+               u: "https://www.whosampled.com/King-Tubby/Dub-Fi-Gwan/" },
+    links: [
+      { n: "Ishkur's Guide, the dub entry", u: "https://music.ishkur.com/" },
+      { n: "Discogs, dub style portal", u: "https://www.discogs.com/style/dub" }
+    ],
+    note: "Ephemera (sound system flyers and fanzines from the Internet Archive) land with the full rollout of this panel."
+  }
+};
+
+/* MC intro script (sound design + text; no synthetic voice) */
+const MC_LINES = [
+  { t:"BIG UP YOUR CHEST.",              fx:"stab"  },
+  { t:"SELECTA LOCKED IN.",              fx:"stab"  },
+  { t:"INNA DI MORNING, INNA DI MIDNIGHT,", fx:"phone" },
+  { t:"YOU ARE NOW TUNED TO",            fx:"stab"  },
+  { t:"HOME MUSIC",  big:true,           fx:"siren" },
+  { t:"STRICTLY VIBES. PULL UP!",        fx:"sweep" }
+];
+</script>
+<script>
+/* ================= HOME MUSIC : PALCO PIXEL, O RITO DO 45 =================
+   Escola E: silhueta contra a lua. Cena unica 320x180 + grandes planos de
+   inserto nos gestos de precisao. API compativel com o motor da radio:
+   setNext, prepare, fadeBegin, setFade, finish, quick, first,
+   setLevels, setProgress, setTempo, e um relogio de poses quadro a quadro. */
+window.RIG=(function(){
+"use strict";
+var stub={ok:false, ctl:{}, setNext:function(){}, prepare:function(k,cb){ if(cb) setTimeout(cb,300); },
+  fadeBegin:function(){}, setFade:function(){}, finish:function(){}, quick:function(){},
+  first:function(){}, setLevels:function(){}, setProgress:function(){}, setTempo:function(){}};
+try{
+var canvas=document.getElementById("px");
+if(!canvas) return stub;
+var g=canvas.getContext("2d");
+g.imageSmoothingEnabled=false;
+
+/* ---------- paleta fechada ---------- */
+var C={
+  sky:"#080714", sky2:"#0b0a1c", star:"#39406a", starB:"#8d90b0",
+  halo:"#1c1836", moon:"#ffb12b", moonL:"#ffd98a", crater:"#d8891c",
+  K:"#04030a", ink:"#060511", rock:"#0c0b1a", rockL:"#181530",
+  water:"#0b0a1c", ripple:"#141228", wline:"#1a1732",
+  red:"#e8392c", teal:"#41d9c8", amber:"#ffb12b", paper:"#f4ecd9",
+  dim:"#5a6a94", dim2:"#8d90b0", sleeve:"#d8cfae", sleeveS:"#b8ae8c",
+  jack:"#241d3c", jackL:"#3a3160"
+};
+
+/* ---------- utilitarios de pixel ---------- */
+function R(x,y,w,h,c){ g.fillStyle=c; g.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h))); }
+function PX(x,y,c){ R(x,y,1,1,c); }
+function DISC(cx,cy,r,c){ g.fillStyle=c; cx=Math.round(cx); cy=Math.round(cy);
+  for(var dy=-r;dy<=r;dy++){ var w=Math.floor(Math.sqrt(r*r-dy*dy)); g.fillRect(cx-w,cy+dy,w*2+1,1);} }
+function ELL(cx,cy,rx,ry,c){ g.fillStyle=c; cx=Math.round(cx); cy=Math.round(cy);
+  for(var dy=-ry;dy<=ry;dy++){ var w=Math.floor(rx*Math.sqrt(Math.max(0,1-(dy*dy)/(ry*ry)))); g.fillRect(cx-w,cy+dy,w*2+1,1);} }
+function LINE(x0,y0,x1,y1,c,th){
+  th=th||1;
+  x0=Math.round(x0); y0=Math.round(y0); x1=Math.round(x1); y1=Math.round(y1);
+  var dx=Math.abs(x1-x0), dy=Math.abs(y1-y0), sx=x0<x1?1:-1, sy=y0<y1?1:-1, err=dx-dy;
+  while(true){
+    R(x0,y0,th,th,c);
+    if(x0===x1 && y0===y1) break;
+    var e2=2*err;
+    if(e2>-dy){ err-=dy; x0+=sx; }
+    if(e2<dx){ err+=dx; y0+=sy; }
+  }
+}
+function D2(x,y,w,h,c,step){ g.fillStyle=c; step=step||2;
+  for(var j=0;j<h;j++) for(var i=(j%step); i<w; i+=step) g.fillRect(x+i,y+j,1,1); }
+var F35={
+ A:["010","101","111","101","101"],B:["110","101","110","101","110"],C:["011","100","100","100","011"],
+ D:["110","101","101","101","110"],E:["111","100","110","100","111"],F:["111","100","110","100","100"],
+ G:["011","100","101","101","011"],H:["101","101","111","101","101"],I:["111","010","010","010","111"],
+ J:["001","001","001","101","010"],K:["101","110","100","110","101"],L:["100","100","100","100","111"],
+ M:["10001","11011","10101","10001","10001"],N:["1001","1101","1011","1001","1001"],O:["010","101","101","101","010"],
+ P:["110","101","110","100","100"],Q:["010","101","101","011","001"],R:["110","101","110","110","101"],
+ S:["011","100","010","001","110"],T:["111","010","010","010","010"],U:["101","101","101","101","111"],
+ V:["101","101","101","101","010"],W:["10101","10101","10101","10101","01010"],X:["101","010","010","010","101"],
+ Y:["101","101","010","010","010"],Z:["111","001","010","100","111"],
+ "0":["010","101","101","101","010"],"1":["010","110","010","010","111"],"2":["110","001","010","100","111"],
+ "3":["111","001","011","001","111"],"4":["101","101","111","001","001"],"5":["111","100","110","001","110"],
+ "6":["011","100","111","101","111"],"7":["111","001","010","010","010"],"8":["111","101","111","101","111"],
+ "9":["111","101","111","001","110"],
+ ".":["0","0","0","0","1"],",":["00","00","00","01","10"],":":["0","1","0","1","0"],"/":["001","001","010","100","100"],
+ "'":["1","1","0","0","0"],"-":["000","000","111","000","000"],"&":["010","101","010","101","011"]," ":["00","00","00","00","00"]
+};
+function T3(str,x,y,c){
+  str=String(str).toUpperCase();
+  var cx=Math.round(x); y=Math.round(y);
+  for(var k=0;k<str.length;k++){
+    var gl=F35[str[k]]||F35[" "];
+    for(var j=0;j<gl.length;j++) for(var i=0;i<gl[j].length;i++) if(gl[j][i]==="1"){ g.fillStyle=c; g.fillRect(cx+i,y+j,1,1); }
+    cx+=gl[0].length+1;
+  }
+  return cx-Math.round(x)-1;
+}
+function tw3(str){ str=String(str).toUpperCase(); var w=0;
+  for(var k=0;k<str.length;k++){ var gl=F35[str[k]]||F35[" "]; w+=gl[0].length+1; } return Math.max(0,w-1); }
+
+/* ---------- geografia da cena ---------- */
+var MOON={x:238, y:44, r:33};
+var PLATY=96;               /* topo da plataforma */
+var WATY=128;               /* linha de agua */
+var BOOTH={x:96, w:132, h:10};             /* cabina: tampo em PLATY-10 */
+var DECK={A:{x:122}, B:{x:196}};           /* centros dos pratos */
+var MIX={x:159};
+var STASH={x:74};                          /* pilha de capas, a esquerda */
+var EASEL={x:258};                         /* expositor da capa, a direita */
+var BTOP=PLATY-10;                          /* tampo da cabina */
+
+/* ---------- estado ---------- */
+var now=0;
+var cam="wide";
+var levels={A:0,B:0};
+var tempoBPM=120, beatHz=2, beatPh=0;
+var moonFlash=0;
+var decks={
+  A:{disc:true, run:true, ang:0, vel:1, armDown:true, prog:0.3},
+  B:{disc:false, run:false, ang:0, vel:0, armDown:false, prog:0}
+};
+var xf=0;                   /* 0 = A, 1 = B */
+var meta={a:"HOME MUSIC", t:"WARMING UP", y:"", bpm:120, accent:"#ffb12b"};   /* a tocar / exposta */
+var nextMeta=null;
+var pitchShow=null;          /* {from,to,t01} mostrador do acerto de bpm */
+/* objetos do rito */
+var easel={has:true, meta:null};
+var jacket={st:"none", x:0, y:0};    /* none / stash / hand / easel / aside */
+var sleevO={st:"none", x:0, y:0};    /* sleeve em transito */
+var discO={st:"none", x:0, y:0};     /* disco em transito */
+var asideJacket=null;                /* capa da faixa anterior pousada de lado */
+var asideSleeve=true;                /* sleeve da faixa anterior na cabina */
+var stashN=5;
+/* figura */
+var FIG={x:MIX.x, y:PLATY, pose:"idle", hand:null, hand2:null, carry:null, step:0};
+/* inserto (grande plano) */
+var cut={kind:null, t:0, dur:0};
+function cutIn(kind,dur){ cut.kind=kind; cut.t=0; cut.dur=dur; }
+
+/* ---------- tweens e sequencias ---------- */
+var tweens=[], seqs=[];
+function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+function tween(set,dur,done){ tweens.push({set:set,dur:dur,t:0,done:done}); }
+function runSeq(steps){ seqs.push({t:0, steps:steps.map(function(s){ return {t:s.t, fn:s.fn, done:false}; })}); }
+function busy(){ return seqs.length>0; }
+function walkTo(x,dur){
+  var fx=FIG.x;
+  tween(function(v){ FIG.x=fx+(x-fx)*ease(v); FIG.step=Math.sin(v*Math.PI*4)*1.5; }, dur, function(){ FIG.step=0; });
+}
+/* ================= desenho da cena ================= */
+function stars(){
+  for(var i=0;i<96;i++){
+    var sx=(i*73+17)%320, sy=(i*47+9)%(WATY-48);
+    var tw=((i*13+Math.floor(now*2))%19)===0;
+    PX(sx,sy, tw?C.starB:C.star);
+  }
+  PX(30,12,C.paper); R(28,14,5,1,C.paper); R(30,12,1,5,C.paper);
+  PX(290,22,C.paper); R(288,24,5,1,C.paper); R(290,22,1,5,C.paper);
+}
+function moon(){
+  var r=MOON.r + (moonFlash>0 ? Math.round(moonFlash*3) : 0);
+  DISC(MOON.x,MOON.y,r+5,C.halo);
+  if(moonFlash>0) DISC(MOON.x,MOON.y,r+3,"#2a2348");
+  DISC(MOON.x,MOON.y,r,C.moon);
+  g.fillStyle=C.moonL;
+  for(var sy=-r; sy<-Math.floor(r*0.25); sy++){
+    var w2=Math.floor(Math.sqrt(r*r-sy*sy));
+    for(var sx=-w2; sx<=w2; sx+=2) g.fillRect(MOON.x+sx+((sy%2)?1:0),MOON.y+sy,1,1);
+  }
+  DISC(MOON.x-14,MOON.y+7,6,C.crater);
+  DISC(MOON.x+13,MOON.y+17,4,C.crater);
+  DISC(MOON.x+5,MOON.y-8,3,C.crater);
+}
+function city(){
+  R(0,84,58,WATY-84,C.K); R(34,76,10,WATY-76,C.K); R(38,70,1,7,C.K); PX(38,69,C.red);
+  R(300,74,20,WATY-74,C.K); PX(306,72,C.red);
+  R(62,94,16,WATY-94,C.K);
+}
+function drawSoundsystem(){
+  /* a muralha de tres colunas: a cadeia de vias dos sistemas de dub,
+     de baixo para cima scoop sobre scoop, kick bin, medios, cornetas,
+     regua de bullets e o stencil; control tower a parte, ligada por cabo */
+  var lvl=Math.min(1, levels.A+levels.B);
+  var pu=Math.pow(Math.max(0,Math.sin(beatPh)),2)*lvl;
+  var pu2=Math.pow(Math.max(0,Math.sin(beatPh+2.1)),2)*lvl;
+  function cab(x,y,w,h,face){
+    R(x,y,w,h,face); R(x,y,w,1,C.rockL); R(x,y,1,h,"#1c1838"); R(x+w-1,y,1,h,"#05040c");
+    PX(x+1,y+1,"#2a2448"); PX(x+w-2,y+1,"#2a2448"); PX(x+1,y+h-2,"#2a2448"); PX(x+w-2,y+h-2,"#2a2448");
+  }
+  function cone(cx,cy,r,hot){
+    DISC(cx,cy,r,"#0a0918");
+    g.fillStyle="#2a2348";
+    for(var a=-r;a<=r;a++){ var hh=Math.floor(Math.sqrt(r*r-a*a)); PX(cx+a,cy-hh,"#2a2348"); PX(cx+a,cy+hh,"#15112a"); }
+    DISC(cx,cy,Math.max(1,Math.floor(r*0.4)),"#141128");
+    PX(cx,cy, hot?C.amber:"#3a2f18");
+  }
+  function scoopBox(x,y,w,h,hot){
+    cab(x,y,w,h,"#0d0b1a");
+    var mw=Math.floor(w*0.62), mh=Math.floor(h*0.5);
+    var mx=x+Math.floor((w-mw)/2), my=y+h-mh-2;
+    R(mx-1,my-1,mw+2,mh+2,"#1a1632");
+    R(mx,my,mw,mh, hot?"#0a0620":"#020106");
+    R(mx,my+Math.floor(mh*0.45),mw,2, hot?"#2a2254":"#15122a");
+    R(mx+Math.floor(mw/2)-1,my,2,mh,"#100d22");
+    PX(x+3,y+3,"#3a3160"); PX(x+w-4,y+3,"#3a3160");
+  }
+  function kickBin(x,y,w,h,hot){
+    cab(x,y,w,h,"#0e0c1e");
+    R(x+3,y+3,w-6,h-6,"#0a0918");
+    D2(x+3,y+3,w-6,h-6, hot?"#2a2454":"#1e1a38",2);
+    DISC(x+Math.floor(w/2),y+Math.floor(h/2),Math.floor(Math.min(w,h)*0.32), hot?"#0d0a20":"#070512");
+  }
+  function midBox(x,y,w,h,hot){
+    cab(x,y,w,h,"#0d0b1c");
+    cone(x+Math.floor(w*0.3), y+Math.floor(h/2), Math.floor(h*0.34), hot);
+    cone(x+Math.floor(w*0.7), y+Math.floor(h/2), Math.floor(h*0.34), false);
+    D2(x+2,y+2,w-4,2,"#191536",2);
+  }
+  function hornRow(x,y,w,n,hot){
+    var hw=Math.floor(w/n);
+    for(var i=0;i<n;i++){
+      var hx=x+i*hw;
+      g.fillStyle="#0e0c1e";
+      g.beginPath(); g.moveTo(hx+2,y+10); g.lineTo(hx+hw-2,y+10); g.lineTo(hx+hw-5,y+3); g.lineTo(hx+5,y+3); g.closePath(); g.fill();
+      R(hx+Math.floor(hw/2)-2,y+10,4,3,"#161330");
+      R(hx+5,y+3,hw-10,1,"#241d44");
+      PX(hx+Math.floor(hw/2),y+6, (hot&&i===0)?C.teal:"#16322c");
+    }
+  }
+  function bulletRow(x,y,n){
+    for(var i=0;i<n;i++){
+      var bx=x+i*9;
+      R(bx,y,6,4,"#141130");
+      PX(bx+6,y+1,"#241d44"); PX(bx+6,y+2,"#241d44");
+      PX(bx+2,y+1,(pu>0.55&&i%2===0)||(pu2>0.55&&i%2===1)?C.moonL:"#2a2448");
+    }
+  }
+  var base=WATY, colw=30;
+  for(var c2=0;c2<3;c2++){
+    var x=4+c2*(colw+3);
+    var hotc=(c2===1)?(pu2>0.3):(pu>0.3);
+    scoopBox(x,base-24,colw,24, hotc);
+    scoopBox(x,base-46,colw,22, (c2===1)?(pu>0.3):(pu2>0.3));
+    kickBin(x,base-62,colw,16, hotc&&pu>0.55);
+    midBox(x,base-76,colw,14, (c2===1?pu2:pu)>0.35);
+    hornRow(x,base-89,colw,2, (c2===1?pu2:pu)>0.5);
+    R(x+1,base-89,1,89,"#181530"); R(x+colw-2,base-89,1,89,"#181530");
+  }
+  bulletRow(16,base-95,8);
+  T3("HOME MUSIC HI-FI", 20, base-101, "#3a3160");
+  R(18,base-102,68,1,"#241d3c");
+  /* cabos da muralha para a cabina */
+  LINE(98,base-30, BOOTH.x+6, PLATY-2, "#141130",1);
+  LINE(98,base-52, BOOTH.x+2, PLATY-4, "#100d26",1);
+  /* ---- control tower na margem direita: preamp, sirene e candeeiro ---- */
+  var tx=280, tb=WATY;
+  R(tx,tb-16,22,16,"#0d0b1c"); R(tx,tb-16,22,1,C.rockL);
+  R(tx-2,tb-20,26,4,"#15122a");
+  R(tx+1,tb-27,20,7,"#0a0918");
+  [3,8,13,18].forEach(function(k,i){
+    PX(tx+k,tb-24, (Math.floor(beatPh*0.6)%4)===i&&lvl>0.05 ? C.moonL : C.amber);
+  });
+  PX(tx+17,tb-26, (Math.floor(now)%4===0)?C.red:"#5a2420");
+  R(tx+3,tb-33,8,5,"#15122a"); PX(tx+6,tb-31,C.red);
+  R(tx+14,tb-31,1,4,"#241d44"); DISC(tx+14,tb-33,2,C.moonL); PX(tx+14,tb-33,C.paper);
+  R(tx+2,tb-16,1,16,"#181530"); R(tx+19,tb-16,1,16,"#05040c");
+  /* cabo da cabina para a control tower */
+  LINE(BOOTH.x+BOOTH.w-4, PLATY-2, tx+2, tb-14, "#141130",1);
+}
+function waterScene(){
+  R(0,WATY,320,180-WATY,C.water);
+  R(0,WATY,320,1,C.wline);
+  /* reflexo da lua */
+  g.fillStyle=C.moon;
+  for(var ry=WATY+2; ry<178; ry+=2){
+    var off=((ry*7)%3)-1, w3=Math.max(3, 26-(ry-WATY));
+    for(var rx=-w3; rx<=w3; rx+=3) g.fillRect(MOON.x+rx+off, ry, 1,1);
+  }
+  /* reflexo da figura e da cabina */
+  g.fillStyle="#100d20";
+  R(FIG.x-1, WATY+2, 3, 10, "#100d20");
+  R(BOOTH.x+10, WATY+2, BOOTH.w-20, 2, "#0e0c1e");
+  R(6, WATY+2, 92, 3, "#0d0b1e"); R(278, WATY+2, 26, 2, "#0d0b1e");
+  PX(19, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e"); PX(52, WATY+4, levels.B>0.05?"#4a3a1c":"#0d0b1e");
+  PX(85, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e");
+  PX(294, WATY+3, "#4a3e20");
+  PX(DECK.A.x, WATY+3, levels.A>0.05?"#5a2a28":"#100d20");
+  PX(DECK.B.x, WATY+3, levels.B>0.05?"#5a4a20":"#100d20");
+  R(60,WATY+8,56,1,C.ripple); R(150,WATY+14,70,1,C.ripple); R(40,WATY+22,70,1,C.ripple); R(210,WATY+24,60,1,C.ripple);
+}
+function platform(){
+  R(56,PLATY,212,8,C.rock);
+  R(56,PLATY,212,1,C.rockL);
+  g.fillStyle=C.rock;
+  g.beginPath(); g.moveTo(120,PLATY+8); g.lineTo(146,WATY); g.lineTo(190,WATY); g.lineTo(206,PLATY+8); g.closePath(); g.fill();
+}
+/* a capa: artwork tipografico com dados reais */
+function initials(m){
+  if(!m) return "HM";
+  var a=(m.a||"").replace(/[^A-Za-z0-9 ]/g,"").split(" ").filter(function(x){return x;});
+  var s=(a[0]?a[0][0]:"H")+(a[1]?a[1][0]:(a[0]&&a[0][1]?a[0][1]:"M"));
+  return s.toUpperCase();
+}
+function T3S(str,x,y,c,sc){
+  str=String(str).toUpperCase();
+  var cx=Math.round(x);
+  for(var k=0;k<str.length;k++){
+    var gl=F35[str[k]]||F35[" "];
+    for(var j=0;j<gl.length;j++) for(var i=0;i<gl[j].length;i++) if(gl[j][i]==="1") R(cx+i*sc,y+j*sc,sc,sc,c);
+    cx+=(gl[0].length+1)*sc;
+  }
+}
+function jacketArt(x,y,s,m){
+  var acc=(m&&m.accent)||C.amber;
+  R(x,y,s,s,C.jack);
+  R(x,y,s,1,C.jackL); R(x,y,1,s,C.jackL);
+  R(x+1,y+1,s-2,Math.max(2,Math.floor(s*0.22)),acc);
+  var ini=initials(m);
+  if(s>=14){
+    T3S(ini, x+Math.floor(s/2)-Math.floor(tw3(ini)/2)*1, y+Math.floor(s*0.38), C.paper, 1);
+    R(x+2,y+s-4,s-4,1,"#4a4468");
+  }
+}
+function drawStash(){
+  R(STASH.x-8, BTOP, 18, PLATY-BTOP, C.ink);
+  R(STASH.x-8, BTOP, 18, 1, "#14102a");
+  for(var i=0;i<stashN;i++){
+    R(STASH.x-6, BTOP-3-i*3, 14, 2, i%2?C.jack:C.jackL);
+    PX(STASH.x+6, BTOP-3-i*3, (i%3===0)?C.amber:C.jack);
+  }
+}
+function drawEasel(){
+  /* feixe de lua sobre o expositor */
+  g.fillStyle="#241d3c";
+  for(var by=14; by<BTOP-18; by+=2){ var bx=EASEL.x+Math.floor((BTOP-by)*0.12); PX(bx,by,"#2a2348"); PX(bx+5,by+1,"#241d3c"); }
+  LINE(EASEL.x-6,BTOP, EASEL.x-2,BTOP-14, C.K,1);
+  LINE(EASEL.x+6,BTOP, EASEL.x+2,BTOP-14, C.K,1);
+  if(easel.has){ jacketArt(EASEL.x-8, BTOP-24, 16, easel.meta||meta); }
+  if(asideJacket){ R(EASEL.x-26, BTOP-3, 12, 2, C.jackL); PX(EASEL.x-16,BTOP-3,asideJacket.accent||C.amber); }
+  if(asideSleeve){ R(EASEL.x-24, BTOP-6, 9, 5, C.sleeve); R(EASEL.x-24, BTOP-6, 9, 1, C.sleeveS); }
+}
+function drawDeck(k){
+  var d=decks[k], x=DECK[k].x;
+  R(x-16,BTOP-4,32,4,C.ink);
+  ELL(x,BTOP-4,16,5,"#100d20");
+  ELL(x,BTOP-5,14,4,"#0d0b18");
+  if(d.disc){
+    ELL(x,BTOP-6,12,3,C.K);
+    var a=d.ang;
+    var mx=Math.round(Math.cos(a)*9), my=Math.round(Math.sin(a)*2);
+    PX(x+mx,BTOP-6+my,C.amber);
+    PX(x-mx,BTOP-6-my,"#2a2348");
+    PX(x,BTOP-7,C.red);
+  }
+  /* braco da agulha */
+  var na=d.armDown?1:0;
+  var ax0=x+13, ay0=BTOP-9;
+  var ax1=x+4+Math.round(d.prog*4), ay1=BTOP-7-Math.round((1-na)*4);
+  R(ax0,ay0,2,3,C.K);
+  LINE(ax0,ay0+1,ax1,ay1,C.K,1);
+  PX(ax1,ay1+1,d.armDown?C.teal:"#2a2348");
+  /* botao e pitch */
+  PX(x-12,BTOP-2,d.run?C.teal:"#2a2348");
+  R(x+9,BTOP-1,6,1,"#2a2348");
+  PX(x+10+Math.round(((k==="A"?0:1))*0+2),BTOP-2,C.paper);
+}
+function drawMixer(){
+  R(MIX.x-10,BTOP-6,20,6,C.ink);
+  var vA=Math.min(4,Math.round(levels.A*5)), vB=Math.min(4,Math.round(levels.B*5));
+  for(var i=0;i<4;i++){
+    PX(MIX.x-6, BTOP-3-i, i<vA ? (i>2?C.red:C.teal) : "#161228");
+    PX(MIX.x+6, BTOP-3-i, i<vB ? (i>2?C.red:C.amber) : "#161228");
+  }
+  R(MIX.x-7,BTOP-1,14,1,C.K);
+  R(MIX.x-7+Math.round(xf*12),BTOP-2,2,2,C.paper);
+}
+function drawBooth(){
+  R(BOOTH.x,BTOP,BOOTH.w,10,C.ink);
+  R(BOOTH.x,BTOP,BOOTH.w,1,"#14102a");
+  R(BOOTH.x+4,PLATY-2,BOOTH.w-8,1,"#0a0816");
+  drawDeck("A"); drawDeck("B"); drawMixer(); drawStash(); drawEasel();
+  /* monograma na frente */
+  T3("HM", MIX.x-3, PLATY-7, "#201a38");
+}
+/* ---------- a silhueta ---------- */
+var FIGC="#191634", RIM="#9a7f4a";
+function drawFig(){
+  var x=Math.round(FIG.x), yTop=PLATY-26;
+  var hb=(busy()?0:(Math.sin(beatPh)>0.3?1:0));
+  /* sombra */
+  ELL(x+1,PLATY+1,5,1,"#030208");
+  /* cabeca */
+  R(x-2,yTop+hb,5,4,FIGC);
+  R(x-2,yTop+hb,5,1,"#241f44");
+  PX(x+3,yTop+hb+1,RIM); PX(x+3,yTop+hb+2,RIM);
+  /* tronco */
+  R(x-2,yTop+4,5,11,FIGC);
+  R(x+3,yTop+5,1,9,RIM);
+  PX(x-3,yTop+6,"#100e24");
+  /* bracos */
+  var sh1={x:x-2,y:yTop+6}, sh2={x:x+3,y:yTop+6};
+  var h1=FIG.hand, h2=FIG.hand2;
+  if(!h1 && !h2){
+    h1={x:x-6,y:BTOP-1}; h2={x:x+6,y:BTOP-1};
+    if(!busy()){ h2={x:x+6+(Math.sin(beatPh)>0?1:0), y:BTOP-1}; }
+  }
+  if(h1){ var e1={x:(sh1.x+h1.x)/2-2,y:(sh1.y+h1.y)/2+2}; LINE(sh1.x,sh1.y,e1.x,e1.y,FIGC,2); LINE(e1.x,e1.y,h1.x,h1.y,FIGC,2); }
+  if(h2){ var e2={x:(sh2.x+h2.x)/2+2,y:(sh2.y+h2.y)/2+2}; LINE(sh2.x,sh2.y,e2.x,e2.y,FIGC,2); LINE(e2.x,e2.y,h2.x,h2.y,FIGC,2); }
+  /* pernas */
+  var st=Math.round(FIG.step);
+  R(x-2-st,yTop+15,2,PLATY-(yTop+15),FIGC);
+  R(x+1+st,yTop+15,2,PLATY-(yTop+15),FIGC);
+  PX(x+2+st,yTop+17,RIM);
+  /* objeto transportado segue a mao 1 */
+  if(FIG.carry==="jacket" && h1){
+    jacketArt(h1.x-5,h1.y-5,11,jacket.m||nextMeta);
+    if(jacket.peek>0){ R(h1.x+6,h1.y-3,Math.round(jacket.peek*4),6,C.sleeve); }
+  }
+  if(FIG.carry==="sleeve" && h1){ R(h1.x-4,h1.y-4,8,8,C.sleeve); R(h1.x-4,h1.y-4,8,1,C.sleeveS); }
+  if(FIG.carry==="disc" && h1){ DISC(h1.x,h1.y,4,C.K); g.fillStyle=C.moonL;
+    for(var a=-4;a<=4;a++){ var hh=Math.floor(Math.sqrt(16-a*a)); PX(h1.x+a,h1.y-hh,C.moonL); } PX(h1.x,h1.y,C.red); }
+}
+/* ---------- grandes planos ---------- */
+function drawCut(){
+  if(!cut.kind) return;
+  var p=cut.t/cut.dur;
+  if(p>=1){ cut.kind=null; return; }
+  if(cut.kind==="needle"){
+    var w2=96,h2=56,x2=10,y2=10;
+    R(x2-1,y2-1,w2+2,h2+2,C.paper); R(x2,y2,w2,h2,C.ink);
+    ELL(x2+40,y2+40,34,10,"#0d0b18");
+    ELL(x2+40,y2+38,30,8,C.K);
+    var sp=now*6;
+    PX(x2+40+Math.round(Math.cos(sp)*22), y2+38+Math.round(Math.sin(sp)*5), C.amber);
+    PX(x2+40,y2+36,C.red);
+    var na=cut.na===undefined?p:cut.na;
+    var ny=y2+16+Math.round(Math.min(1,p*1.6)*14);
+    R(x2+78,y2+8,3,6,C.K);
+    LINE(x2+79,y2+12, x2+52, ny, C.paper,1);
+    PX(x2+52,ny+1,C.teal);
+    T3("A AGULHA", x2+2, y2+h2+3, C.dim);
+  }
+  if(cut.kind==="pitch"){
+    var w3=96,h3=50,x3=10,y3=10;
+    R(x3-1,y3-1,w3+2,h3+2,C.paper); R(x3,y3,w3,h3,C.ink);
+    var ps=pitchShow||{from:120,to:120};
+    var vv=Math.round(ps.from+(ps.to-ps.from)*Math.min(1,p*1.25+((p>0.5&&p<0.7)?Math.sin(p*40)*0.02:0)));
+    T3S(String(vv), x3+14, y3+10, (Math.abs(vv-ps.to)<1)?C.teal:C.paper, 3);
+    T3("BPM", x3+66, y3+20, C.dim2);
+    R(x3+8,y3+40,80,1,"#2a2348");
+    R(x3+8+Math.round(Math.min(1,p*1.25)*76),y3+38,3,5,C.paper);
+    T3("O TEMPO", x3+2, y3+h3+3, C.dim);
+  }
+  if(cut.kind==="fader"){
+    var w4=96,h4=40,x4=224,y4=10;
+    R(x4-1,y4-1,w4+2,h4+2,C.paper); R(x4,y4,w4,h4,C.ink);
+    R(x4+8,y4+20,80,2,"#2a2348");
+    R(x4+6+Math.round(xf*76),y4+16,4,9,C.paper);
+    T3("A",x4+8,y4+6,C.red); T3("B",x4+82,y4+6,C.amber);
+    for(var i2=0;i2<4;i2++){
+      PX(x4+20+i2, y4+32, i2<Math.round(levels.A*5)?C.teal:"#161228");
+      PX(x4+70+i2, y4+32, i2<Math.round(levels.B*5)?C.amber:"#161228");
+    }
+    T3("A PASSAGEM", x4+2, y4+h4+3, C.dim);
+  }
+}
+function draw(){
+  R(0,0,320,180,C.sky);
+  D2(0,0,320,40,C.sky2,3);
+  stars(); moon(); city(); drawSoundsystem(); platform();
+  drawFig();
+  drawBooth(); waterScene(); drawCut();
+}
+/* ================= o rito: sequencias de poses ================= */
+function stashTop(){ return BTOP-3-(stashN-1)*3; }
+function handTw(to,dur,done){
+  var h0={x:FIG.hand?FIG.hand.x:FIG.x, y:FIG.hand?FIG.hand.y:BTOP-2};
+  FIG.hand=FIG.hand||{x:h0.x,y:h0.y};
+  tween(function(v){ FIG.hand.x=h0.x+(to.x-h0.x)*ease(v); FIG.hand.y=h0.y+(to.y-h0.y)*ease(v); }, dur, done);
+}
+function normMeta(m){
+  m=m||{};
+  return {a:m.a||"", t:m.t||"", y:m.y||"", bpm:m.bpm||120, accent:m.accent||C.amber};
+}
+
+var API={
+  ok:true, ctl:{},
+  setNext:function(m){ nextMeta=normMeta(m); },
+  setTempo:function(bpm){ tempoBPM=Math.max(50,Math.min(190,bpm||120)); var hz=tempoBPM/60; beatHz=hz>1.9?hz/2:hz; },
+  setLevels:function(a,b){ levels.A=a; levels.B=b; },
+  setProgress:function(k,p){ if(decks[k]) decks[k].prog=Math.max(0,Math.min(1,p)); },
+
+  prepare:function(inK, cb){
+    var m=nextMeta||normMeta(meta);
+    runSeq([
+      {t:0.00, fn:function(){ FIG.hand=null; FIG.hand2=null; FIG.carry=null; walkTo(STASH.x+10,0.8); }},
+      {t:0.85, fn:function(){ FIG.hand={x:STASH.x+1,y:stashTop()-1}; }},
+      {t:1.15, fn:function(){ stashN=Math.max(0,stashN-1); FIG.carry="jacket"; jacket.m=m;
+                              handTw({x:FIG.x-6,y:BTOP-13},0.5); }},
+      {t:1.80, fn:function(){ FIG.hand2={x:FIG.x+3,y:BTOP-12}; jacket.peek=0;
+                              tween(function(v){ jacket.peek=v; },0.5); }},
+      {t:2.40, fn:function(){ FIG.hand2=null; walkTo(EASEL.x-12,0.75); FIG.hand={x:EASEL.x-16,y:BTOP-12}; }},
+      {t:3.20, fn:function(){ asideJacket=easel.meta?{accent:(easel.meta.accent||C.amber)}:null;
+                              easel.meta=m; easel.has=true; jacket.peek=0;
+                              FIG.carry="sleeve"; FIG.hand={x:EASEL.x-14,y:BTOP-10}; }},
+      {t:3.85, fn:function(){ FIG.carry="disc"; asideSleeve=true; handTw({x:EASEL.x-18,y:BTOP-12},0.4); }},
+      {t:4.40, fn:function(){ walkTo(DECK[inK].x+7,0.85); FIG.hand={x:DECK[inK].x+2,y:BTOP-12}; }},
+      {t:5.35, fn:function(){ handTw({x:DECK[inK].x,y:BTOP-6},0.45, function(){
+                                FIG.carry=null; decks[inK].disc=true; decks[inK].prog=0; FIG.hand=null; }); }},
+      {t:5.95, fn:function(){ decks[inK].run=true; }},
+      {t:6.15, fn:function(){ FIG.hand={x:DECK[inK].x+9,y:BTOP-9}; cutIn("needle",2.0); }},
+      {t:7.15, fn:function(){ decks[inK].armDown=true; if(window.HMFX) window.HMFX.needle(); }},
+      {t:7.55, fn:function(){ FIG.hand={x:DECK[inK].x+11,y:BTOP-3};
+                              pitchShow={from:(meta&&meta.bpm)||118, to:m.bpm};
+                              cutIn("pitch",2.8); }},
+      {t:10.35, fn:function(){ FIG.hand=null; walkTo(MIX.x,0.6); }},
+      {t:11.00, fn:function(){ meta=m; if(cb) cb(); }}
+    ]);
+  },
+
+  fadeBegin:function(inK){
+    moonFlash=1;
+    cutIn("fader",6.6);
+    FIG.hand={x:MIX.x-1,y:BTOP-2};
+    FIG.hand2={x:MIX.x+4,y:BTOP-4};
+  },
+  setFade:function(x,inK){
+    xf=(inK==="B")?x:(1-x);
+    if(FIG.hand){ FIG.hand.x=MIX.x-7+Math.round(xf*12); }
+  },
+
+  finish:function(outK){
+    runSeq([
+      {t:0.00, fn:function(){ FIG.hand2=null; walkTo(DECK[outK].x+7,0.6); FIG.hand=null; }},
+      {t:0.60, fn:function(){ FIG.hand={x:DECK[outK].x+9,y:BTOP-9}; }},
+      {t:1.10, fn:function(){ decks[outK].armDown=false; }},
+      {t:1.40, fn:function(){ handTw({x:DECK[outK].x,y:BTOP-7},0.35); }},
+      {t:1.80, fn:function(){ decks[outK].disc=false; decks[outK].run=false; FIG.carry="disc";
+                              handTw({x:DECK[outK].x+3,y:BTOP-12},0.4); }},
+      {t:2.30, fn:function(){ walkTo(EASEL.x-20,0.6); }},
+      {t:2.95, fn:function(){ FIG.carry="sleeve"; asideSleeve=false; FIG.hand={x:EASEL.x-22,y:BTOP-9}; }},
+      {t:3.70, fn:function(){ FIG.carry="jacket"; jacket.m=asideJacket; jacket.peek=0; asideJacket=null;
+                              FIG.hand={x:EASEL.x-24,y:BTOP-11}; }},
+      {t:4.40, fn:function(){ walkTo(STASH.x+10,0.75); FIG.hand={x:STASH.x+2,y:BTOP-12}; }},
+      {t:5.25, fn:function(){ handTw({x:STASH.x+1,y:stashTop()-2},0.4, function(){
+                                FIG.carry=null; stashN=Math.min(7,stashN+1); FIG.hand=null; }); }},
+      {t:6.00, fn:function(){ walkTo(MIX.x,0.8); }},
+      {t:6.90, fn:function(){ moonFlash=0.4; }}
+    ]);
+  },
+
+  quick:function(k){
+    var m=nextMeta||normMeta(meta);
+    runSeq([
+      {t:0.00, fn:function(){ FIG.hand=null; FIG.hand2=null; walkTo(DECK[k].x+7,0.5); }},
+      {t:0.50, fn:function(){ FIG.hand={x:DECK[k].x+9,y:BTOP-9}; decks[k].armDown=false; }},
+      {t:0.95, fn:function(){ decks[k].disc=false; decks[k].run=false; }},
+      {t:1.30, fn:function(){ stashN=Math.max(0,stashN-1);
+                              asideJacket=easel.meta?{accent:(easel.meta.accent||C.amber)}:null;
+                              easel.meta=m; moonFlash=0.6; }},
+      {t:1.80, fn:function(){ FIG.carry="disc"; FIG.hand={x:DECK[k].x+3,y:BTOP-12}; }},
+      {t:2.30, fn:function(){ handTw({x:DECK[k].x,y:BTOP-6},0.4, function(){
+                                FIG.carry=null; decks[k].disc=true; decks[k].prog=0; }); }},
+      {t:2.85, fn:function(){ decks[k].run=true; FIG.hand={x:DECK[k].x+9,y:BTOP-9}; cutIn("needle",1.5); }},
+      {t:3.70, fn:function(){ decks[k].armDown=true; if(window.HMFX) window.HMFX.needle(); }},
+      {t:4.10, fn:function(){ FIG.hand={x:DECK[k].x+11,y:BTOP-3};
+                              pitchShow={from:(meta&&meta.bpm)||120, to:m.bpm}; cutIn("pitch",1.8); }},
+      {t:5.90, fn:function(){ FIG.hand=null; walkTo(MIX.x,0.6); }},
+      {t:6.50, fn:function(){ meta=m; }}
+    ]);
+  },
+
+  first:function(k){
+    decks[k].disc=false; decks[k].run=false; decks[k].armDown=false; decks[k].prog=0; decks[k].vel=0;
+    var other=(k==="A")?"B":"A";
+    decks[other].disc=false; decks[other].run=false; decks[other].armDown=false; decks[other].vel=0;
+    easel.meta=null; easel.has=false; asideSleeve=false;
+    API.prepare(k, null);
+  }
+};
+
+/* ================= relogio: 12 quadros por segundo ================= */
+var acc=0, lastT=performance.now(), idleT=0, DT=1/12;
+function tick(){
+  now+=DT;
+  beatPh+=beatHz*2*Math.PI*DT;
+  if(beatPh>628) beatPh-=628.3185307;
+  if(moonFlash>0) moonFlash=Math.max(0,moonFlash-DT*0.8);
+  if(cut.kind){ cut.t+=DT; }
+  /* sequencias */
+  var si;
+  for(si=seqs.length-1; si>=0; si--){
+    var sq=seqs[si]; sq.t+=DT;
+    var done=true, k2;
+    for(k2=0;k2<sq.steps.length;k2++){
+      var st=sq.steps[k2];
+      if(!st.done && sq.t>=st.t){ st.done=true; st.fn(); }
+      if(!st.done) done=false;
+    }
+    if(done) seqs.splice(si,1);
+  }
+  var ti;
+  for(ti=tweens.length-1; ti>=0; ti--){
+    var tw=tweens[ti]; tw.t+=DT;
+    var v=Math.min(1, tw.t/tw.dur);
+    tw.set(v);
+    if(v>=1){ tweens.splice(ti,1); if(tw.done) tw.done(); }
+  }
+  /* pratos */
+  ["A","B"].forEach(function(kk){
+    var d=decks[kk];
+    var target=d.run?1:0;
+    d.vel+=(target-d.vel)*Math.min(1,3.5*DT);
+    if(d.vel>0.01){ d.ang+=d.vel*DT*4.2; }
+  });
+  /* gesto de pausa: olhar a lua */
+  if(!busy()){
+    idleT+=DT;
+    if(idleT>16){
+      idleT=0;
+      FIG.hand2={x:FIG.x+6,y:PLATY-26};
+      setTimeout(function(){ if(!busy()) FIG.hand2=null; }, 1700);
+    }
+  } else idleT=0;
+  draw();
+}
+function frame(t){
+  acc+=(t-lastT)/1000; lastT=t;
+  if(acc>0.5) acc=0.5;
+  while(acc>=DT){ tick(); acc-=DT; }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+draw();
+return API;
+}catch(err){
+  return stub;
+}
+})();
+</script>
+<script>
+/* ================= HOME MUSIC ENGINE v5 : drives the pixel rite ================= */
+(function(){
+"use strict";
+
+var $ = function(id){ return document.getElementById(id); };
+var RIG = window.RIG || {ok:false, ctl:{}, prepare:function(k,cb){ if(cb) setTimeout(cb,300); },
+  fadeBegin:function(){}, setFade:function(){}, finish:function(){}, quick:function(){},
+  first:function(){}, setLevels:function(){}, setProgress:function(){}, setTempo:function(){}, setNext:function(){}};
+var SIMPLE = window.matchMedia("(pointer:coarse)").matches; /* touch devices: single player, rig still performs */
+var XFADE_LEAD = 24;     /* o rito completo do vinil leva ~11s antes de a rampa poder comecar */
+var FADE_DUR = 6000;     /* ms, the audible crossfade; the rig hand rides the knob in sync */
+
+/* ---------------- FX : web audio dub kit ---------------- */
+var FX = {
+  ctx:null, master:null, echoIn:null,
+  init: function(){
+    if(this.ctx) return;
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain(); this.master.gain.value = 0.7;
+      this.master.connect(this.ctx.destination);
+      var delay = this.ctx.createDelay(1.5); delay.delayTime.value = 0.36;
+      var fb = this.ctx.createGain(); fb.gain.value = 0.52;
+      var lp = this.ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 1700;
+      delay.connect(lp); lp.connect(fb); fb.connect(delay);
+      var wet = this.ctx.createGain(); wet.gain.value = 0.9;
+      delay.connect(wet); wet.connect(this.master);
+      this.echoIn = delay;
+    }catch(e){ this.ctx = null; }
+  },
+  resume: function(){ if(this.ctx && this.ctx.state === "suspended"){ this.ctx.resume(); } },
+  setVol: function(v){ if(this.master) this.master.gain.value = 0.7 * v; },
+  env: function(g, t0, a, peak, rel){
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.linearRampToValueAtTime(peak, t0 + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + rel);
+  },
+  stab: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, g=c.createGain();
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=900; bp.Q.value=1.1;
+    g.connect(bp);
+    var dry=c.createGain(); dry.gain.value=0.35; bp.connect(dry); dry.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.75; bp.connect(s); s.connect(this.echoIn);
+    [220, 261.6, 329.6].forEach(function(f,i){
+      var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f; o.detune.value=(i-1)*7;
+      o.connect(g); o.start(t); o.stop(t+0.4);
+    });
+    this.env(g, t, 0.01, 0.24, 0.3);
+  },
+  phone: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this, pairs=[[697,1209],[770,1336],[852,1477],[941,1336],[770,1209]];
+    pairs.forEach(function(p,i){
+      var t=c.currentTime + i*0.13, g=c.createGain();
+      var dry=c.createGain(); dry.gain.value=0.5; g.connect(dry); dry.connect(self.master);
+      var s=c.createGain(); s.gain.value=0.5; g.connect(s); s.connect(self.echoIn);
+      p.forEach(function(f){
+        var o=c.createOscillator(); o.type="sine"; o.frequency.value=f;
+        o.connect(g); o.start(t); o.stop(t+0.12);
+      });
+      self.env(g, t, 0.005, 0.11, 0.1);
+    });
+  },
+  siren: function(dur){
+    if(!this.ctx) return;
+    dur = dur || 1.2;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="triangle"; o.frequency.value=540;
+    var lfo=c.createOscillator(); lfo.type="sine"; lfo.frequency.value=4.2;
+    var lg=c.createGain(); lg.gain.value=130; lfo.connect(lg); lg.connect(o.frequency);
+    var g=c.createGain(); o.connect(g);
+    var dry=c.createGain(); dry.gain.value=0.05; g.connect(dry); dry.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.6; g.connect(s); s.connect(this.echoIn);
+    o.start(t); lfo.start(t); o.stop(t+dur+0.1); lfo.stop(t+dur+0.1);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.08, t+0.1);
+    g.gain.setValueAtTime(0.08, t+dur-0.3);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  },
+  kick: function(at){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime+(at||0);
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(96,t); o.frequency.exponentialRampToValueAtTime(48, t+0.12);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.3);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.32, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.26);
+  },
+  rim: function(at, wet){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime+(at||0);
+    var len=Math.floor(c.sampleRate*0.06), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1900; bp.Q.value=2.2;
+    var g=c.createGain(); g.gain.value=0.16;
+    src.connect(bp); bp.connect(g); g.connect(this.master);
+    if(wet){ var s2=c.createGain(); s2.gain.value=0.9; g.connect(s2); s2.connect(this.echoIn); }
+    src.start(t);
+  },
+  bubble: function(at){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this, t0=at||0;
+    [0,0.17].forEach(function(dt0,i){
+      var t=c.currentTime+t0+dt0, g2=c.createGain();
+      var lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=760;
+      g2.connect(lp);
+      var dry=c.createGain(); dry.gain.value=0.3; lp.connect(dry); dry.connect(self.master);
+      var s2=c.createGain(); s2.gain.value=0.35; lp.connect(s2); s2.connect(self.echoIn);
+      [146.8, 220].forEach(function(f){
+        var o=c.createOscillator(); o.type="square"; o.frequency.value=f*(i?1.002:1);
+        o.connect(g2); o.start(t); o.stop(t+0.11);
+      });
+      self.env(g2, t, 0.004, 0.09, 0.09);
+    });
+  },
+  oneDrop: function(){
+    /* dois compassos de one drop a 72 BPM: kick no 3, rim com eco no 3 e meio */
+    var self=this, beat=60/72;
+    [0,1].forEach(function(bar){
+      var b0=bar*4*beat;
+      self.kick(b0+2*beat);
+      self.rim(b0+2*beat, true);
+      self.rim(b0+3.5*beat, bar===1);
+      self.bubble(b0+1*beat); self.bubble(b0+3*beat);
+    });
+  },
+  needleDrop: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, self=this;
+    /* toque surdo do braco a pousar */
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(82,t); o.frequency.exponentialRampToValueAtTime(48, t+0.07);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.12);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.18, t+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.11);
+    /* estalido do contacto */
+    var len=Math.floor(c.sampleRate*0.05), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.4); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1400;
+    var g2=c.createGain(); g2.gain.value=0.2;
+    src.connect(hp); hp.connect(g2); g2.connect(this.master);
+    var s2=c.createGain(); s2.gain.value=0.5; g2.connect(s2); s2.connect(this.echoIn);
+    src.start(t+0.03);
+    /* chiado do sulco a assentar */
+    var ln2=Math.floor(c.sampleRate*2.2), b2=c.createBuffer(1,ln2,c.sampleRate), d2=b2.getChannelData(0);
+    for(var j=0;j<ln2;j++){ d2[j]=(Math.random()*2-1)*0.5 + ((Math.random()<0.004)?(Math.random()*2-1)*1.6:0); }
+    var sr2=c.createBufferSource(); sr2.buffer=b2;
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=5200; bp.Q.value=0.8;
+    var g3=c.createGain();
+    sr2.connect(bp); bp.connect(g3); g3.connect(this.master);
+    sr2.start(t+0.06);
+    g3.gain.setValueAtTime(0.0001,t+0.06);
+    g3.gain.linearRampToValueAtTime(0.085, t+0.3);
+    g3.gain.setValueAtTime(0.085, t+1.2);
+    g3.gain.exponentialRampToValueAtTime(0.0001, t+2.2);
+  },
+  sub: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(62,t); o.frequency.exponentialRampToValueAtTime(40, t+0.7);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.95);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.3, t+0.05);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.9);
+  },
+  skank: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this;
+    [0,0.34].forEach(function(dt0){
+      var t=c.currentTime+dt0, g2=c.createGain();
+      var lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=1200;
+      g2.connect(lp);
+      var dry=c.createGain(); dry.gain.value=0.2; lp.connect(dry); dry.connect(self.master);
+      var s2=c.createGain(); s2.gain.value=0.7; lp.connect(s2); s2.connect(self.echoIn);
+      [174.6, 220, 261.6].forEach(function(f){
+        var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f;
+        o.connect(g2); o.start(t); o.stop(t+0.22);
+      });
+      self.env(g2, t, 0.005, 0.12, 0.16);
+    });
+  },
+  horn: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, g2=c.createGain();
+    var lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=900;
+    g2.connect(lp);
+    var dry=c.createGain(); dry.gain.value=0.3; lp.connect(dry); dry.connect(this.master);
+    var s2=c.createGain(); s2.gain.value=0.8; lp.connect(s2); s2.connect(this.echoIn);
+    [110, 164.8, 220].forEach(function(f,i){
+      var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f; o.detune.value=(i-1)*5;
+      o.connect(g2); o.start(t); o.stop(t+1.3);
+    });
+    g2.gain.setValueAtTime(0.0001,t);
+    g2.gain.linearRampToValueAtTime(0.16, t+0.5);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t+1.25);
+  },
+  sweep: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(980, t+0.7);
+    var g=c.createGain(); o.connect(g);
+    var s=c.createGain(); s.gain.value=0.8; g.connect(s); s.connect(this.echoIn);
+    var dry=c.createGain(); dry.gain.value=0.12; g.connect(dry); dry.connect(this.master);
+    o.start(t); o.stop(t+0.85);
+    this.env(g, t, 0.04, 0.16, 0.75);
+  },
+  rewind: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(55, t+0.45);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.5; g.connect(s); s.connect(this.echoIn);
+    o.start(t); o.stop(t+0.5);
+    this.env(g, t, 0.01, 0.22, 0.42);
+  },
+  crackle: function(on){
+    if(!this.ctx) return;
+    if(on){
+      if(this._ck) return;
+      var c=this.ctx, len=c.sampleRate*2, buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+      for(var i=0;i<len;i++){ d[i] = (Math.random() < 0.0018) ? (Math.random()*2-1)*0.8 : (Math.random()*2-1)*0.012; }
+      var src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+      var g=c.createGain(); g.gain.value=0.16; src.connect(g); g.connect(this.master);
+      src.start(); this._ck={src:src,g:g};
+    }else if(this._ck){
+      var ck=this._ck; this._ck=null;
+      ck.g.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime+0.6);
+      setTimeout(function(){ try{ck.src.stop();}catch(e){} }, 700);
+    }
+  },
+  /* o crepitar como na realidade: uma janela curta que se apaga sozinha */
+  crackleBurst: function(dur){
+    if(!this.ctx) return;
+    this.crackle(true);
+    var self=this;
+    clearTimeout(this._ckT);
+    this._ckT=setTimeout(function(){ self.crackle(false); }, Math.max(300,(dur||2.2)*1000));
+  },
+  /* levantar a agulha: varrimento leve, estalido, meio segundo de sulco e silencio */
+  needleLift: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(52,t); o.frequency.exponentialRampToValueAtTime(90,t+0.09);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.14);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.12,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
+    var len=Math.floor(c.sampleRate*0.04), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.2); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1600;
+    var g2=c.createGain(); g2.gain.value=0.14;
+    src.connect(hp); hp.connect(g2); g2.connect(this.master);
+    src.start(t+0.05);
+  },
+  transitionFx: function(){
+    var self=this;
+    self.kick(); self.rim(0.02,true);
+    setTimeout(function(){ self.bubble(); }, 480);
+    setTimeout(function(){ self.sub(); }, 1100);
+    setTimeout(function(){ self.rim(0,true); }, 1900);
+    if(Math.random()<0.4){ setTimeout(function(){ self.phone(); }, 2600); }
+  }
+};
+
+/* tempo per genre: the resident's groove locks to what is on air */
+var GBPM={ reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
+  lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,
+  breakbeat:132, hypnotic_techno:132, deep_house:122, ragga_jungle:164, dubstep:140,
+  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94, uk_garage:133, house:124, focus_zen:60 };
+
+function metaFor(t){
+  return { a:t.a, t:t.t, y:t.y, bpm:(t.bpm||GBPM[t.g]||120), accent:(BLOCKS[currentBlock]&&BLOCKS[currentBlock].accent)||"#ffb12b" };
+}
+
+/* ---------------- scheduling ---------------- */
+function blockKeyFor(h){ if(h>=6 && h<13) return "morning"; if(h>=13 && h<20) return "afternoon"; return "night"; }
+var OVERRIDE = (function(){
+  try{
+    var m = window.location.search.match(/[?&]block=(morning|afternoon|night)/);
+    return m ? m[1] : null;
+  }catch(e){ return null; }
+})();
+var currentBlock = OVERRIDE || blockKeyFor(new Date().getHours());
+var deadIds = {};
+var current = null;
+/* vizinhanca entre generos: a transicao muda sempre para um som familiar */
+var ADJ={
+  reggae:["dub","ska_rocksteady"],
+  dub:["reggae","ska_rocksteady","lofi","ambient_techno","dub_techno","dubstep"],
+  ska_rocksteady:["reggae","dub"],
+  lofi:["dub","ambient","lofi_house"],
+  ambient:["lofi","ambient_techno","dub_techno","liquid"],
+  ambient_techno:["ambient","dub","dub_techno","deep_house","hypnotic_techno"],
+  dub_techno:["dub","ambient","ambient_techno","deep_house","hypnotic_techno"],
+  lofi_house:["lofi","deep_house","breakbeat","liquid"],
+  liquid:["intelligent_dnb","atmospheric_jungle","ambient","lofi_house"],
+  intelligent_dnb:["liquid","atmospheric_jungle"],
+  atmospheric_jungle:["liquid","intelligent_dnb","ragga_jungle","oldskool_hardcore","breakbeat"],
+  breakbeat:["lofi_house","atmospheric_jungle","oldskool_hardcore","hypnotic_techno"],
+  deep_house:["lofi_house","hypnotic_techno","ambient_techno","dub_techno"],
+  hypnotic_techno:["deep_house","ambient_techno","dub_techno","dubstep","breakbeat"],
+  dubstep:["hypnotic_techno","ragga_jungle","dub"],
+  ragga_jungle:["dubstep","atmospheric_jungle","oldskool_hardcore"],
+  oldskool_hardcore:["ragga_jungle","breakbeat","atmospheric_jungle"]
+};
+var pools={}, currentGenre=null, runLeft=0;
+
+function shuffle(arr){
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; }
+  return arr;
+}
+function poolFor(gn){
+  if(!pools[gn] || !pools[gn].length){
+    pools[gn] = shuffle(TRACKS.filter(function(t){ return t.g===gn && !deadIds[t.v]; }));
+  }
+  return pools[gn];
+}
+function genreHasTracks(gn){
+  return TRACKS.some(function(t){ return t.g===gn && !deadIds[t.v]; });
+}
+function pickGenre(fromG){
+  var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
+  if(!bg.length) return null;
+  function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
+  if(fromG && ADJ[fromG]){
+    var near = ADJ[fromG].filter(function(gn){ return bg.indexOf(gn)>=0 && gn!==fromG; });
+    if(near.length){
+      /* entre os primos, o de tempo mais proximo quase sempre: a corrente nao da saltos */
+      near.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return (near.length>1 && Math.random()<0.28) ? near[1] : near[0];
+    }
+    /* sem primo direto no bloco: o genero do bloco com o BPM mais proximo */
+    var rest = bg.filter(function(gn){ return gn!==fromG; });
+    if(rest.length){
+      rest.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return rest[0];
+    }
+  }
+  return bg[Math.floor(Math.random()*bg.length)];
+}
+function buildQueue(){ currentGenre=null; runLeft=0; }
+function nextTrack(){
+  var bg = BLOCKS[currentBlock].genres;
+  if(!currentGenre || bg.indexOf(currentGenre)<0 || !genreHasTracks(currentGenre) || runLeft<=0){
+    var nx = pickGenre(currentGenre);
+    if(!nx) return null;
+    currentGenre = nx;
+    runLeft = 3 + Math.floor(Math.random()*3);
+  }
+  var pool = poolFor(currentGenre);
+  if(!pool.length) return null;
+  var t = pool.shift();
+  if(current && t && t.v === current.v && pool.length){ pool.push(t); t = pool.shift(); }
+  runLeft--;
+  return t;
+}
+
+/* ---------------- YouTube players + mix state ---------------- */
+var apiReady=false, started=false, radioOn=false;
+var P = { A:{k:"A", yt:null, slot:"slotA", ready:false}, B:{k:"B", yt:null, slot:"slotB", ready:false} };
+var activeKey="A";
+var rigDeck="A";             /* which rig deck currently holds the live stream */
+var masterVol = 80;
+var muted=false;
+var transitioning=false;
+var retryCount=0;
+var lastT=0, lastStamp=0;
+
+try{ var sv = localStorage.getItem("hm_vol"); if(sv!==null){ masterVol = Math.max(0, Math.min(100, parseInt(sv,10)||80)); } }catch(e){}
+
+function other(k){ return k==="A" ? "B" : "A"; }
+function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
+function applyVol(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return;
+  var f = (p.fade==null?1:p.fade);
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f)))); }catch(e){}
+}
+function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
+function audibleLevel(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return 0;
+  var st=-9; try{ st=p.yt.getPlayerState(); }catch(e){ return 0; }
+  if(st!==1 || muted) return 0;
+  var f = (p.fade==null?1:p.fade);
+  return (masterVol/100) * f;
+}
+
+/* feed the VU meters and the tonearm creep */
+setInterval(function(){
+  if(!radioOn) return;
+  /* o botao segue sempre o estado real */
+  var mb=$("muteBtn");
+  if(mb){ var want = muted ? "Unmute" : "Mute"; if(mb.textContent!==want){ mb.textContent=want; mb.classList.toggle("on", muted); } }
+  var la=0, lb=0;
+  ["A","B"].forEach(function(k){
+    var v = audibleLevel(k);
+    if(deckOfPlayer(k)==="A"){ la=Math.max(la,v); } else { lb=Math.max(lb,v); }
+  });
+  RIG.setLevels(la, lb);
+}, 280);
+
+window.onYouTubeIframeAPIReady = function(){
+  apiReady = true;
+  makePlayer("A"); if(!SIMPLE) makePlayer("B");
+};
+function ensureLoaded(p, vid){
+  if(!p || !p.ready || !p.yt || !vid) return false;
+  if(p.loadedId === vid) return true;
+  try{ p.yt.loadVideoById(vid); p.loadedId = vid; return true; }catch(e){ return false; }
+}
+function makePlayer(k){
+  var p = P[k];
+  p.yt = new YT.Player("yt"+k, {
+    width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:0, disablekb:1, fs:0, iv_load_policy:3, modestbranding:1, rel:0, playsinline:1,
+      origin: window.location.origin, widget_referrer: window.location.href },
+    events:{
+      onReady: function(e){ p.yt = e.target; p.ready=true; if(k==="A"){ maybeStart(); } },
+      onStateChange: function(e){ onState(k, e.data); },
+      onError: function(e){ onYtError(k, e.data); }
+    }
+  });
+}
+function loadApi(){
+  var s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = function(){ apiFail(); };
+  document.head.appendChild(s);
+  setTimeout(function(){ if(!apiReady) apiFail(); }, 9000);
+}
+var apiFailed = false;
+function apiFail(){
+  if(apiReady) return;
+  apiFailed = true;
+  $("standbyMsg").textContent = "cannot reach YouTube from this network. the radio needs it to spin.";
+}
+
+/* start sequence: user pressed play, intro runs, radio starts */
+/* relogio de animacao que nao adormece: setInterval corre em separadores ocultos
+   (com passos mais grossos), ao contrario do requestAnimationFrame; usar para
+   TODAS as rampas de audio e maquinas de transicao. step devolve false para abortar. */
+function animClock(dur, step, done){
+  var t0=performance.now();
+  var h=setInterval(function(){
+    var x=Math.min(1,(performance.now()-t0)/dur);
+    var cont=step(x);
+    if(cont===false){ clearInterval(h); return; }
+    if(x>=1){ clearInterval(h); if(done) done(); }
+  }, 50);
+  return h;
+}
+var pendingFirst = null;
+function maybeStart(){
+  if(!pendingFirst || !P.A.ready || started) return;
+  try{ P.A.yt.mute(); }catch(e){}
+  if(ensureLoaded(P.A, pendingFirst.v)){ started = true; }
+  else { setTimeout(maybeStart, 400); }
+}
+var firstLogged = false;
+function beginRadio(){
+  radioOn = true;
+  var p = P[activeKey];
+  $("standbyMsg").textContent = "dropping the needle…";
+  function go(){
+    if(!p.ready){ if(!apiFailed){ setTimeout(go, 300); } return; }
+    if(!started){ try{ p.yt.mute(); }catch(e){} if(ensureLoaded(p, pendingFirst.v)) started=true; }
+    if(!started){ setTimeout(go, 500); return; }
+    try{
+      p.yt.unMute(); muted=false;
+      fadeVol(p, 0);
+      p.yt.seekTo(0, true);
+      p.yt.playVideo();
+    }catch(e){}
+    if(!firstLogged && current){
+      firstLogged = true; pushHistory(current);
+      firstRampPending = true;
+      /* o crackle so entra quando a agulha toca o disco: antes disso, silencio */
+      if(RIG.setNext) RIG.setNext(metaFor(current));
+      RIG.first(deckOfPlayer(activeKey));
+      /* rede de seguranca: se o gancho da agulha nao disparar, a rampa entra na mesma */
+      setTimeout(function(){ if(firstRampPending && window.HMFX){ window.HMFX.needle(); } }, 9500);
+    }
+    setTimeout(checkAudible, 6000);
+  }
+  go();
+}
+var needleTries = 0;
+function checkAudible(){
+  var p = P[activeKey];
+  if(!p.ready){ setTimeout(checkAudible, 800); return; }
+  var st=-9, mu=false;
+  try{ st = p.yt.getPlayerState(); mu = p.yt.isMuted(); }catch(e){}
+  if(st === 1 && !mu){ needleTries = 0; return; }
+  if(!started && pendingFirst){ ensureLoaded(p, pendingFirst.v) && (started=true); }
+  if((st === 3 || st === -1) && needleTries++ < 5){ setTimeout(checkAudible, 1200); return; }
+  /* mostrar o proprio leitor para o arranque manual, venha o bloqueio de onde vier */
+  $("slot"+activeKey).classList.add("live");
+  $("standby").classList.add("off");
+  $("needle").textContent = (st === 1 && mu) ? "muted by the browser. tap for sound" : "silent? press play on the monitor";
+  $("needle").classList.add("on");
+}
+$("needle") && $("needle").addEventListener("click", function(){
+  var p = P[activeKey];
+  try{ p.yt.unMute(); muted=false; fadeVol(p,1); p.yt.playVideo(); }catch(e){}
+  FX.resume();
+  $("needle").classList.remove("on");
+});
+
+function onState(k, st){
+  if(st === 1){
+    if(k === activeKey){
+      $("standby").classList.add("off");
+      $("slot"+k).classList.add("live");
+      var muNow=false; try{ muNow=P[k].yt.isMuted(); }catch(e){}
+      if(!muNow || muted){ $("needle").classList.remove("on"); }
+      lastT = 0; lastStamp = Date.now();
+    }
+    retryCount = 0;
+  }
+  if(st === 0 && k === activeKey && !transitioning){ hardNext("ended"); }
+}
+function onYtError(k, code){
+  var p = P[k];
+  if(code === 153 || code === 2){
+    $("slot"+k).classList.add("live");
+    $("standby").classList.add("off");
+    $("needle").textContent = "player blocked by browser privacy settings";
+    $("needle").classList.add("on");
+    return;
+  }
+  var bad = p.pendingTrack || (k===activeKey ? current : null);
+  if(bad){ deadIds[bad.v] = true; }
+  if(transitioning && k !== activeKey){
+    transitioning = false;
+    if(retryCount++ < 4){ startTransition(); }
+  } else if(k === activeKey){
+    if(retryCount++ < 5){ hardNext("error"); }
+    else { $("standbyMsg").textContent = "too many dead links in a row. check the connection."; $("standby").classList.remove("off"); }
+  }
+}
+
+/* hard cut (errors, manual skip): the rig does a fast same-deck swap */
+function hardNextAudio(t, quiet){
+  var p = P[activeKey];
+  p.pendingTrack = t;
+  setNow(t, true);
+  ensureLoaded(p, t.v);
+  try{ p.yt.unMute(); fadeVol(p, quiet?0:1); }catch(e){}
+}
+var swapPending=false;
+function hardNext(reason){
+  if(swapPending) return;
+  var t = nextTrack(); if(!t) return;
+  if(reason === "ended"){
+    /* o disco chegou ao fim: agulha fora, sulco a morrer, maos no proximo */
+    swapPending=true;
+    if(window.HMFX) HMFX.lift();
+    $("standbyMsg").textContent = "changing the record\u2026";
+    setTimeout(function(){
+      swapPending=false;
+      if(!radioOn) return;
+      if(RIG.setNext) RIG.setNext(metaFor(t));
+      firstRampPending=true; rampDur=2000;
+      hardNextAudio(t, true);
+      RIG.quick(deckOfPlayer(activeKey));
+      /* salvaguarda: se o gancho da agulha nao vier, a rampa entra na mesma */
+      setTimeout(function(){ if(firstRampPending && window.HMFX){ HMFX.needle(); } }, 6000);
+    }, 2600);
+    return;
+  }
+  if(RIG.setNext) RIG.setNext(metaFor(t));
+  hardNextAudio(t);
+  RIG.quick(deckOfPlayer(activeKey));
+}
+
+/* the changeover: the rig walks to the idle deck, swaps the record, drops the
+   needle, then rides the crossfader while the audio does the same 6s ramp */
+function startTransition(){
+  if(transitioning || !radioOn) return;
+  var t = nextTrack(); if(!t) return;
+
+  if(SIMPLE){
+    transitioning = true;
+    var inD = other(rigDeck), outD = rigDeck;
+    var prepped = false;
+    if(RIG.setNext) RIG.setNext(metaFor(t));
+    RIG.prepare(inD, function(){ prepped = true; });
+    FX.transitionFx();
+    var waited = 0;
+    (function waitPrep(){
+      if(!transitioning) return;
+      if(prepped){ go(); }
+      else if((waited += 250) > 14000){ go(); }
+      else setTimeout(waitPrep, 250);
+    })();
+    function go(){
+      RIG.fadeBegin(inD);
+      var swapped=false;
+      animClock(1900, function(x){
+        if(!transitioning){ return false; }
+        RIG.setFade(x, inD);
+        if(x >= 0.5 && !swapped){ swapped=true; hardNextAudio(t); }
+      }, function(){
+        RIG.finish(outD);
+        rigDeck = inD;
+        transitioning = false;
+        lastT=0; lastStamp=Date.now();
+      });
+    }
+    return;
+  }
+
+  var inc = P[other(activeKey)];
+  if(!inc.ready){ hardNext(); return; }
+  transitioning = true;
+  inc.pendingTrack = t;
+  fadeVol(inc, 0);
+  ensureLoaded(inc, t.v);
+  try{ inc.yt.unMute(); }catch(e){}
+  var inK = other(activeKey), outK = activeKey;
+  var prepped = false;
+  if(RIG.setNext) RIG.setNext(metaFor(t));
+  RIG.prepare(inK, function(){ prepped = true; });
+  FX.transitionFx();
+  var waited=0;
+  (function waitBoth(){
+    var st=-9; try{ st = inc.yt.getPlayerState(); }catch(e){}
+    if(!transitioning) return;            /* aborted by the error handler */
+    if(st === 1 && prepped){ ramp(); }
+    else if((waited += 250) > 30000){ transitioning=false; hardNext(); }
+    else setTimeout(waitBoth, 250);
+  })();
+  function ramp(){
+    var out = P[outK], mid=false;
+    RIG.fadeBegin(inK);
+    animClock(FADE_DUR, function(x){
+      if(!transitioning){ return false; }
+      fadeVol(out, Math.cos(x * Math.PI/2));
+      fadeVol(inc, Math.sin(x * Math.PI/2));
+      RIG.setFade(x, inK);
+      if(x >= 0.45 && !mid){
+        mid = true;
+        $("slot"+inK).classList.add("live");
+        $("slot"+outK).classList.remove("live");
+        setNow(t, true);
+      }
+    }, function(){
+      try{ out.yt.stopVideo(); }catch(e){}
+      out.pendingTrack = null;
+      RIG.finish(outK);
+      activeKey = inK;
+      rigDeck = inK;
+      transitioning = false;
+      lastT=0; lastStamp=Date.now();
+    });
+  }
+}
+
+/* watchdog */
+setInterval(function(){
+  if(!radioOn || transitioning) return;
+  var p = P[activeKey]; if(!p.ready) return;
+  var st=-9, cur=0, dur=0;
+  try{ st=p.yt.getPlayerState(); cur=p.yt.getCurrentTime(); dur=p.yt.getDuration(); }catch(e){ return; }
+  if(st === 1){
+    if(cur !== lastT){ lastT=cur; lastStamp=Date.now(); }
+    else if(Date.now() - lastStamp > 14000){ hardNext("stalled"); return; }
+    if(dur > 0){ RIG.setProgress(deckOfPlayer(activeKey), cur/dur); }
+    if(dur > 40 && (dur - cur) <= XFADE_LEAD){ startTransition(); }
+  }
+}, 600);
+
+/* block changes */
+function applyBlockTheme(){
+  var b = BLOCKS[currentBlock];
+  document.body.style.setProperty("--blk", b.accent);
+  $("blockLabel").textContent = b.label + " " + b.range + (OVERRIDE ? " (override)" : "");
+}
+setInterval(function(){
+  if(OVERRIDE) return;
+  var bk = blockKeyFor(new Date().getHours());
+  if(bk !== currentBlock){
+    currentBlock = bk;
+    buildQueue();
+    applyBlockTheme();
+    toast("PROGRAMME CHANGE · " + BLOCKS[bk].label);
+    FX.horn();
+  }
+}, 20000);
+
+/* clock */
+function tickClock(){
+  var d=new Date();
+  $("clock").textContent = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ---------------- UI ---------------- */
+function spotifyLink(t){
+  return t.s ? t.s : "https://open.spotify.com/search/" + encodeURIComponent(t.a + " " + t.t);
+}
+function setNow(t, push){
+  current = t;
+  var g = GENRES[t.g];
+  if(RIG.setTempo){ RIG.setTempo(t.bpm||GBPM[t.g]||120); }
+  $("gChip").textContent = g.name;
+  $("tYear").textContent = t.y ? String(t.y) : "";
+  $("tBpm").textContent = (t.bpm? "" : "~") + (t.bpm||GBPM[t.g]||120) + " BPM";
+  $("tArtist").textContent = t.a;
+  $("tTitle").textContent = t.t;
+  $("tBlurb").textContent = t.b;
+  $("aYT").href = "https://www.youtube.com/watch?v=" + t.v;
+  $("aSP").href = spotifyLink(t);
+  var src = $("aSrc");
+  if(t.w){ src.href = t.w; src.hidden = false; } else { src.hidden = true; }
+  $("gName").textContent = g.name;
+  $("gNote").textContent = g.note;
+  var gw = $("gWiki");
+  if(g.w){ gw.href = g.w; gw.hidden = false; } else { gw.hidden = true; }
+  var n = TRACKS.filter(function(x){ return x.g===t.g; }).length;
+  $("gTrackCount").textContent = n + " records from this sound in tonight's crate.";
+  /* amostra do painel estendido: escrita de fora primeiro, a nossa so como argamassa */
+  var ext=$("gExt");
+  if(ext){
+    var gx=(typeof GEXT!=="undefined") && GEXT[t.g];
+    if(gx && !gx.records){
+      var ks0=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
+      gx={ quote:gx.quote, quote2:gx.quote2, lineage:gx.lineage, note:gx.note, eph:gx.eph,
+        records: ks0.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+          r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
+          u:"https://www.youtube.com/watch?v="+k.v }; }),
+        links: gx.links || [
+          { n:"Ishkur's Guide, this genre's entry", u:"https://music.ishkur.com/" },
+          { n:"Discogs, releases in this style", u:"https://www.discogs.com/search/?q="+encodeURIComponent(g.name)+"&type=release" },
+          { n:"This genre on Wikipedia", u:(g.w||"https://en.wikipedia.org/wiki/Electronic_music") }
+        ] };
+    }
+    if(!gx){
+      /* todos os generos mostram ja o painel estendido: registos da propria
+         estante e portas para fora; os dossiers ricos chegam genero a genero */
+      var ks=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
+      gx={
+        records: ks.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+          r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
+          u:"https://www.youtube.com/watch?v="+k.v }; }),
+        links:[
+          { n:"Ishkur's Guide, this genre's entry", u:"https://music.ishkur.com/" },
+          { n:"Discogs, releases in this style", u:"https://www.discogs.com/search/?q="+encodeURIComponent(g.name)+"&type=release" },
+          { n:"This genre on Wikipedia", u:(g.w||"https://en.wikipedia.org/wiki/Electronic_music") }
+        ],
+        note:"Extended dossier for this genre (quotes, lineage, ephemera) lands with the panel rollout; dub carries the full sample."
+      };
+    }
+    if(gx){
+      var h='';
+      if(gx.quote) h+='<blockquote>&ldquo;'+gx.quote.t+'&rdquo;<cite><a href="'+gx.quote.u+'" target="_blank" rel="noopener">'+gx.quote.src+'</a></cite></blockquote>';
+      if(gx.quote2) h+='<blockquote>&ldquo;'+gx.quote2.t+'&rdquo;<cite><a href="'+gx.quote2.u+'" target="_blank" rel="noopener">'+gx.quote2.src+'</a></cite></blockquote>';
+      h+='<div class="gx-h">Key records</div><ul class="gx-list">';
+      gx.records.forEach(function(r){ h+='<li><a href="'+r.u+'" target="_blank" rel="noopener">'+r.n+'</a><span>'+r.r+'</span></li>'; });
+      h+='</ul>';
+      if(gx.lineage) h+='<div class="gx-h">Lineage</div><p class="gx-p">'+gx.lineage.t+' <a href="'+gx.lineage.u+'" target="_blank" rel="noopener">WhoSampled ↗</a></p>';
+      if(gx.links && gx.links.length){
+        h+='<div class="gx-h">Go deeper</div><ul class="gx-list">';
+        gx.links.forEach(function(l){ h+='<li><a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a></li>'; });
+        h+='</ul>';
+      }
+      if(gx.note) h+='<p class="gx-note">'+gx.note+'</p>';
+      ext.innerHTML=h; ext.hidden=false;
+    } else { ext.hidden=true; ext.innerHTML=""; }
+  }
+  document.title = t.a + " · Home Music";
+  if(push){ pushHistory(t); }
+}
+function pushHistory(t){
+  var ul = $("histList");
+  var empty = ul.querySelector(".h-empty"); if(empty) empty.remove();
+  var d=new Date();
+  var li = document.createElement("li");
+  var tm = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  li.innerHTML = '<div class="h-time">' + tm + ' · ' + GENRES[t.g].name.toUpperCase() + '</div>' +
+    '<div class="h-art"></div><div class="h-tit"></div>' +
+    '<div class="h-links"><a target="_blank" rel="noopener">YOUTUBE</a><a target="_blank" rel="noopener">SPOTIFY</a></div>';
+  li.querySelector(".h-art").textContent = t.a;
+  li.querySelector(".h-tit").textContent = t.t + (t.y ? " (" + t.y + ")" : "");
+  var as = li.querySelectorAll(".h-links a");
+  as[0].href = "https://www.youtube.com/watch?v=" + t.v;
+  as[1].href = spotifyLink(t);
+  ul.insertBefore(li, ul.firstChild);
+  while(ul.children.length > 60){ ul.removeChild(ul.lastChild); }
+}
+var toastTimer=null;
+function toast(msg){
+  var el=$("toast"); el.textContent=msg; el.classList.add("on");
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ el.classList.remove("on"); }, 3400);
+}
+
+/* volume + mute */
+var volEl = $("vol"); volEl.value = masterVol;
+volEl.addEventListener("input", function(){
+  masterVol = parseInt(volEl.value,10);
+  try{ localStorage.setItem("hm_vol", String(masterVol)); }catch(e){}
+  applyVol("A"); applyVol("B");
+  FX.setVol(masterVol/100);
+  if(introAudio && !introFading){ try{ introAudio.volume=masterVol/100; }catch(e){} }
+});
+FX.setVol(masterVol/100);
+function toggleMute(){
+  muted = !muted;
+  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ muted ? p.yt.mute() : p.yt.unMute(); }catch(e){} } });
+  if(introAudio){ try{ introAudio.muted = muted; }catch(e){} }
+  $("muteBtn").classList.toggle("on", muted);
+  $("muteBtn").textContent = muted ? "Unmute" : "Mute";
+}
+$("muteBtn").addEventListener("click", toggleMute);
+
+/* panels */
+function bindPanel(btnId, panelId){
+  $(btnId).addEventListener("click", function(){
+    var p=$(panelId), was=p.classList.contains("on");
+    document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+    if(!was) p.classList.add("on");
+  });
+}
+bindPanel("genreBtn","genrePanel"); bindPanel("histBtn","histPanel");
+/* ---------------- the dance nearby: pistas por regiao, Europa e America primeiro ----------------
+   sem servidor proprio: geolocalizacao do browser, cidade por Nominatim (OpenStreetMap),
+   e ligacoes construidas para os diretorios que cobrem cada regiao. */
+var DANCE_TERM={ reggae:"reggae", dub:"dub sound system", ska_rocksteady:"ska reggae",
+  lofi:"beats", ambient:"ambient", ambient_techno:"ambient techno", dub_techno:"dub techno",
+  lofi_house:"house", liquid:"drum and bass", intelligent_dnb:"drum and bass",
+  atmospheric_jungle:"jungle drum and bass", breakbeat:"breakbeat", deep_house:"deep house",
+  hypnotic_techno:"techno", ragga_jungle:"jungle", oldskool_hardcore:"rave", dubstep:"dubstep" };
+var US19={ "san francisco":"BayArea","oakland":"BayArea","los angeles":"LosAngeles","new york":"NYC",
+  "brooklyn":"NYC","seattle":"Seattle","portland":"PNW","miami":"Miami","chicago":"CHI",
+  "detroit":"Detroit","denver":"Denver","austin":"Texas","dallas":"Texas","houston":"Texas",
+  "atlanta":"Atlanta","boston":"MASS","philadelphia":"PHL","washington":"DC","toronto":"Toronto",
+  "vancouver":"Vancouver","montreal":"Montreal","phoenix":"Phoenix","las vegas":"LasVegas" };
+function danceLinks(city, cc){
+  var g=(current&&current.g)||"dub";
+  var term=DANCE_TERM[g]||"electronic";
+  var citySlug=(city||"").toLowerCase().replace(/[^a-z0-9]+/g,"");
+  var q=encodeURIComponent(term+" "+(city||""));
+  var out=[];
+  if(cc){ out.push({n:"Resident Advisor: events in "+(city||cc.toUpperCase()), u:"https://ra.co/events/"+cc.toLowerCase()+"/"+citySlug}); }
+  else { out.push({n:"Resident Advisor", u:"https://ra.co/events"}); }
+  if(cc==="us"||cc==="ca"){
+    var k=(city||"").toLowerCase(), reg=null;
+    Object.keys(US19).some(function(x){ if(k.indexOf(x)>=0){ reg=US19[x]; return true; } return false; });
+    out.push({n:"19hz underground listings"+(reg?": "+reg:""), u: reg? "https://19hz.info/eventlisting_"+reg+".php" : "https://19hz.info/"});
+  }
+  out.push({n:"Bandsintown: "+term, u:"https://www.bandsintown.com/?came_from=257&search="+q});
+  out.push({n:"Songkick: "+term+" near "+(city||"you"), u:"https://www.songkick.com/search?utf8=%E2%9C%93&type=upcoming&query="+q});
+  if(!cc || ["pt","es","fr","de","it","nl","be","gb","ie","pl","cz","at","ch","dk","se","no","fi","gr","hu","ro","us"].indexOf(cc)>=0){
+    out.push({n:"DICE: around "+(city||"you"), u:"https://dice.fm/browse"});
+  }
+  return out;
+}
+var DANCE_DB=null, DANCE_DB_TRIED=false;
+function danceDb(cb){
+  if(DANCE_DB || DANCE_DB_TRIED){ cb(DANCE_DB); return; }
+  var base=(location.pathname.indexOf("/liquid")>=0)? "../" : "";
+  fetch(base+"events/europe.json").then(function(r){ return r.ok? r.json() : null; })
+    .then(function(j){ DANCE_DB_TRIED=true; DANCE_DB=j; cb(j); })
+    .catch(function(){ DANCE_DB_TRIED=true; cb(null); });
+}
+function fmtDay(iso){
+  try{
+    var d=new Date(iso);
+    if(isNaN(d)) return iso.slice(0,10);
+    var wd=["sun","mon","tue","wed","thu","fri","sat"][d.getDay()];
+    return wd+" "+String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0");
+  }catch(e){ return ""; }
+}
+function danceRender(city, cc, note){
+  var ul=$("danceList"); ul.innerHTML="";
+  var put=function(html){ var li=document.createElement("li"); li.innerHTML=html; ul.appendChild(li); };
+  danceDb(function(db){
+    var hit=null;
+    if(db && db.cities && city){
+      hit=db.cities[(city||"").toLowerCase()];
+    }
+    if(hit && hit.events && hit.events.length){
+      hit.events.slice(0,8).forEach(function(ev){
+        put('<a href="'+ev.u+'" target="_blank" rel="noopener">'+ev.t+' ↗</a>'+
+            '<span class="dance-meta">'+fmtDay(ev.d)+(ev.v? " · "+ev.v : "")+" · via "+ev.src.toUpperCase()+'</span>');
+      });
+      put('<span class="dance-more">more doors:</span>');
+    } else if(db && city){
+      put('<span class="dance-more">no harvested listings for '+city+' yet (collector refreshes every 48 h, Europe first); the doors below search live:</span>');
+    }
+    danceLinks(city, cc).forEach(function(l){
+      put('<a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a>');
+    });
+    $("danceNote").textContent = note || "";
+  });
+}
+function danceLocate(){
+  $("danceNote").textContent="asking your browser for a rough position…";
+  if(!navigator.geolocation){ danceRender(null,null,"no geolocation in this browser; type a city instead."); return; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var la=pos.coords.latitude.toFixed(3), lo=pos.coords.longitude.toFixed(3);
+    fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+la+"&lon="+lo+"&zoom=10")
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var a=j.address||{};
+        var city=a.city||a.town||a.municipality||a.village||a.county||"";
+        var cc=(a.country_code||"").toLowerCase();
+        $("danceCity").value=city;
+        danceRender(city, cc, "listings in the spirit of the sound now playing, near "+(city||"you")+". underground first: trust the small rooms.");
+      })
+      .catch(function(){ danceRender(null,null,"could not name your city; type it below."); });
+  }, function(){ danceRender(null,null,"location declined, fair enough: type a city instead."); }, {maximumAge:600000, timeout:8000});
+}
+$("danceBtn").addEventListener("click", function(){
+  document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+  $("dancePanel").classList.add("on");
+  if(!$("danceList").children.length) danceLocate();
+});
+$("danceGo").addEventListener("click", function(){
+  var c=$("danceCity").value.trim();
+  danceRender(c||null, null, c? "listings around "+c+"." : "");
+});
+$("danceCity").addEventListener("keydown", function(e){ if(e.key==="Enter"){ $("danceGo").click(); } });
+
+/* ---------------- a prateleira das mixtapes: gaveta sobre a emissao ----------------
+   abrir nao toca no som; dar play numa tape poe a radio de lado (mute) e fechar devolve-a */
+var MXT2=[
+  {a:"King Tubby & The Aggrovators", t:"Dub Fi Gwan", y:1977, v:"qu3RXnGFQa8"},
+  {a:"Max Romeo & The Upsetters", t:"Chase the Devil", y:1976, v:"5_U9wsBVvqU"},
+  {a:"Lee \"Scratch\" Perry & The Upsetters", t:"Disco Devil", y:1977, v:"vjC2WT7VOyE"},
+  {a:"Yabby You", t:"Deliver Me From My Enemies (dub plate mix)", y:1977, v:"uVXlm4He6Mc"},
+  {a:"Pablo Gad", t:"Blood Suckers", y:1979, v:"ISIWjpRquGA"},
+  {a:"Scientist", t:"Dance of the Vampires", y:1981, v:"iCpPaTeL2BE"},
+  {a:"Johnnie Clarke", t:"Young Rebel", y:1983, v:"Dmujamx8Hww"}
+];
+var mx2={i:-1, yt:null, ready:false, playing:false, mutedRadio:false, loadedFrames:false};
+function mx2List(){
+  var ol=$("mxList2"); if(!ol) return;
+  ol.innerHTML="";
+  MXT2.forEach(function(x,i){
+    var li=document.createElement("li");
+    li.textContent=x.a+" / "+x.t+" ("+x.y+")";
+    if(i===mx2.i) li.className="on";
+    li.addEventListener("click", function(){ mx2Go(i); });
+    ol.appendChild(li);
+  });
+}
+function mx2SideRadio(on){
+  /* on=true: a radio poe-se de lado enquanto a tape toca */
+  if(on){ if(!muted){ toggleMute(); mx2.mutedRadio=true; } }
+  else { if(mx2.mutedRadio){ mx2.mutedRadio=false; if(muted) toggleMute(); } }
+}
+function mx2Player(cb){
+  if(mx2.yt && mx2.ready){ cb(); return; }
+  if(typeof YT==="undefined" || !YT.Player){ setTimeout(function(){ mx2Player(cb); }, 400); return; }
+  mx2.yt=new YT.Player("mxYt2", { width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, playsinline:1 },
+    events:{
+      onReady:function(e){ mx2.yt=e.target; mx2.ready=true; cb(); },
+      onStateChange:function(e){
+        if(e.data===1 && !mx2.playing){
+          /* play nativo sobre o disco ja carregado */
+          if(typeof scPauseAll==="function") scPauseAll(-1);
+          mx2.playing=true; $("mxPlay2").textContent="Pause";
+          mx2SideRadio(true);
+          if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+        }
+        if(e.data===0){
+          if(mx2.i<MXT2.length-1){
+            /* agulha fora, meio compasso de sulco, proximo disco */
+            if(window.HMFX) HMFX.lift();
+            setTimeout(function(){ mx2Go(mx2.i+1); }, 1800);
+          } else {
+            mx2.playing=false; $("mxPlay2").textContent="Play";
+            $("mxNow2").textContent="side B ran out. thanks for sitting through.";
+            mx2SideRadio(false);
+          }
+        }
+      }
+    }
+  });
+}
+function mx2Go(i){
+  if(typeof scPauseAll==="function") scPauseAll(-1);
+  mx2.i=i; mx2List();
+  var x=MXT2[i];
+  $("mxNow2").textContent=(i+1)+"/"+MXT2.length+" "+x.a+" / "+x.t;
+  $("mxIdle2").style.display="none";
+  mx2SideRadio(true);
+  if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+  mx2Player(function(){
+    setTimeout(function(){ mx2.yt.loadVideoById(x.v); mx2.yt.playVideo(); mx2.playing=true; $("mxPlay2").textContent="Pause"; }, 320);
+  });
+}
+$("mixBtn").addEventListener("click", function(){
+  var d=$("mixPanel");
+  d.classList.add("on");
+  if(!mx2.loadedFrames){
+    mx2.loadedFrames=true;
+    d.querySelectorAll("iframe[data-src]").forEach(function(f){ f.src=f.getAttribute("data-src"); });
+    mx2List();
+    scWidget(0, function(){}); scWidget(1, function(){});
+  }
+  /* primeiro disco ja no prato: carregado, a espera do play */
+  if(mx2.i<0 && !mx2.playing){
+    mx2Player(function(){
+      if(mx2.i>=0 || mx2.playing) return;
+      try{ mx2.yt.cueVideoById(MXT2[0].v); }catch(e){}
+      $("mxIdle2").style.display="none";
+      mx2.i=0; mx2List();
+      $("mxNow2").textContent="1/"+MXT2.length+" "+MXT2[0].a+" / "+MXT2[0].t;
+    });
+  }
+});
+function mx2Close(){
+  $("mixPanel").classList.remove("on");
+  if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+  if(typeof scPauseAll==="function") scPauseAll(-1);
+  mx2SideRadio(false);
+}
+$("mixClose").addEventListener("click", mx2Close);
+$("mxPlay2").addEventListener("click", function(){
+  if(mx2.i<0){ mx2Go(0); return; }
+  if(!mx2.ready) return;
+  if(mx2.playing){ mx2.yt.pauseVideo(); mx2.playing=false; this.textContent="Play"; mx2SideRadio(false); }
+  else { mx2SideRadio(true); mx2.yt.playVideo(); mx2.playing=true; this.textContent="Pause"; }
+});
+$("mxNext2").addEventListener("click", function(){ if(mx2.i<MXT2.length-1) mx2Go(mx2.i+1); });
+
+/* ---------------- tapes soundcloud: cromo nativo sobre a API oficial do widget ---------------- */
+var SCT=[{dur:0, playing:false, started:false, w:null},{dur:0, playing:false, started:false, w:null}];
+function scApi(cb){
+  if(window.SC && SC.Widget){ cb(); return; }
+  if(scApi._q){ scApi._q.push(cb); return; }
+  scApi._q=[cb];
+  var s=document.createElement("script"); s.src="https://w.soundcloud.com/player/api.js";
+  s.onload=function(){ var q=scApi._q; scApi._q=null; q.forEach(function(f){ f(); }); };
+  s.onerror=function(){ scApi._q=null; scUnfold(0); scUnfold(1); };
+  document.head.appendChild(s);
+}
+function scFmt(ms){ var s=Math.floor(ms/1000), m=Math.floor(s/60); s=s%60; return m+":"+(s<10?"0":"")+s; }
+function scUnfold(i){ var h=$("scHost"+i); if(h) h.classList.add("unfold"); }
+function scAnyPlaying(){ return SCT[0].playing || SCT[1].playing; }
+function scWidget(i, cb){
+  if(SCT[i].w){ cb(SCT[i].w); return; }
+  scApi(function(){
+    var f=$("scHost"+i).querySelector("iframe");
+    if(!f.src) f.src=f.getAttribute("data-src");
+    var w=SC.Widget(f); SCT[i].w=w;
+    w.bind(SC.Widget.Events.READY, function(){
+      w.getDuration(function(d){ SCT[i].dur=d||0; scPaint(i, 0); });
+    });
+    w.bind(SC.Widget.Events.PLAY, function(){
+      SCT[i].playing=true; SCT[i].started=true;
+      $("scPlay"+i).textContent="Pause";
+      mx2SideRadio(true);
+      if(FX.ctx && FX.ctx.state==="running" && !SCT[i]._dropped){ SCT[i]._dropped=true; FX.needleDrop(); FX.crackleBurst(1.4); }
+    });
+    w.bind(SC.Widget.Events.PAUSE, function(){
+      SCT[i].playing=false; $("scPlay"+i).textContent="Play";
+      if(!scAnyPlaying() && !mx2.playing) mx2SideRadio(false);
+    });
+    w.bind(SC.Widget.Events.FINISH, function(){
+      SCT[i].playing=false; SCT[i]._dropped=false; $("scPlay"+i).textContent="Play"; scPaint(i, 0);
+      if(!scAnyPlaying() && !mx2.playing) mx2SideRadio(false);
+    });
+    w.bind(SC.Widget.Events.PLAY_PROGRESS, function(e){ scPaint(i, e.currentPosition||0); });
+    w.bind(SC.Widget.Events.ERROR, function(){ scUnfold(i); });
+    cb(w);
+  });
+}
+function scPaint(i, pos){
+  var d=SCT[i].dur;
+  $("scFill"+i).style.width = d ? Math.min(100, pos/d*100)+"%" : "0";
+  $("scTime"+i).textContent = scFmt(pos)+" / "+(d?scFmt(d):"--:--");
+}
+function scPauseAll(except){
+  SCT.forEach(function(st, i){ if(i!==except && st.playing && st.w){ try{ st.w.pause(); }catch(e){} } });
+}
+function scToggle(i){
+  scWidget(i, function(w){
+    if(SCT[i].playing){ w.pause(); return; }
+    scPauseAll(i);
+    if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+    w.play();
+    /* se o widget nao responder (consentimento por dar, bloqueio), abre-se para a pessoa tratar la dentro */
+    setTimeout(function(){ if(!SCT[i].started) scUnfold(i); }, 2600);
+  });
+}
+[0,1].forEach(function(i){
+  $("scPlay"+i).addEventListener("click", function(){ scToggle(i); });
+  $("scBar"+i).addEventListener("click", function(ev){
+    if(!SCT[i].started){ scToggle(i); return; }
+    var r=this.getBoundingClientRect(), frac=(ev.clientX-r.left)/r.width;
+    if(SCT[i].w && SCT[i].dur){ try{ SCT[i].w.seekTo(Math.max(0, Math.min(1, frac))*SCT[i].dur); }catch(e){} }
+  });
+});
+/* imersao: ecra inteiro */
+function toggleFs(){
+  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+}
+$("fsBtn").addEventListener("click", toggleFs);
+document.addEventListener("fullscreenchange", function(){
+  $("fsBtn").classList.toggle("on", !!document.fullscreenElement);
+  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";
+});
+document.querySelectorAll(".pclose").forEach(function(b){
+  b.addEventListener("click", function(){
+    var tgt=b.getAttribute("data-close");
+    if(tgt){ $(tgt).classList.remove("on"); }
+  });
+});
+/* ---------------- earn the skip: bater o tempo liberta a agulha ----------------
+   escolha do dono da casa: saltar de faixa custa um desafio de beat-match.
+   oito toques, mediana dentro de 3 BPM do alvo (meio tempo e dobro contam);
+   falhar fecha a cabina por vinte segundos. */
+var SK={taps:[], open:false, lockUntil:0, lockTick:null};
+function skMedian(a){ var b=a.slice().sort(function(x,y){return x-y;}); var m=b.length>>1; return b.length%2? b[m] : (b[m-1]+b[m])/2; }
+function skTargets(){ var t0=(current&&(current.bpm||GBPM[current.g]))||120; return [[t0,3],[t0/2,2],[t0*2,6]]; }
+function skReset(){
+  SK.taps=[];
+  $("skBpm").textContent="--";
+  document.querySelectorAll("#skDots i").forEach(function(d){ d.classList.remove("f"); });
+  $("skMsg").textContent=""; $("skMsg").className="sk-msg";
+}
+function skLockLeft(){ return Math.max(0, SK.lockUntil-Date.now()); }
+function skShowLock(){
+  $("skPad").disabled=true;
+  var m=$("skMsg"); m.className="sk-msg bad";
+  function up(){
+    var s=Math.ceil(skLockLeft()/1000);
+    if(s<=0){ clearInterval(SK.lockTick); SK.lockTick=null; $("skPad").disabled=false; skReset(); return; }
+    m.textContent="missed it. the booth is closed: "+s+" s";
+  }
+  up();
+  if(SK.lockTick) clearInterval(SK.lockTick);
+  SK.lockTick=setInterval(up, 250);
+}
+function skOpen(){
+  if(!radioOn || !current) return;
+  SK.open=true;
+  $("skTarget").textContent=String(current.bpm||GBPM[current.g]||120);
+  $("skill").classList.add("on");
+  skReset();
+  if(skLockLeft()>0) skShowLock(); else $("skPad").disabled=false;
+}
+function skCloseBox(){
+  SK.open=false;
+  $("skill").classList.remove("on");
+  if(SK.lockTick){ clearInterval(SK.lockTick); SK.lockTick=null; }
+}
+function skPass(){
+  var m=$("skMsg"); m.className="sk-msg ok"; m.textContent="locked in. pull up!";
+  FX.rim(0.02,true);
+  setTimeout(function(){ skCloseBox(); FX.rewind(); setTimeout(hardNext, 350); }, 650);
+}
+function skFail(){
+  SK.lockUntil=Date.now()+20000;
+  skShowLock();
+}
+function skTap(){
+  if(skLockLeft()>0 || !SK.open) return;
+  var now=performance.now();
+  SK.taps.push(now);
+  if(SK.taps.length>8) SK.taps.shift();
+  var dots=document.querySelectorAll("#skDots i");
+  for(var i=0;i<dots.length;i++) dots[i].classList.toggle("f", i<SK.taps.length);
+  if(SK.taps.length>=3){
+    var iv=[]; for(var j=1;j<SK.taps.length;j++) iv.push(SK.taps[j]-SK.taps[j-1]);
+    var bpm=60000/skMedian(iv);
+    $("skBpm").textContent=String(Math.round(bpm));
+    if(SK.taps.length===8){
+      var ok=skTargets().some(function(c){ return Math.abs(bpm-c[0])<=c[1]; });
+      if(ok) skPass(); else skFail();
+    }
+  }
+}
+$("skPad").addEventListener("pointerdown", function(e){ e.preventDefault(); skTap(); });
+$("skClose").addEventListener("click", skCloseBox);
+$("skipBtn").addEventListener("click", skOpen);
+/* o botao Field existe so na sala liquida: troca o campo do fundo */
+var fieldBtn=$("fieldBtn");
+if(fieldBtn && window.HMFIELD){
+  fieldBtn.addEventListener("click", function(){ HMFIELD.next(); });
+}
+
+document.addEventListener("keydown", function(e){
+  if(e.target && (e.target.tagName==="INPUT")) return;
+  if(e.key === "Escape"){
+    document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+    if(SK.open) skCloseBox();
+    if($("mixPanel").classList.contains("on")) mx2Close();
+  }
+  if(!radioOn) return;
+  if(SK.open && (e.key===" " || e.code==="Space")){ e.preventDefault(); skTap(); return; }
+  if(e.key === "ArrowRight"){ skOpen(); }
+  if(e.key === "m" || e.key === "M"){ toggleMute(); }
+  if(e.key === "f" || e.key === "F"){ toggleFs(); }
+  if((e.key === "v" || e.key === "V") && window.HMFIELD){ HMFIELD.next(); }
+});
+
+/* ---------------- intro: o disco de abertura ----------------
+   Koncrete Roots, Sound Killah (Dub ina Midlands, Dubophonic 2014, CC BY-NC-ND 4.0).
+   Toca em streaming, inteira e sem cortes, do Internet Archive; aos 23 s a
+   coreografia arranca para a agulha pousar com os 30 s; o veu negro clareia
+   ao ritmo do proprio relogio da faixa. */
+var P1_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var P2_SRC="https://archive.org/download/DPH010/06_Rakoon_Tubbys_Dub_Lesson.mp3";
+var INTRO_LEN=30, P1_FADE=28.5, P2_START=10, P2_PREP=25.15, P2_FADE=28.5, HARD1=42, HARD2=34;
+var MC_AT=[6, 10.5, 15, 19, 23, 26.2];
+var introTimers=[], introDone=false, introTick=null, introAudio=null, introAudio2=null;
+var mcShown=0, beginCalled=false, introFading=false, phase=1, endSeqDone=false;
+/* diagnostico da abertura, visivel em window.HMI */
+window.HMI={log:[]};
+function hmi(ev){ try{ HMI.log.push((performance.now()/1000).toFixed(1)+" "+ev); }catch(e){} }
+function showLine(i){
+  var line=MC_LINES[i], mc=$("mc");
+  var div=document.createElement("div");
+  div.className="mc-line" + (line.big ? " big" : "");
+  div.textContent=line.t;
+  mc.appendChild(div);
+  void div.offsetWidth; div.classList.add("show");
+}
+function startRadioUnderIntro(){
+  if(beginCalled) return; beginCalled=true;
+  beginRadio();
+}
+/* ---- a camada vj: plasma liquido mate, cor continua e deformacao de dominio ---- */
+var vjOn=false, vjG=null, vjImg=null, vjStops=[], vjLast=0;
+var VJW=192, VJH=108;
+function vjInit(){
+  var c=$("vj");
+  vjG=c.getContext("2d");
+  c.width=VJW; c.height=VJH;
+  vjImg=vjG.createImageData(VJW,VJH);
+  ["#030309","#0d0a22","#1c1340","#3a2a4e","#5a4020","#7a5422"]
+  .forEach(function(h){ vjStops.push([parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]); });
+}
+function introClock(){
+  if(phase===2) return (introAudio2 && introAudio2.currentTime)||P2_START;
+  return (introAudio && introAudio.currentTime)||0;
+}
+function vjFrame(ts){
+  if(!vjOn) return;
+  requestAnimationFrame(vjFrame);
+  if(ts-vjLast<40) return;           /* ~25 fps */
+  vjLast=ts;
+  var at=introClock();
+  var t=ts/1000;
+  var energy=(phase===2)?1:0.16+0.84*Math.min(1, at/26);
+  var vib=1+0.11*Math.sin(at*2*Math.PI*1.25);
+  var cx=VJW*0.5+Math.sin(t*0.16)*44, cy=VJH*0.5+Math.cos(t*0.12)*26;
+  var sp=t*(0.3+energy*0.6);
+  var d=vjImg.data, n=vjStops.length;
+  for(var y=0;y<VJH;y++){
+    var wy=y+7*Math.sin(y*0.021+sp*0.7);
+    var dy=(y-cy)*1.55;
+    for(var x=0;x<VJW;x++){
+      /* deformacao de dominio: as coordenadas fluem antes de medir o campo */
+      var wx=x+9*Math.sin(y*0.045+sp*0.85)+5*Math.sin(x*0.02-sp*0.5);
+      var dx=x-cx;
+      var v=Math.sin(wx*0.047+sp*0.8)
+           +Math.sin(wy*0.07-sp*0.55)
+           +Math.sin((wx*0.027+wy*0.04)+sp*0.42)
+           +Math.sin(Math.sqrt(dx*dx+dy*dy)*0.1-sp*1.35)*vib;
+      v=(v+4)/8;
+      v=Math.pow(v, 2.0-0.95*energy)*energy;
+      /* cor continua pela rampa de paradas, sem quantizar: liquido e sem emendas */
+      var f=v*(n-1); if(f<0)f=0; if(f>n-1.001)f=n-1.001;
+      var i0=f|0, fr=f-i0, a2=vjStops[i0], b2=vjStops[i0+1];
+      var p=(y*VJW+x)*4;
+      d[p]  =a2[0]+(b2[0]-a2[0])*fr;
+      d[p+1]=a2[1]+(b2[1]-a2[1])*fr;
+      d[p+2]=a2[2]+(b2[2]-a2[2])*fr;
+      d[p+3]=255;
+    }
+  }
+  vjG.putImageData(vjImg,0,0);
+}
+function vjStart(){ if(vjOn) return; vjInit(); vjOn=true; $("vj").classList.add("on"); requestAnimationFrame(vjFrame); }
+function vjFade(){ $("vj").classList.add("out"); setTimeout(vjStop, 2600); }
+function vjStop(){ vjOn=false; var c=$("vj"); c.classList.remove("on"); c.classList.remove("out"); }
+
+/* o veu negro: escuro ate aos 9 s, depois abre com a faixa */
+function veilK(t){
+  if(t<=9) return 1;
+  var u=Math.min(1,(t-9)/(INTRO_LEN-9));
+  var s=u*u*(3-2*u);
+  return 1-s;
+}
+var awaitingGesture=false;
+function waitGesture(){
+  if(awaitingGesture || introDone) return;
+  awaitingGesture=true;
+  $("tapHint").classList.add("on");
+  function go2(){
+    if(!awaitingGesture) return;
+    awaitingGesture=false;
+    $("tapHint").classList.remove("on");
+    FX.resume();
+    if(introAudio && introAudio.paused){ introAudio.play().catch(function(){ finishIntro(); }); }
+  }
+  document.addEventListener("pointerdown", go2, {once:true});
+  document.addEventListener("keydown", go2, {once:true});
+}
+function fadeAudio(a, len, cb){
+  if(!a){ if(cb) cb(); return; }
+  introFading=true;
+  var v0=a.volume;
+  animClock(len*1000, function(x){
+    try{ a.volume=v0*(1-x); }catch(e){}
+  }, function(){ try{ a.pause(); }catch(e){} if(cb) cb(); });
+}
+/* parte 2: Tubby's Dub Lesson entra nos 10 s; as frases saem, fica o plasma */
+var p2Started=false, p2Fading=false;
+function startP2(){
+  if(p2Started || introDone) return; p2Started=true; phase=2;
+  hmi("startP2 rs="+(introAudio2?introAudio2.readyState:"x"));
+  $("mc").style.opacity="0";
+  var cr=$("introCredit");
+  cr.style.opacity="0";
+  setTimeout(function(){
+    cr.innerHTML="<b>opening tune, part two</b><br>Rakoon, Tubby's Dub Lesson<br>Explorations in Dub &middot; Dubophonic 2013 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive";
+    cr.style.opacity="1";
+  }, 1300);
+  if(!introAudio2){ endSequence(); return; }
+  function go3(){
+    try{ introAudio2.currentTime=P2_START; }catch(e){}
+    introAudio2.volume=0;
+    introAudio2.play().then(function(){
+      var target=Math.max(0, Math.min(1, masterVol/100));
+      animClock(900, function(x){
+        if(introDone) return false;
+        try{ introAudio2.volume=target*x; }catch(e){}
+      });
+    }).catch(function(e2){ hmi("p2 play catch "+(e2&&e2.name)); startRadioUnderIntro(); endSequence(); });
+  }
+  if(introAudio2.readyState>=1){ go3(); }
+  else{
+    introAudio2.addEventListener("loadedmetadata", go3, {once:true});
+    setTimeout(function(){ if(!introDone && introAudio2.readyState<1){ hmi("p2 meta timeout"); startRadioUnderIntro(); endSequence(); } }, 5000);
+  }
+}
+/* o fim: silencio, a luz sobe no palco, a agulha pousa, a musica cresce */
+function endSequence(){
+  if(endSeqDone) return; endSeqDone=true;
+  hmi("endSequence");
+  introDone=true; cleanupIntro();
+  startRadioUnderIntro();
+  var veil=$("introVeil");
+  vjFade();
+  $("splash").classList.add("off");
+  setTimeout(function(){ $("splash").style.display="none"; }, 1500);
+  $("app").classList.remove("intro");
+  veil.classList.add("on");
+  veil.style.transition="none"; veil.style.opacity="0.88";
+  void veil.offsetWidth;
+  var t0=performance.now();
+  (function lift(now){
+    var x=Math.min(1,(now-t0)/4200);
+    veil.style.opacity=String((0.88*(1-x)).toFixed(3));
+    if(x<1){ requestAnimationFrame(lift); }
+    else { veil.classList.remove("on"); veil.style.transition=""; introDone=true; cleanupIntro(); }
+  })(performance.now());
+}
+function cleanupIntro(){
+  introTimers.forEach(clearTimeout);
+  if(introTick){ clearInterval(introTick); introTick=null; }
+}
+function runIntro(){
+  $("splash").classList.add("dark");
+  var veil=$("introVeil");
+  veil.classList.add("on"); veil.style.opacity="1";
+  $("mc").classList.add("on");
+  vjStart();
+  setTimeout(function(){ if(!introDone) $("skipIntro").classList.add("on"); }, 1500);
+  setTimeout(function(){ if(!introDone) $("introCredit").classList.add("on"); }, 2600);
+  introAudio=new Audio(P1_SRC);
+  introAudio.preload="auto";
+  try{ introAudio.volume=Math.max(0, Math.min(1, masterVol/100)); }catch(e){}
+  introAudio.addEventListener("error", function(){ if(phase===1 && !p2Started) finishIntro(); });
+  introAudio.play().catch(function(err){
+    if(err && err.name==="NotAllowedError"){ waitGesture(); }
+    else { finishIntro(); }
+  });
+  /* a segunda faixa comeca a carregar ja */
+  introAudio2=new Audio(P2_SRC);
+  introAudio2.preload="auto";
+  introAudio2.addEventListener("error", function(){ hmi("p2 error ev"); if(phase===2 && !endSeqDone){ startRadioUnderIntro(); endSequence(); } });
+  /* sem progresso em 8 s (e sem espera por gesto): a emissao nao fica presa ao arquivo */
+  introTimers.push(setTimeout(function(){
+    if(!introDone && !awaitingGesture && phase===1 && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
+  }, 8000));
+  var p1Fading=false;
+  introTick=setInterval(function(){
+    if(introDone) return;
+    if(phase===1){
+      var t=(introAudio && introAudio.currentTime)||0;
+      veil.style.opacity=veilK(t).toFixed(3);
+      while(mcShown<MC_LINES.length && t>=MC_AT[mcShown]){ showLine(mcShown); mcShown++; }
+      if(!p1Fading && t>=P1_FADE){ p1Fading=true; fadeAudio(introAudio, 1.5, startP2); }
+      if(t>=HARD1){ p1Fading=true; fadeAudio(introAudio, 0.6, startP2); }
+    } else {
+      var t2=(introAudio2 && introAudio2.currentTime)||0;
+      HMI.p2t=t2;
+      if(t2>=P2_PREP) startRadioUnderIntro();
+      if(!p2Fading && t2>=P2_FADE && (firstLogged || t2>=HARD2)){
+        p2Fading=true; hmi("p2 fade @"+t2.toFixed(1));
+        fadeAudio(introAudio2, 1.5, endSequence);
+      }
+      if(t2>=HARD2+2 && !endSeqDone){ hmi("p2 hard @"+t2.toFixed(1)); endSequence(); }
+    }
+  }, 120);
+}
+function finishIntro(){
+  /* o salto: despacha tudo e entrega a emissao */
+  if(introDone) return; introDone=true;
+  awaitingGesture=false;
+  cleanupIntro();
+  if(introAudio) fadeAudio(introAudio, 0.45);
+  if(introAudio2) fadeAudio(introAudio2, 0.45);
+  if(vjOn && !$("vj").classList.contains("out")) vjFade();
+  var veil=$("introVeil");
+  veil.style.opacity="0";
+  setTimeout(function(){ veil.classList.remove("on"); }, 600);
+  $("splash").classList.add("off");
+  setTimeout(function(){ $("splash").style.display="none"; }, 1000);
+  $("app").classList.remove("intro");
+  startRadioUnderIntro();
+}
+$("skipIntro").addEventListener("click", finishIntro);
+
+/* ---------------- arranque automatico: sem ecra de press play ---------------- */
+function firstGesture(){
+  FX.resume();
+  setTimeout(function(){
+    if(FX._pendingNeedle){ FX._pendingNeedle=false; if(window.HMFX) HMFX.needle(); }
+    if(radioOn && !muted){
+      var p=P[activeKey];
+      try{ p.yt.unMute(); p.yt.playVideo(); }catch(e){}
+    }
+  }, 120);
+}
+document.addEventListener("pointerdown", firstGesture, {once:true});
+document.addEventListener("keydown", firstGesture, {once:true});
+(function autoStart(){
+  FX.init();
+  $("app").classList.add("on");
+  $("app").classList.add("intro");
+  buildQueue(); applyBlockTheme();
+  pendingFirst = nextTrack();
+  setNow(pendingFirst, false);
+  loadApi();
+  maybeStart();
+  runIntro();
+})();
+
+var firstRampPending=false, rampDur=4500;
+function rampInFirst(){
+  if(!firstRampPending) return;
+  firstRampPending=false;
+  /* lenta e constante, em linha reta */
+  var p=P[activeKey], DURR=rampDur;
+  rampDur=4500;
+  animClock(DURR, function(x){ fadeVol(p, x); }, function(){ FX.crackle(false); });
+}
+window.HMFX = {
+  needle: function(){
+    if(!FX.ctx || FX.ctx.state!=="running"){ FX._pendingNeedle=true; return; }
+    FX.needleDrop(); FX.crackleBurst(2.4); rampInFirst();
+  },
+  lift: function(){
+    if(!FX.ctx || FX.ctx.state!=="running") return;
+    FX.needleLift(); FX.crackleBurst(1.3);
+  }
+};
+
+window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
+  return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE };
+}};
+
+})();
+</script>
+</body>
+</html>
