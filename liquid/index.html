@@ -247,12 +247,143 @@ button{font-family:var(--mono)}
   opacity:0; pointer-events:none; transition:opacity .4s}
 #toast.on{opacity:1}
 
+/* ---------- a abertura da sala liquida: so o disco 2, depois a agulha ---------- */
+#splash{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0.2) 0 2px, rgba(0,0,0,0) 2px 4px),
+    radial-gradient(circle at 74% 26%, rgba(255,177,43,0.12), rgba(0,0,0,0) 38%),
+    rgba(6,5,17,0.68);
+  transition:opacity 1s ease}
+#splash.off{opacity:0; pointer-events:none}
+.sp-inner{text-align:center; padding:20px; max-width:560px}
+.sp-bar{width:84px; height:3px; background:var(--amber); margin:0 auto 20px; box-shadow:0 0 10px rgba(255,177,43,.6)}
+.sp-title{font-family:var(--mono); font-weight:700; font-size:clamp(28px,6.5vw,42px); line-height:1.1;
+  letter-spacing:.34em; margin:0 0 10px; color:var(--paper); text-transform:uppercase;
+  text-shadow:3px 3px 0 #000, 0 0 18px rgba(255,177,43,.25)}
+.sp-sub{color:var(--teal); font-size:11px; letter-spacing:.3em; text-transform:uppercase; margin-bottom:26px}
+#tapHint{display:block; margin-top:26px; color:var(--amber); font-size:11px; letter-spacing:.34em;
+  text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
+@keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
+#mc{display:none; text-align:left; min-height:200px; transition:opacity 1.4s ease}
+#mc.on{display:block}
+.mc-line{font-size:14px; letter-spacing:.14em; color:var(--paper); opacity:0; transform:translateY(8px);
+  transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase}
+.mc-line.show{opacity:1; transform:none}
+.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 #000}
+#skipIntro{position:fixed; right:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
+  cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
+  font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:8px 13px}
+#skipIntro:hover{color:var(--amber); border-color:var(--amber)}
+#introCredit{position:fixed; left:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
+  color:var(--dim); font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; text-align:left; line-height:1.9; opacity:0; transition:opacity 1.2s ease}
+#introCredit.on{opacity:1}
+#introCredit b{color:var(--amber); font-weight:500}
+
+/* ---------- weekly art installation: a sala inteira para a obra ---------- */
+#wart{position:fixed; inset:0; z-index:90; display:none; background:var(--ink)}
+#wart.on{display:block}
+#waVid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none;
+  filter:brightness(.6) contrast(1.06) saturate(.9)}
+#waPicWrap{position:absolute; inset:0; overflow:hidden; display:none}
+#waPic{position:absolute; left:50%; top:50%; width:118%; height:118%; object-fit:cover;
+  transform:translate(-50%,-50%); filter:brightness(.9) saturate(.94)}
+#waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
+#waVeil{position:absolute; inset:0; pointer-events:none; display:none;
+  background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 34%, rgba(6,5,17,.85) 100%)}
+#waGrain{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.06; display:none}
+#waPoem{position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+  text-align:center; padding:0 7vw}
+#waPoemLine{font-size:clamp(17px,3.2vw,30px); letter-spacing:.3em; line-height:2;
+  color:var(--paper); text-shadow:0 0 26px rgba(65,217,200,.22); opacity:0}
+#waPoemTitle{position:absolute; right:22px; top:64px; font-size:9px; letter-spacing:.3em;
+  color:var(--dim); text-transform:uppercase}
+#waCap{position:absolute; left:16px; bottom:16px; max-width:min(480px,86vw);
+  background:rgba(6,5,17,.78); border:1px solid var(--line); padding:11px 13px}
+#waCap .k{font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
+#waCap .t{font-size:15px; letter-spacing:.12em; text-transform:uppercase; margin:4px 0 2px; color:var(--paper)}
+#waCap .a{font-size:10px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase}
+#waCap .row{display:flex; gap:6px; margin-top:9px; flex-wrap:wrap}
+#wartFicha{position:absolute; top:0; right:0; bottom:0; width:min(430px,94vw); z-index:3;
+  background:rgba(8,7,20,.97); border-left:1px solid var(--line); padding:54px 24px 28px;
+  overflow-y:auto; transform:translateX(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1)}
+#wartFicha.on{transform:translateX(0)}
+#wartFicha h3{margin:0 0 2px; font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+#wartFicha .fsub{font-size:9px; letter-spacing:.22em; color:var(--dim); text-transform:uppercase; margin:0 0 16px}
+#wartFicha .fk{font-size:9px; letter-spacing:.28em; color:var(--teal); text-transform:uppercase; margin:15px 0 4px}
+#wartFicha .fv{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0}
+#wartFicha .fv b{color:var(--paper); font-weight:500}
+#wartFicha a{display:block; color:var(--amber); font-size:11px; letter-spacing:.1em;
+  text-decoration:none; border-bottom:1px dotted var(--line); padding:7px 0}
+#wartFichaClose{position:absolute; right:12px; top:12px; background:none; border:none; color:var(--dim);
+  font-size:18px; cursor:pointer}
+#waBadge{display:none; font-size:9px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink); background:var(--teal); padding:3px 8px; margin:0 0 12px}
+
+/* ---------- leitor com estaleiro: arrastar pela barra, redimensionar no canto (so computador) ---------- */
+@media (min-width:761px){
+  .vp-top{cursor:move; user-select:none}
+  .vp-resize{position:absolute; right:0; bottom:0; width:16px; height:16px; cursor:nwse-resize;
+    background:linear-gradient(135deg, transparent 50%, var(--line) 50%)}
+  .vidpanel{touch-action:none}
+}
+@media (max-width:760px){
+  .vp-resize{display:none}
+  #vol{display:none}
+}
+#wakeBtn{display:none}
+@media (max-width:760px){
+  #wakeBtn.avail{display:inline-flex}
+}
 </style>
 </head>
 <body>
 <canvas id="vj" width="256" height="144"></canvas>
 <div id="lightVeil"></div>
 <div id="fieldName"></div>
+
+<div id="splash">
+  <div class="sp-inner">
+    <div class="sp-bar"></div>
+    <div class="sp-title">Home Music</div>
+    <div class="sp-sub">the liquid room</div>
+    <div id="mc" aria-live="polite"></div>
+    <div id="tapHint" role="button" tabindex="0">tap to drop the needle</div>
+  </div>
+</div>
+<button id="skipIntro" type="button">skip the intro &raquo;</button>
+<div id="introCredit"><b>opening tune</b><br>Rakoon, Tubby's Dub Lesson<br>Dubophonic &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive</div>
+
+<div id="wart" aria-label="weekly art installation">
+  <video id="waVid" loop muted playsinline preload="none"></video>
+  <div id="waPicWrap"><img id="waPic" alt=""></div>
+  <canvas id="waCv"></canvas>
+  <div id="waVeil"></div>
+  <canvas id="waGrain"></canvas>
+  <div id="waPoem"><div id="waPoemLine"></div><div id="waPoemTitle"></div></div>
+  <div id="waCap">
+    <div class="k" id="waK"></div>
+    <div class="t" id="waT"></div>
+    <div class="a" id="waA"></div>
+    <div class="row">
+      <button class="tbtn" id="waFichaBtn" type="button">Ficha de sala</button>
+      <button class="tbtn" id="waFsBtn" type="button">Immerse</button>
+      <button class="tbtn" id="waBack" type="button">Back to the radio</button>
+    </div>
+  </div>
+  <aside id="wartFicha">
+    <button id="wartFichaClose" type="button">&times;</button>
+    <h3 id="waFT">&hellip;</h3>
+    <p class="fsub">ficha de sala &middot; week <span id="waWeek"></span></p>
+    <div id="waBadge">demonstration ficha &middot; fictional resident</div>
+    <div class="fk">artist</div><p class="fv" id="waFArtist"></p>
+    <div class="fk">life</div><p class="fv" id="waFLife"></p>
+    <div class="fk">who they are</div><p class="fv" id="waFWho"></p>
+    <div class="fk">the piece</div><p class="fv" id="waFPiece"></p>
+    <div class="fk">licence &middot; source</div><p class="fv" id="waFLic"></p>
+    <div class="fk">links</div><div id="waFLinks"></div>
+  </aside>
+</div>
 
 <div id="app">
   <header id="top">
@@ -264,6 +395,7 @@ button{font-family:var(--mono)}
       <button class="tbtn" id="histBtn" type="button">Session log</button>
       <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
       <button class="tbtn" id="fieldBtn" type="button" title="change the liquid field [v]">Field</button>
+      <button class="tbtn" id="wartBtn" type="button" title="this week's installation [w]">Weekly art</button>
       <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
     </div>
   </header>
@@ -298,8 +430,10 @@ button{font-family:var(--mono)}
     <div class="vp-ctrl">
       <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
       <button class="tbtn" id="skipBtn" type="button" title="earn the skip">Skip</button>
+      <button class="tbtn" id="wakeBtn" type="button" title="keep the screen awake so the music keeps playing">Screen on</button>
       <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
     </div>
+    <div class="vp-resize" id="vpResize" title="drag to resize, double click to reset"></div>
   </div>
 
   <button id="needle" type="button">touch to drop the needle</button>
@@ -749,19 +883,20 @@ window.RIG={
   }
   requestAnimationFrame(frame);
 
-  /* a luz da sala sobe do escuro ao normal em 9,5 s; a musica acompanha
+  /* a luz da sala: fica no escuro ate a intro mandar subir; a musica acompanha
      (a rampa do leitor na sala liquida tem a mesma duracao) */
-  var lv=document.getElementById("lightVeil");
-  if(lv){
-    var t0=null;
-    (function lights(ts){
-      if(t0===null) t0=ts;
-      var x=Math.min(1,(ts-t0)/9500);
-      lv.style.opacity=String((0.9*(1-x)).toFixed(3));
-      if(x<1) requestAnimationFrame(lights);
-      else lv.style.display="none";
-    })(performance.now());
-  }
+  window.LVfx={
+    unveil:function(ms){
+      var lv=document.getElementById("lightVeil");
+      if(!lv) return;
+      var t0=performance.now();
+      var h=setInterval(function(){
+        var x=Math.min(1,(performance.now()-t0)/(ms||8000));
+        lv.style.opacity=String((0.9*(1-x)).toFixed(3));
+        if(x>=1){ clearInterval(h); lv.style.display="none"; }
+      }, 50);
+    }
+  };
 })();
 </script>
 <script>
@@ -1149,6 +1284,7 @@ var retryCount=0;
 var lastT=0, lastStamp=0;
 
 try{ var sv = localStorage.getItem("hm_vol"); if(sv!==null){ masterVol = Math.max(0, Math.min(100, parseInt(sv,10)||80)); } }catch(e){}
+try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches){ masterVol=100; } }catch(e){}
 
 function other(k){ return k==="A" ? "B" : "A"; }
 function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
@@ -1969,7 +2105,7 @@ document.addEventListener("keydown", function(e){
   if((e.key === "v" || e.key === "V") && window.HMFIELD){ HMFIELD.next(); }
 });
 
-/* sem introducao nesta estacao: a emissao arranca direta */
+/* a introducao da sala liquida vive no modulo l06 */
 var introAudio=null, introFading=false;
 
 /* ---------------- arranque automatico: sem ecra de press play ---------------- */
@@ -1993,10 +2129,16 @@ document.addEventListener("keydown", firstGesture, {once:true});
   setNow(pendingFirst, false);
   loadApi();
   maybeStart();
-  setTimeout(beginRadio, 700);
 })();
+/* pontes para os modulos da sala liquida (intro, instalacao semanal) */
+window.HM={
+  begin: beginRadio,
+  fxResume: function(){ try{ FX.resume(); }catch(e){} },
+  animClock: animClock,
+  isOn: function(){ return radioOn; }
+};
 
-var firstRampPending=false, rampDur=4500;
+var firstRampPending=false, rampDur=8000;
 function rampInFirst(){
   if(!firstRampPending) return;
   firstRampPending=false;
@@ -2024,3 +2166,356 @@ window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:funct
 </script>
 </body>
 </html>
+<script>
+"use strict";
+/* ================= modulos proprios da sala liquida =================
+   1) a abertura: so o disco 2 (Tubby's Dub Lesson, do segundo 10), fade no
+      tutututu, um segundo de silencio, a agulha, e a radio sobe sozinha;
+   2) weekly art installations: a sala inteira para uma obra por semana,
+      com a emissao a tocar por baixo;
+   3) leitor com estaleiro no computador: arrastar e redimensionar;
+   4) telemovel: trinco do ecra (wake lock) para a musica nao parar. */
+(function(){
+var $=function(id){ return document.getElementById(id); };
+
+/* ---------------- 1. a abertura ---------------- */
+var P2_SRC="https://archive.org/download/DPH010/06_Rakoon_Tubbys_Dub_Lesson.mp3";
+var P2_START=10, P2_FADE=28.5, MC_AT_TRK=[12, 14.5, 17, 19.5, 22, 24.5];
+var intro={ audio:null, tick:null, shown:0, fading:false, done:false, started:false };
+
+function showLine(i){
+  var line=MC_LINES[i], mc=$("mc");
+  var div=document.createElement("div");
+  div.className="mc-line" + (line.big ? " big" : "");
+  div.textContent=line.t;
+  mc.appendChild(div);
+  void div.offsetWidth; div.classList.add("show");
+}
+function sequenceIntoRadio(){
+  if(intro.done) return; intro.done=true;
+  if(intro.tick){ clearInterval(intro.tick); intro.tick=null; }
+  try{ if(intro.audio) intro.audio.pause(); }catch(e){}
+  $("splash").classList.add("off");
+  $("introCredit").classList.remove("on");
+  $("skipIntro").style.display="none";
+  /* um segundo de sulco vazio; depois a agulha (via RIG.first) e a rampa de 8 s */
+  setTimeout(function(){
+    if(window.HM) HM.begin();
+    setTimeout(function(){ if(window.LVfx) LVfx.unveil(8000); }, 1100);
+  }, 1000);
+}
+function fadeOutIntro(ms){
+  if(intro.fading || intro.done) return; intro.fading=true;
+  var a=intro.audio;
+  if(!a){ sequenceIntoRadio(); return; }
+  var v0=a.volume;
+  if(window.HM && HM.animClock){
+    HM.animClock(ms, function(x){ try{ a.volume=v0*(1-x); }catch(e){} }, sequenceIntoRadio);
+  } else {
+    try{ a.volume=0; }catch(e){}
+    setTimeout(sequenceIntoRadio, ms);
+  }
+}
+function startIntro(){
+  if(intro.started || intro.done) return; intro.started=true;
+  if(window.HM) HM.fxResume();
+  $("tapHint").style.display="none";
+  $("mc").classList.add("on");
+  $("introCredit").classList.add("on");
+  var vol=0.8;
+  try{ var sv=localStorage.getItem("hm_vol"); if(sv!==null) vol=Math.max(0,Math.min(100,parseInt(sv,10)||80))/100; }catch(e){}
+  try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches) vol=1; }catch(e){}
+  var a=new Audio(P2_SRC);
+  intro.audio=a;
+  a.volume=vol;
+  a.addEventListener("loadedmetadata", function(){ try{ a.currentTime=P2_START; }catch(e){} });
+  a.addEventListener("error", function(){ sequenceIntoRadio(); });
+  var p=a.play();
+  if(p && p.catch) p.catch(function(){ sequenceIntoRadio(); });
+  /* rede de seguranca: sem progresso em 4 s (rede, bloqueio), a radio entra na mesma */
+  setTimeout(function(){
+    if(!intro.done && (!a.currentTime || a.currentTime < P2_START+0.4)) sequenceIntoRadio();
+  }, 4000);
+  intro.tick=setInterval(function(){
+    var t=a.currentTime||0;
+    while(intro.shown<MC_LINES.length && t>=MC_AT_TRK[intro.shown]){ showLine(intro.shown); intro.shown++; }
+    if(t>=P2_FADE) fadeOutIntro(2500);
+  }, 100);
+}
+$("splash").addEventListener("pointerdown", startIntro);
+$("tapHint").addEventListener("keydown", function(ev){ if(ev.key==="Enter"||ev.key===" ") startIntro(); });
+$("skipIntro").addEventListener("click", function(){
+  if(!intro.started){ if(window.HM) HM.fxResume(); }
+  if(intro.started && !intro.fading){ fadeOutIntro(600); } else { sequenceIntoRadio(); }
+});
+
+/* ---------------- 2. weekly art installations ---------------- */
+function isoWeek(d){
+  var x=new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  var day=x.getUTCDay()||7;
+  x.setUTCDate(x.getUTCDate()+4-day);
+  var y0=new Date(Date.UTC(x.getUTCFullYear(),0,1));
+  return Math.ceil((((x-y0)/86400000)+1)/7);
+}
+var EGG="https://archive.org/download/viking-eggeling-symphonie-diagonale-1923/Viking%20Eggeling%20-%20Symphonie%20Diagonale%20-%201923.mp4";
+var SWAN="https://upload.wikimedia.org/wikipedia/commons/0/00/Hilma_af_Klint%2C_1915%2C_Svanen%2C_No._17.jpg";
+var YEATS=[
+  "Had I the heavens' embroidered cloths,",
+  "Enwrought with golden and silver light,",
+  "The blue and the dim and the dark cloths",
+  "Of night and light and the half-light,",
+  "I would spread the cloths under your feet:",
+  "But I, being poor, have only my dreams;",
+  "I have spread my dreams under your feet;",
+  "Tread softly because you tread on my dreams."
+];
+var WPIECES=[
+  { kind:"film", k:"Residency &middot; ceded film loop", t:"Symphonie Diagonale", a:"Viking Eggeling", real:true,
+    life:"Lund 1880, Berlin 1925",
+    who:"Swedish painter and film-maker of the Dada circle in Zurich and Berlin. With Hans Richter he searched for a universal language of abstract form; <b>Symphonie Diagonale</b>, his only finished film, premiered in Berlin in May 1925, days before his death.",
+    piece:"Diagonal figures animated frame by frame orchestrate growth and decay in time: cinema treated as scored music for the eye. It runs dimmed under a veil that breathes with the broadcast.",
+    lic:"Public domain (the author died in 1925). File streamed whole from the Internet Archive.",
+    links:[["Viking Eggeling on Wikipedia","https://en.wikipedia.org/wiki/Viking_Eggeling"],["The film at the Internet Archive","https://archive.org/details/viking-eggeling-symphonie-diagonale-1923"]] },
+  { kind:"canvas", k:"Residency &middot; fixed work, adrift", t:"Svanen, No. 17", a:"Hilma af Klint", real:true,
+    life:"Stockholm 1862, Djursholm 1944",
+    who:"Swedish painter who arrived at abstraction years before it had a public name, working from the notebooks of her spiritualist circle, The Five. She ordered the abstract work kept unseen for twenty years after her death.",
+    piece:"From Group IX/SUW, The Swan series (1915): the swan dissolved into a circle of opposing halves. The canvas drifts almost imperceptibly while the room breathes with the tune on air.",
+    lic:"Public domain (the author died in 1944). Image via Wikimedia Commons.",
+    links:[["Hilma af Klint on Wikipedia","https://en.wikipedia.org/wiki/Hilma_af_Klint"],["The image on Wikimedia Commons","https://commons.wikimedia.org/wiki/File:Hilma_af_Klint,_1915,_Svanen,_No._17.jpg"]] },
+  { kind:"poem", k:"Residency &middot; kinetic poem", t:"He wishes for the Cloths of Heaven", a:"W. B. Yeats", real:true,
+    life:"Dublin 1865, Menton 1939",
+    who:"Irish poet, Nobel laureate of 1923. The poem closes <b>The Wind Among the Reeds</b> (1899), eight lines that half the world has quoted at the other half ever since.",
+    piece:"The eight lines surface, drift and sink, one at a time, at the pace of the room. Text as installation: a poem given the duration music already has.",
+    lic:"Public domain (the author died in 1939). Text from Wikisource.",
+    links:[["W. B. Yeats on Wikipedia","https://en.wikipedia.org/wiki/W._B._Yeats"],["The poem on Wikisource","https://en.wikisource.org/wiki/He_wishes_for_the_Cloths_of_Heaven"]] },
+  { kind:"field", k:"Residency &middot; signed field", t:"Low Tide, Bottle Green", a:"Direction: resident (demonstration)", real:false,
+    life:"(placeholder)",
+    who:"Model for artists who do not code: the resident writes the brief, the house builds the field, the piece carries their signature. Brief on file: bottle green on pitch black; tide, not waves; never brighter than the moon; one breath every eight seconds.",
+    piece:"The brief above, implemented note for note, breathing with the levels of the tune on air.",
+    lic:"House demonstration of the model; a real resident's field carries their name here.",
+    links:[] }
+];
+var wa={ on:false, raf:0, idx:isoWeek(new Date())%WPIECES.length, grainLast:0, poemT0:0 };
+
+function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
+function waFillFicha(p){
+  $("waFT").innerHTML=p.t;
+  $("waWeek").textContent=String(isoWeek(new Date()));
+  $("waBadge").style.display=p.real?"none":"inline-block";
+  $("waFArtist").innerHTML=p.a;
+  $("waFLife").textContent=p.life;
+  $("waFWho").innerHTML=p.who;
+  $("waFPiece").innerHTML=p.piece;
+  $("waFLic").innerHTML=p.lic;
+  var L=$("waFLinks"); L.innerHTML="";
+  (p.links||[]).forEach(function(x){
+    var a=document.createElement("a"); a.textContent=x[0]+" ↗"; a.href=x[1];
+    a.target="_blank"; a.rel="noopener"; L.appendChild(a);
+  });
+}
+function waGrainDraw(ts){
+  if(ts-wa.grainLast<90) return; wa.grainLast=ts;
+  var g=$("waGrain"), gx=g.getContext("2d");
+  if(g.width!==240){ g.width=240; g.height=150; }
+  var img=gx.createImageData(240,150), d=img.data;
+  for(var i=0;i<d.length;i+=4){ var v=(Math.random()*255)|0; d[i]=d[i+1]=d[i+2]=v; d[i+3]=255; }
+  gx.putImageData(img,0,0);
+}
+/* campo verde-garrafa (so para a peca assinada) */
+var FG={w:128, h:72, oc:null, ox:null};
+function fgPal(v){
+  var stops=[[4,18,12],[12,59,42],[46,107,80],[127,174,155]];
+  var x=Math.max(0,Math.min(.999,v))*3, i=Math.floor(x), f=x-i;
+  var a=stops[i], b=stops[i+1];
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
+}
+function fgStep(cv){
+  if(!FG.oc){ FG.oc=document.createElement("canvas"); FG.oc.width=FG.w; FG.oc.height=FG.h; FG.ox=FG.oc.getContext("2d"); }
+  var now=performance.now()/1000, t=now*.05, lo=lvLo();
+  var img=FG.ox.createImageData(FG.w,FG.h), d=img.data;
+  var breath=Math.sin(now*2*Math.PI/8)*.5+.5;
+  for(var y=0;y<FG.h;y++){
+    for(var x=0;x<FG.w;x++){
+      var u=x/FG.w, v=y/FG.h;
+      var s=Math.sin(u*5.3+t*2.1)+Math.sin(v*3.7-t*1.7)+Math.sin((u+v)*4.1+t*1.2)
+        +Math.sin(Math.hypot(u-.5, v-.62)*11-t*2.6);
+      var tide=Math.sin(v*Math.PI+t*.6)*.5;
+      var val=(s/4+.5)*.6+tide*.18+breath*.1+lo*.1;
+      var c=fgPal(val*.8);
+      var k=(y*FG.w+x)*4;
+      d[k]=c[0]; d[k+1]=c[1]; d[k+2]=c[2]; d[k+3]=255;
+    }
+  }
+  FG.ox.putImageData(img,0,0);
+  var cx=cv.getContext("2d");
+  cx.imageSmoothingEnabled=true;
+  cx.drawImage(FG.oc,0,0,cv.width,cv.height);
+}
+function waLoop(ts){
+  if(!wa.on) return;
+  wa.raf=requestAnimationFrame(waLoop);
+  var p=WPIECES[wa.idx], now=performance.now()/1000, lo=lvLo();
+  if(p.kind==="film"){
+    $("waVeil").style.opacity=String(.6-.25*lo);
+    waGrainDraw(ts);
+  } else if(p.kind==="canvas"){
+    var s=1.09+0.05*Math.sin(now*2*Math.PI/140);
+    var dx=12*Math.sin(now*2*Math.PI/173), dy=9*Math.cos(now*2*Math.PI/151);
+    $("waPic").style.transform="translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px)) scale("+s+")";
+    $("waVeil").style.opacity=String(.72-.22*lo);
+    waGrainDraw(ts);
+  } else if(p.kind==="poem"){
+    var per=12, tt=now-wa.poemT0;
+    var i=Math.floor(tt/per)%YEATS.length, ph=(tt%per)/per;
+    var el=$("waPoemLine");
+    if(el.textContent!==YEATS[i]) el.textContent=YEATS[i];
+    var fade = ph<.2 ? ph/.2 : (ph>.8 ? (1-ph)/.2 : 1);
+    el.style.opacity=String(fade*(.82+.18*lo));
+    el.style.transform="translateY("+((-32)*ph)+"px)";
+  } else if(p.kind==="field"){
+    fgStep($("waCv"));
+  }
+}
+function waShowLayers(p){
+  $("waVid").style.display   = p.kind==="film" ? "block":"none";
+  $("waPicWrap").style.display= p.kind==="canvas" ? "block":"none";
+  $("waCv").style.display    = p.kind==="field" ? "block":"none";
+  $("waPoem").style.display  = p.kind==="poem" ? "flex":"none";
+  $("waVeil").style.display  = (p.kind==="film"||p.kind==="canvas") ? "block":"none";
+  $("waGrain").style.display = (p.kind==="film"||p.kind==="canvas") ? "block":"none";
+}
+function wartOpen(){
+  if(wa.on) return;
+  wa.on=true;
+  var p=WPIECES[wa.idx];
+  $("waK").innerHTML=p.k; $("waT").innerHTML=p.t; $("waA").innerHTML=p.a;
+  waFillFicha(p);
+  waShowLayers(p);
+  if(p.kind==="film"){
+    var v=$("waVid");
+    if(!v.src) v.src=EGG;
+    v.play().catch(function(){});
+  }
+  if(p.kind==="canvas" && !$("waPic").src) $("waPic").src=SWAN;
+  if(p.kind==="poem"){
+    wa.poemT0=performance.now()/1000;
+    $("waPoemTitle").textContent="W. B. Yeats · He wishes for the Cloths of Heaven · 1899";
+  }
+  if(p.kind==="field"){
+    var c=$("waCv");
+    c.width=Math.min(innerWidth, 1600); c.height=Math.min(innerHeight, 1000);
+  }
+  $("wart").classList.add("on");
+  wa.raf=requestAnimationFrame(waLoop);
+}
+function wartClose(){
+  if(!wa.on) return;
+  wa.on=false;
+  cancelAnimationFrame(wa.raf);
+  try{ $("waVid").pause(); }catch(e){}
+  $("wartFicha").classList.remove("on");
+  $("wart").classList.remove("on");
+}
+$("wartBtn").addEventListener("click", wartOpen);
+$("waBack").addEventListener("click", wartClose);
+$("waFichaBtn").addEventListener("click", function(){ $("wartFicha").classList.toggle("on"); });
+$("wartFichaClose").addEventListener("click", function(){ $("wartFicha").classList.remove("on"); });
+$("waFsBtn").addEventListener("click", function(){
+  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+});
+document.addEventListener("keydown", function(ev){
+  if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="TEXTAREA")) return;
+  if(ev.key==="w" && intro.done){ wa.on ? wartClose() : wartOpen(); }
+  if(ev.key==="Escape" && wa.on){ if($("wartFicha").classList.contains("on")) $("wartFicha").classList.remove("on"); else wartClose(); }
+});
+
+/* ---------------- 3. leitor com estaleiro (so computador) ---------------- */
+var DESK=false;
+try{ DESK=window.matchMedia && matchMedia("(min-width:761px)").matches; }catch(e){}
+if(DESK){
+  var panel=document.querySelector(".vidpanel");
+  var screenEl=document.querySelector(".vp-screen");
+  function applySize(w){
+    w=Math.max(220, Math.min(560, w));
+    panel.style.width=w+"px";
+    screenEl.style.width=w+"px";
+    screenEl.style.height=Math.round(w*2/3)+"px";
+    return w;
+  }
+  function applyPos(l,t){
+    var W=innerWidth, H=innerHeight, pw=panel.offsetWidth, ph=panel.offsetHeight;
+    l=Math.max(6, Math.min(W-pw-6, l));
+    t=Math.max(6, Math.min(H-ph-6, t));
+    panel.style.left=l+"px"; panel.style.top=t+"px";
+    panel.style.right="auto"; panel.style.bottom="auto";
+    return {l:l, t:t};
+  }
+  try{
+    var svw=parseInt(localStorage.getItem("hm_vidw"),10);
+    if(svw>0) applySize(svw);
+    var svp=JSON.parse(localStorage.getItem("hm_vidpos")||"null");
+    if(svp && typeof svp.l==="number") applyPos(svp.l, svp.t);
+  }catch(e){}
+  var top=document.querySelector(".vp-top");
+  top.addEventListener("pointerdown", function(ev){
+    ev.preventDefault();
+    var r=panel.getBoundingClientRect();
+    var ox=ev.clientX-r.left, oy=ev.clientY-r.top, last=null;
+    function mv(e){ last=applyPos(e.clientX-ox, e.clientY-oy); }
+    function up(){
+      document.removeEventListener("pointermove", mv);
+      document.removeEventListener("pointerup", up);
+      if(last){ try{ localStorage.setItem("hm_vidpos", JSON.stringify(last)); }catch(e){} }
+    }
+    document.addEventListener("pointermove", mv);
+    document.addEventListener("pointerup", up);
+  });
+  var rz=$("vpResize");
+  if(rz){
+    rz.addEventListener("pointerdown", function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      var w0=panel.offsetWidth, x0=ev.clientX, lastW=w0;
+      function mv(e){ lastW=applySize(w0+(e.clientX-x0)); }
+      function up(){
+        document.removeEventListener("pointermove", mv);
+        document.removeEventListener("pointerup", up);
+        try{ localStorage.setItem("hm_vidw", String(lastW)); }catch(e){}
+      }
+      document.addEventListener("pointermove", mv);
+      document.addEventListener("pointerup", up);
+    });
+    rz.addEventListener("dblclick", function(){
+      panel.style.left=panel.style.top=panel.style.right=panel.style.bottom="";
+      panel.style.width=""; screenEl.style.width=""; screenEl.style.height="";
+      try{ localStorage.removeItem("hm_vidw"); localStorage.removeItem("hm_vidpos"); }catch(e){}
+    });
+  }
+}
+
+/* ---------------- 4. telemovel: trinco do ecra ---------------- */
+(function(){
+  var btn=$("wakeBtn");
+  if(!btn) return;
+  if(!("wakeLock" in navigator)) return;
+  btn.classList.add("avail");
+  var lock=null, want=false;
+  function acquire(){
+    navigator.wakeLock.request("screen").then(function(l){
+      lock=l;
+      btn.textContent="Screen off";
+      l.addEventListener("release", function(){ lock=null; if(!want) btn.textContent="Screen on"; });
+    }).catch(function(){ want=false; btn.textContent="Screen on"; });
+  }
+  btn.addEventListener("click", function(){
+    want=!want;
+    if(want){ acquire(); }
+    else if(lock){ lock.release(); btn.textContent="Screen on"; }
+  });
+  document.addEventListener("visibilitychange", function(){
+    if(want && !lock && document.visibilityState==="visible") acquire();
+  });
+})();
+
+})();
+</script>
