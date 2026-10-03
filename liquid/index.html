@@ -128,33 +128,39 @@ button{font-family:var(--mono)}
   opacity:0; pointer-events:none; transition:opacity .35s}
 #fieldName.on{opacity:1}
 
-/* ---------- mobile: opcao A, full bleed (cartao e leitor lado a lado) ---------- */
+/* ---------- mobile: full bleed; navegacao em fita deslizante, alvos de toque a serio ---------- */
 @media (max-width:760px){
-  #top{padding:10px 10px; gap:8px; flex-wrap:wrap}
+  #top{padding:8px 10px 0; gap:4px 10px; flex-wrap:wrap;
+    background:linear-gradient(to bottom, rgba(0,0,0,.8), rgba(0,0,0,.45) 68%, rgba(0,0,0,0))}
   .brand b{font-size:12px; letter-spacing:.22em}
   .brand span{margin-left:6px}
   .onair .lbl{display:none}
   #blockLabel{display:none}
-  #clock{font-size:11px}
-  .hdr-btns{gap:5px; flex-wrap:wrap}
-  .tbtn{font-size:8px; padding:6px 8px}
+  #clock{font-size:12px; flex:0 0 auto; align-self:center}
+  /* a fila de botoes vira fita: uma linha inteira, deslizavel ao dedo */
+  .hdr-btns{flex:1 1 100%; margin-left:0; gap:8px; flex-wrap:nowrap; overflow-x:auto;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:4px 0 10px}
+  .hdr-btns::-webkit-scrollbar{display:none}
+  .tbtn{font-size:10px; padding:11px 13px; min-height:42px; letter-spacing:.14em;
+    flex:0 0 auto; white-space:nowrap}
   .vidpanel{right:10px; bottom:10px; width:200px}
   .vp-screen{width:200px; height:200px}
-  .vp-ctrl{padding:6px 6px}
-  #vol{max-width:64px}
-  #needle{right:10px; bottom:276px; z-index:33}
-  #now{left:10px; right:222px; bottom:14px; max-width:none; z-index:32}
+  .vp-ctrl{padding:6px 6px; gap:6px}
+  #needle{top:calc(env(safe-area-inset-top,0px) + 100px); bottom:auto; left:50%; right:auto;
+    transform:translateX(-50%); min-height:42px; z-index:33}
+  #now{left:10px; right:220px; bottom:14px; max-width:none; z-index:32}
   .chiprow{flex-wrap:wrap; gap:6px}
   #tArtist{font-size:16px; line-height:1.15}
   #tTitle{font-size:11px; margin:3px 0 6px}
   #tBlurb{display:none}
-  .t-links{flex-direction:column; align-items:flex-start; gap:4px}
-  .t-links a,.t-links .tbtn{font-size:8px; padding:4px 6px; letter-spacing:.12em}
-  .panel{top:48px; width:94vw; right:3vw}
+  .t-links{flex-direction:column; align-items:stretch; gap:6px}
+  .t-links a,.t-links .tbtn{font-size:9.5px; padding:10px 11px; letter-spacing:.13em; min-height:38px}
+  .t-links a{display:inline-flex; align-items:center}
+  .panel{top:102px; width:94vw; right:3vw; max-height:calc(100vh - 148px)}
   #genrePanel{width:94vw}
   .drawer{inset:2% 2.5%}
-  #toast{bottom:auto; top:52px}
-  #fieldName{top:96px}
+  #toast{bottom:auto; top:106px}
+  #fieldName{top:150px}
 }
 
 /* ---------- the dance nearby + painel estendido ---------- */
@@ -278,14 +284,15 @@ button{font-family:var(--mono)}
 #wart{position:fixed; inset:0; z-index:90; display:none; background:var(--ink)}
 #wart.on{display:block}
 #waVid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none;
-  filter:brightness(.6) contrast(1.06) saturate(.9)}
+  filter:brightness(.82) contrast(1.03)}
 #waPicWrap{position:absolute; inset:0; overflow:hidden; display:none}
 #waPic{position:absolute; left:50%; top:50%; width:118%; height:118%; object-fit:cover;
-  transform:translate(-50%,-50%); filter:brightness(.9) saturate(.94)}
+  transform:translate(-50%,-50%)}
+/* daily canvas: a obra inteira, sem recorte nem filtro */
+#waPicWrap.daily #waPic{width:100%; height:100%; object-fit:contain}
 #waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
 #waVeil{position:absolute; inset:0; pointer-events:none; display:none;
-  background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 34%, rgba(6,5,17,.85) 100%)}
-#waGrain{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.06; display:none}
+  background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 44%, rgba(6,5,17,.72) 100%)}
 #waPoem{position:absolute; inset:0; display:none; align-items:center; justify-content:center;
   text-align:center; padding:0 7vw; overflow:hidden}
 #waPoemLines{transition:transform .9s ease, opacity .8s ease}
@@ -403,7 +410,6 @@ textarea.gift-field{min-height:84px; resize:vertical}
   <div id="waPicWrap"><img id="waPic" alt=""></div>
   <canvas id="waCv"></canvas>
   <div id="waVeil"></div>
-  <canvas id="waGrain"></canvas>
   <div id="waPoem"><div id="waPoemLines"></div><div id="waPoemTitle"></div></div>
   <div id="waHint">rotate the phone for the full piece &middot; pinch to zoom, drag to pan</div>
   <button class="wa-nav" id="waPrev" type="button" title="previous piece">&lsaquo;</button>
@@ -439,11 +445,9 @@ textarea.gift-field{min-height:84px; resize:vertical}
     <div class="onair"><span class="dot"></span><span class="lbl">on air &middot; </span><span id="blockLabel">&hellip;</span></div>
     <div class="hdr-btns">
       <div id="clock">--:--</div>
-      <button class="tbtn" id="genreBtn" type="button">The sound</button>
-      <button class="tbtn" id="histBtn" type="button">Session log</button>
       <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
       <button class="tbtn" id="giftBtn" type="button" title="recommend music to the house">Gift a tune</button>
-      <button class="tbtn" id="fieldBtn" type="button" title="change the liquid field [v]">Field</button>
+      <button class="tbtn" id="fieldBtn" type="button" title="change the liquid background [v]">Background</button>
       <button class="tbtn" id="wartBtn" type="button" title="the art wing [w]">Art</button>
       <button class="tbtn" id="focusBtn" type="button" title="the focus room">Focus</button>
       <button class="tbtn" id="arcBtn" type="button" title="the arcade">Arcade</button>
@@ -467,6 +471,8 @@ textarea.gift-field{min-height:84px; resize:vertical}
       <a id="aSP" href="#" target="_blank" rel="noopener">&#9678; Spotify</a>
       <a id="aSrc" href="#" target="_blank" rel="noopener" hidden>&#9636; Liner source</a>
       <button class="tbtn" id="danceBtn" type="button">&#9737; The dance nearby</button>
+      <button class="tbtn" id="genreBtn" type="button">The sound</button>
+      <button class="tbtn" id="histBtn" type="button">Session log</button>
     </div>
   </section>
 
@@ -2639,7 +2645,7 @@ var WPIECES=[
     links:[] }
 ];
 /* as quatro pecas estao todas em cartaz na mesma semana; o cartaz renova a cada semana */
-var wa={ on:false, raf:0, cur:0, grainLast:0, poemT0:0, wing:"week", hinted:false };
+var wa={ on:false, raf:0, cur:0, poemT0:0, wing:"week", hinted:false };
 
 function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
 function waFillFicha(p){
@@ -2656,14 +2662,6 @@ function waFillFicha(p){
     var a=document.createElement("a"); a.textContent=x[0]+" ↗"; a.href=x[1];
     a.target="_blank"; a.rel="noopener"; L.appendChild(a);
   });
-}
-function waGrainDraw(ts){
-  if(ts-wa.grainLast<90) return; wa.grainLast=ts;
-  var g=$("waGrain"), gx=g.getContext("2d");
-  if(g.width!==240){ g.width=240; g.height=150; }
-  var img=gx.createImageData(240,150), d=img.data;
-  for(var i=0;i<d.length;i+=4){ var v=(Math.random()*255)|0; d[i]=d[i+1]=d[i+2]=v; d[i+3]=255; }
-  gx.putImageData(img,0,0);
 }
 /* campo verde-garrafa (so para a peca assinada) */
 var FG={w:128, h:72, oc:null, ox:null};
@@ -2698,17 +2696,17 @@ function fgStep(cv){
 function waLoop(ts){
   if(!wa.on) return;
   wa.raf=requestAnimationFrame(waLoop);
-  var p=(wa.wing==="day")?{kind:"canvas"}:WPIECES[wa.cur];
+  var p=(wa.wing==="day")?{kind:"canvas",day:true}:WPIECES[wa.cur];
   var now=performance.now()/1000, lo=lvLo();
   if(p.kind==="film"){
-    $("waVeil").style.opacity=String(.6-.25*lo);
-    waGrainDraw(ts);
+    $("waVeil").style.opacity=String(.34-.2*lo);
   } else if(p.kind==="canvas"){
-    var s=1.09+0.05*Math.sin(now*2*Math.PI/140);
-    var dx=12*Math.sin(now*2*Math.PI/173), dy=9*Math.cos(now*2*Math.PI/151);
-    $("waPic").style.transform="translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px)) scale("+s+")";
-    $("waVeil").style.opacity=String(.72-.22*lo);
-    waGrainDraw(ts);
+    /* a obra como ela e: sem filtros; a peca semanal mantem a deriva lenta, a diaria fica quieta */
+    if(!p.day){
+      var s=1.09+0.05*Math.sin(now*2*Math.PI/140);
+      var dx=12*Math.sin(now*2*Math.PI/173), dy=9*Math.cos(now*2*Math.PI/151);
+      $("waPic").style.transform="translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px)) scale("+s+")";
+    }
   } else if(p.kind==="poem"){
     /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
     var per=10, hold=14, tt=now-wa.poemT0;
@@ -2740,8 +2738,9 @@ function waShowLayers(p){
   $("waPicWrap").style.display= p.kind==="canvas" ? "block":"none";
   $("waCv").style.display    = p.kind==="field" ? "block":"none";
   $("waPoem").style.display  = p.kind==="poem" ? "flex":"none";
-  $("waVeil").style.display  = (p.kind==="film"||p.kind==="canvas") ? "block":"none";
-  $("waGrain").style.display = (p.kind==="film"||p.kind==="canvas") ? "block":"none";
+  $("waVeil").style.display  = p.kind==="film" ? "block":"none";
+  $("waPicWrap").classList.toggle("daily", !!p.day);
+  if(p.day) $("waPic").style.transform="";
 }
 function waShow(n){
   if(wa.wing==="day"){ dailyShow(); return; }
@@ -2753,12 +2752,14 @@ function waShow(n){
   $("waT").innerHTML=p.t; $("waA").innerHTML=p.a;
   waFillFicha(p);
   waShowLayers(p);
+  gesReset();
   if(p.kind==="film"){
     var v=$("waVid");
     if(!v.src) v.src=EGG;
     v.play().catch(function(){});
   }
-  if(p.kind==="canvas" && !$("waPic").src) $("waPic").src=SWAN;
+  /* a parede semanal tem a sua propria tela: repoe-a sempre, mesmo que o daily a tenha usado */
+  if(p.kind==="canvas" && $("waPic").src!==SWAN) $("waPic").src=SWAN;
   if(p.kind==="poem"){
     wa.poemT0=performance.now()/1000;
     var bx=$("waPoemLines"); bx.innerHTML=""; bx.style.opacity="1";
@@ -2840,8 +2841,8 @@ function dailyShow(){
     var L=$("waFLinks"); L.innerHTML="";
     var a=document.createElement("a"); a.textContent="This work at the Art Institute of Chicago ↗";
     a.href=d.link; a.target="_blank"; a.rel="noopener"; L.appendChild(a);
-    $("waPic").src=d.img;
-    waShowLayers({kind:"canvas"});
+    if($("waPic").src!==d.img) $("waPic").src=d.img;
+    waShowLayers({kind:"canvas", day:true});
     gesReset();
   });
 }
@@ -3680,9 +3681,13 @@ $("fcExit").addEventListener("click", focusClose);
 #arcReveal{font-size:11px; color:#d7d3e4; margin:8px 0 0; min-height:34px}
 
 /* ---- dub desk: consola da casa ---- */
-#deskNote{border:1px dashed var(--line); padding:10px 12px; margin:0 0 14px;
-  font-size:10.5px; color:var(--dim); line-height:1.9}
-#deskNote b{color:var(--amber); font-weight:500}
+#dkCrate{display:flex; gap:7px; flex-wrap:wrap; margin:6px 0 16px}
+.dkPlate{background:#241607; border:1px solid #3a2a14; color:#cdbb92; cursor:pointer;
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  padding:8px 11px; text-align:left; line-height:1.5}
+.dkPlate b{display:block; color:#e7d9b8; font-weight:500; letter-spacing:.2em}
+.dkPlate.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+.dkPlate.on b{color:#160d06}
 #desk{background:linear-gradient(180deg, #221409, #160d06 60%, #0f0a05);
   border:1px solid #3a2a14; border-top:none; padding:16px 16px 14px; position:relative}
 #desk::before{content:""; display:block; position:absolute; left:0; right:0; top:0; height:4px;
@@ -3721,7 +3726,7 @@ $("fcExit").addEventListener("click", focusClose);
 <div id="arcade" aria-label="the arcade">
   <button id="arcClose" type="button">&times;</button>
   <h3>The Arcade</h3>
-  <p class="asub">drop the needle pauses the broadcast in a fade; the dub desk has its own dubplate</p>
+  <p class="asub">drop the needle pauses the broadcast in a fade; the dub desk spins the house dubplates</p>
   <nav class="arc-tabs">
     <button class="tbtn arcTab on" data-g="nd" type="button">Drop the Needle</button>
     <button class="tbtn arcTab" data-g="dk" type="button">Dub Desk</button>
@@ -3740,13 +3745,13 @@ $("fcExit").addEventListener("click", focusClose);
   </section>
 
   <section class="arc-game" id="ag-dk">
-    <div id="deskNote"><b>Why the broadcast stays out of the desk's hands:</b> the YouTube stream lives in a sealed frame no site may process; that is browser law, not a choice of the house. The board works its own dubplate; the radio only steps aside while that record spins. The day the station runs tunes from open sources, this desk plugs straight into the air.</div>
     <div id="desk">
       <div id="deskHead">
         <span class="dname">Home Music &middot; Spring Board</span>
         <span class="dsub">dub console mk I</span>
         <button class="tbtn" id="dkPlay" type="button">Spin the dubplate</button>
       </div>
+      <div id="dkCrate"></div>
       <div id="deskRow">
         <div class="kbank">
           <div class="knob" data-k="send"><div class="kcap"><div class="kscale"></div><i></i></div><label>echo send</label><span class="kv">22</span></div>
@@ -3764,7 +3769,7 @@ $("fcExit").addEventListener("click", focusClose);
           <button id="dkThrow" class="tbtn" type="button">THROW &middot; echo out</button>
           <canvas id="dkVu" width="260" height="46"></canvas>
           <div class="dkkeys">drag a knob up or down &middot; [space] throw &middot; [b] bass</div>
-          <div id="dkCredit"><b>on the platter</b> Koncrete Roots, Sound Killah &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0 &middot; live processing in your browser, nothing recorded</div>
+          <div id="dkCredit"></div>
         </div>
       </div>
     </div>
@@ -3787,6 +3792,8 @@ $("arcBtn").addEventListener("click", function(){
   ARC.on=true;
   $("arcade").classList.add("on");
   sideWant();
+  /* o gira-discos do needle liga ja: quando o jogador carregar, o disco cai sem espera de arranque */
+  ndPlayer(null);
 });
 function arcClose(){
   if(!ARC.on) return;
@@ -3808,32 +3815,55 @@ document.querySelectorAll(".arcTab").forEach(function(b){
   });
 });
 
-/* ---------- drop the needle: o relogio so conta com a musica a tocar ---------- */
-var nd={ yt:null, ready:false, cur:null, lives:3, score:0, stopT:null, round:0, waiting:false };
+/* ---------- drop the needle: contam-se 6 s de musica REALMENTE ouvida ----------
+   o relogio e um somatorio do tempo de reproducao (getCurrentTime a avancar);
+   carregamentos e buffering nao gastam um decimo de segundo da audicao */
+var ND_SECS=6;
+var nd={ yt:null, ready:false, making:false, q:[], cur:null, lives:3, score:0, poll:null, round:0, heard:0, lastT:null };
 function ndPlayer(cb){
-  if(nd.yt && nd.ready){ cb(); return; }
-  if(typeof YT==="undefined" || !YT.Player){ setTimeout(function(){ ndPlayer(cb); }, 400); return; }
-  nd.yt=new YT.Player("arcYt", { width:"100%", height:"100%",
-    playerVars:{ autoplay:0, controls:0, rel:0, playsinline:1 },
-    events:{
-      onReady:function(e){ nd.yt=e.target; nd.ready=true; cb(); },
-      onStateChange:function(e){
-        /* os 6 s de audicao so arrancam quando o disco REALMENTE comeca a soar */
-        if(e.data===1 && nd.waiting){
-          nd.waiting=false;
-          var myRound=nd.round;
-          $("arcMask").innerHTML="the record is hidden<br>listening&hellip;";
-          clearTimeout(nd.stopT);
-          nd.stopT=setTimeout(function(){
-            if(nd.round!==myRound) return;
-            try{ nd.yt.pauseVideo(); }catch(err){}
-            $("arcMask").innerHTML="the needle is up<br>name the sound";
-          }, 6000);
-        }
-      }
-    } });
+  if(nd.yt && nd.ready){ if(cb) cb(); return; }
+  if(cb) nd.q.push(cb);
+  if(nd.making) return;
+  nd.making=true;
+  (function boot(){
+    if(typeof YT==="undefined" || !YT.Player){ setTimeout(boot, 400); return; }
+    new YT.Player("arcYt", { width:"100%", height:"100%",
+      playerVars:{ autoplay:0, controls:0, rel:0, playsinline:1 },
+      events:{ onReady:function(e){
+        nd.yt=e.target; nd.ready=true;
+        var q=nd.q; nd.q=[];
+        q.forEach(function(f){ try{ f(); }catch(err){} });
+      } } });
+  })();
 }
-function ndStop(){ nd.waiting=false; clearTimeout(nd.stopT); try{ if(nd.yt&&nd.ready) nd.yt.pauseVideo(); }catch(e){} }
+function ndWatch(){
+  clearInterval(nd.poll);
+  nd.heard=0; nd.lastT=null;
+  var myRound=nd.round, started=false;
+  nd.poll=setInterval(function(){
+    if(nd.round!==myRound || !nd.ready) return;
+    var st; try{ st=nd.yt.getPlayerState(); }catch(e){ return; }
+    if(st===1){
+      started=true;
+      var t=null; try{ t=nd.yt.getCurrentTime()||0; }catch(e){}
+      if(t!=null){
+        if(nd.lastT!=null){ var d=t-nd.lastT; if(d>0 && d<1.2) nd.heard+=d; }
+        nd.lastT=t;
+      }
+      if(nd.heard>=ND_SECS){
+        clearInterval(nd.poll); nd.poll=null;
+        try{ nd.yt.pauseVideo(); }catch(err){}
+        $("arcMask").innerHTML="the needle is up<br>name the sound";
+      } else {
+        $("arcMask").innerHTML="the record is hidden<br>listening&hellip; "+Math.ceil(ND_SECS-nd.heard);
+      }
+    } else {
+      nd.lastT=null;
+      if(st===3) $("arcMask").innerHTML= started ? "the groove skips&hellip;<br>the clock holds" : "dropping the needle&hellip;";
+    }
+  }, 200);
+}
+function ndStop(){ clearInterval(nd.poll); nd.poll=null; try{ if(nd.yt&&nd.ready) nd.yt.pauseVideo(); }catch(e){} }
 function ndOptions(t){
   var names={}, out=[GENRES[t.g].name];
   names[t.g]=1;
@@ -3856,10 +3886,10 @@ function ndRound(){
     ch.appendChild(b);
   });
   $("arcMask").innerHTML="dropping the needle&hellip;";
-  nd.waiting=true;
   ndPlayer(function(){
     nd.yt.loadVideoById({ videoId:nd.cur.v, startSeconds:45 });
-    nd.yt.playVideo();
+    try{ nd.yt.playVideo(); }catch(e){}
+    ndWatch();
   });
   ndPaint();
 }
@@ -3880,9 +3910,49 @@ function ndPaint(){ $("arcScore").textContent="score "+nd.score+" · lives "+nd.
 $("arcStart").addEventListener("click", ndRound);
 
 /* ---------- dub desk ---------- */
-var DK={ ac:null, el:null, n:null, playing:false, raf:0 };
-var DK_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var DK={ ac:null, el:null, n:null, playing:false, raf:0, pi:0 };
+/* o caixote dos dubplates: so pratas da casa, CC, a correr inteiras do Internet Archive */
+var DK_PLATES=[
+  { a:"Koncrete Roots", t:"Sound Killah", rel:"Dub ina Midlands &middot; Dubophonic 2014", lic:"CC BY-NC-ND 4.0",
+    src:"https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3" },
+  { a:"Rakoon", t:"Tubby's Dub Lesson", rel:"Explorations in Dub &middot; Dubophonic 2013", lic:"CC BY-NC-ND 4.0",
+    src:"https://archive.org/download/DPH010/06_Rakoon_Tubbys_Dub_Lesson.mp3" },
+  { a:"Red Barrio", t:"Feeling Irie Dub", rel:"Explorations in Dub &middot; Dubophonic 2013", lic:"CC BY-NC-ND 4.0",
+    src:"https://archive.org/download/DPH010/01_Red_Barrio_Feeling_Irie_Dub.mp3" },
+  { a:"Dub-I", t:"Satta Dub", rel:"Creation &middot; Dubophonic 2013", lic:"CC BY-NC-ND 3.0",
+    src:"https://archive.org/download/DPH001/05_Dub-i_-_Satta_Dub.mp3" },
+  { a:"The Dubbstyle", t:"Sun Is Dub", rel:"Sun Is Dub &middot; Dubophonic 2019", lic:"CC BY-ND 4.0",
+    src:"https://archive.org/download/DPH037/7_Sun%20is%20dub.mp3" }
+];
 var KV={ send:22, fb:55, space:18, lpf:100 };
+function dkCredit(){
+  var p=DK_PLATES[DK.pi];
+  $("dkCredit").innerHTML="<b>on the platter</b> "+p.a+", "+p.t+" &middot; "+p.rel+" &middot; "+p.lic+
+    " &middot; live processing in your browser, nothing recorded";
+}
+function dkSelect(i){
+  if(i===DK.pi && DK.el) return;
+  DK.pi=i;
+  document.querySelectorAll(".dkPlate").forEach(function(x,xi){ x.classList.toggle("on", xi===i); });
+  dkCredit();
+  if(DK.el){
+    var was=DK.playing;
+    try{ DK.el.pause(); }catch(e){}
+    DK.el.src=DK_PLATES[i].src;
+    if(was){ DK.el.play().catch(function(){}); }
+  }
+}
+(function(){
+  var c=$("dkCrate");
+  DK_PLATES.forEach(function(p,i){
+    var b=document.createElement("button");
+    b.type="button"; b.className="dkPlate"+(i===0?" on":"");
+    b.innerHTML="<b>"+p.a+"</b>"+p.t;
+    b.addEventListener("click", function(){ dkSelect(i); });
+    c.appendChild(b);
+  });
+  dkCredit();
+})();
 function dkIr(secs){
   var rate=DK.ac.sampleRate, len=Math.floor(secs*rate);
   var buf=DK.ac.createBuffer(2, len, rate);
@@ -3901,7 +3971,7 @@ function dkApply(){
 }
 function dkBuild(){
   var ac=DK.ac=new (window.AudioContext||window.webkitAudioContext)();
-  var el=DK.el=new Audio(DK_SRC);
+  var el=DK.el=new Audio(DK_PLATES[DK.pi].src);
   el.crossOrigin="anonymous";
   el.addEventListener("ended", function(){ DK.playing=false; $("dkPlay").textContent="Spin the dubplate"; sideWant(); });
   var src=ac.createMediaElementSource(el);
