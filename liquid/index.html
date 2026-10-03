@@ -136,6 +136,31 @@ button{font-family:var(--mono)}
 .gx-p a{color:var(--teal); text-decoration:none}
 .gx-note{color:var(--dim); font-size:10px; letter-spacing:.08em; margin:12px 0 0}
 
+
+/* ---------- a prateleira das mixtapes: gaveta sobre a emissao ---------- */
+.drawer{position:fixed; inset:3% 3.5%; z-index:60; display:none; overflow:auto;
+  background:rgba(6,5,17,.97); border:1px solid var(--amber); padding:0}
+.drawer.on{display:block}
+.dw-in{padding:24px 26px 30px; max-width:860px; margin:0 auto; position:relative}
+.dw-title{margin:0 0 4px; font-size:16px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+.dw-sub{margin:0 0 18px; color:var(--dim); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; line-height:1.8}
+.dw-tape{border:1px solid var(--line); background:rgba(13,11,28,.85); padding:14px 16px; margin:0 0 16px}
+.dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
+.dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
+.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
+.dw-yt iframe{width:100%; height:100%}
+.dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:#04030c}
+.dw-ctl{display:flex; gap:8px; align-items:center; padding:9px 0 0}
+.dw-now{color:var(--amber); font-size:10px; letter-spacing:.1em}
+.dw-list{list-style:none; margin:10px 0 0; padding:0; counter-reset:dw}
+.dw-list li{counter-increment:dw; padding:6px 0; border-bottom:1px dotted var(--line);
+  font-size:11.5px; color:#c9c4d8; cursor:pointer}
+.dw-list li::before{content:counter(dw,decimal-leading-zero)"  "; color:var(--dim)}
+.dw-list li.on{color:var(--amber)}
+.dw-list li:hover{color:var(--amber)}
+
 /* ---------- earn the skip ---------- */
 #skill{position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center;
   background:rgba(3,2,10,.82)}
@@ -185,7 +210,7 @@ button{font-family:var(--mono)}
       <div id="clock">--:--</div>
       <button class="tbtn" id="genreBtn" type="button">The sound</button>
       <button class="tbtn" id="histBtn" type="button">Session log</button>
-      <a class="tbtn" href="../mixtapes/">Mixtapes</a>
+      <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
       <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
     </div>
   </header>
@@ -261,6 +286,35 @@ button{font-family:var(--mono)}
     <p class="psub">everything played since you tuned in</p>
     <ul id="histList"><li class="h-empty">Nothing yet.</li></ul>
   </aside>
+
+
+  <div id="mixPanel" class="drawer" aria-label="mixtapes">
+    <div class="dw-in">
+      <button class="pclose" id="mixClose" type="button">&times;</button>
+      <h3 class="dw-title">Mixtapes</h3>
+      <p class="dw-sub">sessions by the founders. the radio keeps playing under this shelf; press play on a tape and the radio steps aside until you close it.</p>
+      <section class="dw-tape">
+        <h4>liquid dnb for street market wandering <span>Weronika &middot; 15.06.2026 &middot; liquid dnb</span></h4>
+        <iframe title="liquid dnb for street market wandering, by Weronika" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+      </section>
+      <section class="dw-tape">
+        <h4>UNDERGROUND BASS SOUNDz <span>Weronika &middot; 28.08.2026 &middot; uk bass / 140 / dubby</span></h4>
+        <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+      </section>
+      <section class="dw-tape">
+        <h4>Tubby's Lesson <span>the founders &middot; dub 1975-83</span></h4>
+        <div class="dw-yt"><div id="mxYt2"></div><div class="dw-idle" id="mxIdle2">seven records, needle lifted between each one</div></div>
+        <div class="dw-ctl">
+          <button class="tbtn" id="mxPlay2" type="button">Play</button>
+          <button class="tbtn" id="mxNext2" type="button">Next</button>
+          <span class="dw-now" id="mxNow2"></span>
+        </div>
+        <ol class="dw-list" id="mxList2"></ol>
+      </section>
+    </div>
+  </div>
 
   <div id="skill" role="dialog" aria-label="earn the skip">
     <div class="sk-card">
@@ -847,6 +901,33 @@ var FX = {
       setTimeout(function(){ try{ck.src.stop();}catch(e){} }, 700);
     }
   },
+  /* o crepitar como na realidade: uma janela curta que se apaga sozinha */
+  crackleBurst: function(dur){
+    if(!this.ctx) return;
+    this.crackle(true);
+    var self=this;
+    clearTimeout(this._ckT);
+    this._ckT=setTimeout(function(){ self.crackle(false); }, Math.max(300,(dur||2.2)*1000));
+  },
+  /* levantar a agulha: varrimento leve, estalido, meio segundo de sulco e silencio */
+  needleLift: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(52,t); o.frequency.exponentialRampToValueAtTime(90,t+0.09);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.14);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.12,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
+    var len=Math.floor(c.sampleRate*0.04), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.2); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1600;
+    var g2=c.createGain(); g2.gain.value=0.14;
+    src.connect(hp); hp.connect(g2); g2.connect(this.master);
+    src.start(t+0.05);
+  },
   transitionFx: function(){
     var self=this;
     self.kick(); self.rim(0.02,true);
@@ -1074,7 +1155,7 @@ function beginRadio(){
       /* rede de seguranca: se o gancho da agulha nao disparar, a rampa entra na mesma */
       setTimeout(function(){ if(firstRampPending && window.HMFX){ window.HMFX.needle(); } }, 9500);
     }
-    setTimeout(checkAudible, 11000);
+    setTimeout(checkAudible, 6000);
   }
   go();
 }
@@ -1134,15 +1215,34 @@ function onYtError(k, code){
 }
 
 /* hard cut (errors, manual skip): the rig does a fast same-deck swap */
-function hardNextAudio(t){
+function hardNextAudio(t, quiet){
   var p = P[activeKey];
   p.pendingTrack = t;
   setNow(t, true);
   ensureLoaded(p, t.v);
-  try{ p.yt.unMute(); fadeVol(p,1); }catch(e){}
+  try{ p.yt.unMute(); fadeVol(p, quiet?0:1); }catch(e){}
 }
-function hardNext(){
+var swapPending=false;
+function hardNext(reason){
+  if(swapPending) return;
   var t = nextTrack(); if(!t) return;
+  if(reason === "ended"){
+    /* o disco chegou ao fim: agulha fora, sulco a morrer, maos no proximo */
+    swapPending=true;
+    if(window.HMFX) HMFX.lift();
+    $("standbyMsg").textContent = "changing the record\u2026";
+    setTimeout(function(){
+      swapPending=false;
+      if(!radioOn) return;
+      if(RIG.setNext) RIG.setNext(metaFor(t));
+      firstRampPending=true; rampDur=2000;
+      hardNextAudio(t, true);
+      RIG.quick(deckOfPlayer(activeKey));
+      /* salvaguarda: se o gancho da agulha nao vier, a rampa entra na mesma */
+      setTimeout(function(){ if(firstRampPending && window.HMFX){ HMFX.needle(); } }, 6000);
+    }, 2600);
+    return;
+  }
   if(RIG.setNext) RIG.setNext(metaFor(t));
   hardNextAudio(t);
   RIG.quick(deckOfPlayer(activeKey));
@@ -1298,8 +1398,25 @@ function setNow(t, push){
   var ext=$("gExt");
   if(ext){
     var gx=(typeof GEXT!=="undefined") && GEXT[t.g];
+    if(!gx){
+      /* todos os generos mostram ja o painel estendido: registos da propria
+         estante e portas para fora; os dossiers ricos chegam genero a genero */
+      var ks=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
+      gx={
+        records: ks.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+          r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
+          u:"https://www.youtube.com/watch?v="+k.v }; }),
+        links:[
+          { n:"Ishkur's Guide, this genre's entry", u:"https://music.ishkur.com/" },
+          { n:"Discogs, releases in this style", u:"https://www.discogs.com/search/?q="+encodeURIComponent(g.name)+"&type=release" },
+          { n:"This genre on Wikipedia", u:(g.w||"https://en.wikipedia.org/wiki/Electronic_music") }
+        ],
+        note:"Extended dossier for this genre (quotes, lineage, ephemera) lands with the panel rollout; dub carries the full sample."
+      };
+    }
     if(gx){
-      var h='<blockquote>&ldquo;'+gx.quote.t+'&rdquo;<cite><a href="'+gx.quote.u+'" target="_blank" rel="noopener">'+gx.quote.src+'</a></cite></blockquote>';
+      var h='';
+      if(gx.quote) h+='<blockquote>&ldquo;'+gx.quote.t+'&rdquo;<cite><a href="'+gx.quote.u+'" target="_blank" rel="noopener">'+gx.quote.src+'</a></cite></blockquote>';
       if(gx.quote2) h+='<blockquote>&ldquo;'+gx.quote2.t+'&rdquo;<cite><a href="'+gx.quote2.u+'" target="_blank" rel="noopener">'+gx.quote2.src+'</a></cite></blockquote>';
       h+='<div class="gx-h">Key records</div><ul class="gx-list">';
       gx.records.forEach(function(r){ h+='<li><a href="'+r.u+'" target="_blank" rel="noopener">'+r.n+'</a><span>'+r.r+'</span></li>'; });
@@ -1437,6 +1554,91 @@ $("danceGo").addEventListener("click", function(){
   danceRender(c||null, null, c? "listings around "+c+"." : "");
 });
 $("danceCity").addEventListener("keydown", function(e){ if(e.key==="Enter"){ $("danceGo").click(); } });
+
+/* ---------------- a prateleira das mixtapes: gaveta sobre a emissao ----------------
+   abrir nao toca no som; dar play numa tape poe a radio de lado (mute) e fechar devolve-a */
+var MXT2=[
+  {a:"King Tubby & The Aggrovators", t:"Dub Fi Gwan", y:1977, v:"qu3RXnGFQa8"},
+  {a:"Max Romeo & The Upsetters", t:"Chase the Devil", y:1976, v:"5_U9wsBVvqU"},
+  {a:"Lee \"Scratch\" Perry & The Upsetters", t:"Disco Devil", y:1977, v:"vjC2WT7VOyE"},
+  {a:"Yabby You", t:"Deliver Me From My Enemies (dub plate mix)", y:1977, v:"uVXlm4He6Mc"},
+  {a:"Pablo Gad", t:"Blood Suckers", y:1979, v:"ISIWjpRquGA"},
+  {a:"Scientist", t:"Dance of the Vampires", y:1981, v:"iCpPaTeL2BE"},
+  {a:"Johnnie Clarke", t:"Young Rebel", y:1983, v:"Dmujamx8Hww"}
+];
+var mx2={i:-1, yt:null, ready:false, playing:false, mutedRadio:false, loadedFrames:false};
+function mx2List(){
+  var ol=$("mxList2"); if(!ol) return;
+  ol.innerHTML="";
+  MXT2.forEach(function(x,i){
+    var li=document.createElement("li");
+    li.textContent=x.a+" / "+x.t+" ("+x.y+")";
+    if(i===mx2.i) li.className="on";
+    li.addEventListener("click", function(){ mx2Go(i); });
+    ol.appendChild(li);
+  });
+}
+function mx2SideRadio(on){
+  /* on=true: a radio poe-se de lado enquanto a tape toca */
+  if(on){ if(!muted){ toggleMute(); mx2.mutedRadio=true; } }
+  else { if(mx2.mutedRadio){ mx2.mutedRadio=false; if(muted) toggleMute(); } }
+}
+function mx2Player(cb){
+  if(mx2.yt && mx2.ready){ cb(); return; }
+  if(typeof YT==="undefined" || !YT.Player){ setTimeout(function(){ mx2Player(cb); }, 400); return; }
+  mx2.yt=new YT.Player("mxYt2", { width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, playsinline:1 },
+    events:{
+      onReady:function(e){ mx2.yt=e.target; mx2.ready=true; cb(); },
+      onStateChange:function(e){
+        if(e.data===0){
+          if(mx2.i<MXT2.length-1){
+            /* agulha fora, meio compasso de sulco, proximo disco */
+            if(window.HMFX) HMFX.lift();
+            setTimeout(function(){ mx2Go(mx2.i+1); }, 1800);
+          } else {
+            mx2.playing=false; $("mxPlay2").textContent="Play";
+            $("mxNow2").textContent="side B ran out. thanks for sitting through.";
+            mx2SideRadio(false);
+          }
+        }
+      }
+    }
+  });
+}
+function mx2Go(i){
+  mx2.i=i; mx2List();
+  var x=MXT2[i];
+  $("mxNow2").textContent=(i+1)+"/"+MXT2.length+" "+x.a+" / "+x.t;
+  $("mxIdle2").style.display="none";
+  mx2SideRadio(true);
+  if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+  mx2Player(function(){
+    setTimeout(function(){ mx2.yt.loadVideoById(x.v); mx2.yt.playVideo(); mx2.playing=true; $("mxPlay2").textContent="Pause"; }, 320);
+  });
+}
+$("mixBtn").addEventListener("click", function(){
+  var d=$("mixPanel");
+  d.classList.add("on");
+  if(!mx2.loadedFrames){
+    mx2.loadedFrames=true;
+    d.querySelectorAll("iframe[data-src]").forEach(function(f){ f.src=f.getAttribute("data-src"); });
+    mx2List();
+  }
+});
+function mx2Close(){
+  $("mixPanel").classList.remove("on");
+  if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+  mx2SideRadio(false);
+}
+$("mixClose").addEventListener("click", mx2Close);
+$("mxPlay2").addEventListener("click", function(){
+  if(mx2.i<0){ mx2Go(0); return; }
+  if(!mx2.ready) return;
+  if(mx2.playing){ mx2.yt.pauseVideo(); mx2.playing=false; this.textContent="Play"; mx2SideRadio(false); }
+  else { mx2SideRadio(true); mx2.yt.playVideo(); mx2.playing=true; this.textContent="Pause"; }
+});
+$("mxNext2").addEventListener("click", function(){ if(mx2.i<MXT2.length-1) mx2Go(mx2.i+1); });
 /* imersao: ecra inteiro */
 function toggleFs(){
   if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
@@ -1448,7 +1650,10 @@ document.addEventListener("fullscreenchange", function(){
   $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";
 });
 document.querySelectorAll(".pclose").forEach(function(b){
-  b.addEventListener("click", function(){ $(b.getAttribute("data-close")).classList.remove("on"); });
+  b.addEventListener("click", function(){
+    var tgt=b.getAttribute("data-close");
+    if(tgt){ $(tgt).classList.remove("on"); }
+  });
 });
 /* ---------------- earn the skip: bater o tempo liberta a agulha ----------------
    escolha do dono da casa: saltar de faixa custa um desafio de beat-match.
@@ -1524,6 +1729,7 @@ document.addEventListener("keydown", function(e){
   if(e.key === "Escape"){
     document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
     if(SK.open) skCloseBox();
+    if($("mixPanel").classList.contains("on")) mx2Close();
   }
   if(!radioOn) return;
   if(SK.open && (e.key===" " || e.code==="Space")){ e.preventDefault(); skTap(); return; }
@@ -1536,8 +1742,18 @@ document.addEventListener("keydown", function(e){
 var introAudio=null, introFading=false;
 
 /* ---------------- arranque automatico: sem ecra de press play ---------------- */
-document.addEventListener("pointerdown", function(){ FX.resume(); }, {once:true});
-document.addEventListener("keydown", function(){ FX.resume(); }, {once:true});
+function firstGesture(){
+  FX.resume();
+  setTimeout(function(){
+    if(FX._pendingNeedle){ FX._pendingNeedle=false; if(window.HMFX) HMFX.needle(); }
+    if(radioOn && !muted){
+      var p=P[activeKey];
+      try{ p.yt.unMute(); p.yt.playVideo(); }catch(e){}
+    }
+  }, 120);
+}
+document.addEventListener("pointerdown", firstGesture, {once:true});
+document.addEventListener("keydown", firstGesture, {once:true});
 (function autoStart(){
   FX.init();
   $("app").classList.add("on");
@@ -1549,15 +1765,25 @@ document.addEventListener("keydown", function(){ FX.resume(); }, {once:true});
   setTimeout(beginRadio, 700);
 })();
 
-var firstRampPending=false;
+var firstRampPending=false, rampDur=4500;
 function rampInFirst(){
   if(!firstRampPending) return;
   firstRampPending=false;
-  /* lenta e constante: 4,5 s em linha reta */
-  var p=P[activeKey], DURR=9500;
+  /* lenta e constante, em linha reta */
+  var p=P[activeKey], DURR=rampDur;
+  rampDur=4500;
   animClock(DURR, function(x){ fadeVol(p, x); }, function(){ FX.crackle(false); });
 }
-window.HMFX = { needle: function(){ FX.needleDrop(); FX.crackle(true); rampInFirst(); } };
+window.HMFX = {
+  needle: function(){
+    if(!FX.ctx || FX.ctx.state!=="running"){ FX._pendingNeedle=true; return; }
+    FX.needleDrop(); FX.crackleBurst(2.4); rampInFirst();
+  },
+  lift: function(){
+    if(!FX.ctx || FX.ctx.state!=="running") return;
+    FX.needleLift(); FX.crackleBurst(1.3);
+  }
+};
 
 window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
   return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE };
