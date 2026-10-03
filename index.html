@@ -193,7 +193,12 @@ button{font-family:var(--mono)}
   padding:calc(18px + env(safe-area-inset-top, 0px)) 20px 24px; overflow-y:auto;
   transition:transform .35s ease;
 }
-#genrePanel{left:0; border-right:1px solid var(--line); transform:translateX(-102%)}
+#genrePanel{left:0; border-right:1px solid var(--line); transform:translateX(-102%); width:min(640px,96vw)}
+@media (min-width:720px){
+  #genrePanel #gExt{display:grid; grid-template-columns:1fr 1fr; gap:2px 20px; align-items:start}
+  #genrePanel #gExt blockquote{grid-column:1/-1}
+  #genrePanel #gExt .gx-note{grid-column:1/-1}
+}
 #dancePanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
 #histPanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
 .panel.on, #genrePanel.on, #histPanel.on, #dancePanel.on{transform:translateX(0)}
@@ -256,6 +261,9 @@ button{font-family:var(--mono)}
 .dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 .dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
 .dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+.dw-tape iframe.scmini,.tape iframe.scmini{height:22px; border:none; background:transparent;
+  filter:invert(1) hue-rotate(180deg) saturate(1.5) contrast(0.92); opacity:.92; border-radius:2px}
+
 .dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
 .dw-yt iframe{width:100%; height:100%}
 .dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -428,13 +436,13 @@ button{font-family:var(--mono)}
       <p class="dw-sub">sessions by the founders. the radio keeps playing under this shelf; press play on a tape and the radio steps aside until you close it.</p>
       <section class="dw-tape">
         <h4>liquid dnb for street market wandering <span>Weronika &middot; 15.06.2026 &middot; liquid dnb</span></h4>
-        <iframe title="liquid dnb for street market wandering, by Weronika" loading="lazy" allow="autoplay"
-          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+        <iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
       </section>
       <section class="dw-tape">
         <h4>UNDERGROUND BASS SOUNDz <span>Weronika &middot; 28.08.2026 &middot; uk bass / 140 / dubby</span></h4>
-        <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" loading="lazy" allow="autoplay"
-          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+        <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
       </section>
       <section class="dw-tape">
         <h4>Tubby's Lesson <span>the founders &middot; dub 1975-83</span></h4>
@@ -2278,6 +2286,12 @@ function mx2Player(cb){
     events:{
       onReady:function(e){ mx2.yt=e.target; mx2.ready=true; cb(); },
       onStateChange:function(e){
+        if(e.data===1 && !mx2.playing){
+          /* play nativo sobre o disco ja carregado */
+          mx2.playing=true; $("mxPlay2").textContent="Pause";
+          mx2SideRadio(true);
+          if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+        }
         if(e.data===0){
           if(mx2.i<MXT2.length-1){
             /* agulha fora, meio compasso de sulco, proximo disco */
@@ -2311,6 +2325,16 @@ $("mixBtn").addEventListener("click", function(){
     mx2.loadedFrames=true;
     d.querySelectorAll("iframe[data-src]").forEach(function(f){ f.src=f.getAttribute("data-src"); });
     mx2List();
+  }
+  /* primeiro disco ja no prato: carregado, a espera do play */
+  if(mx2.i<0 && !mx2.playing){
+    mx2Player(function(){
+      if(mx2.i>=0 || mx2.playing) return;
+      try{ mx2.yt.cueVideoById(MXT2[0].v); }catch(e){}
+      $("mxIdle2").style.display="none";
+      mx2.i=0; mx2List();
+      $("mxNow2").textContent="1/"+MXT2.length+" "+MXT2[0].a+" / "+MXT2[0].t;
+    });
   }
 });
 function mx2Close(){
