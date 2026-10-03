@@ -1,0 +1,642 @@
+<script>
+"use strict";
+/* ================= modulos proprios da sala liquida =================
+   1) a abertura: so o disco 2 (Tubby's Dub Lesson, do segundo 10), fade no
+      tutututu, um segundo de silencio, a agulha, e a radio sobe sozinha;
+   2) weekly art installations: a sala inteira para uma obra por semana,
+      com a emissao a tocar por baixo;
+   3) leitor com estaleiro no computador: arrastar e redimensionar;
+   4) telemovel: trinco do ecra (wake lock) para a musica nao parar. */
+(function(){
+var $=function(id){ return document.getElementById(id); };
+
+/* ---------------- 1. a abertura ----------------
+   Sound Killah do zero; quando o telefone da faixa entra (28,5 s) o intro desce,
+   um segundo de sulco vazio, a agulha encontra o disco, e a emissao sobe. */
+var P_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var P_START=0, P_FADE=28.5, MC_AT_TRK=[6, 10.5, 15, 19, 23, 26.2];
+var intro={ audio:null, tick:null, shown:0, fading:false, done:false, started:false };
+
+function showLine(i){
+  var line=MC_LINES[i], mc=$("mc");
+  var div=document.createElement("div");
+  div.className="mc-line" + (line.big ? " big" : "");
+  div.textContent=line.t;
+  mc.appendChild(div);
+  void div.offsetWidth; div.classList.add("show");
+}
+/* a agulha a serio e uma agulha a serio: o vinil da casa (freesound 625771, CC0),
+   do segundo 13 ao 17; a musica entra aos 15 e aos 17 ja vai a 100 por cento */
+var VINYL_SRC="https://cdn.freesound.org/previews/625/625771_9351406-hq.mp3";
+function sequenceIntoRadio(){
+  if(intro.done) return; intro.done=true;
+  if(intro.tick){ clearInterval(intro.tick); intro.tick=null; }
+  try{ if(intro.audio) intro.audio.pause(); }catch(e){}
+  $("splash").classList.add("off");
+  $("introCredit").classList.remove("on");
+  $("skipIntro").style.display="none";
+  var begun=false;
+  function begin(){
+    if(begun) return; begun=true;
+    if(window.HM) HM.begin();
+    if(window.LVfx) LVfx.unveil(2600);
+  }
+  /* 1 s de silencio, depois o sulco real */
+  setTimeout(function(){
+    var v=new Audio(VINYL_SRC);
+    var vol=0.8;
+    try{ var sv=localStorage.getItem("hm_vol"); if(sv!==null) vol=Math.max(0,Math.min(100,parseInt(sv,10)||80))/100; }catch(e){}
+    try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches) vol=1; }catch(e){}
+    v.volume=vol;
+    v.addEventListener("loadedmetadata", function(){ try{ v.currentTime=13; }catch(e){} });
+    v.addEventListener("error", begin);
+    var p=v.play(); if(p && p.catch) p.catch(begin);
+    /* sem progresso em 2,5 s, a radio entra na mesma */
+    setTimeout(function(){ if(!begun && (!v.currentTime || v.currentTime<13.3)) begin(); }, 2500);
+    var h=setInterval(function(){
+      var t=v.currentTime||0;
+      if(t>=15 && !begun) begin();
+      if(t>=17){
+        clearInterval(h);
+        var v0=v.volume, t0=performance.now();
+        var f=setInterval(function(){
+          var x=Math.min(1,(performance.now()-t0)/300);
+          try{ v.volume=v0*(1-x); }catch(e){}
+          if(x>=1){ clearInterval(f); try{ v.pause(); }catch(e){} }
+        }, 40);
+      }
+    }, 60);
+  }, 1000);
+}
+function fadeOutIntro(ms){
+  if(intro.fading || intro.done) return; intro.fading=true;
+  var a=intro.audio;
+  if(!a){ sequenceIntoRadio(); return; }
+  var v0=a.volume;
+  if(window.HM && HM.animClock){
+    /* curva suave: o eco do telefone escapa-se em vez de ser cortado */
+    HM.animClock(ms, function(x){ try{ a.volume=v0*Math.pow(1-x, 1.7); }catch(e){} }, sequenceIntoRadio);
+  } else {
+    try{ a.volume=0; }catch(e){}
+    setTimeout(sequenceIntoRadio, ms);
+  }
+}
+function startIntro(){
+  if(intro.started || intro.done) return; intro.started=true;
+  if(window.HM){ HM.fxResume(); if(HM.prime) HM.prime(); }
+  $("tapHint").style.display="none";
+  $("mc").classList.add("on");
+  $("introCredit").classList.add("on");
+  var vol=0.8;
+  try{ var sv=localStorage.getItem("hm_vol"); if(sv!==null) vol=Math.max(0,Math.min(100,parseInt(sv,10)||80))/100; }catch(e){}
+  try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches) vol=1; }catch(e){}
+  var a=new Audio(P_SRC);
+  intro.audio=a;
+  a.volume=vol;
+  a.addEventListener("error", function(){ sequenceIntoRadio(); });
+  var p=a.play();
+  if(p && p.catch) p.catch(function(){ sequenceIntoRadio(); });
+  /* rede de seguranca: sem progresso em 4 s (rede, bloqueio), a radio entra na mesma */
+  setTimeout(function(){
+    if(!intro.done && (!a.currentTime || a.currentTime < P_START+0.4)) sequenceIntoRadio();
+  }, 4000);
+  intro.tick=setInterval(function(){
+    var t=a.currentTime||0;
+    while(intro.shown<MC_LINES.length && t>=MC_AT_TRK[intro.shown]){ showLine(intro.shown); intro.shown++; }
+    /* o telefone e a ultima coisa que se ouve: fade curto, corte antes da bateria seguinte */
+    if(t>=P_FADE) fadeOutIntro(2600);
+  }, 100);
+}
+$("splash").addEventListener("pointerdown", startIntro);
+$("tapHint").addEventListener("keydown", function(ev){ if(ev.key==="Enter"||ev.key===" ") startIntro(); });
+$("skipIntro").addEventListener("click", function(){
+  if(!intro.started){ if(window.HM) HM.fxResume(); }
+  if(intro.started && !intro.fading){ fadeOutIntro(600); } else { sequenceIntoRadio(); }
+});
+
+/* ---------------- 2. weekly art installations ---------------- */
+function isoWeek(d){
+  var x=new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  var day=x.getUTCDay()||7;
+  x.setUTCDate(x.getUTCDate()+4-day);
+  var y0=new Date(Date.UTC(x.getUTCFullYear(),0,1));
+  return Math.ceil((((x-y0)/86400000)+1)/7);
+}
+var EGG="https://archive.org/download/viking-eggeling-symphonie-diagonale-1923/Viking%20Eggeling%20-%20Symphonie%20Diagonale%20-%201923.mp4";
+var SWAN="https://upload.wikimedia.org/wikipedia/commons/0/00/Hilma_af_Klint%2C_1915%2C_Svanen%2C_No._17.jpg";
+var YEATS=[
+  "Had I the heavens' embroidered cloths,",
+  "Enwrought with golden and silver light,",
+  "The blue and the dim and the dark cloths",
+  "Of night and light and the half-light,",
+  "I would spread the cloths under your feet:",
+  "But I, being poor, have only my dreams;",
+  "I have spread my dreams under your feet;",
+  "Tread softly because you tread on my dreams."
+];
+var WPIECES=[
+  { kind:"film", k:"Residency &middot; ceded film loop", t:"Symphonie Diagonale", a:"Viking Eggeling", real:true,
+    life:"Lund 1880, Berlin 1925",
+    who:"Swedish painter and film-maker of the Dada circle in Zurich and Berlin. With Hans Richter he searched for a universal language of abstract form; <b>Symphonie Diagonale</b>, his only finished film, premiered in Berlin in May 1925, days before his death.",
+    piece:"Diagonal figures animated frame by frame orchestrate growth and decay in time: cinema treated as scored music for the eye. It runs dimmed under a veil that breathes with the broadcast.",
+    lic:"Public domain (the author died in 1925). File streamed whole from the Internet Archive.",
+    links:[["Viking Eggeling on Wikipedia","https://en.wikipedia.org/wiki/Viking_Eggeling"],["The film at the Internet Archive","https://archive.org/details/viking-eggeling-symphonie-diagonale-1923"]] },
+  { kind:"canvas", k:"Residency &middot; fixed work, adrift", t:"Svanen, No. 17", a:"Hilma af Klint", real:true,
+    life:"Stockholm 1862, Djursholm 1944",
+    who:"Swedish painter who arrived at abstraction years before it had a public name, working from the notebooks of her spiritualist circle, The Five. She ordered the abstract work kept unseen for twenty years after her death.",
+    piece:"From Group IX/SUW, The Swan series (1915): the swan dissolved into a circle of opposing halves. The canvas drifts almost imperceptibly while the room breathes with the tune on air.",
+    lic:"Public domain (the author died in 1944). Image via Wikimedia Commons.",
+    links:[["Hilma af Klint on Wikipedia","https://en.wikipedia.org/wiki/Hilma_af_Klint"],["The image on Wikimedia Commons","https://commons.wikimedia.org/wiki/File:Hilma_af_Klint,_1915,_Svanen,_No._17.jpg"]] },
+  { kind:"poem", k:"Residency &middot; kinetic poem", t:"He wishes for the Cloths of Heaven", a:"W. B. Yeats", real:true,
+    life:"Dublin 1865, Menton 1939",
+    who:"Irish poet, Nobel laureate of 1923. The poem closes <b>The Wind Among the Reeds</b> (1899), eight lines that half the world has quoted at the other half ever since.",
+    piece:"The eight lines surface, drift and sink, one at a time, at the pace of the room. Text as installation: a poem given the duration music already has.",
+    lic:"Public domain (the author died in 1939). Text from Wikisource.",
+    links:[["W. B. Yeats on Wikipedia","https://en.wikipedia.org/wiki/W._B._Yeats"],["The poem on Wikisource","https://en.wikisource.org/wiki/He_wishes_for_the_Cloths_of_Heaven"]] },
+  { kind:"field", k:"Residency &middot; signed field", t:"Low Tide, Bottle Green", a:"Direction: resident (demonstration)", real:false,
+    life:"(placeholder)",
+    who:"Model for artists who do not code: the resident writes the brief, the house builds the field, the piece carries their signature. Brief on file: bottle green on pitch black; tide, not waves; never brighter than the moon; one breath every eight seconds.",
+    piece:"The brief above, implemented note for note, breathing with the levels of the tune on air.",
+    lic:"House demonstration of the model; a real resident's field carries their name here.",
+    links:[] }
+];
+/* as quatro pecas estao todas em cartaz na mesma semana; o cartaz renova a cada semana */
+var wa={ on:false, raf:0, cur:0, poemT0:0, wing:"week", hinted:false };
+
+function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
+function waFillFicha(p){
+  $("waFT").innerHTML=p.t;
+  $("waWeek").textContent=String(isoWeek(new Date()));
+  $("waBadge").style.display=p.real?"none":"inline-block";
+  $("waFArtist").innerHTML=p.a;
+  $("waFLife").textContent=p.life;
+  $("waFWho").innerHTML=p.who;
+  $("waFPiece").innerHTML=p.piece;
+  $("waFLic").innerHTML=p.lic;
+  var L=$("waFLinks"); L.innerHTML="";
+  (p.links||[]).forEach(function(x){
+    var a=document.createElement("a"); a.textContent=x[0]+" ↗"; a.href=x[1];
+    a.target="_blank"; a.rel="noopener"; L.appendChild(a);
+  });
+}
+/* campo verde-garrafa (so para a peca assinada) */
+var FG={w:128, h:72, oc:null, ox:null};
+function fgPal(v){
+  var stops=[[4,18,12],[12,59,42],[46,107,80],[127,174,155]];
+  var x=Math.max(0,Math.min(.999,v))*3, i=Math.floor(x), f=x-i;
+  var a=stops[i], b=stops[i+1];
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
+}
+function fgStep(cv){
+  if(!FG.oc){ FG.oc=document.createElement("canvas"); FG.oc.width=FG.w; FG.oc.height=FG.h; FG.ox=FG.oc.getContext("2d"); }
+  var now=performance.now()/1000, t=now*.05, lo=lvLo();
+  var img=FG.ox.createImageData(FG.w,FG.h), d=img.data;
+  var breath=Math.sin(now*2*Math.PI/8)*.5+.5;
+  for(var y=0;y<FG.h;y++){
+    for(var x=0;x<FG.w;x++){
+      var u=x/FG.w, v=y/FG.h;
+      var s=Math.sin(u*5.3+t*2.1)+Math.sin(v*3.7-t*1.7)+Math.sin((u+v)*4.1+t*1.2)
+        +Math.sin(Math.hypot(u-.5, v-.62)*11-t*2.6);
+      var tide=Math.sin(v*Math.PI+t*.6)*.5;
+      var val=(s/4+.5)*.6+tide*.18+breath*.1+lo*.1;
+      var c=fgPal(val*.8);
+      var k=(y*FG.w+x)*4;
+      d[k]=c[0]; d[k+1]=c[1]; d[k+2]=c[2]; d[k+3]=255;
+    }
+  }
+  FG.ox.putImageData(img,0,0);
+  var cx=cv.getContext("2d");
+  cx.imageSmoothingEnabled=true;
+  cx.drawImage(FG.oc,0,0,cv.width,cv.height);
+}
+function waLoop(ts){
+  if(!wa.on) return;
+  wa.raf=requestAnimationFrame(waLoop);
+  var p=(wa.wing==="day")?{kind:"canvas",day:true}:WPIECES[wa.cur];
+  var now=performance.now()/1000, lo=lvLo();
+  if(p.kind==="film"){
+    $("waVeil").style.opacity=String(.34-.2*lo);
+  } else if(p.kind==="canvas"){
+    /* a obra como ela e: sem filtros; a peca semanal mantem a deriva lenta, a diaria fica quieta */
+    if(!p.day){
+      var s=1.09+0.05*Math.sin(now*2*Math.PI/140);
+      var dx=12*Math.sin(now*2*Math.PI/173), dy=9*Math.cos(now*2*Math.PI/151);
+      $("waPic").style.transform="translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px)) scale("+s+")";
+    }
+  } else if(p.kind==="poem"){
+    /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
+    var per=10, hold=14, tt=now-wa.poemT0;
+    var box=$("waPoemLines");
+    var want=Math.min(YEATS.length, Math.floor(tt/per)+1);
+    while(box.childElementCount<want){
+      var dv=document.createElement("div");
+      dv.textContent=YEATS[box.childElementCount];
+      box.appendChild(dv);
+      void dv.offsetWidth; dv.style.opacity="1";
+    }
+    var kids=box.children;
+    for(var ki=0;ki<kids.length;ki++){
+      var last=(ki===kids.length-1) && kids.length<YEATS.length;
+      kids[ki].style.opacity= kids.length===YEATS.length ? ".88" : (last ? String(.85+.15*lo) : ".5");
+    }
+    if(tt > per*YEATS.length + hold){
+      box.style.opacity="0";
+      if(tt > per*YEATS.length + hold + 1.4){
+        box.innerHTML=""; box.style.opacity="1"; wa.poemT0=now;
+      }
+    }
+  } else if(p.kind==="field"){
+    fgStep($("waCv"));
+  }
+}
+function waShowLayers(p){
+  $("waVid").style.display   = p.kind==="film" ? "block":"none";
+  $("waPicWrap").style.display= p.kind==="canvas" ? "block":"none";
+  $("waCv").style.display    = p.kind==="field" ? "block":"none";
+  $("waPoem").style.display  = p.kind==="poem" ? "flex":"none";
+  $("waVeil").style.display  = p.kind==="film" ? "block":"none";
+  $("waPicWrap").classList.toggle("daily", !!p.day);
+  if(p.day) $("waPic").style.transform="";
+}
+function waShow(n){
+  if(wa.wing==="day"){ dailyShow(); return; }
+  wa.cur=((n%WPIECES.length)+WPIECES.length)%WPIECES.length;
+  var p=WPIECES[wa.cur];
+  try{ $("waVid").pause(); }catch(e){}
+  $("waK").innerHTML=p.k;
+  $("waNum").textContent="· piece "+(wa.cur+1)+" of "+WPIECES.length;
+  $("waT").innerHTML=p.t; $("waA").innerHTML=p.a;
+  waFillFicha(p);
+  waShowLayers(p);
+  gesReset();
+  if(p.kind==="film"){
+    var v=$("waVid");
+    if(!v.src) v.src=EGG;
+    v.play().catch(function(){});
+  }
+  /* a parede semanal tem a sua propria tela: repoe-a sempre, mesmo que o daily a tenha usado */
+  if(p.kind==="canvas" && $("waPic").src!==SWAN) $("waPic").src=SWAN;
+  if(p.kind==="poem"){
+    wa.poemT0=performance.now()/1000;
+    var bx=$("waPoemLines"); bx.innerHTML=""; bx.style.opacity="1";
+    $("waPoemTitle").textContent="W. B. Yeats · He wishes for the Cloths of Heaven · 1899";
+  }
+  if(p.kind==="field"){
+    var c=$("waCv");
+    c.width=Math.min(innerWidth, 1600); c.height=Math.min(innerHeight, 1000);
+  }
+}
+function wartOpen(){
+  if(wa.on) return;
+  wa.on=true;
+  if(wa.wing==="day"){ dailyShow(); } else { waShow(wa.cur); }
+  $("wart").classList.add("on");
+  wa.raf=requestAnimationFrame(waLoop);
+  try{
+    if(!wa.hinted && matchMedia("(max-width:760px)").matches){
+      wa.hinted=true;
+      var h=$("waHint"); h.classList.add("on");
+      setTimeout(function(){ h.classList.remove("on"); }, 5200);
+    }
+  }catch(e){}
+}
+function wartClose(){
+  if(!wa.on) return;
+  wa.on=false;
+  cancelAnimationFrame(wa.raf);
+  try{ $("waVid").pause(); }catch(e){}
+  $("wartFicha").classList.remove("on");
+  $("wart").classList.remove("on");
+}
+/* ---------------- daily canvas: um quadro por dia, colecao aberta do Art Institute of Chicago ---------------- */
+var DAILY={ got:false, piece:null };
+function dayOfYear(){
+  var d=new Date(), y0=new Date(d.getFullYear(),0,0);
+  return Math.floor((d-y0)/86400000);
+}
+function dailyFetch(cb){
+  if(DAILY.got){ cb(); return; }
+  var doy=dayOfYear();
+  var page=((doy*7)%90)+1;
+  var u="https://api.artic.edu/api/v1/artworks/search?q=painting&query[term][is_public_domain]=true"+
+    "&fields=id,title,artist_display,date_display,image_id,short_description,medium_display,credit_line&limit=12&page="+page;
+  fetch(u).then(function(r){ return r.json(); }).then(function(d){
+    var arts=(d.data||[]).filter(function(a){ return a.image_id; });
+    if(!arts.length) throw 0;
+    var a=arts[doy%arts.length];
+    DAILY.piece={
+      id:a.id, t:a.title, artist:a.artist_display||"(museum record)",
+      date:a.date_display||"", img:"https://www.artic.edu/iiif/2/"+a.image_id+"/full/1200,/0/default.jpg",
+      who:a.short_description || ("Notes from the museum record: "+(a.medium_display||"")+(a.credit_line? (". "+a.credit_line):"")),
+      link:"https://www.artic.edu/artworks/"+a.id
+    };
+    DAILY.got=true; cb();
+  }).catch(function(){ DAILY.piece=null; DAILY.got=true; cb(); });
+}
+function dailyShow(){
+  dailyFetch(function(){
+    try{ $("waVid").pause(); }catch(e){}
+    var d=DAILY.piece;
+    $("waK").innerHTML="Daily canvas · one painting a day";
+    $("waNum").textContent="· day "+dayOfYear();
+    if(!d){
+      $("waT").textContent="The museum door is closed";
+      $("waA").textContent="could not reach the open collection; try again in a moment";
+      waShowLayers({kind:"field"});
+      return;
+    }
+    $("waT").textContent=d.t;
+    $("waA").textContent=d.artist.split("\n")[0];
+    $("waFT").textContent=d.t;
+    $("waBadge").style.display="none";
+    $("waFArtist").textContent=d.artist;
+    $("waFLife").textContent=d.date;
+    $("waFWho").textContent=d.who;
+    $("waFPiece").textContent="Daily canvas: every day the house hangs one public-domain work from the Art Institute of Chicago open collection, chosen by the calendar. Tomorrow the wall changes.";
+    $("waFLic").textContent="Public-domain artwork; image and record served by the Art Institute of Chicago open API (CC0 designated data).";
+    var L=$("waFLinks"); L.innerHTML="";
+    var a=document.createElement("a"); a.textContent="This work at the Art Institute of Chicago ↗";
+    a.href=d.link; a.target="_blank"; a.rel="noopener"; L.appendChild(a);
+    if($("waPic").src!==d.img) $("waPic").src=d.img;
+    waShowLayers({kind:"canvas", day:true});
+    gesReset();
+  });
+}
+/* ---------------- gestos: pinch para ampliar, arrastar para percorrer ---------------- */
+var GES={s:1, x:0, y:0, pts:{}, d0:0, s0:1};
+function gesTarget(){
+  if($("waVid").style.display!=="none") return $("waVid");
+  if($("waPicWrap").style.display!=="none") return $("waPicWrap");
+  return null;
+}
+function gesApply(){
+  var el=gesTarget(); if(!el) return;
+  el.style.transform="translate("+GES.x+"px,"+GES.y+"px) scale("+GES.s+")";
+}
+function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
+  ["waVid","waPicWrap"].forEach(function(id){ $(id).style.transform=""; }); }
+(function(){
+  var w=$("wart");
+  w.addEventListener("pointerdown", function(ev){
+    if(ev.target.closest("#waCap")||ev.target.closest("#wartFicha")||ev.target.closest(".wa-nav")) return;
+    GES.pts[ev.pointerId]=[ev.clientX, ev.clientY];
+    var ks=Object.keys(GES.pts);
+    if(ks.length===2){
+      var a=GES.pts[ks[0]], b=GES.pts[ks[1]];
+      GES.d0=Math.hypot(a[0]-b[0], a[1]-b[1]); GES.s0=GES.s;
+    }
+  });
+  w.addEventListener("pointermove", function(ev){
+    if(!(ev.pointerId in GES.pts)) return;
+    var prev=GES.pts[ev.pointerId];
+    GES.pts[ev.pointerId]=[ev.clientX, ev.clientY];
+    var ks=Object.keys(GES.pts);
+    if(ks.length===2){
+      var a=GES.pts[ks[0]], b=GES.pts[ks[1]];
+      var d=Math.hypot(a[0]-b[0], a[1]-b[1]);
+      if(GES.d0>0){ GES.s=Math.max(1, Math.min(4, GES.s0*d/GES.d0)); gesApply(); }
+    } else if(ks.length===1 && GES.s>1){
+      GES.x+=ev.clientX-prev[0]; GES.y+=ev.clientY-prev[1]; gesApply();
+    }
+  });
+  function up(ev){ delete GES.pts[ev.pointerId]; GES.d0=0; }
+  w.addEventListener("pointerup", up); w.addEventListener("pointercancel", up);
+  w.addEventListener("wheel", function(ev){
+    if(!gesTarget()) return;
+    ev.preventDefault();
+    GES.s=Math.max(1, Math.min(4, GES.s*(ev.deltaY<0?1.08:0.93)));
+    if(GES.s===1){ GES.x=0; GES.y=0; }
+    gesApply();
+  }, {passive:false});
+  w.addEventListener("dblclick", function(){ gesReset(); });
+})();
+
+$("wartBtn").addEventListener("click", wartOpen);
+$("waBack").addEventListener("click", wartClose);
+$("waWingBtn").addEventListener("click", function(){
+  wa.wing = (wa.wing==="week") ? "day" : "week";
+  this.textContent = (wa.wing==="week") ? "Daily canvas" : "This week: residency";
+  $("waPrev").style.display=$("waNext").style.display=(wa.wing==="week")?"":"none";
+  gesReset();
+  if(wa.wing==="day"){ dailyShow(); } else { waShow(wa.cur); }
+});
+$("waPrev").addEventListener("click", function(){ waShow(wa.cur-1); });
+$("waNext").addEventListener("click", function(){ waShow(wa.cur+1); });
+/* dentro da instalacao, as setas mudam de peca e nunca chegam ao Earn the skip */
+document.addEventListener("keydown", function(ev){
+  if(!wa.on) return;
+  if(ev.key==="ArrowRight"){ ev.preventDefault(); ev.stopImmediatePropagation(); waShow(wa.cur+1); }
+  else if(ev.key==="ArrowLeft"){ ev.preventDefault(); ev.stopImmediatePropagation(); waShow(wa.cur-1); }
+}, true);
+$("waFichaBtn").addEventListener("click", function(){ $("wartFicha").classList.toggle("on"); });
+$("wartFichaClose").addEventListener("click", function(){ $("wartFicha").classList.remove("on"); });
+$("waFsBtn").addEventListener("click", function(){
+  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+});
+document.addEventListener("keydown", function(ev){
+  if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="TEXTAREA")) return;
+  if(ev.key==="w" && intro.done){ wa.on ? wartClose() : wartOpen(); }
+  if(ev.key==="Escape" && wa.on){ if($("wartFicha").classList.contains("on")) $("wartFicha").classList.remove("on"); else wartClose(); }
+});
+
+/* ---------------- 3. leitor com estaleiro (so computador) ---------------- */
+var DESK=false;
+try{ DESK=window.matchMedia && matchMedia("(min-width:761px)").matches; }catch(e){}
+if(DESK){
+  var panel=document.querySelector(".vidpanel");
+  var screenEl=document.querySelector(".vp-screen");
+  function applySize(w){
+    w=Math.max(220, Math.min(560, w));
+    panel.style.width=w+"px";
+    screenEl.style.width=w+"px";
+    screenEl.style.height=Math.round(w*2/3)+"px";
+    return w;
+  }
+  function applyPos(l,t){
+    var W=innerWidth, H=innerHeight, pw=panel.offsetWidth, ph=panel.offsetHeight;
+    l=Math.max(6, Math.min(W-pw-6, l));
+    t=Math.max(6, Math.min(H-ph-6, t));
+    panel.style.left=l+"px"; panel.style.top=t+"px";
+    panel.style.right="auto"; panel.style.bottom="auto";
+    return {l:l, t:t};
+  }
+  try{
+    var svw=parseInt(localStorage.getItem("hm_vidw"),10);
+    if(svw>0) applySize(svw);
+    var svp=JSON.parse(localStorage.getItem("hm_vidpos")||"null");
+    if(svp && typeof svp.l==="number") applyPos(svp.l, svp.t);
+  }catch(e){}
+  var top=document.querySelector(".vp-top");
+  top.addEventListener("pointerdown", function(ev){
+    ev.preventDefault();
+    var r=panel.getBoundingClientRect();
+    var ox=ev.clientX-r.left, oy=ev.clientY-r.top, last=null;
+    function mv(e){ last=applyPos(e.clientX-ox, e.clientY-oy); }
+    function up(){
+      document.removeEventListener("pointermove", mv);
+      document.removeEventListener("pointerup", up);
+      if(last){ try{ localStorage.setItem("hm_vidpos", JSON.stringify(last)); }catch(e){} }
+    }
+    document.addEventListener("pointermove", mv);
+    document.addEventListener("pointerup", up);
+  });
+  var rz=$("vpResize");
+  if(rz){
+    rz.addEventListener("pointerdown", function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      var w0=panel.offsetWidth, x0=ev.clientX, lastW=w0;
+      function mv(e){ lastW=applySize(w0+(e.clientX-x0)); }
+      function up(){
+        document.removeEventListener("pointermove", mv);
+        document.removeEventListener("pointerup", up);
+        try{ localStorage.setItem("hm_vidw", String(lastW)); }catch(e){}
+      }
+      document.addEventListener("pointermove", mv);
+      document.addEventListener("pointerup", up);
+    });
+    rz.addEventListener("dblclick", function(){
+      panel.style.left=panel.style.top=panel.style.right=panel.style.bottom="";
+      panel.style.width=""; screenEl.style.width=""; screenEl.style.height="";
+      try{ localStorage.removeItem("hm_vidw"); localStorage.removeItem("hm_vidpos"); }catch(e){}
+    });
+  }
+}
+
+/* ---------------- 4. telemovel: trinco do ecra ---------------- */
+(function(){
+  var btn=$("wakeBtn");
+  if(!btn) return;
+  if(!("wakeLock" in navigator)) return;
+  btn.classList.add("avail");
+  var lock=null, want=false;
+  function acquire(){
+    navigator.wakeLock.request("screen").then(function(l){
+      lock=l;
+      btn.textContent="Screen off";
+      l.addEventListener("release", function(){ lock=null; if(!want) btn.textContent="Screen on"; });
+    }).catch(function(){ want=false; btn.textContent="Screen on"; });
+  }
+  btn.addEventListener("click", function(){
+    want=!want;
+    if(want){ acquire(); }
+    else if(lock){ lock.release(); btn.textContent="Screen on"; }
+  });
+  document.addEventListener("visibilitychange", function(){
+    if(want && !lock && document.visibilityState==="visible") acquire();
+  });
+})();
+
+/* ---------------- 4b. modo de estaleiro (?dev na morada) ---------------- */
+(function(){
+  if(!(window.HMDEV && HMDEV.on)) return;
+  var panel=$("devPanel");
+  panel.classList.add("on");
+  function paint(){
+    var list;
+    try{ list=HMDEV.peek(3); }catch(e){ list=[]; }
+    var ul=$("devNext"); ul.innerHTML="";
+    list.forEach(function(x,i){
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=(i+1)+". "+x.a+" / "+x.t;
+      var s=document.createElement("span"); s.textContent=x.g+" · "+(x.sure?"":"~")+x.bpm+" bpm";
+      li.appendChild(b); li.appendChild(s); ul.appendChild(li);
+    });
+  }
+  $("devSkip").addEventListener("click", function(){ HMDEV.skip(); setTimeout(paint, 900); });
+  document.addEventListener("keydown", function(ev){
+    if(ev.key==="n" && !wa.on){ HMDEV.skip(); setTimeout(paint, 900); }
+  });
+  /* repinta quando a faixa do cartao muda */
+  var mo=new MutationObserver(function(){ paint(); });
+  mo.observe($("tArtist"), {childList:true, characterData:true, subtree:true});
+  var boot=setInterval(function(){ if(window.HM && HM.isOn()){ clearInterval(boot); paint(); } }, 800);
+})();
+
+/* ---------------- 5. gift a tune: recomendacoes da sala ---------------- */
+(function(){
+  var btn=$("giftBtn");
+  if(!btn) return;
+  btn.addEventListener("click", function(){
+    var p=$("giftPanel"), was=p.classList.contains("on");
+    document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+    if(!was) p.classList.add("on");
+  });
+  function giftText(){
+    var n=($("giftName").value||"").trim(), w=($("giftWhat").value||"").trim();
+    return "Tune recommendation for Home Music\n\nFrom: "+(n||"(no name given)")+
+      "\n\nThe music:\n"+(w||"(empty)")+
+      "\n\nHouse protocol: the founders listen first and verify artist, title and liner facts; accepted tunes enter the crates credited as a present from the sender.";
+  }
+  $("giftGo").addEventListener("click", function(){
+    var w=($("giftWhat").value||"").trim();
+    if(!w){ $("giftWhat").focus(); return; }
+    var u="https://github.com/hikilinkuja/home-music/issues/new?title="+
+      encodeURIComponent("Tune recommendation: "+w.slice(0,60))+
+      "&body="+encodeURIComponent(giftText());
+    window.open(u, "_blank", "noopener");
+  });
+  $("giftCopy").addEventListener("click", function(){
+    var b=this;
+    try{
+      navigator.clipboard.writeText(giftText()).then(function(){
+        b.textContent="Copied"; setTimeout(function(){ b.textContent="Copy the note"; }, 1600);
+      });
+    }catch(e){}
+  });
+})();
+
+/* ---------------- 6. a descricao por inteiro (o clamp de 3 linhas) ---------------- */
+(function(){
+  var bm=$("blurbMore"), bl=$("tBlurb");
+  if(!bm || !bl) return;
+  bm.addEventListener("click", function(){
+    var open=bl.classList.toggle("open");
+    bm.textContent=open ? "less" : "more";
+  });
+})();
+
+/* ---------------- 6b. crop do monitor: comer as barras pretas dos rips ---------------- */
+(function(){
+  var btn=$("cropBtn"); if(!btn) return;
+  var scr=document.querySelector(".vp-screen");
+  var on=true;
+  try{ var sv=localStorage.getItem("hm_fill"); if(sv==="0") on=false; }catch(e){}
+  function paint(){
+    scr.classList.toggle("fill", on);
+    btn.textContent = on ? "Fit" : "Crop";
+    btn.title = on ? "show the whole video frame" : "crop away the black bars of the video";
+  }
+  btn.addEventListener("click", function(){
+    on=!on;
+    try{ localStorage.setItem("hm_fill", on?"1":"0"); }catch(e){}
+    paint();
+  });
+  paint();
+})();
+
+/* ---------------- 7. telemovel: a dica do ecra fechado (uma vez) ---------------- */
+(function(){
+  var tip=$("braveTip");
+  if(!tip) return;
+  var mobile=false;
+  try{ mobile=window.matchMedia && matchMedia("(max-width:760px)").matches; }catch(e){}
+  if(!mobile) return;
+  try{ if(localStorage.getItem("hm_bgtip")) return; }catch(e){}
+  function maybeShow(){
+    if(navigator.brave && navigator.brave.isBrave){
+      navigator.brave.isBrave().then(function(is){ if(!is) show(); });
+    } else { show(); }
+  }
+  function show(){ tip.classList.add("on"); }
+  $("braveTipOk").addEventListener("click", function(){
+    tip.classList.remove("on");
+    try{ localStorage.setItem("hm_bgtip","1"); }catch(e){}
+  });
+  var w=setInterval(function(){
+    if(window.HM && HM.isOn()){ clearInterval(w); setTimeout(maybeShow, 12000); }
+  }, 1000);
+})();
+
+})();
+</script>
