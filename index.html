@@ -166,6 +166,7 @@ button{font-family:var(--mono)}
 .chiprow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 #gChip{font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:3px 9px; color:var(--ink); background:var(--blk, var(--amber)); font-weight:700}
 #tYear{color:var(--dim); font-size:12px; letter-spacing:.2em}
+#tBpm{color:var(--amber); font-size:10px; letter-spacing:.22em; border:1px solid rgba(255,177,43,.35); padding:2px 6px}
 #tArtist{font-family:var(--display); font-weight:400; font-size:clamp(22px, 3vw, 30px); margin:6px 0 0; line-height:1.05; text-transform:uppercase; letter-spacing:.015em}
 #tTitle{color:var(--amber); font-size:15px; margin:3px 0 7px; letter-spacing:.04em}
 #tBlurb{color:var(--paper); opacity:.82; margin:0 0 10px; font-size:12.5px; max-height:5.6em; overflow-y:auto}
@@ -262,6 +263,7 @@ button{font-family:var(--mono)}
       <div id="clock">--:--</div>
       <button class="tbtn" id="genreBtn" type="button">The sound</button>
       <button class="tbtn" id="histBtn" type="button">Session log</button>
+      <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
     </div>
   </header>
 
@@ -286,6 +288,7 @@ button{font-family:var(--mono)}
       <div class="chiprow">
         <span id="gChip">&hellip;</span>
         <span id="tYear"></span>
+        <span id="tBpm"></span>
       </div>
       <h2 id="tArtist">Warming up the amps</h2>
       <div id="tTitle">&nbsp;</div>
@@ -1444,9 +1447,20 @@ function genreHasTracks(gn){
 function pickGenre(fromG){
   var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
   if(!bg.length) return null;
+  function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
   if(fromG && ADJ[fromG]){
     var near = ADJ[fromG].filter(function(gn){ return bg.indexOf(gn)>=0 && gn!==fromG; });
-    if(near.length) return near[Math.floor(Math.random()*near.length)];
+    if(near.length){
+      /* entre os primos, o de tempo mais proximo quase sempre: a corrente nao da saltos */
+      near.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return (near.length>1 && Math.random()<0.28) ? near[1] : near[0];
+    }
+    /* sem primo direto no bloco: o genero do bloco com o BPM mais proximo */
+    var rest = bg.filter(function(gn){ return gn!==fromG; });
+    if(rest.length){
+      rest.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return rest[0];
+    }
   }
   return bg[Math.floor(Math.random()*bg.length)];
 }
@@ -1457,7 +1471,7 @@ function nextTrack(){
     var nx = pickGenre(currentGenre);
     if(!nx) return null;
     currentGenre = nx;
-    runLeft = 2 + (Math.random()<0.5 ? 1 : 0);
+    runLeft = 3 + Math.floor(Math.random()*3);
   }
   var pool = poolFor(currentGenre);
   if(!pool.length) return null;
@@ -1790,6 +1804,7 @@ function setNow(t, push){
   if(RIG.setTempo){ RIG.setTempo(GBPM[t.g]||120); }
   $("gChip").textContent = g.name;
   $("tYear").textContent = t.y ? String(t.y) : "";
+  $("tBpm").textContent = "~" + (GBPM[t.g]||120) + " BPM";
   $("tArtist").textContent = t.a;
   $("tTitle").textContent = t.t;
   $("tBlurb").textContent = t.b;
@@ -1857,6 +1872,16 @@ function bindPanel(btnId, panelId){
   });
 }
 bindPanel("genreBtn","genrePanel"); bindPanel("histBtn","histPanel");
+/* imersao: ecra inteiro */
+function toggleFs(){
+  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+}
+$("fsBtn").addEventListener("click", toggleFs);
+document.addEventListener("fullscreenchange", function(){
+  $("fsBtn").classList.toggle("on", !!document.fullscreenElement);
+  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";
+});
 document.querySelectorAll(".pclose").forEach(function(b){
   b.addEventListener("click", function(){ $(b.getAttribute("data-close")).classList.remove("on"); });
 });
@@ -1866,6 +1891,7 @@ document.addEventListener("keydown", function(e){
   if(!radioOn) return;
   if(e.key === "ArrowRight"){ FX.rewind(); setTimeout(hardNext, 350); }
   if(e.key === "m" || e.key === "M"){ toggleMute(); }
+  if(e.key === "f" || e.key === "F"){ toggleFs(); }
 });
 
 /* ---------------- intro: o disco de abertura ----------------
