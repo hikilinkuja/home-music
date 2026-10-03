@@ -498,9 +498,9 @@ const BLOCKS = {
   morning:   { label: "MORNING PROGRAMME",   range: "06:00 - 13:00", accent: "#ffb12b",
                genres: ["reggae","dub","ska_rocksteady","lofi","ambient","ambient_techno","dub_techno"] },
   afternoon: { label: "AFTERNOON PROGRAMME", range: "13:00 - 20:00", accent: "#41d9c8",
-               genres: ["lofi_house","liquid","intelligent_dnb","atmospheric_jungle","breakbeat"] },
+               genres: ["lofi_house","liquid","intelligent_dnb","atmospheric_jungle","breakbeat","uk_garage","house"] },
   night:     { label: "NIGHT PROGRAMME",     range: "20:00 - 06:00", accent: "#e8392c",
-               genres: ["hypnotic_techno","deep_house","dub_techno","ragga_jungle","oldskool_hardcore","dubstep"] }
+               genres: ["hypnotic_techno","deep_house","house","dub_techno","uk_garage","ragga_jungle","oldskool_hardcore","dubstep"] }
 };
 
 const ISHKUR = "https://music.ishkur.com/";
@@ -522,6 +522,8 @@ const GENRES = {
   dubstep: { name: "Dubstep", w: "https://en.wikipedia.org/wiki/Dubstep", note: "South London, early 2000s: garage slowed down, hollowed out, and sent to the basement. Croydon record shops, FWD at Plastic People, sub-bass you feel in your sternum before you hear it. Space is the instrument; the silence between the hits is where the dread lives. Meditate at 140." },
   dub_techno: { name: "Dub Techno", w: "https://en.wikipedia.org/wiki/Dub_techno", note: "Berlin hears King Tubby through a concrete wall. Basic Channel, 1993: two engineers press techno until only the echo remains, chords surfacing like weather fronts, hiss as holy as the kick. Every record sounds like the same gray ocean and that is the discipline. Detroit gave it pulse, Jamaica gave it space, Berlin gave it patience." },
   oldskool_hardcore: { name: "Oldskool Hardcore", w: "https://en.wikipedia.org/wiki/Breakbeat_hardcore", note: "Britain 1992, a generation discovers the pitch control. Breakbeats sped past reason, pianos stabbing at heaven, toytown samples and air horns, all mixed on a borrowed Amiga. The tabloids panicked, the fields filled, and for about thirty months every record sounded like the best night of your life. Jungle was being born in here. Hold tight." },
+  uk_garage: { name: "UK Garage", w: "https://en.wikipedia.org/wiki/UK_garage", note: "London flips US garage into something swung and illegal-sounding. Two-step drums that refuse to land where you expect, bass that talks back, vocals chopped into confetti. Pirate radio raised it, champagne dances crowned it, dubstep and grime are its children. All silk shirts and sub pressure." },
+  house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
 };
 
@@ -1627,7 +1629,7 @@ var FX = {
 var GBPM={ reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
   lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,
   breakbeat:132, hypnotic_techno:132, deep_house:122, ragga_jungle:164, dubstep:140,
-  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94 };
+  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94, uk_garage:133, house:124 };
 
 function metaFor(t){
   return { a:t.a, t:t.t, y:t.y, bpm:(t.bpm||GBPM[t.g]||120), accent:(BLOCKS[currentBlock]&&BLOCKS[currentBlock].accent)||"#ffb12b" };
