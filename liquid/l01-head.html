@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Music Liquid</title>
+<style>
+:root{
+  --ink:#060511; --paper:#f4ecd9; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
+  --dim:#8d90b0; --line:#2b2745; --blk:#ffb12b;
+  --mono:"Courier New", ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; background:#000; color:var(--paper); font-family:var(--mono); overflow:hidden}
+button{font-family:var(--mono)}
+:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
+
+/* o liquido e o proprio fundo da estacao */
+#vj{position:fixed; inset:0; z-index:0; width:100vw; height:100vh; background:#000}
+
+#app{display:none}
+#app.on{display:block}
+
+#top{
+  position:fixed; left:0; right:0; top:0; z-index:40;
+  display:flex; align-items:center; gap:14px; padding:12px 18px;
+  background:linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
+}
+.brand b{font-size:15px; letter-spacing:.3em; color:var(--paper); text-shadow:2px 2px 0 rgba(0,0,0,.8)}
+.brand span{margin-left:10px; font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:var(--blk)}
+.onair{display:flex; align-items:center; gap:7px; font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
+.onair .dot{width:6px; height:6px; background:var(--red); border-radius:50%; animation:blink 2.1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.hdr-btns{margin-left:auto; display:flex; align-items:center; gap:8px}
+#clock{font-size:13px; letter-spacing:.18em; color:var(--amber)}
+.tbtn{
+  cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:7px 11px;
+  font-family:var(--mono); text-decoration:none; display:inline-flex; align-items:center;
+}
+.tbtn:hover{color:var(--amber); border-color:var(--amber)}
+.tbtn.on{color:var(--ink); background:var(--amber); border-color:var(--amber)}
+
+/* cartao da faixa: texto a flutuar sobre o liquido */
+#now{
+  position:fixed; left:22px; bottom:20px; z-index:30; max-width:min(560px, 58vw);
+  text-shadow:0 2px 10px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.9);
+}
+.chiprow{display:flex; gap:10px; align-items:baseline; margin-bottom:6px}
+#gChip{font-size:9px; letter-spacing:.26em; text-transform:uppercase; color:var(--ink);
+  background:var(--blk); padding:3px 8px; text-shadow:none}
+#tYear{font-size:11px; letter-spacing:.2em; color:var(--dim)}
+#tBpm{font-size:9.5px; letter-spacing:.22em; color:var(--amber); border:1px solid rgba(255,177,43,.35); padding:2px 6px; text-shadow:none}
+#tArtist{margin:0; font-size:clamp(20px,3.4vw,34px); letter-spacing:.06em; text-transform:uppercase; line-height:1.08}
+#tTitle{color:var(--amber); font-size:clamp(13px,1.8vw,17px); margin:4px 0 8px}
+#tBlurb{color:#c9c4d8; font-size:12px; line-height:1.55; margin:0; max-width:52ch;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
+.t-links{margin-top:9px; display:flex; gap:9px; flex-wrap:wrap}
+.t-links a{color:var(--teal); text-decoration:none; font-size:9.5px; letter-spacing:.18em;
+  text-transform:uppercase; border:1px solid rgba(65,217,200,.4); padding:5px 9px; background:rgba(5,4,16,.55)}
+.t-links a:hover{border-color:var(--teal)}
+
+/* o monitor: o menor leitor conforme, moldura mate ao canto */
+.vidpanel{position:fixed; right:20px; bottom:20px; z-index:30; width:300px}
+.vp-top{display:flex; justify-content:space-between; align-items:center; padding:5px 8px;
+  background:rgba(5,4,16,.78); border:1px solid var(--line); border-bottom:none;
+  font-size:8px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
+.vp-top .dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
+.vp-screen{position:relative; width:300px; height:200px; background:#000; border:1px solid var(--line)}
+.yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
+.yt-slot.live{opacity:1; pointer-events:auto}
+.yt-slot iframe{width:100%; height:100%}
+/* crop: engole as barras pretas dos rips (conteudo 4:3 dentro de video 16:9) */
+.vp-screen.fill .yt-slot iframe{position:absolute; width:136%; height:136%; left:50%; top:50%;
+  transform:translate(-50%,-50%)}
+#standby{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:6px; background:rgba(4,3,12,.92); z-index:3; transition:opacity .6s}
+#standby.off{opacity:0; pointer-events:none}
+#standby .big{font-size:13px; letter-spacing:.3em; color:var(--red); text-transform:uppercase}
+#standbyMsg{font-size:9px; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; text-align:center; max-width:34ch}
+.vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
+  background:rgba(5,4,16,.78); border:1px solid var(--line); border-top:none}
+#vol{flex:1; accent-color:var(--amber); background:transparent}
+#needle{
+  position:fixed; right:20px; bottom:252px; z-index:31; display:none; cursor:pointer;
+  background:var(--amber); color:var(--ink); border:none; font-size:9.5px; letter-spacing:.2em;
+  text-transform:uppercase; padding:9px 12px;
+}
+#needle.on{display:block}
+
+/* paineis */
+.panel{position:fixed; right:20px; top:54px; z-index:45; width:min(360px, 92vw);
+  max-height:calc(100vh - 90px); overflow:auto; background:rgba(6,5,17,.93);
+  border:1px solid var(--line); padding:16px; display:none}
+.panel.on{display:block}
+#genrePanel{width:min(640px,94vw)}
+@media (min-width:720px){
+  #genrePanel #gExt{display:grid; grid-template-columns:1fr 1fr; gap:2px 20px; align-items:start}
+  #genrePanel #gExt blockquote{grid-column:1/-1}
+  #genrePanel #gExt .gx-note{grid-column:1/-1}
+}
+.panel h3{margin:0 0 2px; font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--amber)}
+.psub{margin:0 0 12px; color:var(--dim); font-size:10px; letter-spacing:.14em; text-transform:uppercase}
+.pclose{position:absolute; right:10px; top:8px; cursor:pointer; background:none; border:none;
+  color:var(--dim); font-size:16px}
+#gName{font-size:15px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px}
+#gNote{color:#c9c4d8; font-size:12px; line-height:1.6}
+#gTrackCount{color:var(--dim); font-size:10px; letter-spacing:.14em; margin:8px 0}
+.g-links{display:flex; flex-direction:column; gap:6px; margin-top:10px}
+.g-links a{color:var(--teal); font-size:10.5px; text-decoration:none}
+.credits{margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); color:var(--dim);
+  font-size:10px; line-height:1.7}
+.credits b{color:var(--amber)}
+#histList{list-style:none; margin:0; padding:0}
+#histList li{padding:7px 0; border-bottom:1px dotted var(--line); font-size:11px; color:#c9c4d8}
+#histList li b{color:var(--paper)}
+#histList .h-time{color:var(--dim); margin-right:7px}
+.h-empty{color:var(--dim)}
+
+/* a luz da sala: abre do escuro ao normal nos primeiros segundos, com a musica a subir */
+#lightVeil{position:fixed; inset:0; z-index:65; background:#000; opacity:.9; pointer-events:none}
+
+
+#fieldName{position:fixed; left:50%; transform:translateX(-50%); top:56px; z-index:46;
+  color:var(--amber); font-size:10px; letter-spacing:.3em; text-transform:uppercase;
+  background:rgba(6,5,17,.85); border:1px solid var(--line); padding:7px 12px;
+  opacity:0; pointer-events:none; transition:opacity .35s}
+#fieldName.on{opacity:1}
+
+/* ---------- mobile: full bleed; navegacao em fita deslizante, alvos de toque a serio ---------- */
+@media (max-width:760px){
+  #top{padding:8px 10px 0; gap:4px 10px; flex-wrap:wrap;
+    background:linear-gradient(to bottom, rgba(0,0,0,.8), rgba(0,0,0,.45) 68%, rgba(0,0,0,0))}
+  .brand b{font-size:12px; letter-spacing:.22em}
+  .brand span{margin-left:6px}
+  .onair .lbl{display:none}
+  #blockLabel{display:none}
+  #clock{font-size:12px; flex:0 0 auto; align-self:center}
+  /* a fila de botoes vira fita: uma linha inteira, deslizavel ao dedo */
+  .hdr-btns{flex:1 1 100%; margin-left:0; gap:8px; flex-wrap:nowrap; overflow-x:auto;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:4px 0 10px}
+  .hdr-btns::-webkit-scrollbar{display:none}
+  .tbtn{font-size:10px; padding:11px 13px; min-height:42px; letter-spacing:.14em;
+    flex:0 0 auto; white-space:nowrap}
+  .vidpanel{right:10px; bottom:10px; width:200px}
+  .vp-screen{width:200px; height:200px}
+  .vp-ctrl{padding:6px 6px; gap:6px}
+  #needle{top:calc(env(safe-area-inset-top,0px) + 100px); bottom:auto; left:50%; right:auto;
+    transform:translateX(-50%); min-height:42px; z-index:33}
+  #now{left:10px; right:220px; bottom:14px; max-width:none; z-index:32}
+  .chiprow{flex-wrap:wrap; gap:6px}
+  #tArtist{font-size:16px; line-height:1.15}
+  #tTitle{font-size:11px; margin:3px 0 6px}
+  #tBlurb{display:none}
+  .t-links{flex-direction:column; align-items:stretch; gap:6px}
+  .t-links a,.t-links .tbtn{font-size:9.5px; padding:10px 11px; letter-spacing:.13em; min-height:38px}
+  .t-links a{display:inline-flex; align-items:center}
+  .panel{top:102px; width:94vw; right:3vw; max-height:calc(100vh - 148px)}
+  #genrePanel{width:94vw}
+  .drawer{inset:2% 2.5%}
+  #toast{bottom:auto; top:106px}
+  #fieldName{top:150px}
+}
+
+/* ---------- the dance nearby + painel estendido ---------- */
+.dance-row{display:flex; gap:8px; margin:0 0 12px}
+#danceCity{flex:1; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.08em}
+.dance-list{list-style:none; margin:0; padding:0}
+.dance-list li{padding:8px 0; border-bottom:1px dotted var(--line)}
+.dance-list a{color:var(--teal); text-decoration:none; font-size:12px}
+.dance-list a:hover{color:var(--amber)}
+.dance-note{color:var(--dim); font-size:10.5px; letter-spacing:.06em; line-height:1.7; margin-top:10px}
+.dance-meta{display:block; color:var(--dim); font-size:9.5px; letter-spacing:.08em; margin-top:2px}
+.dance-more{display:block; color:var(--amber); font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 0}
+
+#gExt{margin-top:16px; border-top:1px dashed var(--line); padding-top:12px}
+#gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
+  background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
+#gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:9.5px;
+  letter-spacing:.14em; text-transform:uppercase}
+#gExt blockquote cite a{color:var(--dim)}
+.gx-h{font-size:10px; letter-spacing:.26em; text-transform:uppercase; color:var(--amber); margin:12px 0 6px}
+.gx-list{list-style:none; margin:0; padding:0}
+.gx-list li{padding:5px 0; font-size:11.5px; border-bottom:1px dotted var(--line)}
+.gx-list li a{color:var(--teal); text-decoration:none}
+.gx-list li span{display:block; color:var(--dim); font-size:10px; letter-spacing:.08em}
+.gx-p{color:#c9c4d8; font-size:11.5px; line-height:1.65; margin:0}
+.gx-p a{color:var(--teal); text-decoration:none}
+.gx-note{color:var(--dim); font-size:10px; letter-spacing:.08em; margin:12px 0 0}
+
+
+/* ---------- a prateleira das mixtapes: gaveta sobre a emissao ---------- */
+.drawer{position:fixed; inset:3% 3.5%; z-index:60; display:none; overflow:auto;
+  background:rgba(6,5,17,.97); border:1px solid var(--amber); padding:0}
+.drawer.on{display:block}
+.dw-in{padding:24px 26px 30px; max-width:860px; margin:0 auto; position:relative}
+.dw-title{margin:0 0 4px; font-size:16px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+.dw-sub{margin:0 0 18px; color:var(--dim); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; line-height:1.8}
+.dw-tape{border:1px solid var(--line); background:rgba(13,11,28,.85); padding:14px 16px; margin:0 0 16px}
+.dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
+.dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
+.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+/* soundcloud: cromo nativo; o widget fica dobrado a 0px e so abre como ultimo recurso */
+.schost{height:0; overflow:hidden; transition:height .4s ease}
+.schost.unfold{height:166px; margin-top:8px}
+.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.scrow{display:flex; align-items:center; gap:10px; margin-top:9px}
+.scbar{flex:1; height:4px; background:rgba(244,241,231,.14); cursor:pointer; position:relative}
+.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber, #ffb12b)}
+.sctime{font-size:10px; letter-spacing:.08em; color:var(--dim); min-width:72px; text-align:right}
+.sclink{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
+.sclink:hover{color:var(--paper)}
+
+.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
+.dw-yt iframe{width:100%; height:100%}
+.dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:#04030c}
+.dw-ctl{display:flex; gap:8px; align-items:center; padding:9px 0 0}
+.dw-now{color:var(--amber); font-size:10px; letter-spacing:.1em}
+.dw-list{list-style:none; margin:10px 0 0; padding:0; counter-reset:dw}
+.dw-list li{counter-increment:dw; padding:6px 0; border-bottom:1px dotted var(--line);
+  font-size:11.5px; color:#c9c4d8; cursor:pointer}
+.dw-list li::before{content:counter(dw,decimal-leading-zero)"  "; color:var(--dim)}
+.dw-list li.on{color:var(--amber)}
+.dw-list li:hover{color:var(--amber)}
+
+/* ---------- earn the skip ---------- */
+#skill{position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center;
+  background:rgba(3,2,10,.82)}
+#skill.on{display:flex}
+.sk-card{position:relative; width:min(380px, 92vw); background:#0b0918; border:1px solid var(--amber);
+  padding:22px 22px 18px; text-align:center}
+.sk-title{font-size:14px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin-bottom:6px}
+.sk-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); text-transform:uppercase; line-height:1.8; margin-bottom:14px}
+.sk-target{font-size:11px; letter-spacing:.2em; color:var(--paper); margin-bottom:12px}
+.sk-target b{color:var(--teal); font-size:15px}
+#skPad{width:100%; height:92px; cursor:pointer; background:rgba(255,177,43,.07); border:2px solid var(--amber);
+  color:var(--amber); font-size:16px; letter-spacing:.4em; text-transform:uppercase; font-family:var(--mono)}
+#skPad:active{background:var(--amber); color:#060511}
+#skPad:disabled{opacity:.35; cursor:not-allowed}
+.sk-meter{margin-top:10px; font-size:12px; letter-spacing:.2em; color:var(--paper)}
+.sk-meter b{color:var(--amber)}
+.sk-dots{display:flex; gap:7px; justify-content:center; margin-top:10px}
+.sk-dots i{width:9px; height:9px; background:#241d3c; display:block}
+.sk-dots i.f{background:var(--teal)}
+.sk-msg{min-height:18px; margin-top:12px; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
+.sk-msg.ok{color:var(--teal)} .sk-msg.bad{color:var(--red)}
+.sk-close{position:absolute; right:8px; top:6px; background:none; border:none; color:var(--dim);
+  font-size:16px; cursor:pointer}
+
+#toast{position:fixed; left:50%; transform:translateX(-50%); bottom:240px; z-index:50;
+  background:rgba(6,5,17,.95); border:1px solid var(--blk); color:var(--paper);
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase; padding:9px 14px;
+  opacity:0; pointer-events:none; transition:opacity .4s}
+#toast.on{opacity:1}
+
+/* ---------- a abertura da sala liquida: so o disco 2, depois a agulha ---------- */
+#splash{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
+  background:#000; transition:opacity 1s ease}
+#splash.off{opacity:0; pointer-events:none}
+.sp-inner{text-align:center; padding:20px; max-width:560px}
+#tapHint{display:block; margin-top:26px; color:var(--amber); font-size:11px; letter-spacing:.34em;
+  text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
+@keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
+#mc{display:none; text-align:left; min-height:200px; width:min(88vw,440px); transition:opacity 1.4s ease}
+#mc.on{display:block}
+.mc-line{font-size:14px; letter-spacing:.14em; color:var(--paper); opacity:0; transform:translateY(8px);
+  transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase}
+.mc-line.show{opacity:1; transform:none}
+.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 #000}
+#skipIntro{position:fixed; right:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
+  cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
+  font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:8px 13px}
+#skipIntro:hover{color:var(--amber); border-color:var(--amber)}
+#introCredit{position:fixed; left:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
+  color:var(--dim); font-size:9px; letter-spacing:.2em; pointer-events:none;
+  text-transform:uppercase; text-align:left; line-height:1.9; opacity:0; transition:opacity 1.2s ease}
+#introCredit.on{opacity:1}
+#introCredit b{color:var(--amber); font-weight:500}
+
+/* ---------- weekly art installation: a sala inteira para a obra ---------- */
+#wart{position:fixed; inset:0; z-index:90; display:none; background:var(--ink)}
+#wart.on{display:block}
+#waVid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none;
+  filter:brightness(.82) contrast(1.03)}
+#waPicWrap{position:absolute; inset:0; overflow:hidden; display:none}
+#waPic{position:absolute; left:50%; top:50%; width:118%; height:118%; object-fit:cover;
+  transform:translate(-50%,-50%)}
+/* daily canvas: a obra inteira, sem recorte nem filtro */
+#waPicWrap.daily #waPic{width:100%; height:100%; object-fit:contain}
+#waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
+#waVeil{position:absolute; inset:0; pointer-events:none; display:none;
+  background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 44%, rgba(6,5,17,.72) 100%)}
+#waPoem{position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+  text-align:center; padding:0 7vw; overflow:hidden}
+#waPoemLines{transition:transform .9s ease, opacity .8s ease}
+#waPoemLines div{font-size:clamp(15px,2.6vw,26px); letter-spacing:.28em; line-height:2.2;
+  color:var(--paper); text-shadow:0 0 26px rgba(65,217,200,.22); opacity:0; transition:opacity 1.2s ease}
+#waHint{position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:4;
+  background:rgba(6,5,17,.85); border:1px solid var(--line); color:var(--amber);
+  font-size:9px; letter-spacing:.22em; text-transform:uppercase; padding:8px 12px;
+  display:none; white-space:nowrap}
+#waHint.on{display:block}
+#waPoemTitle{position:absolute; right:22px; top:64px; font-size:9px; letter-spacing:.3em;
+  color:var(--dim); text-transform:uppercase}
+#waCap{position:absolute; left:16px; bottom:16px; max-width:min(480px,86vw);
+  background:rgba(6,5,17,.78); border:1px solid var(--line); padding:11px 13px}
+#waCap .k{font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
+#waCap .t{font-size:15px; letter-spacing:.12em; text-transform:uppercase; margin:4px 0 2px; color:var(--paper)}
+#waCap .a{font-size:10px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase}
+#waCap .row{display:flex; gap:6px; margin-top:9px; flex-wrap:wrap}
+#wartFicha{position:absolute; top:0; right:0; bottom:0; width:min(430px,94vw); z-index:3;
+  background:rgba(8,7,20,.97); border-left:1px solid var(--line); padding:54px 24px 28px;
+  overflow-y:auto; transform:translateX(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1)}
+#wartFicha.on{transform:translateX(0)}
+#wartFicha h3{margin:0 0 2px; font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+#wartFicha .fsub{font-size:9px; letter-spacing:.22em; color:var(--dim); text-transform:uppercase; margin:0 0 16px}
+#wartFicha .fk{font-size:9px; letter-spacing:.28em; color:var(--teal); text-transform:uppercase; margin:15px 0 4px}
+#wartFicha .fv{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0}
+#wartFicha .fv b{color:var(--paper); font-weight:500}
+#wartFicha a{display:block; color:var(--amber); font-size:11px; letter-spacing:.1em;
+  text-decoration:none; border-bottom:1px dotted var(--line); padding:7px 0}
+#wartFichaClose{position:absolute; right:12px; top:12px; background:none; border:none; color:var(--dim);
+  font-size:18px; cursor:pointer}
+#waBadge{display:none; font-size:9px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink); background:var(--teal); padding:3px 8px; margin:0 0 12px}
+
+/* ---------- leitor com estaleiro: arrastar pela barra, redimensionar no canto (so computador) ---------- */
+@media (min-width:761px){
+  .vp-top{cursor:move; user-select:none}
+  .vp-resize{position:absolute; right:0; bottom:0; width:16px; height:16px; cursor:nwse-resize;
+    background:linear-gradient(135deg, transparent 50%, var(--line) 50%)}
+  .vidpanel{touch-action:none}
+}
+@media (max-width:760px){
+  .vp-resize{display:none}
+  #vol{display:none}
+}
+/* o volume nunca sai do painel: ocupa a linha de baixo, a largura que houver */
+.vp-ctrl{flex-wrap:wrap}
+#vol{flex:1 1 100%; width:100%; max-width:none; min-width:0; margin-top:6px}
+.gx-eph{margin:12px 0 4px}
+.gx-eph img{width:100%; border:1px solid var(--line); display:block}
+.gx-eph figcaption{font-size:9px; color:var(--dim); letter-spacing:.12em; text-transform:uppercase; padding-top:6px; line-height:1.8}
+.gx-eph figcaption a{color:var(--teal); text-decoration:none}
+#wakeBtn{display:none}
+@media (max-width:760px){
+  #wakeBtn.avail{display:inline-flex}
+}
+
+/* ---------- cartao: credito da oferta + estender a descricao ---------- */
+#tRec{color:var(--amber); font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; margin:6px 0 0}
+#tBlurb.open{-webkit-line-clamp:unset; display:block; overflow:visible}
+.bmore{background:none; border:none; border-bottom:1px dotted var(--teal); color:var(--teal);
+  font-family:var(--mono); font-size:9px; letter-spacing:.22em; text-transform:uppercase;
+  cursor:pointer; padding:2px 0 1px; margin:4px 0 0}
+.bmore:hover{color:var(--paper); border-color:var(--paper)}
+
+/* ---------- gift a tune ---------- */
+#giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0 0 14px}
+.gift-field{width:100%; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.06em; margin:0 0 10px}
+textarea.gift-field{min-height:84px; resize:vertical}
+.gift-row{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px}
+.gift-note{font-size:10px; color:var(--dim); letter-spacing:.08em; line-height:1.8}
+
+/* ---------- weekly art: navegacao entre as pecas da semana ---------- */
+.wa-nav{position:absolute; top:50%; transform:translateY(-50%); z-index:2; background:none;
+  border:none; color:var(--dim); font-size:34px; cursor:pointer; padding:14px; line-height:1}
+.wa-nav:hover{color:var(--amber)}
+#waPrev{left:6px} #waNext{right:6px}
+#waNum{color:var(--dim)}
+
+/* ---------- modo de estaleiro (?dev) ---------- */
+#devPanel{position:fixed; left:12px; top:56px; z-index:85; width:250px;
+  background:rgba(8,7,20,.95); border:1px solid var(--teal); padding:10px 12px; display:none}
+#devPanel.on{display:block}
+#devPanel h4{margin:0 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
+#devNext{list-style:none; margin:0 0 9px; padding:0}
+#devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:10.5px; line-height:1.6; color:#d7d3e4}
+#devNext li b{color:var(--paper); font-weight:500; display:block}
+#devNext li span{color:var(--amber)}
+
+/* ---------- telemovel: sugestao de audicao com o ecra fechado ---------- */
+#braveTip{position:fixed; left:10px; right:10px; bottom:10px; z-index:70; display:none;
+  background:rgba(8,7,20,.97); border:1px solid var(--line); padding:12px 13px}
+#braveTip.on{display:block}
+#braveTip p{margin:0 0 9px; font-size:11px; line-height:1.8; color:#d7d3e4}
+#braveTip b{color:var(--amber); font-weight:500}
+</style>
+</head>
+<body>
