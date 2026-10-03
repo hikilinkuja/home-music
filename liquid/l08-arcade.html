@@ -1,0 +1,440 @@
+<style>
+/* ================= a arcada da casa ================= */
+#arcade{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:86; display:none;
+  width:min(880px, 94vw); max-height:92vh; overflow:auto; background:rgba(8,6,18,.97);
+  border:1px solid var(--amber); padding:18px 22px 20px}
+#arcade.on{display:block}
+#arcClose{position:absolute; right:10px; top:8px; background:none; border:none; color:var(--dim);
+  font-size:18px; cursor:pointer}
+#arcade h3{margin:0 0 2px; font-size:14px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+#arcade .asub{font-size:9px; letter-spacing:.22em; color:var(--dim); text-transform:uppercase; margin:0 0 14px}
+.arc-tabs{display:flex; gap:7px; margin:0 0 16px}
+.arc-game{display:none}
+.arc-game.on{display:block}
+
+/* needle */
+#arcStage{display:flex; gap:18px; flex-wrap:wrap}
+#arcCover{position:relative; width:300px; height:168px; background:#000; border:1px solid var(--line);
+  overflow:hidden; flex:0 0 auto}
+#arcYt{width:100%; height:100%}
+#arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,#0a0820 0 12px,#070617 12px 24px);
+  display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:10px;
+  letter-spacing:.3em; text-transform:uppercase; text-align:center; padding:10px}
+#arcOpts{flex:1; min-width:250px}
+.arc-opt{display:block; width:100%; text-align:left; margin:0 0 7px; padding:9px 12px}
+.arc-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
+.arc-opt.bad{color:var(--paper); background:rgba(232,57,44,.4); border-color:var(--red)}
+#arcScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:6px 0 0}
+#arcReveal{font-size:11px; color:#d7d3e4; margin:8px 0 0; min-height:34px}
+
+/* ---- dub desk: consola da casa ---- */
+#dkCrate{display:flex; gap:7px; flex-wrap:wrap; margin:6px 0 16px}
+.dkPlate{background:#241607; border:1px solid #3a2a14; color:#cdbb92; cursor:pointer;
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  padding:8px 11px; text-align:left; line-height:1.5}
+.dkPlate b{display:block; color:#e7d9b8; font-weight:500; letter-spacing:.2em}
+.dkPlate.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+.dkPlate.on b{color:#160d06}
+#desk{background:linear-gradient(180deg, #221409, #160d06 60%, #0f0a05);
+  border:1px solid #3a2a14; border-top:none; padding:16px 16px 14px; position:relative}
+#desk::before{content:""; display:block; position:absolute; left:0; right:0; top:0; height:4px;
+  background:linear-gradient(90deg, #1c7a3a 0 33%, #e3b71f 33% 66%, #b3271e 66% 100%)}
+#deskHead{display:flex; align-items:center; gap:12px; margin:6px 0 16px}
+#deskHead .dname{font-size:11px; letter-spacing:.34em; color:#e7d9b8; text-transform:uppercase}
+#deskHead .dsub{font-size:8.5px; letter-spacing:.2em; color:#8a7750; text-transform:uppercase}
+#dkPlay{margin-left:auto}
+#deskRow{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start}
+.kbank{display:flex; gap:18px; flex-wrap:wrap}
+.knob{width:76px; text-align:center; user-select:none}
+.kcap{position:relative; width:58px; height:58px; margin:0 auto; border-radius:50%; cursor:ns-resize;
+  background:radial-gradient(circle at 36% 30%, #f2e7cd, #cdbb92 55%, #8f7a52 92%);
+  box-shadow:0 3px 7px rgba(0,0,0,.65), inset 0 -3px 5px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.5);
+  border:2px solid #2a1c0c}
+.kcap i{position:absolute; left:50%; top:4px; width:3px; height:18px; margin-left:-1.5px;
+  background:#b3271e; border-radius:2px; transform-origin:50% 25px}
+.knob label{display:block; margin-top:7px; font-size:8.5px; letter-spacing:.24em; color:#cdbb92;
+  text-transform:uppercase}
+.knob .kv{font-size:9px; color:#8a7750}
+.kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted rgba(205,187,146,.3)}
+#dkTimeBank{display:flex; flex-direction:column; gap:6px}
+#dkTimeBank .tbtn{background:#241607; border-color:#3a2a14; color:#cdbb92}
+#dkTimeBank .tbtn.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+.dk-side{min-width:200px; flex:1}
+#dkBass{background:#241607; border-color:#3a2a14; color:#cdbb92; padding:10px 12px}
+#dkBass.on{background:#1c7a3a; border-color:#1c7a3a; color:#0f0a05}
+#dkThrow{background:#b3271e; border-color:#b3271e; color:#f6ead0; padding:14px 16px; font-size:11px; width:100%}
+#dkThrow:active{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+#dkVu{width:100%; height:46px; background:#0b0703; border:1px solid #3a2a14; margin-top:10px}
+#dkCredit{font-size:9.5px; color:#8a7750; line-height:1.8; margin-top:10px}
+#dkCredit b{color:#e3b71f; font-weight:500}
+.dkkeys{font-size:8.5px; color:#6a5a3c; letter-spacing:.16em; text-transform:uppercase; margin-top:6px}
+</style>
+
+<div id="arcade" aria-label="the arcade">
+  <button id="arcClose" type="button">&times;</button>
+  <h3>The Arcade</h3>
+  <p class="asub">drop the needle pauses the broadcast in a fade; the dub desk spins the house dubplates</p>
+  <nav class="arc-tabs">
+    <button class="tbtn arcTab on" data-g="nd" type="button">Drop the Needle</button>
+    <button class="tbtn arcTab" data-g="dk" type="button">Dub Desk</button>
+  </nav>
+
+  <section class="arc-game on" id="ag-nd">
+    <div id="arcStage">
+      <div id="arcCover"><div id="arcYt"></div><div id="arcMask">the record is hidden<br>listen</div></div>
+      <div id="arcOpts">
+        <button class="tbtn" id="arcStart" type="button">Drop it</button>
+        <div id="arcChoices"></div>
+        <div id="arcReveal"></div>
+        <div id="arcScore"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="arc-game" id="ag-dk">
+    <div id="desk">
+      <div id="deskHead">
+        <span class="dname">Home Music &middot; Spring Board</span>
+        <span class="dsub">dub console mk I</span>
+        <button class="tbtn" id="dkPlay" type="button">Spin the dubplate</button>
+      </div>
+      <div id="dkCrate"></div>
+      <div id="deskRow">
+        <div class="kbank">
+          <div class="knob" data-k="send"><div class="kcap"><div class="kscale"></div><i></i></div><label>echo send</label><span class="kv">22</span></div>
+          <div class="knob" data-k="fb"><div class="kcap"><div class="kscale"></div><i></i></div><label>feedback</label><span class="kv">55</span></div>
+          <div class="knob" data-k="space"><div class="kcap"><div class="kscale"></div><i></i></div><label>spring</label><span class="kv">18</span></div>
+          <div class="knob" data-k="lpf"><div class="kcap"><div class="kscale"></div><i></i></div><label>tone</label><span class="kv">100</span></div>
+        </div>
+        <div id="dkTimeBank">
+          <button class="tbtn dkT" data-t="0.28" type="button">tight</button>
+          <button class="tbtn dkT on" data-t="0.42" type="button">skank</button>
+          <button class="tbtn dkT" data-t="0.56" type="button">wide</button>
+          <button class="tbtn" id="dkBass" type="button">Kill the bass</button>
+        </div>
+        <div class="dk-side">
+          <button id="dkThrow" class="tbtn" type="button">THROW &middot; echo out</button>
+          <canvas id="dkVu" width="260" height="46"></canvas>
+          <div class="dkkeys">drag a knob up or down &middot; [space] throw &middot; [b] bass</div>
+          <div id="dkCredit"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+(function(){
+var $=function(id){ return document.getElementById(id); };
+var ARC={ on:false, tab:"nd" };
+
+function sideWant(){
+  /* a emissao so se afasta quando ha outro som: o jogo da agulha, ou o dubplate a rodar */
+  var want = ARC.on && (ARC.tab==="nd" || (ARC.tab==="dk" && DK.playing));
+  if(window.HM && HM.side) HM.side(want);
+}
+$("arcBtn").addEventListener("click", function(){
+  if(ARC.on) return;
+  ARC.on=true;
+  $("arcade").classList.add("on");
+  sideWant();
+  /* o gira-discos do needle liga ja: quando o jogador carregar, o disco cai sem espera de arranque */
+  ndPlayer(null);
+});
+function arcClose(){
+  if(!ARC.on) return;
+  ARC.on=false;
+  $("arcade").classList.remove("on");
+  ndStop(); dkStop();
+  sideWant();
+}
+$("arcClose").addEventListener("click", arcClose);
+document.addEventListener("keydown", function(ev){ if(ev.key==="Escape" && ARC.on) arcClose(); });
+document.querySelectorAll(".arcTab").forEach(function(b){
+  b.addEventListener("click", function(){
+    ARC.tab=b.getAttribute("data-g");
+    document.querySelectorAll(".arcTab").forEach(function(x){ x.classList.toggle("on", x===b); });
+    document.querySelectorAll(".arc-game").forEach(function(g){ g.classList.remove("on"); });
+    $("ag-"+ARC.tab).classList.add("on");
+    if(ARC.tab!=="nd") ndStop();
+    sideWant();
+  });
+});
+
+/* ---------- drop the needle: contam-se 6 s de musica REALMENTE ouvida ----------
+   o relogio e um somatorio do tempo de reproducao (getCurrentTime a avancar);
+   carregamentos e buffering nao gastam um decimo de segundo da audicao */
+var ND_SECS=6;
+var nd={ yt:null, ready:false, making:false, q:[], cur:null, lives:3, score:0, poll:null, round:0, heard:0, lastT:null };
+function ndPlayer(cb){
+  if(nd.yt && nd.ready){ if(cb) cb(); return; }
+  if(cb) nd.q.push(cb);
+  if(nd.making) return;
+  nd.making=true;
+  (function boot(){
+    if(typeof YT==="undefined" || !YT.Player){ setTimeout(boot, 400); return; }
+    new YT.Player("arcYt", { width:"100%", height:"100%",
+      playerVars:{ autoplay:0, controls:0, rel:0, playsinline:1 },
+      events:{ onReady:function(e){
+        nd.yt=e.target; nd.ready=true;
+        var q=nd.q; nd.q=[];
+        q.forEach(function(f){ try{ f(); }catch(err){} });
+      } } });
+  })();
+}
+function ndWatch(){
+  clearInterval(nd.poll);
+  nd.heard=0; nd.lastT=null;
+  var myRound=nd.round, started=false;
+  nd.poll=setInterval(function(){
+    if(nd.round!==myRound || !nd.ready) return;
+    var st; try{ st=nd.yt.getPlayerState(); }catch(e){ return; }
+    if(st===1){
+      started=true;
+      var t=null; try{ t=nd.yt.getCurrentTime()||0; }catch(e){}
+      if(t!=null){
+        if(nd.lastT!=null){ var d=t-nd.lastT; if(d>0 && d<1.2) nd.heard+=d; }
+        nd.lastT=t;
+      }
+      if(nd.heard>=ND_SECS){
+        clearInterval(nd.poll); nd.poll=null;
+        try{ nd.yt.pauseVideo(); }catch(err){}
+        $("arcMask").innerHTML="the needle is up<br>name the sound";
+      } else {
+        $("arcMask").innerHTML="the record is hidden<br>listening&hellip; "+Math.ceil(ND_SECS-nd.heard);
+      }
+    } else {
+      nd.lastT=null;
+      if(st===3) $("arcMask").innerHTML= started ? "the groove skips&hellip;<br>the clock holds" : "dropping the needle&hellip;";
+    }
+  }, 200);
+}
+function ndStop(){ clearInterval(nd.poll); nd.poll=null; try{ if(nd.yt&&nd.ready) nd.yt.pauseVideo(); }catch(e){} }
+function ndOptions(t){
+  var names={}, out=[GENRES[t.g].name];
+  names[t.g]=1;
+  var keys=Object.keys(GENRES);
+  while(out.length<4){
+    var k=keys[Math.floor(Math.random()*keys.length)];
+    if(!names[k] && TRACKS.some(function(x){ return x.g===k; })){ names[k]=1; out.push(GENRES[k].name); }
+  }
+  return out.sort(function(){ return Math.random()-0.5; });
+}
+function ndRound(){
+  nd.cur=TRACKS[Math.floor(Math.random()*TRACKS.length)];
+  nd.round++;
+  $("arcReveal").textContent="";
+  var ch=$("arcChoices"); ch.innerHTML="";
+  ndOptions(nd.cur).forEach(function(name){
+    var b=document.createElement("button");
+    b.className="tbtn arc-opt"; b.type="button"; b.textContent=name;
+    b.addEventListener("click", function(){ ndAnswer(b, name); });
+    ch.appendChild(b);
+  });
+  $("arcMask").innerHTML="dropping the needle&hellip;";
+  ndPlayer(function(){
+    nd.yt.loadVideoById({ videoId:nd.cur.v, startSeconds:45 });
+    try{ nd.yt.playVideo(); }catch(e){}
+    ndWatch();
+  });
+  ndPaint();
+}
+function ndAnswer(btn, name){
+  var good=GENRES[nd.cur.g].name;
+  ndStop();
+  document.querySelectorAll(".arc-opt").forEach(function(b){
+    if(b.textContent===good) b.classList.add("good");
+    b.disabled=true;
+  });
+  if(name===good){ nd.score++; } else { btn.classList.add("bad"); nd.lives--; }
+  $("arcReveal").textContent="it was "+nd.cur.a+" / "+nd.cur.t+" ("+nd.cur.y+"), "+good+".";
+  ndPaint();
+  if(nd.lives<=0){ $("arcStart").textContent="Session over. again?"; nd.lives=3; nd.score=0; }
+  else { $("arcStart").textContent="Next record"; }
+}
+function ndPaint(){ $("arcScore").textContent="score "+nd.score+" · lives "+nd.lives; }
+$("arcStart").addEventListener("click", ndRound);
+
+/* ---------- dub desk ---------- */
+var DK={ ac:null, el:null, n:null, playing:false, raf:0, pi:0 };
+/* o caixote dos dubplates: so pratas da casa, CC, a correr inteiras do Internet Archive */
+var DK_PLATES=[
+  { a:"Koncrete Roots", t:"Sound Killah", rel:"Dub ina Midlands &middot; Dubophonic 2014", lic:"CC BY-NC-ND 4.0",
+    src:"https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3" },
+  { a:"Rakoon", t:"Tubby's Dub Lesson", rel:"Explorations in Dub &middot; Dubophonic 2013", lic:"CC BY-NC-ND 4.0",
+    src:"https://archive.org/download/DPH010/06_Rakoon_Tubbys_Dub_Lesson.mp3" },
+  { a:"Red Barrio", t:"Feeling Irie Dub", rel:"Explorations in Dub &middot; Dubophonic 2013", lic:"CC BY-NC-ND 4.0",
+    src:"https://archive.org/download/DPH010/01_Red_Barrio_Feeling_Irie_Dub.mp3" },
+  { a:"Dub-I", t:"Satta Dub", rel:"Creation &middot; Dubophonic 2013", lic:"CC BY-NC-ND 3.0",
+    src:"https://archive.org/download/DPH001/05_Dub-i_-_Satta_Dub.mp3" },
+  { a:"The Dubbstyle", t:"Sun Is Dub", rel:"Sun Is Dub &middot; Dubophonic 2019", lic:"CC BY-ND 4.0",
+    src:"https://archive.org/download/DPH037/7_Sun%20is%20dub.mp3" }
+];
+var KV={ send:22, fb:55, space:18, lpf:100 };
+function dkCredit(){
+  var p=DK_PLATES[DK.pi];
+  $("dkCredit").innerHTML="<b>on the platter</b> "+p.a+", "+p.t+" &middot; "+p.rel+" &middot; "+p.lic+
+    " &middot; live processing in your browser, nothing recorded";
+}
+function dkSelect(i){
+  if(i===DK.pi && DK.el) return;
+  DK.pi=i;
+  document.querySelectorAll(".dkPlate").forEach(function(x,xi){ x.classList.toggle("on", xi===i); });
+  dkCredit();
+  if(DK.el){
+    var was=DK.playing;
+    try{ DK.el.pause(); }catch(e){}
+    DK.el.src=DK_PLATES[i].src;
+    if(was){ DK.el.play().catch(function(){}); }
+  }
+}
+(function(){
+  var c=$("dkCrate");
+  DK_PLATES.forEach(function(p,i){
+    var b=document.createElement("button");
+    b.type="button"; b.className="dkPlate"+(i===0?" on":"");
+    b.innerHTML="<b>"+p.a+"</b>"+p.t;
+    b.addEventListener("click", function(){ dkSelect(i); });
+    c.appendChild(b);
+  });
+  dkCredit();
+})();
+function dkIr(secs){
+  var rate=DK.ac.sampleRate, len=Math.floor(secs*rate);
+  var buf=DK.ac.createBuffer(2, len, rate);
+  for(var c=0;c<2;c++){
+    var d=buf.getChannelData(c);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len, 2.6); }
+  }
+  return buf;
+}
+function dkApply(){
+  if(!DK.n) return;
+  DK.n.send.gain.value=KV.send/100;
+  DK.n.fb.gain.value=KV.fb/100;
+  DK.n.conv.gain.value=KV.space/100*.6;
+  DK.n.lpf.frequency.value=400*Math.pow(45, KV.lpf/100);
+}
+function dkBuild(){
+  var ac=DK.ac=new (window.AudioContext||window.webkitAudioContext)();
+  var el=DK.el=new Audio(DK_PLATES[DK.pi].src);
+  el.crossOrigin="anonymous";
+  el.addEventListener("ended", function(){ DK.playing=false; $("dkPlay").textContent="Spin the dubplate"; sideWant(); });
+  var src=ac.createMediaElementSource(el);
+  var dry=ac.createGain();
+  var send=ac.createGain();
+  var delay=ac.createDelay(2); delay.delayTime.value=.42;
+  var fb=ac.createGain();
+  var fbF=ac.createBiquadFilter(); fbF.type="bandpass"; fbF.frequency.value=1400; fbF.Q.value=.6;
+  var conv=ac.createConvolver(); conv.buffer=dkIr(2.4);
+  var convWet=ac.createGain();
+  var lpf=ac.createBiquadFilter(); lpf.type="lowpass";
+  var hpf=ac.createBiquadFilter(); hpf.type="highpass"; hpf.frequency.value=0;
+  var master=ac.createGain(); master.gain.value=.95;
+  var ana=ac.createAnalyser(); ana.fftSize=512;
+  src.connect(dry); src.connect(send);
+  send.connect(delay); delay.connect(fbF); fbF.connect(fb); fb.connect(delay);
+  dry.connect(lpf); delay.connect(lpf);
+  lpf.connect(hpf); hpf.connect(master);
+  master.connect(conv); conv.connect(convWet); convWet.connect(ac.destination);
+  master.connect(ana); master.connect(ac.destination);
+  DK.n={send:send, fb:fb, delay:delay, conv:convWet, lpf:lpf, hpf:hpf, ana:ana};
+  dkApply();
+  dkVu();
+}
+function dkVu(){
+  DK.raf=requestAnimationFrame(dkVu);
+  var c=$("dkVu"), g=c.getContext("2d");
+  g.fillStyle="#0b0703"; g.fillRect(0,0,c.width,c.height);
+  if(!DK.n) return;
+  var data=new Uint8Array(DK.n.ana.frequencyBinCount);
+  DK.n.ana.getByteFrequencyData(data);
+  var bars=22, bw=c.width/bars;
+  for(var i=0;i<bars;i++){
+    var v=data[Math.floor(i*data.length/bars)]/255;
+    g.fillStyle = i<6 ? "#b3271e" : (i<14 ? "#e3b71f" : "#1c7a3a");
+    g.fillRect(i*bw+2, c.height-(v*c.height), bw-4, v*c.height);
+  }
+}
+function dkStop(){
+  if(DK.el && DK.playing){ try{ DK.el.pause(); }catch(e){} DK.playing=false; $("dkPlay").textContent="Spin the dubplate"; }
+  sideWant();
+}
+$("dkPlay").addEventListener("click", function(){
+  if(!DK.ac) dkBuild();
+  if(DK.ac.state==="suspended") DK.ac.resume();
+  if(DK.playing){ dkStop(); }
+  else {
+    DK.el.play().catch(function(){});
+    DK.playing=true; this.textContent="Lift the needle";
+    sideWant();
+  }
+});
+
+/* knobs: rodar arrastando na vertical; duplo clique repoe */
+var KDEF={ send:22, fb:55, space:18, lpf:100 };
+var KMAX={ send:100, fb:82, space:100, lpf:100 };
+function kPaint(el){
+  var k=el.getAttribute("data-k");
+  var v=KV[k], max=KMAX[k];
+  var ang=-135 + (v/max)*270;
+  el.querySelector(".kcap i").style.transform="rotate("+ang+"deg)";
+  el.querySelector(".kv").textContent=Math.round(v);
+}
+document.querySelectorAll("#desk .knob").forEach(function(el){
+  var k=el.getAttribute("data-k");
+  kPaint(el);
+  var cap=el.querySelector(".kcap");
+  cap.addEventListener("pointerdown", function(ev){
+    ev.preventDefault();
+    cap.setPointerCapture(ev.pointerId);
+    var y0=ev.clientY, v0=KV[k];
+    function mv(e){
+      KV[k]=Math.max(0, Math.min(KMAX[k], v0+(y0-e.clientY)*(KMAX[k]/140)));
+      kPaint(el); dkApply();
+    }
+    function up(){ cap.removeEventListener("pointermove", mv); cap.removeEventListener("pointerup", up); }
+    cap.addEventListener("pointermove", mv);
+    cap.addEventListener("pointerup", up);
+  });
+  cap.addEventListener("dblclick", function(){ KV[k]=KDEF[k]; kPaint(el); dkApply(); });
+  cap.addEventListener("wheel", function(ev){
+    ev.preventDefault();
+    KV[k]=Math.max(0, Math.min(KMAX[k], KV[k]+(ev.deltaY<0?3:-3)));
+    kPaint(el); dkApply();
+  }, {passive:false});
+});
+document.querySelectorAll(".dkT").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".dkT").forEach(function(x){ x.classList.toggle("on", x===b); });
+    if(DK.n) DK.n.delay.delayTime.value=parseFloat(b.getAttribute("data-t"));
+  });
+});
+var dkBassK=false;
+function dkBass(){
+  dkBassK=!dkBassK;
+  if(DK.n) DK.n.hpf.frequency.value = dkBassK ? 230 : 0;
+  $("dkBass").classList.toggle("on", dkBassK);
+  $("dkBass").textContent = dkBassK ? "Bring the bass back" : "Kill the bass";
+}
+$("dkBass").addEventListener("click", dkBass);
+function dkThrow(down){
+  if(!DK.n) return;
+  if(down){ DK.n._hold=DK.n.send.gain.value; DK.n.send.gain.value=1; }
+  else { DK.n.send.gain.value=KV.send/100; }
+}
+$("dkThrow").addEventListener("pointerdown", function(){ dkThrow(true); });
+$("dkThrow").addEventListener("pointerup", function(){ dkThrow(false); });
+$("dkThrow").addEventListener("pointerleave", function(){ dkThrow(false); });
+document.addEventListener("keydown", function(ev){
+  if(!ARC.on || ARC.tab!=="dk") return;
+  if(ev.target.tagName==="INPUT") return;
+  if(ev.key===" "){ ev.preventDefault(); dkThrow(true); }
+  if(ev.key==="b") dkBass();
+});
+document.addEventListener("keyup", function(ev){
+  if(ARC.on && ev.key===" ") dkThrow(false);
+});
+})();
+</script>
