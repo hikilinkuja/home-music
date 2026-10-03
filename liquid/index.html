@@ -1030,6 +1030,19 @@ function apiFail(){
 }
 
 /* start sequence: user pressed play, intro runs, radio starts */
+/* relogio de animacao que nao adormece: setInterval corre em separadores ocultos
+   (com passos mais grossos), ao contrario do requestAnimationFrame; usar para
+   TODAS as rampas de audio e maquinas de transicao. step devolve false para abortar. */
+function animClock(dur, step, done){
+  var t0=performance.now();
+  var h=setInterval(function(){
+    var x=Math.min(1,(performance.now()-t0)/dur);
+    var cont=step(x);
+    if(cont===false){ clearInterval(h); return; }
+    if(x>=1){ clearInterval(h); if(done) done(); }
+  }, 50);
+  return h;
+}
 var pendingFirst = null;
 function maybeStart(){
   if(!pendingFirst || !P.A.ready || started) return;
@@ -1157,20 +1170,17 @@ function startTransition(){
     })();
     function go(){
       RIG.fadeBegin(inD);
-      var t0 = performance.now(), swapped=false;
-      (function step(now){
-        if(!transitioning){ return; }
-        var x = Math.min(1, (now - t0) / 1900);
+      var swapped=false;
+      animClock(1900, function(x){
+        if(!transitioning){ return false; }
         RIG.setFade(x, inD);
         if(x >= 0.5 && !swapped){ swapped=true; hardNextAudio(t); }
-        if(x < 1){ requestAnimationFrame(step); }
-        else{
-          RIG.finish(outD);
-          rigDeck = inD;
-          transitioning = false;
-          lastT=0; lastStamp=Date.now();
-        }
-      })(performance.now());
+      }, function(){
+        RIG.finish(outD);
+        rigDeck = inD;
+        transitioning = false;
+        lastT=0; lastStamp=Date.now();
+      });
     }
     return;
   }
@@ -1196,10 +1206,10 @@ function startTransition(){
     else setTimeout(waitBoth, 250);
   })();
   function ramp(){
-    var out = P[outK], t0 = performance.now(), mid=false;
+    var out = P[outK], mid=false;
     RIG.fadeBegin(inK);
-    function step(now){
-      var x = Math.min(1, (now - t0) / FADE_DUR);
+    animClock(FADE_DUR, function(x){
+      if(!transitioning){ return false; }
       fadeVol(out, Math.cos(x * Math.PI/2));
       fadeVol(inc, Math.sin(x * Math.PI/2));
       RIG.setFade(x, inK);
@@ -1209,18 +1219,15 @@ function startTransition(){
         $("slot"+outK).classList.remove("live");
         setNow(t, true);
       }
-      if(x < 1){ requestAnimationFrame(step); }
-      else{
-        try{ out.yt.stopVideo(); }catch(e){}
-        out.pendingTrack = null;
-        RIG.finish(outK);
-        activeKey = inK;
-        rigDeck = inK;
-        transitioning = false;
-        lastT=0; lastStamp=Date.now();
-      }
-    }
-    requestAnimationFrame(step);
+    }, function(){
+      try{ out.yt.stopVideo(); }catch(e){}
+      out.pendingTrack = null;
+      RIG.finish(outK);
+      activeKey = inK;
+      rigDeck = inK;
+      transitioning = false;
+      lastT=0; lastStamp=Date.now();
+    });
   }
 }
 
@@ -1547,13 +1554,8 @@ function rampInFirst(){
   if(!firstRampPending) return;
   firstRampPending=false;
   /* lenta e constante: 4,5 s em linha reta */
-  var p=P[activeKey], t0=performance.now(), DURR=9500;
-  (function st2(now){
-    var x=Math.min(1,(now-t0)/DURR);
-    fadeVol(p, x);
-    if(x<1) requestAnimationFrame(st2);
-    else { FX.crackle(false); }
-  })(performance.now());
+  var p=P[activeKey], DURR=9500;
+  animClock(DURR, function(x){ fadeVol(p, x); }, function(){ FX.crackle(false); });
 }
 window.HMFX = { needle: function(){ FX.needleDrop(); FX.crackle(true); rampInFirst(); } };
 
