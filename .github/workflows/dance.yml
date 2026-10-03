@@ -1,0 +1,23 @@
+name: the dance nearby (europe)
+on:
+  schedule:
+    - cron: "17 3 */2 * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/collect_dance.mjs
+      - name: commit events
+        run: |
+          git config user.name "home-music-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add events/europe.json
+          git diff --cached --quiet || git commit -m "the dance nearby: europe refresh"
+          git push
