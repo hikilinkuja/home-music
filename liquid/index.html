@@ -287,9 +287,15 @@ button{font-family:var(--mono)}
   background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 34%, rgba(6,5,17,.85) 100%)}
 #waGrain{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.06; display:none}
 #waPoem{position:absolute; inset:0; display:none; align-items:center; justify-content:center;
-  text-align:center; padding:0 7vw}
-#waPoemLine{font-size:clamp(17px,3.2vw,30px); letter-spacing:.3em; line-height:2;
-  color:var(--paper); text-shadow:0 0 26px rgba(65,217,200,.22); opacity:0}
+  text-align:center; padding:0 7vw; overflow:hidden}
+#waPoemLines{transition:transform .9s ease, opacity .8s ease}
+#waPoemLines div{font-size:clamp(15px,2.6vw,26px); letter-spacing:.28em; line-height:2.2;
+  color:var(--paper); text-shadow:0 0 26px rgba(65,217,200,.22); opacity:0; transition:opacity 1.2s ease}
+#waHint{position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:4;
+  background:rgba(6,5,17,.85); border:1px solid var(--line); color:var(--amber);
+  font-size:9px; letter-spacing:.22em; text-transform:uppercase; padding:8px 12px;
+  display:none; white-space:nowrap}
+#waHint.on{display:block}
 #waPoemTitle{position:absolute; right:22px; top:64px; font-size:9px; letter-spacing:.3em;
   color:var(--dim); text-transform:uppercase}
 #waCap{position:absolute; left:16px; bottom:16px; max-width:min(480px,86vw);
@@ -391,7 +397,8 @@ textarea.gift-field{min-height:84px; resize:vertical}
   <canvas id="waCv"></canvas>
   <div id="waVeil"></div>
   <canvas id="waGrain"></canvas>
-  <div id="waPoem"><div id="waPoemLine"></div><div id="waPoemTitle"></div></div>
+  <div id="waPoem"><div id="waPoemLines"></div><div id="waPoemTitle"></div></div>
+  <div id="waHint">rotate the phone for the full piece &middot; pinch to zoom, drag to pan</div>
   <button class="wa-nav" id="waPrev" type="button" title="previous piece">&lsaquo;</button>
   <button class="wa-nav" id="waNext" type="button" title="next piece">&rsaquo;</button>
   <div id="waCap">
@@ -399,6 +406,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
     <div class="t" id="waT"></div>
     <div class="a" id="waA"></div>
     <div class="row">
+      <button class="tbtn" id="waWingBtn" type="button">Daily canvas</button>
       <button class="tbtn" id="waFichaBtn" type="button">Room sheet</button>
       <button class="tbtn" id="waFsBtn" type="button">Immerse</button>
       <button class="tbtn" id="waBack" type="button">Back to the radio</button>
@@ -429,7 +437,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
       <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
       <button class="tbtn" id="giftBtn" type="button" title="recommend music to the house">Gift a tune</button>
       <button class="tbtn" id="fieldBtn" type="button" title="change the liquid field [v]">Field</button>
-      <button class="tbtn" id="wartBtn" type="button" title="this week's installation [w]">Weekly art</button>
+      <button class="tbtn" id="wartBtn" type="button" title="the art wing [w]">Art</button>
       <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
     </div>
   </header>
@@ -598,9 +606,9 @@ const BLOCKS = {
   morning:   { label: "MORNING PROGRAMME",   range: "06:00 - 13:00", accent: "#ffb12b",
                genres: ["reggae","dub","ska_rocksteady","lofi","ambient","ambient_techno","dub_techno"] },
   afternoon: { label: "AFTERNOON PROGRAMME", range: "13:00 - 20:00", accent: "#41d9c8",
-               genres: ["lofi_house","liquid","intelligent_dnb","atmospheric_jungle","breakbeat"] },
+               genres: ["lofi_house","liquid","intelligent_dnb","atmospheric_jungle","breakbeat","uk_garage","house"] },
   night:     { label: "NIGHT PROGRAMME",     range: "20:00 - 06:00", accent: "#e8392c",
-               genres: ["hypnotic_techno","deep_house","dub_techno","ragga_jungle","oldskool_hardcore","dubstep"] }
+               genres: ["hypnotic_techno","deep_house","house","dub_techno","uk_garage","ragga_jungle","oldskool_hardcore","dubstep"] }
 };
 
 const ISHKUR = "https://music.ishkur.com/";
@@ -622,6 +630,8 @@ const GENRES = {
   dubstep: { name: "Dubstep", w: "https://en.wikipedia.org/wiki/Dubstep", note: "South London, early 2000s: garage slowed down, hollowed out, and sent to the basement. Croydon record shops, FWD at Plastic People, sub-bass you feel in your sternum before you hear it. Space is the instrument; the silence between the hits is where the dread lives. Meditate at 140." },
   dub_techno: { name: "Dub Techno", w: "https://en.wikipedia.org/wiki/Dub_techno", note: "Berlin hears King Tubby through a concrete wall. Basic Channel, 1993: two engineers press techno until only the echo remains, chords surfacing like weather fronts, hiss as holy as the kick. Every record sounds like the same gray ocean and that is the discipline. Detroit gave it pulse, Jamaica gave it space, Berlin gave it patience." },
   oldskool_hardcore: { name: "Oldskool Hardcore", w: "https://en.wikipedia.org/wiki/Breakbeat_hardcore", note: "Britain 1992, a generation discovers the pitch control. Breakbeats sped past reason, pianos stabbing at heaven, toytown samples and air horns, all mixed on a borrowed Amiga. The tabloids panicked, the fields filled, and for about thirty months every record sounded like the best night of your life. Jungle was being born in here. Hold tight." },
+  uk_garage: { name: "UK Garage", w: "https://en.wikipedia.org/wiki/UK_garage", note: "London flips US garage into something swung and illegal-sounding. Two-step drums that refuse to land where you expect, bass that talks back, vocals chopped into confetti. Pirate radio raised it, champagne dances crowned it, dubstep and grime are its children. All silk shirts and sub pressure." },
+  house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
 };
 
@@ -1248,7 +1258,7 @@ var FX = {
 var GBPM={ reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
   lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,
   breakbeat:132, hypnotic_techno:132, deep_house:122, ragga_jungle:164, dubstep:140,
-  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94 };
+  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94, uk_garage:133, house:124 };
 
 function metaFor(t){
   return { a:t.a, t:t.t, y:t.y, bpm:(t.bpm||GBPM[t.g]||120), accent:(BLOCKS[currentBlock]&&BLOCKS[currentBlock].accent)||"#ffb12b" };
@@ -2230,8 +2240,9 @@ window.HM={
   }
 };
 window.HM.rampOnly=function(){
-  /* arma a rampa do primeiro disco sem repetir o foley da agulha */
-  if(firstRampPending){ firstRampPending=false; FX.crackleBurst(1.2); rampInFirst(); }
+  /* arma a rampa do primeiro disco; sem foley nenhum, o sulco real ja soou */
+  if(firstRampPending){ firstRampPending=false; rampInFirst(); }
+  else { try{ fadeVol(P[activeKey], 1); }catch(e){} }
 };
 /* modo de estaleiro (?dev na morada): espreitar a fila e saltar sem o quebra-cabecas */
 window.HMDEV={
@@ -2240,7 +2251,7 @@ window.HMDEV={
   skip: function(){ try{ hardNext("dev"); }catch(e){} }
 };
 
-var firstRampPending=false, rampDur=8000;
+var firstRampPending=false, rampDur=2000;
 function rampInFirst(){
   if(!firstRampPending) return;
   firstRampPending=false;
@@ -2295,43 +2306,9 @@ function showLine(i){
   mc.appendChild(div);
   void div.offsetWidth; div.classList.add("show");
 }
-/* a agulha a serio: assenta com um baque, raspa o sulco, e so quando a raspadela
-   acaba e que a musica comeca a subir, como num prato verdadeiro */
-var ACT=null;
-function actx(){
-  if(!ACT){ try{ ACT=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
-  if(ACT && ACT.state==="suspended"){ try{ ACT.resume(); }catch(e){} }
-  return ACT;
-}
-function realNeedle(){
-  var ac=actx(); if(!ac) return;
-  var t=ac.currentTime;
-  /* baque surdo da agulha a assentar */
-  var o=ac.createOscillator(), og=ac.createGain();
-  o.type="sine"; o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t+.11);
-  og.gain.setValueAtTime(.5, t); og.gain.exponentialRampToValueAtTime(.001, t+.16);
-  o.connect(og).connect(ac.destination); o.start(t); o.stop(t+.18);
-  /* raspadela aspera do sulco de entrada (0,55 s) */
-  var len=Math.floor(ac.sampleRate*.55), b=ac.createBuffer(1, len, ac.sampleRate), d=b.getChannelData(0);
-  for(var i=0;i<len;i++){
-    var x=i/len;
-    d[i]=(Math.random()*2-1)*(.9-.5*x)*(Math.random()<.08?2.4:1);
-  }
-  var n=ac.createBufferSource(); n.buffer=b;
-  var nf=ac.createBiquadFilter(); nf.type="bandpass"; nf.frequency.value=2300; nf.Q.value=.5;
-  var ng=ac.createGain(); ng.gain.setValueAtTime(.4, t+.05); ng.gain.linearRampToValueAtTime(.12, t+.6);
-  n.connect(nf).connect(ng).connect(ac.destination); n.start(t+.05);
-  /* crepitar que se extingue (1,5 s): estalidos esparsos */
-  var len2=Math.floor(ac.sampleRate*1.5), b2=ac.createBuffer(1, len2, ac.sampleRate), d2=b2.getChannelData(0);
-  for(var j=0;j<len2;j++){
-    var y=j/len2;
-    d2[j]=(Math.random()<.004*(1-y*.7)) ? (Math.random()*2-1)*(1-y) : (Math.random()*2-1)*.015*(1-y);
-  }
-  var n2=ac.createBufferSource(); n2.buffer=b2;
-  var f2=ac.createBiquadFilter(); f2.type="bandpass"; f2.frequency.value=4600; f2.Q.value=.7;
-  var g2=ac.createGain(); g2.gain.value=.55;
-  n2.connect(f2).connect(g2).connect(ac.destination); n2.start(t+.5);
-}
+/* a agulha a serio e uma agulha a serio: o vinil da casa (freesound 625771, CC0),
+   do segundo 13 ao 17; a musica entra aos 15 e aos 17 ja vai a 100 por cento */
+var VINYL_SRC="https://cdn.freesound.org/previews/625/625771_9351406-hq.mp3";
 function sequenceIntoRadio(){
   if(intro.done) return; intro.done=true;
   if(intro.tick){ clearInterval(intro.tick); intro.tick=null; }
@@ -2339,12 +2316,38 @@ function sequenceIntoRadio(){
   $("splash").classList.add("off");
   $("introCredit").classList.remove("on");
   $("skipIntro").style.display="none";
-  /* 1 s de silencio; 2 s de agulha e raspadela; e so entao a musica sobe */
-  setTimeout(function(){ realNeedle(); }, 1000);
-  setTimeout(function(){
+  var begun=false;
+  function begin(){
+    if(begun) return; begun=true;
     if(window.HM) HM.begin();
-    setTimeout(function(){ if(window.LVfx) LVfx.unveil(8000); }, 200);
-  }, 3000);
+    if(window.LVfx) LVfx.unveil(2600);
+  }
+  /* 1 s de silencio, depois o sulco real */
+  setTimeout(function(){
+    var v=new Audio(VINYL_SRC);
+    var vol=0.8;
+    try{ var sv=localStorage.getItem("hm_vol"); if(sv!==null) vol=Math.max(0,Math.min(100,parseInt(sv,10)||80))/100; }catch(e){}
+    try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches) vol=1; }catch(e){}
+    v.volume=vol;
+    v.addEventListener("loadedmetadata", function(){ try{ v.currentTime=13; }catch(e){} });
+    v.addEventListener("error", begin);
+    var p=v.play(); if(p && p.catch) p.catch(begin);
+    /* sem progresso em 2,5 s, a radio entra na mesma */
+    setTimeout(function(){ if(!begun && (!v.currentTime || v.currentTime<13.3)) begin(); }, 2500);
+    var h=setInterval(function(){
+      var t=v.currentTime||0;
+      if(t>=15 && !begun) begin();
+      if(t>=17){
+        clearInterval(h);
+        var v0=v.volume, t0=performance.now();
+        var f=setInterval(function(){
+          var x=Math.min(1,(performance.now()-t0)/300);
+          try{ v.volume=v0*(1-x); }catch(e){}
+          if(x>=1){ clearInterval(f); try{ v.pause(); }catch(e){} }
+        }, 40);
+      }
+    }, 60);
+  }, 1000);
 }
 function fadeOutIntro(ms){
   if(intro.fading || intro.done) return; intro.fading=true;
@@ -2360,7 +2363,6 @@ function fadeOutIntro(ms){
 }
 function startIntro(){
   if(intro.started || intro.done) return; intro.started=true;
-  actx();
   if(window.HM){ HM.fxResume(); if(HM.prime) HM.prime(); }
   $("tapHint").style.display="none";
   $("mc").classList.add("on");
@@ -2439,7 +2441,7 @@ var WPIECES=[
     links:[] }
 ];
 /* as quatro pecas estao todas em cartaz na mesma semana; o cartaz renova a cada semana */
-var wa={ on:false, raf:0, cur:0, grainLast:0, poemT0:0 };
+var wa={ on:false, raf:0, cur:0, grainLast:0, poemT0:0, wing:"week", hinted:false };
 
 function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
 function waFillFicha(p){
@@ -2498,7 +2500,8 @@ function fgStep(cv){
 function waLoop(ts){
   if(!wa.on) return;
   wa.raf=requestAnimationFrame(waLoop);
-  var p=WPIECES[wa.cur], now=performance.now()/1000, lo=lvLo();
+  var p=(wa.wing==="day")?{kind:"canvas"}:WPIECES[wa.cur];
+  var now=performance.now()/1000, lo=lvLo();
   if(p.kind==="film"){
     $("waVeil").style.opacity=String(.6-.25*lo);
     waGrainDraw(ts);
@@ -2509,13 +2512,27 @@ function waLoop(ts){
     $("waVeil").style.opacity=String(.72-.22*lo);
     waGrainDraw(ts);
   } else if(p.kind==="poem"){
-    var per=12, tt=now-wa.poemT0;
-    var i=Math.floor(tt/per)%YEATS.length, ph=(tt%per)/per;
-    var el=$("waPoemLine");
-    if(el.textContent!==YEATS[i]) el.textContent=YEATS[i];
-    var fade = ph<.2 ? ph/.2 : (ph>.8 ? (1-ph)/.2 : 1);
-    el.style.opacity=String(fade*(.82+.18*lo));
-    el.style.transform="translateY("+((-32)*ph)+"px)";
+    /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
+    var per=10, hold=14, tt=now-wa.poemT0;
+    var box=$("waPoemLines");
+    var want=Math.min(YEATS.length, Math.floor(tt/per)+1);
+    while(box.childElementCount<want){
+      var dv=document.createElement("div");
+      dv.textContent=YEATS[box.childElementCount];
+      box.appendChild(dv);
+      void dv.offsetWidth; dv.style.opacity="1";
+    }
+    var kids=box.children;
+    for(var ki=0;ki<kids.length;ki++){
+      var last=(ki===kids.length-1) && kids.length<YEATS.length;
+      kids[ki].style.opacity= kids.length===YEATS.length ? ".88" : (last ? String(.85+.15*lo) : ".5");
+    }
+    if(tt > per*YEATS.length + hold){
+      box.style.opacity="0";
+      if(tt > per*YEATS.length + hold + 1.4){
+        box.innerHTML=""; box.style.opacity="1"; wa.poemT0=now;
+      }
+    }
   } else if(p.kind==="field"){
     fgStep($("waCv"));
   }
@@ -2529,6 +2546,7 @@ function waShowLayers(p){
   $("waGrain").style.display = (p.kind==="film"||p.kind==="canvas") ? "block":"none";
 }
 function waShow(n){
+  if(wa.wing==="day"){ dailyShow(); return; }
   wa.cur=((n%WPIECES.length)+WPIECES.length)%WPIECES.length;
   var p=WPIECES[wa.cur];
   try{ $("waVid").pause(); }catch(e){}
@@ -2545,6 +2563,7 @@ function waShow(n){
   if(p.kind==="canvas" && !$("waPic").src) $("waPic").src=SWAN;
   if(p.kind==="poem"){
     wa.poemT0=performance.now()/1000;
+    var bx=$("waPoemLines"); bx.innerHTML=""; bx.style.opacity="1";
     $("waPoemTitle").textContent="W. B. Yeats · He wishes for the Cloths of Heaven · 1899";
   }
   if(p.kind==="field"){
@@ -2555,9 +2574,16 @@ function waShow(n){
 function wartOpen(){
   if(wa.on) return;
   wa.on=true;
-  waShow(wa.cur);
+  if(wa.wing==="day"){ dailyShow(); } else { waShow(wa.cur); }
   $("wart").classList.add("on");
   wa.raf=requestAnimationFrame(waLoop);
+  try{
+    if(!wa.hinted && matchMedia("(max-width:760px)").matches){
+      wa.hinted=true;
+      var h=$("waHint"); h.classList.add("on");
+      setTimeout(function(){ h.classList.remove("on"); }, 5200);
+    }
+  }catch(e){}
 }
 function wartClose(){
   if(!wa.on) return;
@@ -2567,8 +2593,118 @@ function wartClose(){
   $("wartFicha").classList.remove("on");
   $("wart").classList.remove("on");
 }
+/* ---------------- daily canvas: um quadro por dia, colecao aberta do Art Institute of Chicago ---------------- */
+var DAILY={ got:false, piece:null };
+function dayOfYear(){
+  var d=new Date(), y0=new Date(d.getFullYear(),0,0);
+  return Math.floor((d-y0)/86400000);
+}
+function dailyFetch(cb){
+  if(DAILY.got){ cb(); return; }
+  var doy=dayOfYear();
+  var page=((doy*7)%90)+1;
+  var u="https://api.artic.edu/api/v1/artworks/search?q=painting&query[term][is_public_domain]=true"+
+    "&fields=id,title,artist_display,date_display,image_id,short_description,medium_display,credit_line&limit=12&page="+page;
+  fetch(u).then(function(r){ return r.json(); }).then(function(d){
+    var arts=(d.data||[]).filter(function(a){ return a.image_id; });
+    if(!arts.length) throw 0;
+    var a=arts[doy%arts.length];
+    DAILY.piece={
+      id:a.id, t:a.title, artist:a.artist_display||"(museum record)",
+      date:a.date_display||"", img:"https://www.artic.edu/iiif/2/"+a.image_id+"/full/1200,/0/default.jpg",
+      who:a.short_description || ("Notes from the museum record: "+(a.medium_display||"")+(a.credit_line? (". "+a.credit_line):"")),
+      link:"https://www.artic.edu/artworks/"+a.id
+    };
+    DAILY.got=true; cb();
+  }).catch(function(){ DAILY.piece=null; DAILY.got=true; cb(); });
+}
+function dailyShow(){
+  dailyFetch(function(){
+    try{ $("waVid").pause(); }catch(e){}
+    var d=DAILY.piece;
+    $("waK").innerHTML="Daily canvas · one painting a day";
+    $("waNum").textContent="· day "+dayOfYear();
+    if(!d){
+      $("waT").textContent="The museum door is closed";
+      $("waA").textContent="could not reach the open collection; try again in a moment";
+      waShowLayers({kind:"field"});
+      return;
+    }
+    $("waT").textContent=d.t;
+    $("waA").textContent=d.artist.split("\n")[0];
+    $("waFT").textContent=d.t;
+    $("waBadge").style.display="none";
+    $("waFArtist").textContent=d.artist;
+    $("waFLife").textContent=d.date;
+    $("waFWho").textContent=d.who;
+    $("waFPiece").textContent="Daily canvas: every day the house hangs one public-domain work from the Art Institute of Chicago open collection, chosen by the calendar. Tomorrow the wall changes.";
+    $("waFLic").textContent="Public-domain artwork; image and record served by the Art Institute of Chicago open API (CC0 designated data).";
+    var L=$("waFLinks"); L.innerHTML="";
+    var a=document.createElement("a"); a.textContent="This work at the Art Institute of Chicago ↗";
+    a.href=d.link; a.target="_blank"; a.rel="noopener"; L.appendChild(a);
+    $("waPic").src=d.img;
+    waShowLayers({kind:"canvas"});
+    gesReset();
+  });
+}
+/* ---------------- gestos: pinch para ampliar, arrastar para percorrer ---------------- */
+var GES={s:1, x:0, y:0, pts:{}, d0:0, s0:1};
+function gesTarget(){
+  if($("waVid").style.display!=="none") return $("waVid");
+  if($("waPicWrap").style.display!=="none") return $("waPicWrap");
+  return null;
+}
+function gesApply(){
+  var el=gesTarget(); if(!el) return;
+  el.style.transform="translate("+GES.x+"px,"+GES.y+"px) scale("+GES.s+")";
+}
+function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
+  ["waVid","waPicWrap"].forEach(function(id){ $(id).style.transform=""; }); }
+(function(){
+  var w=$("wart");
+  w.addEventListener("pointerdown", function(ev){
+    if(ev.target.closest("#waCap")||ev.target.closest("#wartFicha")||ev.target.closest(".wa-nav")) return;
+    GES.pts[ev.pointerId]=[ev.clientX, ev.clientY];
+    var ks=Object.keys(GES.pts);
+    if(ks.length===2){
+      var a=GES.pts[ks[0]], b=GES.pts[ks[1]];
+      GES.d0=Math.hypot(a[0]-b[0], a[1]-b[1]); GES.s0=GES.s;
+    }
+  });
+  w.addEventListener("pointermove", function(ev){
+    if(!(ev.pointerId in GES.pts)) return;
+    var prev=GES.pts[ev.pointerId];
+    GES.pts[ev.pointerId]=[ev.clientX, ev.clientY];
+    var ks=Object.keys(GES.pts);
+    if(ks.length===2){
+      var a=GES.pts[ks[0]], b=GES.pts[ks[1]];
+      var d=Math.hypot(a[0]-b[0], a[1]-b[1]);
+      if(GES.d0>0){ GES.s=Math.max(1, Math.min(4, GES.s0*d/GES.d0)); gesApply(); }
+    } else if(ks.length===1 && GES.s>1){
+      GES.x+=ev.clientX-prev[0]; GES.y+=ev.clientY-prev[1]; gesApply();
+    }
+  });
+  function up(ev){ delete GES.pts[ev.pointerId]; GES.d0=0; }
+  w.addEventListener("pointerup", up); w.addEventListener("pointercancel", up);
+  w.addEventListener("wheel", function(ev){
+    if(!gesTarget()) return;
+    ev.preventDefault();
+    GES.s=Math.max(1, Math.min(4, GES.s*(ev.deltaY<0?1.08:0.93)));
+    if(GES.s===1){ GES.x=0; GES.y=0; }
+    gesApply();
+  }, {passive:false});
+  w.addEventListener("dblclick", function(){ gesReset(); });
+})();
+
 $("wartBtn").addEventListener("click", wartOpen);
 $("waBack").addEventListener("click", wartClose);
+$("waWingBtn").addEventListener("click", function(){
+  wa.wing = (wa.wing==="week") ? "day" : "week";
+  this.textContent = (wa.wing==="week") ? "Daily canvas" : "This week: residency";
+  $("waPrev").style.display=$("waNext").style.display=(wa.wing==="week")?"":"none";
+  gesReset();
+  if(wa.wing==="day"){ dailyShow(); } else { waShow(wa.cur); }
+});
 $("waPrev").addEventListener("click", function(){ waShow(wa.cur-1); });
 $("waNext").addEventListener("click", function(){ waShow(wa.cur+1); });
 /* dentro da instalacao, as setas mudam de peca e nunca chegam ao Earn the skip */
