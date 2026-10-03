@@ -331,6 +331,13 @@ button{font-family:var(--mono)}
   .vp-resize{display:none}
   #vol{display:none}
 }
+/* o volume nunca sai do painel: ocupa a linha de baixo, a largura que houver */
+.vp-ctrl{flex-wrap:wrap}
+#vol{flex:1 1 100%; width:100%; max-width:none; min-width:0; margin-top:6px}
+.gx-eph{margin:12px 0 4px}
+.gx-eph img{width:100%; border:1px solid var(--line); display:block}
+.gx-eph figcaption{font-size:9px; color:var(--dim); letter-spacing:.12em; text-transform:uppercase; padding-top:6px; line-height:1.8}
+.gx-eph figcaption a{color:var(--teal); text-decoration:none}
 #wakeBtn{display:none}
 @media (max-width:760px){
   #wakeBtn.avail{display:inline-flex}
@@ -438,6 +445,8 @@ textarea.gift-field{min-height:84px; resize:vertical}
       <button class="tbtn" id="giftBtn" type="button" title="recommend music to the house">Gift a tune</button>
       <button class="tbtn" id="fieldBtn" type="button" title="change the liquid field [v]">Field</button>
       <button class="tbtn" id="wartBtn" type="button" title="the art wing [w]">Art</button>
+      <button class="tbtn" id="focusBtn" type="button" title="the focus room">Focus</button>
+      <button class="tbtn" id="arcBtn" type="button" title="the arcade">Arcade</button>
       <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
     </div>
   </header>
@@ -804,6 +813,86 @@ const TRACKS = [
 /* extended sound notes: outside writing first, our words only as mortar.
    Sample for dub; the other sixteen follow the same shape. */
 const GEXT = {
+  reggae: {
+    quote: { t: "Roots reggae is a subgenre of reggae that deals with the everyday lives and aspirations of Africans and those in the African Diaspora, including the spiritual side of Rastafari, black liberation, revolution and the honouring of God, called Jah by Rastafarians.",
+             src: "Wikipedia, Roots reggae (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Roots_reggae" }
+  },
+  lofi: {
+    quote: { t: "Low fidelity is a music or production quality in which elements usually regarded as imperfections in the context of a recording or performance are present, sometimes as a deliberate stylistic choice.",
+             src: "Wikipedia, Lo-fi music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Lo-fi_music" }
+  },
+  ambient: {
+    quote: { t: "Ambient music is a genre of music that emphasizes tone and atmosphere over traditional musical structure or rhythm.",
+             src: "Wikipedia, Ambient music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Ambient_music" }
+  },
+  ambient_techno: {
+    quote: { t: "Ambient techno is a subgenre of techno that incorporates the atmospheric textures of ambient music with the rhythmic elements and production of techno. It was pioneered by 1990s electronic artists such as Aphex Twin, Carl Craig, The Orb, The Future Sound of London, the Black Dog, Pete Namlook and Biosphere.",
+             src: "Wikipedia, Ambient techno (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Ambient_techno" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  lofi_house: {
+    quote: { t: "Outsider house is a subgenre of house music, combining elements of deep house, techno, noise, and ambient, with artists embracing lo-fi techniques rather than the polished cleanliness of mainstream deep house.",
+             src: "Wikipedia, Outsider house (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Outsider_house" }
+  },
+  liquid: {
+    quote: { t: "Liquid drum and bass, liquid DnB, melodic drum and bass, liquid funk, or sometimes just liquid is a subgenre of drum and bass. While it uses similar basslines and bar layouts to other styles, it contains fewer bar-oriented samples and more instrumental layers, harmonies, melodies and ambiance, producing a sentimental atmosphere directed at home listeners as well as nightclub and rave audiences.",
+             src: "Wikipedia, Liquid drum and bass (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Liquid_drum_and_bass" }
+  },
+  intelligent_dnb: {
+    quote: { t: "Drum and bass is a genre of electronic dance music that emerged in the United Kingdom in the early 1990s. It is characterised by fast breakbeats with heavy bass and sub-bass lines, samples, and synthesizers.",
+             src: "Wikipedia, Drum and bass (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Drum_and_bass" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  atmospheric_jungle: {
+    quote: { t: "Jungle is a genre of electronic music that developed in the 1990s out of the UK rave scene and Jamaican sound system culture. Emerging from breakbeat hardcore, the style is characterised by rapid breakbeats, heavily syncopated percussive loops, samples and synthesised effects, combined with the deep basslines, melodies and vocal samples found in dub, reggae and dancehall, as well as hip-hop and funk.",
+             src: "Wikipedia, Jungle (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Jungle_music" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  breakbeat: {
+    quote: { t: "Breakbeat is a broad type of electronic music that uses drum breaks, often sampled from early recordings of funk, jazz, and R&B. Breakbeats have been used in styles such as Florida breaks, hip-hop, jungle, drum and bass, big beat, breakbeat hardcore, and UK garage styles.",
+             src: "Wikipedia, Breakbeat (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Breakbeat" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  hypnotic_techno: {
+    quote: { t: "Minimal techno is a subgenre of techno music. It is characterized by a stripped-down aesthetic that exploits the use of repetition and understated development.",
+             src: "Wikipedia, Minimal techno (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Minimal_techno" },
+    eph: { img: "https://archive.org/download/00-tresor-globus-1996-club-flyer-front/00%20tresor%20globus%201996%20club%20flyer%20front.jpg", cap: "Club flyer, Tresor Globus, Berlin 1996", u: "https://archive.org/details/00-tresor-globus-1996-club-flyer-front" }
+  },
+  deep_house: {
+    quote: { t: "Deep house is a subgenre of house music that originated in the 1980s, initially fusing elements of Chicago house with the lush chords of 1980s jazz-funk and touches of soul music. Its origins are attributed to the early recordings of Larry Heard, including his influential track Can You Feel It.",
+             src: "Wikipedia, Deep house (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Deep_house" }
+  },
+  ragga_jungle: {
+    quote: { t: "Jungle is a genre of electronic music that developed in the 1990s out of the UK rave scene and Jamaican sound system culture. Emerging from breakbeat hardcore, the style is characterised by rapid breakbeats, heavily syncopated percussive loops, samples and synthesised effects, combined with the deep basslines, melodies and vocal samples found in dub, reggae and dancehall.",
+             src: "Wikipedia, Jungle (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Jungle_music" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  dubstep: {
+    quote: { t: "Dubstep is a genre of electronic dance music that originated in South London in the early 2000s. The style, whose roots trace to the Jamaican sound system party scene in the early 1980s, emerged as a UK garage offshoot that blended 2-step rhythms and sparse dub production, as well as incorporating elements of broken beat, grime, and drum and bass.",
+             src: "Wikipedia, Dubstep (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dubstep" }
+  },
+  dub_techno: {
+    quote: { t: "Dub techno is a subgenre of electronic music that originated in the early 1990s, blending the repetitive, minimal structures of techno with the echo-laden, spacey production techniques of dub music. It is notable for its deep, atmospheric soundscapes, chorded layers of elaborate basslines, slowly developing musical phrases featuring heavy delay and reverb effects.",
+             src: "Wikipedia, Dub techno (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dub_techno" },
+    eph: { img: "https://archive.org/download/00-tresor-globus-1996-club-flyer-front/00%20tresor%20globus%201996%20club%20flyer%20front.jpg", cap: "Club flyer, Tresor Globus, Berlin 1996", u: "https://archive.org/details/00-tresor-globus-1996-club-flyer-front" }
+  },
+  oldskool_hardcore: {
+    quote: { t: "Breakbeat hardcore is a music genre that spawned from the UK rave scene during the early 1990s. It combines four-on-the-floor rhythms with breakbeats usually sampled from hip-hop.",
+             src: "Wikipedia, Breakbeat hardcore (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Breakbeat_hardcore" },
+    eph: { img: "https://archive.org/download/scan-20160730-52/12184271_10104761533281017_1218538533904324922_o.jpg", cap: "Rave flyer, American Midwest, 1994", u: "https://archive.org/details/scan-20160730-52" }
+  },
+  ska_rocksteady: {
+    quote: { t: "Rocksteady is a music genre that originated in Jamaica around 1966. A successor of ska and a precursor to reggae, rocksteady was the dominant style of music in Jamaica for nearly two years, performed by many of the artists who helped establish reggae.",
+             src: "Wikipedia, Rocksteady (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Rocksteady" }
+  },
+  uk_garage: {
+    quote: { t: "UK garage, abbreviated as UKG, is a genre of electronic music which originated in England in the early to mid-1990s. It is defined by percussive, shuffled rhythms with syncopated hi-hats, cymbals, and snares, and may include either 4/4 house kick patterns or more irregular 2-step rhythms.",
+             src: "Wikipedia, UK garage (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/UK_garage" }
+  },
+  house: {
+    quote: { t: "House music, or simply house, is a type of electronic dance music which is characterized by a repetitive four-on-the-floor beat and a typical tempo of 115 to 130 beats per minute. It was created in Chicago by DJs and music producers from the city's queer Black underground club culture.",
+             src: "Wikipedia, House music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/House_music" }
+  },
   dub: {
     quote: { t: "Dub is a musical style that grew out of reggae in the late 1960s and early 1970s. It is commonly considered a subgenre of reggae, though it has developed to extend beyond that style.",
              src: "Wikipedia, Dub music (CC BY-SA 4.0)", u: "https://en.wikipedia.org/wiki/Dub_music" },
@@ -1311,7 +1400,8 @@ function genreHasTracks(gn){
   return TRACKS.some(function(t){ return t.g===gn && !deadIds[t.v]; });
 }
 function pickGenre(fromG){
-  var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
+  var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks).filter(function(gg){ return !window.HMFOCUS || !HMFOCUS.on || HMFOCUS.allow[gg]; });
+  if(!bg.length) bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
   if(!bg.length) return null;
   function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
   if(fromG && ADJ[fromG]){
@@ -1333,7 +1423,8 @@ function pickGenre(fromG){
 function buildQueue(){ currentGenre=null; runLeft=0; }
 function nextTrack(){
   var bg = BLOCKS[currentBlock].genres;
-  if(!currentGenre || bg.indexOf(currentGenre)<0 || !genreHasTracks(currentGenre) || runLeft<=0){
+  var fOut = window.HMFOCUS && HMFOCUS.on && currentGenre && !HMFOCUS.allow[currentGenre];
+  if(!currentGenre || fOut || bg.indexOf(currentGenre)<0 || !genreHasTracks(currentGenre) || runLeft<=0){
     var nx = pickGenre(currentGenre);
     if(!nx) return null;
     currentGenre = nx;
@@ -1375,7 +1466,8 @@ function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
 function applyVol(k){
   var p=P[k]; if(!p || !p.ready || !p.yt) return;
   var f = (p.fade==null?1:p.fade);
-  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f)))); }catch(e){}
+  var fdk=(window.HMFOCUS && HMFOCUS.on && HMFOCUS.duck) || 1;
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f * fdk)))); }catch(e){}
 }
 function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
 function audibleLevel(k){
@@ -1482,6 +1574,7 @@ function beginRadio(){
       setTimeout(function(){ if(firstRampPending && window.HMFX){ window.HMFX.needle(); } }, 9500);
     }
     setTimeout(checkAudible, 6000);
+    audioGuard();
   }
   go();
 }
@@ -1733,6 +1826,18 @@ function setNow(t, push){
   var ext=$("gExt");
   if(ext){
     var gx=(typeof GEXT!=="undefined") && GEXT[t.g];
+    if(gx && !gx.records){
+      var ks0=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
+      gx={ quote:gx.quote, quote2:gx.quote2, lineage:gx.lineage, note:gx.note, eph:gx.eph,
+        records: ks0.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+          r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
+          u:"https://www.youtube.com/watch?v="+k.v }; }),
+        links: gx.links || [
+          { n:"Ishkur's Guide, this genre's entry", u:"https://music.ishkur.com/" },
+          { n:"Discogs, releases in this style", u:"https://www.discogs.com/search/?q="+encodeURIComponent(g.name)+"&type=release" },
+          { n:"This genre on Wikipedia", u:(g.w||"https://en.wikipedia.org/wiki/Electronic_music") }
+        ] };
+    }
     if(!gx){
       /* todos os generos mostram ja o painel estendido: registos da propria
          estante e portas para fora; os dossiers ricos chegam genero a genero */
@@ -1762,6 +1867,7 @@ function setNow(t, push){
         gx.links.forEach(function(l){ h+='<li><a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a></li>'; });
         h+='</ul>';
       }
+      if(gx.eph) h+='<figure class="gx-eph"><img loading="lazy" src="'+gx.eph.img+'" alt="'+gx.eph.cap+'"><figcaption>'+gx.eph.cap+' · <a href="'+gx.eph.u+'" target="_blank" rel="noopener">Internet Archive ↗</a></figcaption></figure>';
       if(gx.note) h+='<p class="gx-note">'+gx.note+'</p>';
       ext.innerHTML=h; ext.hidden=false;
     } else { ext.hidden=true; ext.innerHTML=""; }
@@ -2239,6 +2345,47 @@ window.HM={
     })();
   }
 };
+window.HMFOCUS={ on:false, duck:1, allow:{} };
+window.HM.side=function(on){ try{ mx2SideRadio(on); }catch(e){} };
+window.HM.flushPeek=function(){ try{ devQ.length=0; }catch(e){} };
+window.HM.reVol=function(){ try{ applyVol("A"); applyVol("B"); }catch(e){} };
+var guardOn=false;
+function audioGuard(){
+  if(guardOn) return; guardOn=true;
+  var stable=0, tries=0;
+  var iv=setInterval(function(){
+    if(!radioOn) return;
+    var p=P[activeKey];
+    if(!p || !p.ready || !p.yt) return;
+    var st=-9, mu=false, gv=100;
+    try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); gv=p.yt.getVolume(); }catch(e){ return; }
+    if(st!==1){ return; }
+    if(muted){ stable=0; return; }
+    var f=(p.fade==null?1:p.fade);
+    var nd=$("needle");
+    var ok=!mu && gv>1 && f>0.03;
+    if(ok){
+      stable++;
+      if(nd && nd.dataset.guard==="1"){ nd.classList.remove("on"); nd.style.display=""; nd.dataset.guard="0"; }
+      if(stable>=4){ clearInterval(iv); guardOn=false; }
+      return;
+    }
+    stable=0; tries++;
+    try{
+      p.yt.unMute();
+      if(f<=0.03 && !firstRampPending && !transitioning){ fadeVol(p, 1); }
+      applyVol(p.k);
+    }catch(e){}
+    if(tries>=3 && mu && nd){
+      nd.textContent="tap for sound";
+      nd.style.display="block"; nd.classList.add("on"); nd.dataset.guard="1";
+      nd.onclick=function(){
+        try{ p.yt.unMute(); p.yt.playVideo(); applyVol(p.k); }catch(e){}
+        nd.classList.remove("on"); nd.style.display="none"; nd.dataset.guard="0";
+      };
+    }
+  }, 3000);
+}
 window.HM.rampOnly=function(){
   /* arma a rampa do primeiro disco; sem foley nenhum, o sulco real ja soou */
   if(firstRampPending){ firstRampPending=false; rampInFirst(); }
@@ -2355,7 +2502,8 @@ function fadeOutIntro(ms){
   if(!a){ sequenceIntoRadio(); return; }
   var v0=a.volume;
   if(window.HM && HM.animClock){
-    HM.animClock(ms, function(x){ try{ a.volume=v0*(1-x); }catch(e){} }, sequenceIntoRadio);
+    /* curva suave: o eco do telefone escapa-se em vez de ser cortado */
+    HM.animClock(ms, function(x){ try{ a.volume=v0*Math.pow(1-x, 1.7); }catch(e){} }, sequenceIntoRadio);
   } else {
     try{ a.volume=0; }catch(e){}
     setTimeout(sequenceIntoRadio, ms);
@@ -2384,7 +2532,7 @@ function startIntro(){
     var t=a.currentTime||0;
     while(intro.shown<MC_LINES.length && t>=MC_AT_TRK[intro.shown]){ showLine(intro.shown); intro.shown++; }
     /* o telefone e a ultima coisa que se ouve: fade curto, corte antes da bateria seguinte */
-    if(t>=P_FADE) fadeOutIntro(1200);
+    if(t>=P_FADE) fadeOutIntro(2600);
   }, 100);
 }
 $("splash").addEventListener("pointerdown", startIntro);
@@ -2923,5 +3071,750 @@ if(DESK){
   }, 1000);
 })();
 
+})();
+</script>
+<style>
+/* ================= focus room, dentro da sala liquida ================= */
+#focus{position:fixed; inset:0; z-index:88; display:none; background:#000}
+#focus.on{display:block}
+#fcCv{position:absolute; inset:0; width:100%; height:100%}
+#fcGate{position:absolute; inset:0; z-index:6; background:#000; display:none; flex-direction:column;
+  align-items:center; justify-content:center; gap:30px}
+#fcGate.on{display:flex}
+#fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid rgba(65,217,200,.5);
+  box-shadow:0 0 60px rgba(65,217,200,.12) inset, 0 0 40px rgba(65,217,200,.1)}
+#fcWord{font-size:11px; letter-spacing:.5em; text-transform:uppercase; color:var(--dim)}
+#fcWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:#4a4d6a; max-width:420px;
+  text-align:center; line-height:2.1}
+#fcGateSkip{position:absolute; right:18px; bottom:16px}
+.fc-chrome{transition:opacity .8s ease}
+#focus.idle .fc-chrome{opacity:0; pointer-events:none}
+#focus.noidle .fc-chrome{opacity:1 !important; pointer-events:auto !important}
+#fcTop{position:absolute; left:0; right:0; top:0; z-index:4; display:flex; align-items:center; gap:8px;
+  padding:12px 16px; background:linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,0)); flex-wrap:wrap}
+#fcTop .fbrand{font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--paper)}
+#fcTop .fbrand span{color:var(--teal); margin-left:8px}
+#fcTemps{margin-left:auto; display:flex; gap:6px}
+#fcSide{position:absolute; right:14px; top:58px; z-index:4; width:316px; max-height:calc(100% - 76px);
+  overflow-y:auto; background:rgba(5,4,16,.88); border:1px solid var(--line); padding:14px 14px 10px}
+#fcSide h4{margin:15px 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
+#fcSide h4:first-child{margin-top:0}
+#fcTime{font-size:30px; letter-spacing:.14em; color:var(--paper)}
+#fcPhase{font-size:9px; letter-spacing:.3em; color:var(--amber); text-transform:uppercase; margin:2px 0 8px}
+.fc-row{display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; align-items:center}
+.fc-row label{font-size:9px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase}
+.fc-row select{background:#07061a; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:10px; padding:3px 5px}
+.fc-row input[type=checkbox]{accent-color:var(--amber)}
+#fcCycles{display:flex; gap:4px; margin:4px 0 4px}
+#fcCycles i{width:16px; height:3px; background:var(--line)}
+#fcCycles i.done{background:var(--amber)}
+.fc-fader{margin:0 0 9px}
+.fc-fader label{display:flex; justify-content:space-between; font-size:9px; letter-spacing:.2em;
+  color:var(--dim); text-transform:uppercase; margin-bottom:3px}
+.fc-fader input{width:100%; accent-color:var(--amber)}
+#fcValve{display:flex; flex-wrap:wrap; gap:5px}
+#fcValve .g{font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; padding:4px 7px;
+  border:1px solid var(--line); color:#3d405c; cursor:pointer; user-select:none}
+#fcValve .g.on{color:var(--teal); border-color:var(--teal)}
+#fcValve .g:hover{border-color:var(--amber)}
+.fc-note{font-size:8.5px; color:#4a4d6a; letter-spacing:.1em; line-height:1.9; margin-top:6px}
+#fcIntent{width:100%; background:#07061a; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:11px; padding:7px 9px; letter-spacing:.06em}
+#fcIntentTag{position:absolute; left:18px; top:16px; z-index:3; font-size:9.5px; letter-spacing:.3em;
+  text-transform:uppercase; color:rgba(244,241,231,.4)}
+#fcClock{position:absolute; right:18px; bottom:14px; z-index:3; font-size:10px; letter-spacing:.26em;
+  color:rgba(244,241,231,.35)}
+#fcFloat{position:absolute; right:18px; bottom:38px; z-index:3; display:none;
+  font-size:13px; letter-spacing:.24em; color:rgba(255,177,43,.55)}
+#fcFloat.show{display:block}
+#fcRings{position:absolute; left:14px; bottom:12px; z-index:3}
+#focus.sealed #fcTop, #focus.sealed #fcSide, #focus.sealed #fcIntentTag{display:none}
+#fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
+  font-size:9px; letter-spacing:.3em; color:rgba(244,241,231,.22); text-transform:uppercase; display:none}
+#focus.sealed #fcSealHint{display:block}
+.fc-rings-row{display:flex; gap:5px; flex-wrap:wrap; margin:2px 0 6px}
+.fc-rings-row .tbtn{padding:5px 7px; font-size:8.5px}
+#fcExit{position:absolute; left:16px; bottom:40px; z-index:4}
+</style>
+
+<div id="focus">
+  <canvas id="fcCv"></canvas>
+  <div id="fcGate">
+    <div id="fcOrb"></div>
+    <div id="fcWord">breathe in</div>
+    <div id="fcWhy">the gate: three slow breaths before the room opens. the light breathes at six cycles a minute; borrow its pace.</div>
+    <button class="tbtn" id="fcGateSkip" type="button">skip the gate &raquo;</button>
+  </div>
+  <header id="fcTop" class="fc-chrome">
+    <div class="fbrand">FOCUS ROOM<span>the broadcast narrows</span></div>
+    <button class="tbtn" id="fcSeal" type="button" title="fullscreen, wake lock, everything hidden">Seal the room</button>
+    <nav id="fcTemps">
+      <button class="tbtn fcT on" data-t="dusk" type="button">dusk</button>
+      <button class="tbtn fcT" data-t="ink" type="button">ink</button>
+      <button class="tbtn fcT" data-t="off" type="button">off</button>
+    </nav>
+  </header>
+  <aside id="fcSide" class="fc-chrome">
+    <h4>Pomodoro of the selector</h4>
+    <div id="fcTime">25:00</div>
+    <div id="fcPhase">ready</div>
+    <div class="fc-row">
+      <button class="tbtn" id="fcGo" type="button">Start</button>
+      <button class="tbtn" id="fcReset" type="button">Reset</button>
+      <select id="fcLen"><option value="25">25 min</option><option value="35">35 min</option><option value="50">50 min</option></select>
+    </div>
+    <div id="fcCycles"><i></i><i></i><i></i><i></i></div>
+    <div class="fc-row"><label><input type="checkbox" id="fcShowCount"> countdown always on screen</label></div>
+    <div class="fc-row"><label for="fcRing">end ring</label>
+      <select id="fcRing">
+        <option value="0">air horn</option><option value="1">dub siren</option>
+        <option value="2">spinback</option><option value="3">cowbell echo</option>
+        <option value="4">tape stop</option>
+      </select></div>
+    <div class="fc-rings-row">
+      <button class="tbtn fcRp" data-r="0" type="button">&#9654; horn</button>
+      <button class="tbtn fcRp" data-r="1" type="button">&#9654; siren</button>
+      <button class="tbtn fcRp" data-r="2" type="button">&#9654; spin</button>
+      <button class="tbtn fcRp" data-r="3" type="button">&#9654; bell</button>
+      <button class="tbtn fcRp" data-r="4" type="button">&#9654; tape</button>
+    </div>
+    <div class="fc-row"><label><input type="checkbox" id="fcBlack" checked> black room (chrome fades)</label></div>
+
+    <h4>House noise desk</h4>
+    <div class="fc-fader"><label><span>vinyl crackle</span><span id="fcVCk">0</span></label>
+      <input type="range" id="fcCk" min="0" max="100" value="0"></div>
+    <div class="fc-fader"><label><span>rain on the window</span><span id="fcVRn">0</span></label>
+      <input type="range" id="fcRn" min="0" max="100" value="0"></div>
+    <div class="fc-fader"><label><span>fireplace</span><span id="fcVFp">0</span></label>
+      <input type="range" id="fcFp" min="0" max="100" value="0"></div>
+
+    <h4>Programme valve</h4>
+    <div id="fcValve"></div>
+    <div class="fc-note">the valve clamps the live programme: only lit crates play while the room is open, within whatever the hour block offers. it applies from the next record; the tune on air finishes its say.</div>
+
+    <h4>One line of intent</h4>
+    <input id="fcIntent" type="text" maxlength="60" placeholder="what are you on?">
+  </aside>
+  <div id="fcIntentTag"></div>
+  <div id="fcClock">--:--</div>
+  <div id="fcFloat">25:00</div>
+  <svg id="fcRings" width="120" height="120"></svg>
+  <div id="fcSealHint">sealed &middot; esc breaks the seal and returns to the room</div>
+  <button class="tbtn fc-chrome" id="fcExit" type="button">Back to the full room</button>
+</div>
+
+<script>
+"use strict";
+(function(){
+var $=function(id){ return document.getElementById(id); };
+var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null,
+  temp:"dusk", breakLift:0, agitUntil:0,
+  pomo:{ run:false, phase:"work", left:25*60, cycles:0, works:0, focusedSec:0 } };
+var DEEP={ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
+
+/* ---------- campo proprio, tres temperaturas ---------- */
+var TEMPS={
+  dusk:[[4,3,10],[14,10,26],[32,20,38],[58,38,36]],
+  ink: [[3,3,8],[12,12,24],[26,26,42],[44,44,60]],
+  off: [[1,1,3],[4,4,9],[8,8,14],[13,13,20]]
+};
+var W=96,H=54, oc=document.createElement("canvas"); oc.width=W; oc.height=H;
+var ox=oc.getContext("2d");
+function pal(v){
+  var st=TEMPS[FC.temp];
+  var x=Math.max(0,Math.min(.999,v))*3, i=Math.floor(x), f=x-i;
+  var a=st[i], b=st[i+1];
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
+}
+function field(){
+  if(!FC.on) return;
+  FC.raf=requestAnimationFrame(field);
+  var cv=$("fcCv"), cx=cv.getContext("2d");
+  if(cv.width!==innerWidth){ cv.width=innerWidth; cv.height=innerHeight; }
+  var agit=performance.now()<FC.agitUntil;
+  var t=performance.now()/1000*(agit?.16:.03);
+  var img=ox.createImageData(W,H), d=img.data;
+  for(var y=0;y<H;y++){
+    for(var x=0;x<W;x++){
+      var u=x/W, v=y/H;
+      var sN=Math.sin(u*4.1+t*1.8)+Math.sin(v*3.3-t*1.3)+Math.sin((u+v)*3.6+t)+Math.sin(Math.hypot(u-.5,v-.56)*9-t*2.2);
+      var val=(sN/4+.5)*.5+FC.breakLift*.12+(agit?.14:0);
+      var c=pal(val);
+      var k=(y*W+x)*4;
+      d[k]=c[0]; d[k+1]=c[1]; d[k+2]=c[2]; d[k+3]=255;
+    }
+  }
+  ox.putImageData(img,0,0);
+  cx.imageSmoothingEnabled=true;
+  cx.drawImage(oc,0,0,cv.width,cv.height);
+}
+document.querySelectorAll(".fcT").forEach(function(b){
+  b.addEventListener("click", function(){
+    FC.temp=b.getAttribute("data-t");
+    document.querySelectorAll(".fcT").forEach(function(x){ x.classList.toggle("on", x===b); });
+  });
+});
+
+/* ---------- portao de respiracao (primeira entrada da sessao) ---------- */
+var gateRaf=0;
+function gateRun(){
+  var t0=performance.now(), DUR=30000;
+  $("fcGate").classList.add("on");
+  (function tick(){
+    if(!$("fcGate").classList.contains("on")) return;
+    var t=performance.now()-t0;
+    if(t>=DUR){ gateOpen(); return; }
+    gateRaf=requestAnimationFrame(tick);
+    var ph=(t%10000)/10000, inhale=ph<.5, x=inhale?ph*2:(1-(ph-.5)*2);
+    var e=.5-.5*Math.cos(Math.PI*x), sc=.75+.5*e;
+    $("fcOrb").style.transform="scale("+sc.toFixed(3)+")";
+    $("fcWord").textContent=inhale?"breathe in":"breathe out";
+  })();
+}
+function gateOpen(){ $("fcGate").classList.remove("on"); FC.gateDone=true; }
+$("fcGateSkip").addEventListener("click", gateOpen);
+
+/* ---------- cromo que desvanece ---------- */
+var idleT=null;
+function wakeChrome(){
+  $("focus").classList.remove("idle");
+  clearTimeout(idleT);
+  if($("fcBlack").checked){
+    idleT=setTimeout(function(){ if(FC.on) $("focus").classList.add("idle"); }, 5000);
+  }
+}
+["pointermove","pointerdown","keydown"].forEach(function(ev){
+  document.addEventListener(ev, function(){ if(FC.on) wakeChrome(); });
+});
+$("fcBlack").addEventListener("change", function(){
+  $("focus").classList.toggle("noidle", !this.checked);
+  wakeChrome();
+});
+
+/* ---------- relogio ---------- */
+setInterval(function(){
+  if(!FC.on) return;
+  var d=new Date();
+  $("fcClock").textContent=(d.getHours()<10?"0":"")+d.getHours()+":"+(d.getMinutes()<10?"0":"")+d.getMinutes();
+}, 1000);
+
+/* ---------- pomodoro ligado a emissao (ducking nos intervalos) ---------- */
+function fcLen(){ return (parseInt($("fcLen").value,10)||25)*60; }
+function fcPaint(){
+  var p=FC.pomo, m=Math.floor(p.left/60), sx=p.left%60;
+  var txt=(m<10?"0":"")+m+":"+(sx<10?"0":"")+sx;
+  $("fcTime").textContent=txt;
+  $("fcFloat").textContent=txt+(p.phase==="break"?" · break":"");
+  $("fcPhase").textContent= p.run ? (p.phase==="work"?"deep in":"surface, breathe") : "ready";
+  var dots=$("fcCycles").children;
+  for(var i=0;i<dots.length;i++){ dots[i].className=i<p.cycles?"done":""; }
+}
+function duckBroadcast(on){
+  window.HMFOCUS.duck = on ? 0.35 : 1;
+  if(window.HM && HM.reVol) HM.reVol();
+}
+setInterval(function(){
+  var p=FC.pomo;
+  if(!FC.on || !p.run) return;
+  p.left--;
+  if(p.phase==="work"){ p.focusedSec++; ringsPaint(); }
+  if(p.left<=0){
+    if(p.phase==="work"){
+      p.works++; p.cycles=Math.min(4,p.cycles+1);
+      ringPlay(parseInt($("fcRing").value,10)||0);
+      FC.agitUntil=performance.now()+6000;
+      p.phase="break"; p.left=(p.works%3===0?30:5)*60;
+      FC.breakLift=1; duckBroadcast(true);
+    } else {
+      p.phase="work"; p.left=fcLen(); FC.breakLift=0; duckBroadcast(false);
+    }
+  }
+  fcPaint();
+}, 1000);
+$("fcGo").addEventListener("click", function(){
+  FC.pomo.run=!FC.pomo.run;
+  this.textContent=FC.pomo.run?"Pause":"Start";
+  fcPaint();
+});
+$("fcReset").addEventListener("click", function(){
+  var p=FC.pomo;
+  p.run=false; p.phase="work"; p.left=fcLen(); p.cycles=0; p.works=0;
+  FC.breakLift=0; duckBroadcast(false);
+  $("fcGo").textContent="Start"; fcPaint();
+});
+$("fcLen").addEventListener("change", function(){
+  if(!FC.pomo.run && FC.pomo.phase==="work"){ FC.pomo.left=fcLen(); fcPaint(); }
+});
+$("fcShowCount").addEventListener("change", function(){
+  $("fcFloat").classList.toggle("show", this.checked);
+});
+fcPaint();
+
+/* ---------- aneis de profundidade ---------- */
+function ringsPaint(){
+  var n=Math.floor(FC.pomo.focusedSec/1200);
+  var svg=$("fcRings");
+  if(svg.childElementCount===Math.min(n,6)) return;
+  svg.innerHTML="";
+  for(var i=0;i<Math.min(n,6);i++){
+    var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",60); c.setAttribute("cy",60); c.setAttribute("r", 8+i*9);
+    c.setAttribute("fill","none");
+    c.setAttribute("stroke","rgba(65,217,200,"+(0.28-0.03*i)+")");
+    c.setAttribute("stroke-width","1");
+    svg.appendChild(c);
+  }
+}
+
+/* ---------- mesa de ruido (discos CC0 escolhidos) ---------- */
+var SMP={
+  ck:"https://cdn.freesound.org/previews/719/719879_7597896-hq.mp3",
+  rn:"https://cdn.freesound.org/previews/869/869851_19205925-hq.mp3",
+  fp:"https://cdn.freesound.org/previews/484/484338_5902878-hq.mp3"
+};
+var snd={ els:null, rctx:null };
+function sndInit(){
+  if(snd.els) return;
+  snd.els={};
+  Object.keys(SMP).forEach(function(k){
+    var a=new Audio(SMP[k]); a.loop=true; a.volume=0; a.preload="auto";
+    snd.els[k]=a;
+    var p=a.play(); if(p&&p.catch)p.catch(function(){});
+  });
+  sndApply();
+}
+function sndApply(){
+  if(!snd.els) return;
+  snd.els.ck.volume=Math.min(1, $("fcCk").value/100*.9);
+  snd.els.rn.volume=Math.min(1, $("fcRn").value/100*.9);
+  snd.els.fp.volume=Math.min(1, $("fcFp").value/100*.9);
+  $("fcVCk").textContent=$("fcCk").value;
+  $("fcVRn").textContent=$("fcRn").value;
+  $("fcVFp").textContent=$("fcFp").value;
+}
+["fcCk","fcRn","fcFp"].forEach(function(id){
+  $(id).addEventListener("input", function(){ sndInit(); sndApply(); });
+});
+function sndStop(){
+  if(!snd.els) return;
+  Object.keys(snd.els).forEach(function(k){ try{ snd.els[k].pause(); }catch(e){} });
+  snd.els=null;
+}
+
+/* ---------- os cinco toques (sintetizados) ---------- */
+function rctx(){
+  if(!snd.rctx){ try{ snd.rctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if(snd.rctx && snd.rctx.state==="suspended"){ try{ snd.rctx.resume(); }catch(e){} }
+  return snd.rctx;
+}
+function ringPlay(which){
+  var ac=rctx(); if(!ac) return;
+  var t=ac.currentTime+.02;
+  function echo(){
+    var dl=ac.createDelay(1); dl.delayTime.value=.27;
+    var fb=ac.createGain(); fb.gain.value=.42;
+    dl.connect(fb); fb.connect(dl);
+    var out=ac.createGain(); out.gain.value=.5;
+    dl.connect(out); out.connect(ac.destination);
+    return dl;
+  }
+  if(which===0){
+    var e=echo();
+    for(var i=0;i<3;i++){
+      var tt=t+i*.34;
+      var o1=ac.createOscillator(), o2=ac.createOscillator(), g=ac.createGain();
+      o1.type="sawtooth"; o2.type="square";
+      o1.frequency.setValueAtTime(452, tt); o1.frequency.exponentialRampToValueAtTime(392, tt+.22);
+      o2.frequency.setValueAtTime(226, tt); o2.frequency.exponentialRampToValueAtTime(196, tt+.22);
+      g.gain.setValueAtTime(.0001, tt); g.gain.exponentialRampToValueAtTime(.4, tt+.02);
+      g.gain.exponentialRampToValueAtTime(.001, tt+.26);
+      o1.connect(g); o2.connect(g); g.connect(ac.destination); g.connect(e);
+      o1.start(tt); o2.start(tt); o1.stop(tt+.3); o2.stop(tt+.3);
+    }
+  } else if(which===1){
+    var e1=echo();
+    var o=ac.createOscillator(), g1=ac.createGain(), lfo=ac.createOscillator(), lg=ac.createGain();
+    o.type="square"; o.frequency.value=640;
+    lfo.frequency.value=7; lg.gain.value=180;
+    lfo.connect(lg); lg.connect(o.frequency);
+    g1.gain.setValueAtTime(.22, t); g1.gain.setValueAtTime(.22, t+1.0); g1.gain.exponentialRampToValueAtTime(.001, t+1.35);
+    o.connect(g1); g1.connect(ac.destination); g1.connect(e1);
+    o.start(t); o.stop(t+1.4); lfo.start(t); lfo.stop(t+1.4);
+  } else if(which===2){
+    var o3=ac.createOscillator(), g3=ac.createGain();
+    o3.type="sawtooth";
+    o3.frequency.setValueAtTime(420, t); o3.frequency.exponentialRampToValueAtTime(28, t+.85);
+    g3.gain.setValueAtTime(.3, t); g3.gain.exponentialRampToValueAtTime(.001, t+.9);
+    o3.connect(g3).connect(ac.destination);
+    o3.start(t); o3.stop(t+.95);
+  } else if(which===3){
+    var e3=echo();
+    for(var h2=0;h2<3;h2++){
+      var th=t+h2*.3;
+      var a1=ac.createOscillator(), a2=ac.createOscillator(), gb=ac.createGain();
+      a1.type="square"; a2.type="square";
+      a1.frequency.value=562; a2.frequency.value=845;
+      gb.gain.setValueAtTime(.3, th); gb.gain.exponentialRampToValueAtTime(.001, th+.16);
+      var bp=ac.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=900; bp.Q.value=1.4;
+      a1.connect(bp); a2.connect(bp); bp.connect(gb); gb.connect(ac.destination); gb.connect(e3);
+      a1.start(th); a2.start(th); a1.stop(th+.2); a2.stop(th+.2);
+    }
+  } else {
+    var o5=ac.createOscillator(), g5=ac.createGain(), f5=ac.createBiquadFilter();
+    o5.type="sawtooth";
+    o5.frequency.setValueAtTime(196, t); o5.frequency.exponentialRampToValueAtTime(18, t+1.1);
+    f5.type="lowpass"; f5.frequency.setValueAtTime(5200, t); f5.frequency.exponentialRampToValueAtTime(140, t+1.1);
+    g5.gain.setValueAtTime(.3, t); g5.gain.exponentialRampToValueAtTime(.001, t+1.15);
+    o5.connect(f5).connect(g5).connect(ac.destination);
+    o5.start(t); o5.stop(t+1.2);
+  }
+}
+document.querySelectorAll(".fcRp").forEach(function(b){
+  b.addEventListener("click", function(){ ringPlay(parseInt(b.getAttribute("data-r"),10)); });
+});
+
+/* ---------- valvula real sobre a grelha ---------- */
+function valveBuild(){
+  var el=$("fcValve"); el.innerHTML="";
+  Object.keys(GENRES).forEach(function(g){
+    var d=document.createElement("span");
+    d.className="g"+(window.HMFOCUS.allow[g]?" on":"");
+    d.textContent=(GENRES[g].name||g).toLowerCase();
+    d.addEventListener("click", function(){
+      window.HMFOCUS.allow[g]=!window.HMFOCUS.allow[g];
+      d.classList.toggle("on", !!window.HMFOCUS.allow[g]);
+      if(window.HM && HM.flushPeek) HM.flushPeek();
+    });
+    el.appendChild(d);
+  });
+}
+
+/* ---------- intencao ---------- */
+$("fcIntent").addEventListener("change", function(){ $("fcIntentTag").textContent=this.value.trim(); });
+
+/* ---------- selo ---------- */
+function seal(on){
+  FC.sealed=on;
+  $("focus").classList.toggle("sealed", on);
+  if(on){
+    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
+    if("wakeLock" in navigator){ navigator.wakeLock.request("screen").then(function(l){ FC.wlock=l; }).catch(function(){}); }
+  } else {
+    if(document.fullscreenElement) document.exitFullscreen().catch(function(){});
+    if(FC.wlock){ try{ FC.wlock.release(); }catch(e){} FC.wlock=null; }
+    $("focus").classList.remove("idle");
+  }
+}
+$("fcSeal").addEventListener("click", function(){ seal(true); });
+document.addEventListener("fullscreenchange", function(){
+  if(!document.fullscreenElement && FC.sealed) seal(false);
+});
+document.addEventListener("keydown", function(ev){
+  if(!FC.on) return;
+  if(ev.key==="Escape"){
+    if(FC.sealed){ seal(false); ev.stopImmediatePropagation(); }
+  }
+}, true);
+
+/* ---------- abrir e fechar a sala ---------- */
+function focusOpen(){
+  if(FC.on) return;
+  FC.on=true;
+  window.HMFOCUS.on=true;
+  if(!Object.keys(window.HMFOCUS.allow).length){
+    Object.keys(DEEP).forEach(function(g){ window.HMFOCUS.allow[g]=true; });
+  }
+  valveBuild();
+  if(window.HM && HM.flushPeek) HM.flushPeek();
+  $("focus").classList.add("on");
+  $("focus").classList.toggle("noidle", !$("fcBlack").checked);
+  if(!FC.gateDone) gateRun();
+  wakeChrome();
+  field();
+}
+function focusClose(){
+  if(!FC.on) return;
+  FC.on=false;
+  window.HMFOCUS.on=false;
+  duckBroadcast(false);
+  cancelAnimationFrame(FC.raf);
+  if(FC.sealed) seal(false);
+  sndStop();
+  $("focus").classList.remove("on");
+}
+document.getElementById("focusBtn").addEventListener("click", focusOpen);
+$("fcExit").addEventListener("click", focusClose);
+})();
+</script>
+<style>
+/* ================= a arcada da casa: dois jogos sobre a emissao ================= */
+#arcade{position:fixed; inset:3% 4%; z-index:86; display:none; background:rgba(6,5,17,.97);
+  border:1px solid var(--amber); overflow:auto; padding:18px 20px}
+#arcade.on{display:block}
+#arcClose{position:absolute; right:10px; top:8px; background:none; border:none; color:var(--dim);
+  font-size:18px; cursor:pointer}
+#arcade h3{margin:0 0 2px; font-size:14px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
+#arcade .asub{font-size:9px; letter-spacing:.22em; color:var(--dim); text-transform:uppercase; margin:0 0 14px}
+.arc-tabs{display:flex; gap:7px; margin:0 0 16px}
+.arc-game{display:none}
+.arc-game.on{display:block}
+#arcStage{display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start}
+#arcCover{position:relative; width:280px; height:158px; background:#000; border:1px solid var(--line); overflow:hidden}
+#arcYt{width:100%; height:100%}
+#arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,#0a0820 0 12px,#070617 12px 24px);
+  display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:10px;
+  letter-spacing:.3em; text-transform:uppercase; text-align:center; padding:10px}
+#arcOpts{flex:1; min-width:240px}
+.arc-opt{display:block; width:100%; text-align:left; margin:0 0 8px; padding:10px 12px}
+.arc-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
+.arc-opt.bad{color:var(--paper); background:rgba(232,57,44,.4); border-color:var(--red)}
+#arcScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:8px 0 0}
+#arcReveal{font-size:11.5px; color:#d7d3e4; margin:10px 0 0; min-height:38px}
+#dkRow{display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start}
+.dk-col{min-width:220px; flex:1}
+.dk-ctl{margin:0 0 13px}
+.dk-ctl label{display:block; font-size:9px; letter-spacing:.26em; color:var(--teal);
+  text-transform:uppercase; margin-bottom:5px}
+.dk-ctl input[type=range]{width:100%; accent-color:var(--amber)}
+.dk-time{display:flex; gap:6px}
+#dkThrow{background:var(--red); border-color:var(--red); color:var(--paper); padding:13px 16px; font-size:11px}
+#dkThrow:active{background:var(--amber); border-color:var(--amber); color:var(--ink)}
+#dkVu{width:100%; height:50px; background:#07061a; border:1px solid var(--line)}
+#dkCredit{font-size:10px; color:var(--dim); line-height:1.8; margin-top:12px}
+#dkCredit b{color:var(--amber); font-weight:500}
+</style>
+
+<div id="arcade" aria-label="the arcade">
+  <button id="arcClose" type="button">&times;</button>
+  <h3>The Arcade</h3>
+  <p class="asub">two games on the broadcast &middot; the radio steps aside while you play and returns when you leave</p>
+  <nav class="arc-tabs">
+    <button class="tbtn arcTab on" data-g="nd" type="button">Drop the Needle</button>
+    <button class="tbtn arcTab" data-g="dk" type="button">Dub Desk</button>
+  </nav>
+
+  <section class="arc-game on" id="ag-nd">
+    <div id="arcStage">
+      <div id="arcCover"><div id="arcYt"></div><div id="arcMask">the record is hidden<br>listen</div></div>
+      <div id="arcOpts">
+        <button class="tbtn" id="arcStart" type="button">Drop it</button>
+        <div id="arcChoices"></div>
+        <div id="arcReveal"></div>
+        <div id="arcScore"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="arc-game" id="ag-dk">
+    <div id="dkRow">
+      <div class="dk-col">
+        <div class="dk-ctl"><button class="tbtn" id="dkPlay" type="button">Play the record</button></div>
+        <div class="dk-ctl"><label>echo send</label><input type="range" id="dkSend" min="0" max="100" value="22"></div>
+        <div class="dk-ctl"><label>echo feedback</label><input type="range" id="dkFb" min="0" max="82" value="55"></div>
+        <div class="dk-ctl"><label>echo time</label>
+          <div class="dk-time">
+            <button class="tbtn dkT on" data-t="0.28" type="button">tight</button>
+            <button class="tbtn dkT" data-t="0.42" type="button">skank</button>
+            <button class="tbtn dkT" data-t="0.56" type="button">wide</button>
+          </div>
+        </div>
+      </div>
+      <div class="dk-col">
+        <div class="dk-ctl"><label>space (spring)</label><input type="range" id="dkSpace" min="0" max="100" value="18"></div>
+        <div class="dk-ctl"><label>tone (low pass)</label><input type="range" id="dkLpf" min="0" max="100" value="100"></div>
+        <div class="dk-ctl"><label>bass</label><button class="tbtn" id="dkBass" type="button">Kill the bass</button></div>
+        <div class="dk-ctl"><label>the move</label><button id="dkThrow" class="tbtn" type="button">THROW &middot; echo out</button></div>
+      </div>
+      <div class="dk-col">
+        <canvas id="dkVu" width="280" height="50"></canvas>
+        <div id="dkCredit"><b>on the platter</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>live performance processing in your browser; nothing is recorded</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+(function(){
+var $=function(id){ return document.getElementById(id); };
+var ARC={ on:false };
+
+$("arcBtn").addEventListener("click", function(){
+  if(ARC.on) return;
+  ARC.on=true;
+  $("arcade").classList.add("on");
+  if(window.HM && HM.side) HM.side(true);
+});
+function arcClose(){
+  if(!ARC.on) return;
+  ARC.on=false;
+  $("arcade").classList.remove("on");
+  ndStop(); dkStop();
+  if(window.HM && HM.side) HM.side(false);
+}
+$("arcClose").addEventListener("click", arcClose);
+document.addEventListener("keydown", function(ev){
+  if(ev.key==="Escape" && ARC.on) arcClose();
+});
+document.querySelectorAll(".arcTab").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".arcTab").forEach(function(x){ x.classList.toggle("on", x===b); });
+    document.querySelectorAll(".arc-game").forEach(function(g){ g.classList.remove("on"); });
+    $("ag-"+b.getAttribute("data-g")).classList.add("on");
+  });
+});
+
+/* ---------- drop the needle ---------- */
+var nd={ yt:null, ready:false, cur:null, lives:3, score:0, stopT:null };
+function ndPlayer(cb){
+  if(nd.yt && nd.ready){ cb(); return; }
+  if(typeof YT==="undefined" || !YT.Player){ setTimeout(function(){ ndPlayer(cb); }, 400); return; }
+  nd.yt=new YT.Player("arcYt", { width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:0, rel:0, playsinline:1 },
+    events:{ onReady:function(e){ nd.yt=e.target; nd.ready=true; cb(); } } });
+}
+function ndStop(){ clearTimeout(nd.stopT); try{ if(nd.yt&&nd.ready) nd.yt.pauseVideo(); }catch(e){} }
+function ndOptions(t){
+  var names={}, out=[GENRES[t.g].name];
+  names[t.g]=1;
+  var keys=Object.keys(GENRES);
+  while(out.length<4){
+    var k=keys[Math.floor(Math.random()*keys.length)];
+    if(!names[k] && TRACKS.some(function(x){ return x.g===k; })){ names[k]=1; out.push(GENRES[k].name); }
+  }
+  return out.sort(function(){ return Math.random()-0.5; });
+}
+function ndRound(){
+  nd.cur=TRACKS[Math.floor(Math.random()*TRACKS.length)];
+  $("arcReveal").textContent="";
+  var ch=$("arcChoices"); ch.innerHTML="";
+  ndOptions(nd.cur).forEach(function(name){
+    var b=document.createElement("button");
+    b.className="tbtn arc-opt"; b.type="button"; b.textContent=name;
+    b.addEventListener("click", function(){ ndAnswer(b, name); });
+    ch.appendChild(b);
+  });
+  $("arcMask").innerHTML="the record is hidden<br>listening&hellip;";
+  ndPlayer(function(){
+    nd.yt.loadVideoById({ videoId:nd.cur.v, startSeconds:45 });
+    nd.yt.playVideo();
+    clearTimeout(nd.stopT);
+    nd.stopT=setTimeout(function(){ try{ nd.yt.pauseVideo(); }catch(e){} $("arcMask").innerHTML="the needle is up<br>name the sound"; }, 6000);
+  });
+  ndPaint();
+}
+function ndAnswer(btn, name){
+  var good=GENRES[nd.cur.g].name;
+  ndStop();
+  document.querySelectorAll(".arc-opt").forEach(function(b){
+    if(b.textContent===good) b.classList.add("good");
+    b.disabled=true;
+  });
+  if(name===good){ nd.score++; } else { btn.classList.add("bad"); nd.lives--; }
+  $("arcReveal").textContent="it was "+nd.cur.a+" / "+nd.cur.t+" ("+nd.cur.y+"), "+good+".";
+  ndPaint();
+  if(nd.lives<=0){ $("arcStart").textContent="Session over. again?"; nd.lives=3; nd.score=0; }
+  else { $("arcStart").textContent="Next record"; }
+}
+function ndPaint(){ $("arcScore").textContent="score "+nd.score+" · lives "+nd.lives; }
+$("arcStart").addEventListener("click", ndRound);
+
+/* ---------- dub desk ---------- */
+var DK={ ac:null, el:null, n:null, playing:false, raf:0 };
+var DK_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+function dkIr(secs){
+  var rate=DK.ac.sampleRate, len=Math.floor(secs*rate);
+  var buf=DK.ac.createBuffer(2, len, rate);
+  for(var c=0;c<2;c++){
+    var d=buf.getChannelData(c);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len, 2.6); }
+  }
+  return buf;
+}
+function dkBuild(){
+  var ac=DK.ac=new (window.AudioContext||window.webkitAudioContext)();
+  var el=DK.el=new Audio(DK_SRC);
+  el.crossOrigin="anonymous";
+  var src=ac.createMediaElementSource(el);
+  var dry=ac.createGain();
+  var send=ac.createGain(); send.gain.value=.22;
+  var delay=ac.createDelay(2); delay.delayTime.value=.42;
+  var fb=ac.createGain(); fb.gain.value=.55;
+  var fbF=ac.createBiquadFilter(); fbF.type="bandpass"; fbF.frequency.value=1400; fbF.Q.value=.6;
+  var conv=ac.createConvolver(); conv.buffer=dkIr(2.4);
+  var convWet=ac.createGain(); convWet.gain.value=.18;
+  var lpf=ac.createBiquadFilter(); lpf.type="lowpass"; lpf.frequency.value=18000;
+  var hpf=ac.createBiquadFilter(); hpf.type="highpass"; hpf.frequency.value=0;
+  var master=ac.createGain(); master.gain.value=.95;
+  var ana=ac.createAnalyser(); ana.fftSize=512;
+  src.connect(dry); src.connect(send);
+  send.connect(delay); delay.connect(fbF); fbF.connect(fb); fb.connect(delay);
+  dry.connect(lpf); delay.connect(lpf);
+  lpf.connect(hpf); hpf.connect(master);
+  master.connect(conv); conv.connect(convWet); convWet.connect(ac.destination);
+  master.connect(ana); master.connect(ac.destination);
+  DK.n={send:send, delay:delay, fb:fb, lpf:lpf, hpf:hpf, conv:convWet, ana:ana};
+  dkVu();
+}
+function dkVu(){
+  DK.raf=requestAnimationFrame(dkVu);
+  var c=$("dkVu"), g=c.getContext("2d");
+  g.fillStyle="#07061a"; g.fillRect(0,0,c.width,c.height);
+  if(!DK.n) return;
+  var data=new Uint8Array(DK.n.ana.frequencyBinCount);
+  DK.n.ana.getByteFrequencyData(data);
+  var bars=24, bw=c.width/bars;
+  for(var i=0;i<bars;i++){
+    var v=data[Math.floor(i*data.length/bars)]/255;
+    g.fillStyle = i<6 ? "#e8392c" : (i<14 ? "#ffb12b" : "#41d9c8");
+    g.fillRect(i*bw+2, c.height-(v*c.height), bw-4, v*c.height);
+  }
+}
+function dkStop(){
+  if(DK.el && DK.playing){ try{ DK.el.pause(); }catch(e){} DK.playing=false; $("dkPlay").textContent="Play the record"; }
+}
+$("dkPlay").addEventListener("click", function(){
+  if(!DK.ac) dkBuild();
+  if(DK.ac.state==="suspended") DK.ac.resume();
+  if(DK.playing){ dkStop(); }
+  else { DK.el.play().catch(function(){}); DK.playing=true; this.textContent="Lift the needle"; }
+});
+$("dkSend").addEventListener("input", function(){ if(DK.n) DK.n.send.gain.value=this.value/100; });
+$("dkFb").addEventListener("input", function(){ if(DK.n) DK.n.fb.gain.value=this.value/100; });
+$("dkSpace").addEventListener("input", function(){ if(DK.n) DK.n.conv.gain.value=this.value/100*.6; });
+$("dkLpf").addEventListener("input", function(){
+  if(DK.n) DK.n.lpf.frequency.value=400*Math.pow(45, this.value/100);
+});
+document.querySelectorAll(".dkT").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".dkT").forEach(function(x){ x.classList.toggle("on", x===b); });
+    if(DK.n) DK.n.delay.delayTime.value=parseFloat(b.getAttribute("data-t"));
+  });
+});
+var dkBassK=false;
+function dkBass(){
+  dkBassK=!dkBassK;
+  if(DK.n) DK.n.hpf.frequency.value = dkBassK ? 230 : 0;
+  $("dkBass").textContent = dkBassK ? "Bring the bass back" : "Kill the bass";
+}
+$("dkBass").addEventListener("click", dkBass);
+function dkThrow(down){
+  if(!DK.n) return;
+  if(down){ DK.n._hold=DK.n.send.gain.value; DK.n.send.gain.value=1; }
+  else { DK.n.send.gain.value=(typeof DK.n._hold==="number")?DK.n._hold:($("dkSend").value/100); }
+}
+$("dkThrow").addEventListener("pointerdown", function(){ dkThrow(true); });
+$("dkThrow").addEventListener("pointerup", function(){ dkThrow(false); });
+$("dkThrow").addEventListener("pointerleave", function(){ dkThrow(false); });
+document.addEventListener("keydown", function(ev){
+  if(!ARC.on || !$("ag-dk").classList.contains("on")) return;
+  if(ev.target.tagName==="INPUT") return;
+  if(ev.key===" "){ ev.preventDefault(); dkThrow(true); }
+  if(ev.key==="b") dkBass();
+});
+document.addEventListener("keyup", function(ev){
+  if(ARC.on && ev.key===" ") dkThrow(false);
+});
 })();
 </script>
