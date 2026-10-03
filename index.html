@@ -196,7 +196,7 @@ button{font-family:var(--mono)}
 #genrePanel{left:0; border-right:1px solid var(--line); transform:translateX(-102%)}
 #dancePanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
 #histPanel{right:0; border-left:1px solid var(--line); transform:translateX(102%)}
-.panel.on{transform:translateX(0)}
+.panel.on, #genrePanel.on, #histPanel.on, #dancePanel.on{transform:translateX(0)}
 .panel h3{font-family:var(--display); font-weight:400; letter-spacing:.06em; font-size:20px; margin:4px 0 2px; text-transform:uppercase; text-shadow:2px 2px 0 var(--red)}
 .panel .pclose{position:absolute; top:14px; right:14px; background:none; border:1px solid var(--line); color:var(--dim); cursor:pointer; padding:4px 9px}
 .panel .psub{color:var(--dim); font-size:10px; letter-spacing:.3em; text-transform:uppercase; margin:0 0 14px}
@@ -226,6 +226,9 @@ button{font-family:var(--mono)}
 .dance-list a{color:var(--teal); text-decoration:none; font-size:12px}
 .dance-list a:hover{color:var(--amber)}
 .dance-note{color:var(--dim); font-size:10.5px; letter-spacing:.06em; line-height:1.7; margin-top:10px}
+.dance-meta{display:block; color:var(--dim); font-size:9.5px; letter-spacing:.08em; margin-top:2px}
+.dance-more{display:block; color:var(--amber); font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 0}
+
 #gExt{margin-top:16px; border-top:1px dashed var(--line); padding-top:12px}
 #gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
   background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
@@ -2172,14 +2175,44 @@ function danceLinks(city, cc){
   }
   return out;
 }
+var DANCE_DB=null, DANCE_DB_TRIED=false;
+function danceDb(cb){
+  if(DANCE_DB || DANCE_DB_TRIED){ cb(DANCE_DB); return; }
+  var base=(location.pathname.indexOf("/liquid")>=0)? "../" : "";
+  fetch(base+"events/europe.json").then(function(r){ return r.ok? r.json() : null; })
+    .then(function(j){ DANCE_DB_TRIED=true; DANCE_DB=j; cb(j); })
+    .catch(function(){ DANCE_DB_TRIED=true; cb(null); });
+}
+function fmtDay(iso){
+  try{
+    var d=new Date(iso);
+    if(isNaN(d)) return iso.slice(0,10);
+    var wd=["sun","mon","tue","wed","thu","fri","sat"][d.getDay()];
+    return wd+" "+String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0");
+  }catch(e){ return ""; }
+}
 function danceRender(city, cc, note){
   var ul=$("danceList"); ul.innerHTML="";
-  danceLinks(city, cc).forEach(function(l){
-    var li=document.createElement("li");
-    li.innerHTML='<a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a>';
-    ul.appendChild(li);
+  var put=function(html){ var li=document.createElement("li"); li.innerHTML=html; ul.appendChild(li); };
+  danceDb(function(db){
+    var hit=null;
+    if(db && db.cities && city){
+      hit=db.cities[(city||"").toLowerCase()];
+    }
+    if(hit && hit.events && hit.events.length){
+      hit.events.slice(0,8).forEach(function(ev){
+        put('<a href="'+ev.u+'" target="_blank" rel="noopener">'+ev.t+' ↗</a>'+
+            '<span class="dance-meta">'+fmtDay(ev.d)+(ev.v? " · "+ev.v : "")+" · via "+ev.src.toUpperCase()+'</span>');
+      });
+      put('<span class="dance-more">more doors:</span>');
+    } else if(db && city){
+      put('<span class="dance-more">no harvested listings for '+city+' yet (collector refreshes every 48 h, Europe first); the doors below search live:</span>');
+    }
+    danceLinks(city, cc).forEach(function(l){
+      put('<a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a>');
+    });
+    $("danceNote").textContent = note || "";
   });
-  $("danceNote").textContent = note || "";
 }
 function danceLocate(){
   $("danceNote").textContent="asking your browser for a rough position…";
@@ -2377,6 +2410,11 @@ function skTap(){
 $("skPad").addEventListener("pointerdown", function(e){ e.preventDefault(); skTap(); });
 $("skClose").addEventListener("click", skCloseBox);
 $("skipBtn").addEventListener("click", skOpen);
+/* o botao Field existe so na sala liquida: troca o campo do fundo */
+var fieldBtn=$("fieldBtn");
+if(fieldBtn && window.HMFIELD){
+  fieldBtn.addEventListener("click", function(){ HMFIELD.next(); });
+}
 
 document.addEventListener("keydown", function(e){
   if(e.target && (e.target.tagName==="INPUT")) return;
@@ -2390,6 +2428,7 @@ document.addEventListener("keydown", function(e){
   if(e.key === "ArrowRight"){ skOpen(); }
   if(e.key === "m" || e.key === "M"){ toggleMute(); }
   if(e.key === "f" || e.key === "F"){ toggleFs(); }
+  if((e.key === "v" || e.key === "V") && window.HMFIELD){ HMFIELD.next(); }
 });
 
 /* ---------------- intro: o disco de abertura ----------------
@@ -2538,6 +2577,7 @@ function startP2(){
 function endSequence(){
   if(endSeqDone) return; endSeqDone=true;
   hmi("endSequence");
+  introDone=true; cleanupIntro();
   startRadioUnderIntro();
   var veil=$("introVeil");
   vjFade();
