@@ -50,6 +50,7 @@ button{font-family:var(--mono)}
 #gChip{font-size:9px; letter-spacing:.26em; text-transform:uppercase; color:var(--ink);
   background:var(--blk); padding:3px 8px; text-shadow:none}
 #tYear{font-size:11px; letter-spacing:.2em; color:var(--dim)}
+#tBpm{font-size:9.5px; letter-spacing:.22em; color:var(--amber); border:1px solid rgba(255,177,43,.35); padding:2px 6px; text-shadow:none}
 #tArtist{margin:0; font-size:clamp(20px,3.4vw,34px); letter-spacing:.06em; text-transform:uppercase; line-height:1.08}
 #tTitle{color:var(--amber); font-size:clamp(13px,1.8vw,17px); margin:4px 0 8px}
 #tBlurb{color:#c9c4d8; font-size:12px; line-height:1.55; margin:0; max-width:52ch;
@@ -131,6 +132,7 @@ button{font-family:var(--mono)}
       <div id="clock">--:--</div>
       <button class="tbtn" id="genreBtn" type="button">The sound</button>
       <button class="tbtn" id="histBtn" type="button">Session log</button>
+      <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
     </div>
   </header>
 
@@ -138,6 +140,7 @@ button{font-family:var(--mono)}
     <div class="chiprow">
       <span id="gChip">&hellip;</span>
       <span id="tYear"></span>
+      <span id="tBpm"></span>
     </div>
     <h2 id="tArtist">Warming up</h2>
     <div id="tTitle">&nbsp;</div>
@@ -773,9 +776,20 @@ function genreHasTracks(gn){
 function pickGenre(fromG){
   var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
   if(!bg.length) return null;
+  function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
   if(fromG && ADJ[fromG]){
     var near = ADJ[fromG].filter(function(gn){ return bg.indexOf(gn)>=0 && gn!==fromG; });
-    if(near.length) return near[Math.floor(Math.random()*near.length)];
+    if(near.length){
+      /* entre os primos, o de tempo mais proximo quase sempre: a corrente nao da saltos */
+      near.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return (near.length>1 && Math.random()<0.28) ? near[1] : near[0];
+    }
+    /* sem primo direto no bloco: o genero do bloco com o BPM mais proximo */
+    var rest = bg.filter(function(gn){ return gn!==fromG; });
+    if(rest.length){
+      rest.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return rest[0];
+    }
   }
   return bg[Math.floor(Math.random()*bg.length)];
 }
@@ -786,7 +800,7 @@ function nextTrack(){
     var nx = pickGenre(currentGenre);
     if(!nx) return null;
     currentGenre = nx;
-    runLeft = 2 + (Math.random()<0.5 ? 1 : 0);
+    runLeft = 3 + Math.floor(Math.random()*3);
   }
   var pool = poolFor(currentGenre);
   if(!pool.length) return null;
@@ -1119,6 +1133,7 @@ function setNow(t, push){
   if(RIG.setTempo){ RIG.setTempo(GBPM[t.g]||120); }
   $("gChip").textContent = g.name;
   $("tYear").textContent = t.y ? String(t.y) : "";
+  $("tBpm").textContent = "~" + (GBPM[t.g]||120) + " BPM";
   $("tArtist").textContent = t.a;
   $("tTitle").textContent = t.t;
   $("tBlurb").textContent = t.b;
@@ -1186,6 +1201,16 @@ function bindPanel(btnId, panelId){
   });
 }
 bindPanel("genreBtn","genrePanel"); bindPanel("histBtn","histPanel");
+/* imersao: ecra inteiro */
+function toggleFs(){
+  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+}
+$("fsBtn").addEventListener("click", toggleFs);
+document.addEventListener("fullscreenchange", function(){
+  $("fsBtn").classList.toggle("on", !!document.fullscreenElement);
+  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";
+});
 document.querySelectorAll(".pclose").forEach(function(b){
   b.addEventListener("click", function(){ $(b.getAttribute("data-close")).classList.remove("on"); });
 });
@@ -1195,6 +1220,7 @@ document.addEventListener("keydown", function(e){
   if(!radioOn) return;
   if(e.key === "ArrowRight"){ FX.rewind(); setTimeout(hardNext, 350); }
   if(e.key === "m" || e.key === "M"){ toggleMute(); }
+  if(e.key === "f" || e.key === "F"){ toggleFs(); }
 });
 
 /* sem introducao nesta estacao: a emissao arranca direta */
