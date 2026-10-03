@@ -1467,7 +1467,8 @@ function applyVol(k){
   var p=P[k]; if(!p || !p.ready || !p.yt) return;
   var f = (p.fade==null?1:p.fade);
   var fdk=(window.HMFOCUS && HMFOCUS.on && HMFOCUS.duck) || 1;
-  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f * fdk)))); }catch(e){}
+  var sdf=(window.HMSIDE && HMSIDE.f!=null)?HMSIDE.f:1;
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f * fdk * sdf)))); }catch(e){}
 }
 function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
 function audibleLevel(k){
@@ -2049,10 +2050,21 @@ function mx2List(){
     ol.appendChild(li);
   });
 }
+window.HMSIDE={ f:1, src:{}, h:null };
+function sideFade(key, on){
+  HMSIDE.src[key]=!!on;
+  var target=Object.keys(HMSIDE.src).some(function(k){ return HMSIDE.src[k]; }) ? 0 : 1;
+  var from=HMSIDE.f;
+  if(Math.abs(from-target)<0.01){ HMSIDE.f=target; return; }
+  if(HMSIDE.h) clearInterval(HMSIDE.h);
+  HMSIDE.h=animClock(700, function(x){
+    HMSIDE.f=from+(target-from)*x;
+    try{ applyVol("A"); applyVol("B"); }catch(e){}
+  });
+}
 function mx2SideRadio(on){
-  /* on=true: a radio poe-se de lado enquanto a tape toca */
-  if(on){ if(!muted){ toggleMute(); mx2.mutedRadio=true; } }
-  else { if(mx2.mutedRadio){ mx2.mutedRadio=false; if(muted) toggleMute(); } }
+  /* on=true: a radio desvanece de lado enquanto a tape toca */
+  sideFade("tapes", on);
 }
 function mx2Player(cb){
   if(mx2.yt && mx2.ready){ cb(); return; }
@@ -2346,7 +2358,8 @@ window.HM={
   }
 };
 window.HMFOCUS={ on:false, duck:1, allow:{} };
-window.HM.side=function(on){ try{ mx2SideRadio(on); }catch(e){} };
+window.HM.side=function(on){ try{ sideFade("arcade", on); }catch(e){} };
+window.HM.sideKey=function(k, on){ try{ sideFade(k, on); }catch(e){} };
 window.HM.flushPeek=function(){ try{ devQ.length=0; }catch(e){} };
 window.HM.reVol=function(){ try{ applyVol("A"); applyVol("B"); }catch(e){} };
 var guardOn=false;
@@ -3095,7 +3108,7 @@ if(DESK){
 #fcTop .fbrand{font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--paper)}
 #fcTop .fbrand span{color:var(--teal); margin-left:8px}
 #fcTemps{margin-left:auto; display:flex; gap:6px}
-#fcSide{position:absolute; right:14px; top:58px; z-index:4; width:316px; max-height:calc(100% - 76px);
+#fcSide{position:absolute; right:14px; top:58px; z-index:4; width:364px; max-height:calc(100% - 76px);
   overflow-y:auto; background:rgba(5,4,16,.88); border:1px solid var(--line); padding:14px 14px 10px}
 #fcSide h4{margin:15px 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
 #fcSide h4:first-child{margin-top:0}
@@ -3335,6 +3348,11 @@ setInterval(function(){
 $("fcGo").addEventListener("click", function(){
   FC.pomo.run=!FC.pomo.run;
   this.textContent=FC.pomo.run?"Pause":"Start";
+  /* ao iniciar o relogio, a emissao regressa, ja apertada pela valvula */
+  if(FC.pomo.run && !FC.musicBack){
+    FC.musicBack=true;
+    if(window.HM && HM.sideKey) HM.sideKey("focus", false);
+  }
   fcPaint();
 });
 $("fcReset").addEventListener("click", function(){
@@ -3522,6 +3540,9 @@ function focusOpen(){
   if(FC.on) return;
   FC.on=true;
   window.HMFOCUS.on=true;
+  /* a emissao desvanece para a respiracao comecar em silencio */
+  if(window.HM && HM.sideKey) HM.sideKey("focus", true);
+  FC.musicBack=false;
   if(!Object.keys(window.HMFOCUS.allow).length){
     Object.keys(DEEP).forEach(function(g){ window.HMFOCUS.allow[g]=true; });
   }
@@ -3537,6 +3558,7 @@ function focusClose(){
   if(!FC.on) return;
   FC.on=false;
   window.HMFOCUS.on=false;
+  if(window.HM && HM.sideKey) HM.sideKey("focus", false);
   duckBroadcast(false);
   cancelAnimationFrame(FC.raf);
   if(FC.sealed) seal(false);
@@ -3548,9 +3570,10 @@ $("fcExit").addEventListener("click", focusClose);
 })();
 </script>
 <style>
-/* ================= a arcada da casa: dois jogos sobre a emissao ================= */
-#arcade{position:fixed; inset:3% 4%; z-index:86; display:none; background:rgba(6,5,17,.97);
-  border:1px solid var(--amber); overflow:auto; padding:18px 20px}
+/* ================= a arcada da casa ================= */
+#arcade{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:86; display:none;
+  width:min(880px, 94vw); max-height:92vh; overflow:auto; background:rgba(8,6,18,.97);
+  border:1px solid var(--amber); padding:18px 22px 20px}
 #arcade.on{display:block}
 #arcClose{position:absolute; right:10px; top:8px; background:none; border:none; color:var(--dim);
   font-size:18px; cursor:pointer}
@@ -3559,36 +3582,65 @@ $("fcExit").addEventListener("click", focusClose);
 .arc-tabs{display:flex; gap:7px; margin:0 0 16px}
 .arc-game{display:none}
 .arc-game.on{display:block}
-#arcStage{display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start}
-#arcCover{position:relative; width:280px; height:158px; background:#000; border:1px solid var(--line); overflow:hidden}
+
+/* needle */
+#arcStage{display:flex; gap:18px; flex-wrap:wrap}
+#arcCover{position:relative; width:300px; height:168px; background:#000; border:1px solid var(--line);
+  overflow:hidden; flex:0 0 auto}
 #arcYt{width:100%; height:100%}
 #arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,#0a0820 0 12px,#070617 12px 24px);
   display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:10px;
   letter-spacing:.3em; text-transform:uppercase; text-align:center; padding:10px}
-#arcOpts{flex:1; min-width:240px}
-.arc-opt{display:block; width:100%; text-align:left; margin:0 0 8px; padding:10px 12px}
+#arcOpts{flex:1; min-width:250px}
+.arc-opt{display:block; width:100%; text-align:left; margin:0 0 7px; padding:9px 12px}
 .arc-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
 .arc-opt.bad{color:var(--paper); background:rgba(232,57,44,.4); border-color:var(--red)}
-#arcScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:8px 0 0}
-#arcReveal{font-size:11.5px; color:#d7d3e4; margin:10px 0 0; min-height:38px}
-#dkRow{display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start}
-.dk-col{min-width:220px; flex:1}
-.dk-ctl{margin:0 0 13px}
-.dk-ctl label{display:block; font-size:9px; letter-spacing:.26em; color:var(--teal);
-  text-transform:uppercase; margin-bottom:5px}
-.dk-ctl input[type=range]{width:100%; accent-color:var(--amber)}
-.dk-time{display:flex; gap:6px}
-#dkThrow{background:var(--red); border-color:var(--red); color:var(--paper); padding:13px 16px; font-size:11px}
-#dkThrow:active{background:var(--amber); border-color:var(--amber); color:var(--ink)}
-#dkVu{width:100%; height:50px; background:#07061a; border:1px solid var(--line)}
-#dkCredit{font-size:10px; color:var(--dim); line-height:1.8; margin-top:12px}
-#dkCredit b{color:var(--amber); font-weight:500}
+#arcScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:6px 0 0}
+#arcReveal{font-size:11px; color:#d7d3e4; margin:8px 0 0; min-height:34px}
+
+/* ---- dub desk: consola da casa ---- */
+#deskNote{border:1px dashed var(--line); padding:10px 12px; margin:0 0 14px;
+  font-size:10.5px; color:var(--dim); line-height:1.9}
+#deskNote b{color:var(--amber); font-weight:500}
+#desk{background:linear-gradient(180deg, #221409, #160d06 60%, #0f0a05);
+  border:1px solid #3a2a14; border-top:none; padding:16px 16px 14px; position:relative}
+#desk::before{content:""; display:block; position:absolute; left:0; right:0; top:0; height:4px;
+  background:linear-gradient(90deg, #1c7a3a 0 33%, #e3b71f 33% 66%, #b3271e 66% 100%)}
+#deskHead{display:flex; align-items:center; gap:12px; margin:6px 0 16px}
+#deskHead .dname{font-size:11px; letter-spacing:.34em; color:#e7d9b8; text-transform:uppercase}
+#deskHead .dsub{font-size:8.5px; letter-spacing:.2em; color:#8a7750; text-transform:uppercase}
+#dkPlay{margin-left:auto}
+#deskRow{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start}
+.kbank{display:flex; gap:18px; flex-wrap:wrap}
+.knob{width:76px; text-align:center; user-select:none}
+.kcap{position:relative; width:58px; height:58px; margin:0 auto; border-radius:50%; cursor:ns-resize;
+  background:radial-gradient(circle at 36% 30%, #f2e7cd, #cdbb92 55%, #8f7a52 92%);
+  box-shadow:0 3px 7px rgba(0,0,0,.65), inset 0 -3px 5px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.5);
+  border:2px solid #2a1c0c}
+.kcap i{position:absolute; left:50%; top:4px; width:3px; height:18px; margin-left:-1.5px;
+  background:#b3271e; border-radius:2px; transform-origin:50% 25px}
+.knob label{display:block; margin-top:7px; font-size:8.5px; letter-spacing:.24em; color:#cdbb92;
+  text-transform:uppercase}
+.knob .kv{font-size:9px; color:#8a7750}
+.kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted rgba(205,187,146,.3)}
+#dkTimeBank{display:flex; flex-direction:column; gap:6px}
+#dkTimeBank .tbtn{background:#241607; border-color:#3a2a14; color:#cdbb92}
+#dkTimeBank .tbtn.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+.dk-side{min-width:200px; flex:1}
+#dkBass{background:#241607; border-color:#3a2a14; color:#cdbb92; padding:10px 12px}
+#dkBass.on{background:#1c7a3a; border-color:#1c7a3a; color:#0f0a05}
+#dkThrow{background:#b3271e; border-color:#b3271e; color:#f6ead0; padding:14px 16px; font-size:11px; width:100%}
+#dkThrow:active{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+#dkVu{width:100%; height:46px; background:#0b0703; border:1px solid #3a2a14; margin-top:10px}
+#dkCredit{font-size:9.5px; color:#8a7750; line-height:1.8; margin-top:10px}
+#dkCredit b{color:#e3b71f; font-weight:500}
+.dkkeys{font-size:8.5px; color:#6a5a3c; letter-spacing:.16em; text-transform:uppercase; margin-top:6px}
 </style>
 
 <div id="arcade" aria-label="the arcade">
   <button id="arcClose" type="button">&times;</button>
   <h3>The Arcade</h3>
-  <p class="asub">two games on the broadcast &middot; the radio steps aside while you play and returns when you leave</p>
+  <p class="asub">drop the needle pauses the broadcast in a fade; the dub desk has its own dubplate</p>
   <nav class="arc-tabs">
     <button class="tbtn arcTab on" data-g="nd" type="button">Drop the Needle</button>
     <button class="tbtn arcTab" data-g="dk" type="button">Dub Desk</button>
@@ -3607,28 +3659,32 @@ $("fcExit").addEventListener("click", focusClose);
   </section>
 
   <section class="arc-game" id="ag-dk">
-    <div id="dkRow">
-      <div class="dk-col">
-        <div class="dk-ctl"><button class="tbtn" id="dkPlay" type="button">Play the record</button></div>
-        <div class="dk-ctl"><label>echo send</label><input type="range" id="dkSend" min="0" max="100" value="22"></div>
-        <div class="dk-ctl"><label>echo feedback</label><input type="range" id="dkFb" min="0" max="82" value="55"></div>
-        <div class="dk-ctl"><label>echo time</label>
-          <div class="dk-time">
-            <button class="tbtn dkT on" data-t="0.28" type="button">tight</button>
-            <button class="tbtn dkT" data-t="0.42" type="button">skank</button>
-            <button class="tbtn dkT" data-t="0.56" type="button">wide</button>
-          </div>
+    <div id="deskNote"><b>Why the broadcast stays out of the desk's hands:</b> the YouTube stream lives in a sealed frame no site may process; that is browser law, not a choice of the house. The board works its own dubplate; the radio only steps aside while that record spins. The day the station runs tunes from open sources, this desk plugs straight into the air.</div>
+    <div id="desk">
+      <div id="deskHead">
+        <span class="dname">Home Music &middot; Spring Board</span>
+        <span class="dsub">dub console mk I</span>
+        <button class="tbtn" id="dkPlay" type="button">Spin the dubplate</button>
+      </div>
+      <div id="deskRow">
+        <div class="kbank">
+          <div class="knob" data-k="send"><div class="kcap"><div class="kscale"></div><i></i></div><label>echo send</label><span class="kv">22</span></div>
+          <div class="knob" data-k="fb"><div class="kcap"><div class="kscale"></div><i></i></div><label>feedback</label><span class="kv">55</span></div>
+          <div class="knob" data-k="space"><div class="kcap"><div class="kscale"></div><i></i></div><label>spring</label><span class="kv">18</span></div>
+          <div class="knob" data-k="lpf"><div class="kcap"><div class="kscale"></div><i></i></div><label>tone</label><span class="kv">100</span></div>
         </div>
-      </div>
-      <div class="dk-col">
-        <div class="dk-ctl"><label>space (spring)</label><input type="range" id="dkSpace" min="0" max="100" value="18"></div>
-        <div class="dk-ctl"><label>tone (low pass)</label><input type="range" id="dkLpf" min="0" max="100" value="100"></div>
-        <div class="dk-ctl"><label>bass</label><button class="tbtn" id="dkBass" type="button">Kill the bass</button></div>
-        <div class="dk-ctl"><label>the move</label><button id="dkThrow" class="tbtn" type="button">THROW &middot; echo out</button></div>
-      </div>
-      <div class="dk-col">
-        <canvas id="dkVu" width="280" height="50"></canvas>
-        <div id="dkCredit"><b>on the platter</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>live performance processing in your browser; nothing is recorded</div>
+        <div id="dkTimeBank">
+          <button class="tbtn dkT" data-t="0.28" type="button">tight</button>
+          <button class="tbtn dkT on" data-t="0.42" type="button">skank</button>
+          <button class="tbtn dkT" data-t="0.56" type="button">wide</button>
+          <button class="tbtn" id="dkBass" type="button">Kill the bass</button>
+        </div>
+        <div class="dk-side">
+          <button id="dkThrow" class="tbtn" type="button">THROW &middot; echo out</button>
+          <canvas id="dkVu" width="260" height="46"></canvas>
+          <div class="dkkeys">drag a knob up or down &middot; [space] throw &middot; [b] bass</div>
+          <div id="dkCredit"><b>on the platter</b> Koncrete Roots, Sound Killah &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0 &middot; live processing in your browser, nothing recorded</div>
+        </div>
       </div>
     </div>
   </section>
@@ -3638,43 +3694,65 @@ $("fcExit").addEventListener("click", focusClose);
 "use strict";
 (function(){
 var $=function(id){ return document.getElementById(id); };
-var ARC={ on:false };
+var ARC={ on:false, tab:"nd" };
 
+function sideWant(){
+  /* a emissao so se afasta quando ha outro som: o jogo da agulha, ou o dubplate a rodar */
+  var want = ARC.on && (ARC.tab==="nd" || (ARC.tab==="dk" && DK.playing));
+  if(window.HM && HM.side) HM.side(want);
+}
 $("arcBtn").addEventListener("click", function(){
   if(ARC.on) return;
   ARC.on=true;
   $("arcade").classList.add("on");
-  if(window.HM && HM.side) HM.side(true);
+  sideWant();
 });
 function arcClose(){
   if(!ARC.on) return;
   ARC.on=false;
   $("arcade").classList.remove("on");
   ndStop(); dkStop();
-  if(window.HM && HM.side) HM.side(false);
+  sideWant();
 }
 $("arcClose").addEventListener("click", arcClose);
-document.addEventListener("keydown", function(ev){
-  if(ev.key==="Escape" && ARC.on) arcClose();
-});
+document.addEventListener("keydown", function(ev){ if(ev.key==="Escape" && ARC.on) arcClose(); });
 document.querySelectorAll(".arcTab").forEach(function(b){
   b.addEventListener("click", function(){
+    ARC.tab=b.getAttribute("data-g");
     document.querySelectorAll(".arcTab").forEach(function(x){ x.classList.toggle("on", x===b); });
     document.querySelectorAll(".arc-game").forEach(function(g){ g.classList.remove("on"); });
-    $("ag-"+b.getAttribute("data-g")).classList.add("on");
+    $("ag-"+ARC.tab).classList.add("on");
+    if(ARC.tab!=="nd") ndStop();
+    sideWant();
   });
 });
 
-/* ---------- drop the needle ---------- */
-var nd={ yt:null, ready:false, cur:null, lives:3, score:0, stopT:null };
+/* ---------- drop the needle: o relogio so conta com a musica a tocar ---------- */
+var nd={ yt:null, ready:false, cur:null, lives:3, score:0, stopT:null, round:0, waiting:false };
 function ndPlayer(cb){
   if(nd.yt && nd.ready){ cb(); return; }
   if(typeof YT==="undefined" || !YT.Player){ setTimeout(function(){ ndPlayer(cb); }, 400); return; }
   nd.yt=new YT.Player("arcYt", { width:"100%", height:"100%",
     playerVars:{ autoplay:0, controls:0, rel:0, playsinline:1 },
-    events:{ onReady:function(e){ nd.yt=e.target; nd.ready=true; cb(); } } });
+    events:{
+      onReady:function(e){ nd.yt=e.target; nd.ready=true; cb(); },
+      onStateChange:function(e){
+        /* os 6 s de audicao so arrancam quando o disco REALMENTE comeca a soar */
+        if(e.data===1 && nd.waiting){
+          nd.waiting=false;
+          var myRound=nd.round;
+          $("arcMask").innerHTML="the record is hidden<br>listening&hellip;";
+          clearTimeout(nd.stopT);
+          nd.stopT=setTimeout(function(){
+            if(nd.round!==myRound) return;
+            try{ nd.yt.pauseVideo(); }catch(err){}
+            $("arcMask").innerHTML="the needle is up<br>name the sound";
+          }, 6000);
+        }
+      }
+    } });
 }
-function ndStop(){ clearTimeout(nd.stopT); try{ if(nd.yt&&nd.ready) nd.yt.pauseVideo(); }catch(e){} }
+function ndStop(){ nd.waiting=false; clearTimeout(nd.stopT); try{ if(nd.yt&&nd.ready) nd.yt.pauseVideo(); }catch(e){} }
 function ndOptions(t){
   var names={}, out=[GENRES[t.g].name];
   names[t.g]=1;
@@ -3687,6 +3765,7 @@ function ndOptions(t){
 }
 function ndRound(){
   nd.cur=TRACKS[Math.floor(Math.random()*TRACKS.length)];
+  nd.round++;
   $("arcReveal").textContent="";
   var ch=$("arcChoices"); ch.innerHTML="";
   ndOptions(nd.cur).forEach(function(name){
@@ -3695,12 +3774,11 @@ function ndRound(){
     b.addEventListener("click", function(){ ndAnswer(b, name); });
     ch.appendChild(b);
   });
-  $("arcMask").innerHTML="the record is hidden<br>listening&hellip;";
+  $("arcMask").innerHTML="dropping the needle&hellip;";
+  nd.waiting=true;
   ndPlayer(function(){
     nd.yt.loadVideoById({ videoId:nd.cur.v, startSeconds:45 });
     nd.yt.playVideo();
-    clearTimeout(nd.stopT);
-    nd.stopT=setTimeout(function(){ try{ nd.yt.pauseVideo(); }catch(e){} $("arcMask").innerHTML="the needle is up<br>name the sound"; }, 6000);
   });
   ndPaint();
 }
@@ -3723,6 +3801,7 @@ $("arcStart").addEventListener("click", ndRound);
 /* ---------- dub desk ---------- */
 var DK={ ac:null, el:null, n:null, playing:false, raf:0 };
 var DK_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var KV={ send:22, fb:55, space:18, lpf:100 };
 function dkIr(secs){
   var rate=DK.ac.sampleRate, len=Math.floor(secs*rate);
   var buf=DK.ac.createBuffer(2, len, rate);
@@ -3732,19 +3811,27 @@ function dkIr(secs){
   }
   return buf;
 }
+function dkApply(){
+  if(!DK.n) return;
+  DK.n.send.gain.value=KV.send/100;
+  DK.n.fb.gain.value=KV.fb/100;
+  DK.n.conv.gain.value=KV.space/100*.6;
+  DK.n.lpf.frequency.value=400*Math.pow(45, KV.lpf/100);
+}
 function dkBuild(){
   var ac=DK.ac=new (window.AudioContext||window.webkitAudioContext)();
   var el=DK.el=new Audio(DK_SRC);
   el.crossOrigin="anonymous";
+  el.addEventListener("ended", function(){ DK.playing=false; $("dkPlay").textContent="Spin the dubplate"; sideWant(); });
   var src=ac.createMediaElementSource(el);
   var dry=ac.createGain();
-  var send=ac.createGain(); send.gain.value=.22;
+  var send=ac.createGain();
   var delay=ac.createDelay(2); delay.delayTime.value=.42;
-  var fb=ac.createGain(); fb.gain.value=.55;
+  var fb=ac.createGain();
   var fbF=ac.createBiquadFilter(); fbF.type="bandpass"; fbF.frequency.value=1400; fbF.Q.value=.6;
   var conv=ac.createConvolver(); conv.buffer=dkIr(2.4);
-  var convWet=ac.createGain(); convWet.gain.value=.18;
-  var lpf=ac.createBiquadFilter(); lpf.type="lowpass"; lpf.frequency.value=18000;
+  var convWet=ac.createGain();
+  var lpf=ac.createBiquadFilter(); lpf.type="lowpass";
   var hpf=ac.createBiquadFilter(); hpf.type="highpass"; hpf.frequency.value=0;
   var master=ac.createGain(); master.gain.value=.95;
   var ana=ac.createAnalyser(); ana.fftSize=512;
@@ -3754,37 +3841,71 @@ function dkBuild(){
   lpf.connect(hpf); hpf.connect(master);
   master.connect(conv); conv.connect(convWet); convWet.connect(ac.destination);
   master.connect(ana); master.connect(ac.destination);
-  DK.n={send:send, delay:delay, fb:fb, lpf:lpf, hpf:hpf, conv:convWet, ana:ana};
+  DK.n={send:send, fb:fb, delay:delay, conv:convWet, lpf:lpf, hpf:hpf, ana:ana};
+  dkApply();
   dkVu();
 }
 function dkVu(){
   DK.raf=requestAnimationFrame(dkVu);
   var c=$("dkVu"), g=c.getContext("2d");
-  g.fillStyle="#07061a"; g.fillRect(0,0,c.width,c.height);
+  g.fillStyle="#0b0703"; g.fillRect(0,0,c.width,c.height);
   if(!DK.n) return;
   var data=new Uint8Array(DK.n.ana.frequencyBinCount);
   DK.n.ana.getByteFrequencyData(data);
-  var bars=24, bw=c.width/bars;
+  var bars=22, bw=c.width/bars;
   for(var i=0;i<bars;i++){
     var v=data[Math.floor(i*data.length/bars)]/255;
-    g.fillStyle = i<6 ? "#e8392c" : (i<14 ? "#ffb12b" : "#41d9c8");
+    g.fillStyle = i<6 ? "#b3271e" : (i<14 ? "#e3b71f" : "#1c7a3a");
     g.fillRect(i*bw+2, c.height-(v*c.height), bw-4, v*c.height);
   }
 }
 function dkStop(){
-  if(DK.el && DK.playing){ try{ DK.el.pause(); }catch(e){} DK.playing=false; $("dkPlay").textContent="Play the record"; }
+  if(DK.el && DK.playing){ try{ DK.el.pause(); }catch(e){} DK.playing=false; $("dkPlay").textContent="Spin the dubplate"; }
+  sideWant();
 }
 $("dkPlay").addEventListener("click", function(){
   if(!DK.ac) dkBuild();
   if(DK.ac.state==="suspended") DK.ac.resume();
   if(DK.playing){ dkStop(); }
-  else { DK.el.play().catch(function(){}); DK.playing=true; this.textContent="Lift the needle"; }
+  else {
+    DK.el.play().catch(function(){});
+    DK.playing=true; this.textContent="Lift the needle";
+    sideWant();
+  }
 });
-$("dkSend").addEventListener("input", function(){ if(DK.n) DK.n.send.gain.value=this.value/100; });
-$("dkFb").addEventListener("input", function(){ if(DK.n) DK.n.fb.gain.value=this.value/100; });
-$("dkSpace").addEventListener("input", function(){ if(DK.n) DK.n.conv.gain.value=this.value/100*.6; });
-$("dkLpf").addEventListener("input", function(){
-  if(DK.n) DK.n.lpf.frequency.value=400*Math.pow(45, this.value/100);
+
+/* knobs: rodar arrastando na vertical; duplo clique repoe */
+var KDEF={ send:22, fb:55, space:18, lpf:100 };
+var KMAX={ send:100, fb:82, space:100, lpf:100 };
+function kPaint(el){
+  var k=el.getAttribute("data-k");
+  var v=KV[k], max=KMAX[k];
+  var ang=-135 + (v/max)*270;
+  el.querySelector(".kcap i").style.transform="rotate("+ang+"deg)";
+  el.querySelector(".kv").textContent=Math.round(v);
+}
+document.querySelectorAll("#desk .knob").forEach(function(el){
+  var k=el.getAttribute("data-k");
+  kPaint(el);
+  var cap=el.querySelector(".kcap");
+  cap.addEventListener("pointerdown", function(ev){
+    ev.preventDefault();
+    cap.setPointerCapture(ev.pointerId);
+    var y0=ev.clientY, v0=KV[k];
+    function mv(e){
+      KV[k]=Math.max(0, Math.min(KMAX[k], v0+(y0-e.clientY)*(KMAX[k]/140)));
+      kPaint(el); dkApply();
+    }
+    function up(){ cap.removeEventListener("pointermove", mv); cap.removeEventListener("pointerup", up); }
+    cap.addEventListener("pointermove", mv);
+    cap.addEventListener("pointerup", up);
+  });
+  cap.addEventListener("dblclick", function(){ KV[k]=KDEF[k]; kPaint(el); dkApply(); });
+  cap.addEventListener("wheel", function(ev){
+    ev.preventDefault();
+    KV[k]=Math.max(0, Math.min(KMAX[k], KV[k]+(ev.deltaY<0?3:-3)));
+    kPaint(el); dkApply();
+  }, {passive:false});
 });
 document.querySelectorAll(".dkT").forEach(function(b){
   b.addEventListener("click", function(){
@@ -3796,19 +3917,20 @@ var dkBassK=false;
 function dkBass(){
   dkBassK=!dkBassK;
   if(DK.n) DK.n.hpf.frequency.value = dkBassK ? 230 : 0;
+  $("dkBass").classList.toggle("on", dkBassK);
   $("dkBass").textContent = dkBassK ? "Bring the bass back" : "Kill the bass";
 }
 $("dkBass").addEventListener("click", dkBass);
 function dkThrow(down){
   if(!DK.n) return;
   if(down){ DK.n._hold=DK.n.send.gain.value; DK.n.send.gain.value=1; }
-  else { DK.n.send.gain.value=(typeof DK.n._hold==="number")?DK.n._hold:($("dkSend").value/100); }
+  else { DK.n.send.gain.value=KV.send/100; }
 }
 $("dkThrow").addEventListener("pointerdown", function(){ dkThrow(true); });
 $("dkThrow").addEventListener("pointerup", function(){ dkThrow(false); });
 $("dkThrow").addEventListener("pointerleave", function(){ dkThrow(false); });
 document.addEventListener("keydown", function(ev){
-  if(!ARC.on || !$("ag-dk").classList.contains("on")) return;
+  if(!ARC.on || ARC.tab!=="dk") return;
   if(ev.target.tagName==="INPUT") return;
   if(ev.key===" "){ ev.preventDefault(); dkThrow(true); }
   if(ev.key==="b") dkBass();
