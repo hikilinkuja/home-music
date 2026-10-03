@@ -1,0 +1,287 @@
+{
+ "region": "europe",
+ "generated": "2026-10-03T13:48:22.255Z",
+ "cadence_h": 48,
+ "cities": {
+  "lisboa": {
+   "name": "Lisboa",
+   "cc": "pt",
+   "slug": "lisbon",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "porto": {
+   "name": "Porto",
+   "cc": "pt",
+   "slug": "porto",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "madrid": {
+   "name": "Madrid",
+   "cc": "es",
+   "slug": "madrid",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "barcelona": {
+   "name": "Barcelona",
+   "cc": "es",
+   "slug": "barcelona",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "paris": {
+   "name": "Paris",
+   "cc": "fr",
+   "slug": "paris",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "london": {
+   "name": "London",
+   "cc": "uk",
+   "slug": "london",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "manchester": {
+   "name": "Manchester",
+   "cc": "uk",
+   "slug": "manchester",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "bristol": {
+   "name": "Bristol",
+   "cc": "uk",
+   "slug": "bristol",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "glasgow": {
+   "name": "Glasgow",
+   "cc": "uk",
+   "slug": "glasgow",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "dublin": {
+   "name": "Dublin",
+   "cc": "ie",
+   "slug": "dublin",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "amsterdam": {
+   "name": "Amsterdam",
+   "cc": "nl",
+   "slug": "amsterdam",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "rotterdam": {
+   "name": "Rotterdam",
+   "cc": "nl",
+   "slug": "rotterdam",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "brussels": {
+   "name": "Brussels",
+   "cc": "be",
+   "slug": "brussels",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "berlin": {
+   "name": "Berlin",
+   "cc": "de",
+   "slug": "berlin",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "hamburg": {
+   "name": "Hamburg",
+   "cc": "de",
+   "slug": "hamburg",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "munich": {
+   "name": "Munich",
+   "cc": "de",
+   "slug": "munich",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "cologne": {
+   "name": "Cologne",
+   "cc": "de",
+   "slug": "cologne",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "frankfurt": {
+   "name": "Frankfurt",
+   "cc": "de",
+   "slug": "frankfurt",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "leipzig": {
+   "name": "Leipzig",
+   "cc": "de",
+   "slug": "leipzig",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "vienna": {
+   "name": "Vienna",
+   "cc": "at",
+   "slug": "vienna",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "zurich": {
+   "name": "Zurich",
+   "cc": "ch",
+   "slug": "zurich",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "geneva": {
+   "name": "Geneva",
+   "cc": "ch",
+   "slug": "geneva",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "milan": {
+   "name": "Milan",
+   "cc": "it",
+   "slug": "milan",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "rome": {
+   "name": "Rome",
+   "cc": "it",
+   "slug": "rome",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "turin": {
+   "name": "Turin",
+   "cc": "it",
+   "slug": "turin",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "copenhagen": {
+   "name": "Copenhagen",
+   "cc": "dk",
+   "slug": "copenhagen",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "stockholm": {
+   "name": "Stockholm",
+   "cc": "se",
+   "slug": "stockholm",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "oslo": {
+   "name": "Oslo",
+   "cc": "no",
+   "slug": "oslo",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "helsinki": {
+   "name": "Helsinki",
+   "cc": "fi",
+   "slug": "helsinki",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "warsaw": {
+   "name": "Warsaw",
+   "cc": "pl",
+   "slug": "warsaw",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "krakow": {
+   "name": "Krakow",
+   "cc": "pl",
+   "slug": "krakow",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "prague": {
+   "name": "Prague",
+   "cc": "cz",
+   "slug": "prague",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "budapest": {
+   "name": "Budapest",
+   "cc": "hu",
+   "slug": "budapest",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "bucharest": {
+   "name": "Bucharest",
+   "cc": "ro",
+   "slug": "bucharest",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  },
+  "athens": {
+   "name": "Athens",
+   "cc": "gr",
+   "slug": "athens",
+   "src": [],
+   "events": [],
+   "note": "http 403"
+  }
+ }
+}
