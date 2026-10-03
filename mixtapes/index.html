@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Music Mixtapes</title>
+<style>
+:root{--ink:#060511; --paper:#f4ecd9; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
+  --dim:#8d90b0; --line:#2b2745; --mono:"Courier New", ui-monospace, Menlo, monospace}
+*{box-sizing:border-box}
+body{margin:0; background:var(--ink); color:var(--paper); font-family:var(--mono);
+  font-size:14px; line-height:1.65; padding:0 16px 80px}
+.wrap{max-width:880px; margin:0 auto}
+header{padding:42px 0 8px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
+h1{font-size:clamp(22px,4.6vw,34px); letter-spacing:.3em; text-transform:uppercase; margin:0;
+  text-shadow:3px 3px 0 rgba(232,57,44,.8)}
+.rooms{margin-left:auto; display:flex; gap:8px}
+.tbtn{cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:7px 11px;
+  text-decoration:none; display:inline-flex; align-items:center; font-family:var(--mono)}
+.tbtn:hover{color:var(--amber); border-color:var(--amber)}
+.lede{color:var(--dim); max-width:70ch; margin:10px 0 0}
+.lede b{color:var(--paper); font-weight:500}
+.rule{height:2px; background:linear-gradient(90deg,var(--red),transparent); margin:24px 0 28px}
+h2{font-size:12px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin:34px 0 14px}
+.tape{border:1px solid var(--line); background:#0d0b1c; margin:0 0 18px; padding:16px}
+.tape .t-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px}
+.tape h3{margin:0; font-size:16px; letter-spacing:.08em; text-transform:uppercase}
+.tape .by{color:var(--teal); font-size:10px; letter-spacing:.2em; text-transform:uppercase}
+.tape .date{color:var(--dim); font-size:10px; letter-spacing:.18em; margin-left:auto}
+.tape p{margin:6px 0 12px; color:var(--dim); font-size:12px}
+.tape .tagrow{margin:0 0 12px}
+.tag{display:inline-block; font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink); background:var(--amber); padding:2px 7px; margin-right:6px}
+.tape iframe{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.soon{border-style:dashed; opacity:.9}
+.soon .state{display:inline-block; font-size:9px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink); background:var(--teal); padding:2px 7px}
+.mx-player{margin:4px 0 12px}
+.mx-screen{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000;
+  border:1px solid var(--line)}
+.mx-screen iframe{width:100%; height:100%}
+.mx-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--dim); font-size:11px; letter-spacing:.3em; text-transform:uppercase; background:#04030c}
+.mx-ctl{display:flex; gap:8px; align-items:center; padding:8px 0 0}
+.mx-now{color:var(--amber); font-size:10.5px; letter-spacing:.1em}
+.mx-list{list-style:none; margin:10px 0 0; padding:0; counter-reset:mx}
+.mx-list li{counter-increment:mx; padding:7px 0 7px 2px; border-bottom:1px dotted var(--line);
+  font-size:12px; color:#c9c4d8; cursor:pointer}
+.mx-list li::before{content:counter(mx,decimal-leading-zero)"  "; color:var(--dim)}
+.mx-list li:hover{color:var(--amber)}
+.mx-list li.on{color:var(--amber)}
+.mx-list li.on::before{content:counter(mx,decimal-leading-zero)" \25B8 "; color:var(--teal)}
+footer{margin-top:40px; border-top:1px dashed var(--line); padding-top:14px; color:var(--dim);
+  font-size:11px; line-height:1.8}
+footer b{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Mixtapes</h1>
+  <div class="rooms">
+    <a class="tbtn" href="../">Main room</a>
+    <a class="tbtn" href="../liquid/">Liquid room</a>
+  </div>
+</header>
+<p class="lede">Not the radio now: <b>sessions made by the founders of Home Music</b>. Hands on the records, start to finish, no algorithm in the room.</p>
+<div class="rule"></div>
+
+<h2>By Weronika, co-founder</h2>
+
+<div class="tape">
+  <div class="t-head">
+    <h3>liquid dnb for street market wandering</h3>
+    <span class="by">wierkawezprzestan</span>
+    <span class="date">15.06.2026</span>
+  </div>
+  <div class="tagrow"><span class="tag">liquid dnb</span></div>
+  <p>Keeping it smooth: a rolling liquid session for walking through stalls with the sun out.</p>
+  <iframe title="liquid dnb for street market wandering, by Weronika" loading="lazy" allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+</div>
+
+<div class="tape">
+  <div class="t-head">
+    <h3>UNDERGROUND BASS SOUNDz</h3>
+    <span class="by">wierkawezprzestan</span>
+    <span class="date">28.08.2026</span>
+  </div>
+  <div class="tagrow"><span class="tag">uk bass</span><span class="tag">140</span><span class="tag">dubby</span></div>
+  <p>A bass-heavy trip through swung rhythms: the 140 corner of the house, low ceilings, lower frequencies.</p>
+  <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" loading="lazy" allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+</div>
+
+<h2>House sessions</h2>
+
+<div class="tape" id="tubbys">
+  <div class="t-head">
+    <h3>Tubby's Lesson</h3>
+    <span class="by">the founders</span>
+    <span class="date">dub 1975-83</span>
+  </div>
+  <p>The board as instrument: King Tubby, Lee Perry's Black Ark, Scientist at the controls and the golden Waterhouse years, sequenced as one sitting. Seven records, needle lifted between each one.</p>
+  <div class="mx-player">
+    <div class="mx-screen"><div id="mxYt"></div><div class="mx-idle" id="mxIdle">side A &middot; press play</div></div>
+    <div class="mx-ctl">
+      <button class="tbtn" id="mxPlay" type="button">Play</button>
+      <button class="tbtn" id="mxNext" type="button">Next</button>
+      <span class="mx-now" id="mxNow"></span>
+    </div>
+  </div>
+  <ol class="mx-list" id="mxList"></ol>
+</div>
+
+<script>
+"use strict";
+/* leitor da sessao: um prato, sete discos, a agulha levanta entre cada um */
+var MXT=[
+  {a:"King Tubby & The Aggrovators", t:"Dub Fi Gwan", y:1977, v:"qu3RXnGFQa8"},
+  {a:"Max Romeo & The Upsetters", t:"Chase the Devil", y:1976, v:"5_U9wsBVvqU"},
+  {a:"Lee \"Scratch\" Perry & The Upsetters", t:"Disco Devil", y:1977, v:"vjC2WT7VOyE"},
+  {a:"Yabby You", t:"Deliver Me From My Enemies (dub plate mix)", y:1977, v:"uVXlm4He6Mc"},
+  {a:"Pablo Gad", t:"Blood Suckers", y:1979, v:"ISIWjpRquGA"},
+  {a:"Scientist", t:"Dance of the Vampires", y:1981, v:"iCpPaTeL2BE"},
+  {a:"Johnnie Clarke", t:"Young Rebel", y:1983, v:"Dmujamx8Hww"}
+];
+var mxI=-1, mxYt=null, mxReady=false, mxPlaying=false;
+var AC2=null;
+function mxFx(){ /* o toque da agulha, em miniatura */
+  try{
+    if(!AC2) AC2=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC2.state==="suspended") AC2.resume();
+    var t=AC2.currentTime;
+    var o=AC2.createOscillator(), g=AC2.createGain();
+    o.frequency.setValueAtTime(82,t); o.frequency.exponentialRampToValueAtTime(48,t+0.09);
+    g.gain.setValueAtTime(0.14,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.14);
+    o.connect(g).connect(AC2.destination); o.start(t); o.stop(t+0.16);
+    var n=AC2.createBufferSource(), b=AC2.createBuffer(1, AC2.sampleRate*1.4, AC2.sampleRate);
+    var d=b.getChannelData(0);
+    for(var i=0;i<d.length;i++){ d[i]=(Math.random()*2-1)*0.012*(1-i/d.length); }
+    var f=AC2.createBiquadFilter(); f.type="bandpass"; f.frequency.value=5200; f.Q.value=0.8;
+    n.buffer=b; n.connect(f).connect(AC2.destination); n.start(t+0.05);
+  }catch(e){}
+}
+function mxRenderList(){
+  var ol=document.getElementById("mxList"); ol.innerHTML="";
+  MXT.forEach(function(x,i){
+    var li=document.createElement("li");
+    li.textContent=x.a+" / "+x.t+" ("+x.y+")";
+    if(i===mxI) li.className="on";
+    li.addEventListener("click", function(){ mxGo(i); });
+    ol.appendChild(li);
+  });
+}
+function mxGo(i){
+  mxI=i;
+  var x=MXT[i];
+  document.getElementById("mxNow").textContent=(i+1)+"/"+MXT.length+" "+x.a+" / "+x.t;
+  document.getElementById("mxIdle").style.display="none";
+  mxRenderList();
+  mxFx();
+  if(mxReady){ setTimeout(function(){ mxYt.loadVideoById(x.v); mxYt.playVideo(); mxPlaying=true;
+    document.getElementById("mxPlay").textContent="Pause"; }, 350); }
+}
+window.onYouTubeIframeAPIReady=function(){
+  mxYt=new YT.Player("mxYt", { width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, playsinline:1 },
+    events:{
+      onReady:function(e){ mxYt=e.target; mxReady=true; },
+      onStateChange:function(e){
+        if(e.data===0){ if(mxI<MXT.length-1){ mxGo(mxI+1); } else { mxPlaying=false; document.getElementById("mxPlay").textContent="Play"; document.getElementById("mxNow").textContent="side B ran out. thanks for sitting through."; } }
+      }
+    }
+  });
+};
+(function(){
+  var s=document.createElement("script"); s.src="https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+  document.getElementById("mxPlay").addEventListener("click", function(){
+    if(mxI<0){ mxGo(0); return; }
+    if(!mxReady) return;
+    if(mxPlaying){ mxYt.pauseVideo(); mxPlaying=false; this.textContent="Play"; }
+    else { mxYt.playVideo(); mxPlaying=true; this.textContent="Pause"; }
+  });
+  document.getElementById("mxNext").addEventListener("click", function(){
+    if(mxI<MXT.length-1) mxGo(mxI+1);
+  });
+  mxRenderList();
+})();
+</script>
+
+<footer><b>HOME MUSIC MIXTAPES</b> &middot; sessions by the founders, Weronika &amp; Paulo. The radio keeps the 24-hour programme; this shelf keeps the sessions. Weronika's tapes stream from her SoundCloud through the official embedded player.</footer>
+</div>
+</body>
+</html>
