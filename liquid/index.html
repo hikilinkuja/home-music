@@ -249,18 +249,9 @@ button{font-family:var(--mono)}
 
 /* ---------- a abertura da sala liquida: so o disco 2, depois a agulha ---------- */
 #splash{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
-  background:
-    repeating-linear-gradient(to bottom, rgba(0,0,0,0.2) 0 2px, rgba(0,0,0,0) 2px 4px),
-    radial-gradient(circle at 74% 26%, rgba(255,177,43,0.12), rgba(0,0,0,0) 38%),
-    rgba(6,5,17,0.68);
-  transition:opacity 1s ease}
+  background:#000; transition:opacity 1s ease}
 #splash.off{opacity:0; pointer-events:none}
 .sp-inner{text-align:center; padding:20px; max-width:560px}
-.sp-bar{width:84px; height:3px; background:var(--amber); margin:0 auto 20px; box-shadow:0 0 10px rgba(255,177,43,.6)}
-.sp-title{font-family:var(--mono); font-weight:700; font-size:clamp(28px,6.5vw,42px); line-height:1.1;
-  letter-spacing:.34em; margin:0 0 10px; color:var(--paper); text-transform:uppercase;
-  text-shadow:3px 3px 0 #000, 0 0 18px rgba(255,177,43,.25)}
-.sp-sub{color:var(--teal); font-size:11px; letter-spacing:.3em; text-transform:uppercase; margin-bottom:26px}
 #tapHint{display:block; margin-top:26px; color:var(--amber); font-size:11px; letter-spacing:.34em;
   text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
 @keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
@@ -359,6 +350,16 @@ textarea.gift-field{min-height:84px; resize:vertical}
 #waPrev{left:6px} #waNext{right:6px}
 #waNum{color:var(--dim)}
 
+/* ---------- modo de estaleiro (?dev) ---------- */
+#devPanel{position:fixed; left:12px; top:56px; z-index:85; width:250px;
+  background:rgba(8,7,20,.95); border:1px solid var(--teal); padding:10px 12px; display:none}
+#devPanel.on{display:block}
+#devPanel h4{margin:0 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
+#devNext{list-style:none; margin:0 0 9px; padding:0}
+#devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:10.5px; line-height:1.6; color:#d7d3e4}
+#devNext li b{color:var(--paper); font-weight:500; display:block}
+#devNext li span{color:var(--amber)}
+
 /* ---------- telemovel: sugestao de audicao com o ecra fechado ---------- */
 #braveTip{position:fixed; left:10px; right:10px; bottom:10px; z-index:70; display:none;
   background:rgba(8,7,20,.97); border:1px solid var(--line); padding:12px 13px}
@@ -374,9 +375,6 @@ textarea.gift-field{min-height:84px; resize:vertical}
 
 <div id="splash">
   <div class="sp-inner">
-    <div class="sp-bar"></div>
-    <div class="sp-title">Home Music</div>
-    <div class="sp-sub">the liquid room</div>
     <div id="mc" aria-live="polite"></div>
     <div id="tapHint" role="button" tabindex="0">tap to drop the needle</div>
   </div>
@@ -578,6 +576,12 @@ textarea.gift-field{min-height:84px; resize:vertical}
   </div>
 
   <div id="toast" role="status"></div>
+
+  <div id="devPanel">
+    <h4>Dev &middot; up next</h4>
+    <ul id="devNext"></ul>
+    <button class="tbtn" id="devSkip" type="button">Skip, no questions [n]</button>
+  </div>
 
   <div id="braveTip">
     <p><b>Listening with the screen off?</b> Chrome and Safari pause video when the phone locks. The free Brave browser keeps this station playing in the background, ads already stripped. Or press Screen on below the monitor to keep the screen awake here.</p>
@@ -1324,6 +1328,15 @@ function nextTrack(){
   runLeft--;
   return t;
 }
+var devQ=[];
+function pullTrack(){ return devQ.length ? devQ.shift() : nextTrack(); }
+function devPeek(n){
+  while(devQ.length<n){ var t=nextTrack(); if(!t) break; devQ.push(t); }
+  return devQ.slice(0,n).map(function(t){
+    var g=GENRES[t.g]||{};
+    return { a:t.a, t:t.t, g:(g.name||t.g), bpm:(t.bpm||GBPM[t.g]||120), sure:!!t.bpm };
+  });
+}
 
 /* ---------------- YouTube players + mix state ---------------- */
 var apiReady=false, started=false, radioOn=false;
@@ -1520,7 +1533,7 @@ function hardNextAudio(t, quiet){
 var swapPending=false;
 function hardNext(reason){
   if(swapPending) return;
-  var t = nextTrack(); if(!t) return;
+  var t = pullTrack(); if(!t) return;
   if(reason === "ended"){
     /* o disco chegou ao fim: agulha fora, sulco a morrer, maos no proximo */
     swapPending=true;
@@ -1547,7 +1560,7 @@ function hardNext(reason){
    needle, then rides the crossfader while the audio does the same 6s ramp */
 function startTransition(){
   if(transitioning || !radioOn) return;
-  var t = nextTrack(); if(!t) return;
+  var t = pullTrack(); if(!t) return;
 
   if(SIMPLE){
     transitioning = true;
@@ -2187,7 +2200,7 @@ document.addEventListener("keydown", firstGesture, {once:true});
   FX.init();
   $("app").classList.add("on");
   buildQueue(); applyBlockTheme();
-  pendingFirst = nextTrack();
+  pendingFirst = pullTrack();
   setNow(pendingFirst, false);
   loadApi();
   maybeStart();
@@ -2207,6 +2220,12 @@ window.HM={
       else if(!radioOn){ setTimeout(g, 350); }
     })();
   }
+};
+/* modo de estaleiro (?dev na morada): espreitar a fila e saltar sem o quebra-cabecas */
+window.HMDEV={
+  on: /(^|[?&])dev(=|&|$)/.test(location.search),
+  peek: function(n){ return devPeek(n||3); },
+  skip: function(){ try{ hardNext("dev"); }catch(e){} }
 };
 
 var firstRampPending=false, rampDur=8000;
@@ -2311,7 +2330,8 @@ function startIntro(){
   intro.tick=setInterval(function(){
     var t=a.currentTime||0;
     while(intro.shown<MC_LINES.length && t>=MC_AT_TRK[intro.shown]){ showLine(intro.shown); intro.shown++; }
-    if(t>=P_FADE) fadeOutIntro(2500);
+    /* o telefone e a ultima coisa que se ouve: fade curto, corte antes da bateria seguinte */
+    if(t>=P_FADE) fadeOutIntro(1200);
   }, 100);
 }
 $("splash").addEventListener("pointerdown", startIntro);
@@ -2603,6 +2623,32 @@ if(DESK){
   document.addEventListener("visibilitychange", function(){
     if(want && !lock && document.visibilityState==="visible") acquire();
   });
+})();
+
+/* ---------------- 4b. modo de estaleiro (?dev na morada) ---------------- */
+(function(){
+  if(!(window.HMDEV && HMDEV.on)) return;
+  var panel=$("devPanel");
+  panel.classList.add("on");
+  function paint(){
+    var list;
+    try{ list=HMDEV.peek(3); }catch(e){ list=[]; }
+    var ul=$("devNext"); ul.innerHTML="";
+    list.forEach(function(x,i){
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=(i+1)+". "+x.a+" / "+x.t;
+      var s=document.createElement("span"); s.textContent=x.g+" · "+(x.sure?"":"~")+x.bpm+" bpm";
+      li.appendChild(b); li.appendChild(s); ul.appendChild(li);
+    });
+  }
+  $("devSkip").addEventListener("click", function(){ HMDEV.skip(); setTimeout(paint, 900); });
+  document.addEventListener("keydown", function(ev){
+    if(ev.key==="n" && !wa.on){ HMDEV.skip(); setTimeout(paint, 900); }
+  });
+  /* repinta quando a faixa do cartao muda */
+  var mo=new MutationObserver(function(){ paint(); });
+  mo.observe($("tArtist"), {childList:true, characterData:true, subtree:true});
+  var boot=setInterval(function(){ if(window.HM && HM.isOn()){ clearInterval(boot); paint(); } }, 800);
 })();
 
 /* ---------------- 5. gift a tune: recomendacoes da sala ---------------- */
