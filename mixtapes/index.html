@@ -33,6 +33,9 @@ h2{font-size:12px; letter-spacing:.3em; text-transform:uppercase; color:var(--am
 .tag{display:inline-block; font-size:9px; letter-spacing:.18em; text-transform:uppercase;
   color:var(--ink); background:var(--amber); padding:2px 7px; margin-right:6px}
 .tape iframe{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.dw-tape iframe.scmini,.tape iframe.scmini{height:22px; border:none; background:transparent;
+  filter:invert(1) hue-rotate(180deg) saturate(1.5) contrast(0.92); opacity:.92; border-radius:2px}
+
 .soon{border-style:dashed; opacity:.9}
 .soon .state{display:inline-block; font-size:9px; letter-spacing:.2em; text-transform:uppercase;
   color:var(--ink); background:var(--teal); padding:2px 7px}
@@ -78,8 +81,8 @@ footer b{color:var(--amber)}
   </div>
   <div class="tagrow"><span class="tag">liquid dnb</span></div>
   <p>Keeping it smooth: a rolling liquid session for walking through stalls with the sun out.</p>
-  <iframe title="liquid dnb for street market wandering, by Weronika" loading="lazy" allow="autoplay"
-    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+  <iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
 </div>
 
 <div class="tape">
@@ -90,8 +93,8 @@ footer b{color:var(--amber)}
   </div>
   <div class="tagrow"><span class="tag">uk bass</span><span class="tag">140</span><span class="tag">dubby</span></div>
   <p>A bass-heavy trip through swung rhythms: the 140 corner of the house, low ceilings, lower frequencies.</p>
-  <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" loading="lazy" allow="autoplay"
-    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false"></iframe>
+  <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
 </div>
 
 <h2>House sessions</h2>
@@ -168,8 +171,18 @@ window.onYouTubeIframeAPIReady=function(){
   mxYt=new YT.Player("mxYt", { width:"100%", height:"100%",
     playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, playsinline:1 },
     events:{
-      onReady:function(e){ mxYt=e.target; mxReady=true; },
+      onReady:function(e){
+        mxYt=e.target; mxReady=true;
+        /* primeiro disco ja no prato, a espera do play */
+        if(mxI<0 && !mxPlaying){
+          try{ mxYt.cueVideoById(MXT[0].v); }catch(err){}
+          document.getElementById("mxIdle").style.display="none";
+          mxI=0; mxRenderList();
+          document.getElementById("mxNow").textContent="1/"+MXT.length+" "+MXT[0].a+" / "+MXT[0].t;
+        }
+      },
       onStateChange:function(e){
+        if(e.data===1 && !mxPlaying){ mxPlaying=true; document.getElementById("mxPlay").textContent="Pause"; }
         if(e.data===0){ if(mxI<MXT.length-1){ mxGo(mxI+1); } else { mxPlaying=false; document.getElementById("mxPlay").textContent="Play"; document.getElementById("mxNow").textContent="side B ran out. thanks for sitting through."; } }
       }
     }
