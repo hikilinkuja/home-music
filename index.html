@@ -261,8 +261,16 @@ button{font-family:var(--mono)}
 .dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 .dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
 .dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
-.dw-tape iframe.scmini,.tape iframe.scmini{height:22px; border:none; background:transparent;
-  filter:invert(1) hue-rotate(180deg) saturate(1.5) contrast(0.92); opacity:.92; border-radius:2px}
+/* soundcloud: cromo nativo; o widget fica dobrado a 0px e so abre como ultimo recurso */
+.schost{height:0; overflow:hidden; transition:height .4s ease}
+.schost.unfold{height:166px; margin-top:8px}
+.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.scrow{display:flex; align-items:center; gap:10px; margin-top:9px}
+.scbar{flex:1; height:4px; background:rgba(244,241,231,.14); cursor:pointer; position:relative}
+.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber, #ffb12b)}
+.sctime{font-size:10px; letter-spacing:.08em; color:var(--dim); min-width:72px; text-align:right}
+.sclink{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
+.sclink:hover{color:var(--paper)}
 
 .dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
 .dw-yt iframe{width:100%; height:100%}
@@ -436,13 +444,25 @@ button{font-family:var(--mono)}
       <p class="dw-sub">sessions by the founders. the radio keeps playing under this shelf; press play on a tape and the radio steps aside until you close it.</p>
       <section class="dw-tape">
         <h4>liquid dnb for street market wandering <span>Weronika &middot; 15.06.2026 &middot; liquid dnb</span></h4>
-        <iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" loading="lazy" allow="autoplay"
-          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
+        <div class="scrow">
+          <button class="tbtn scPlay" id="scPlay0" data-sc="0" type="button">Play</button>
+          <div class="scbar" id="scBar0" data-sc="0"><i class="scfill" id="scFill0"></i></div>
+          <span class="sctime" id="scTime0">--:-- / --:--</span>
+          <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-06-15" target="_blank" rel="noopener">SoundCloud &nearr;</a>
+        </div>
+        <div class="schost" id="scHost0"><iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
       </section>
       <section class="dw-tape">
         <h4>UNDERGROUND BASS SOUNDz <span>Weronika &middot; 28.08.2026 &middot; uk bass / 140 / dubby</span></h4>
-        <iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" loading="lazy" allow="autoplay"
-          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_artwork=false&show_playcount=false&sharing=false&buying=false&download=false&show_teaser=false"></iframe>
+        <div class="scrow">
+          <button class="tbtn scPlay" id="scPlay1" data-sc="1" type="button">Play</button>
+          <div class="scbar" id="scBar1" data-sc="1"><i class="scfill" id="scFill1"></i></div>
+          <span class="sctime" id="scTime1">--:-- / --:--</span>
+          <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-08-28" target="_blank" rel="noopener">SoundCloud &nearr;</a>
+        </div>
+        <div class="schost" id="scHost1"><iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
       </section>
       <section class="dw-tape">
         <h4>Tubby's Lesson <span>the founders &middot; dub 1975-83</span></h4>
@@ -2288,6 +2308,7 @@ function mx2Player(cb){
       onStateChange:function(e){
         if(e.data===1 && !mx2.playing){
           /* play nativo sobre o disco ja carregado */
+          if(typeof scPauseAll==="function") scPauseAll(-1);
           mx2.playing=true; $("mxPlay2").textContent="Pause";
           mx2SideRadio(true);
           if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
@@ -2308,6 +2329,7 @@ function mx2Player(cb){
   });
 }
 function mx2Go(i){
+  if(typeof scPauseAll==="function") scPauseAll(-1);
   mx2.i=i; mx2List();
   var x=MXT2[i];
   $("mxNow2").textContent=(i+1)+"/"+MXT2.length+" "+x.a+" / "+x.t;
@@ -2340,6 +2362,7 @@ $("mixBtn").addEventListener("click", function(){
 function mx2Close(){
   $("mixPanel").classList.remove("on");
   if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+  if(typeof scPauseAll==="function") scPauseAll(-1);
   mx2SideRadio(false);
 }
 $("mixClose").addEventListener("click", mx2Close);
@@ -2350,6 +2373,75 @@ $("mxPlay2").addEventListener("click", function(){
   else { mx2SideRadio(true); mx2.yt.playVideo(); mx2.playing=true; this.textContent="Pause"; }
 });
 $("mxNext2").addEventListener("click", function(){ if(mx2.i<MXT2.length-1) mx2Go(mx2.i+1); });
+
+/* ---------------- tapes soundcloud: cromo nativo sobre a API oficial do widget ---------------- */
+var SCT=[{dur:0, playing:false, started:false, w:null},{dur:0, playing:false, started:false, w:null}];
+function scApi(cb){
+  if(window.SC && SC.Widget){ cb(); return; }
+  if(scApi._q){ scApi._q.push(cb); return; }
+  scApi._q=[cb];
+  var s=document.createElement("script"); s.src="https://w.soundcloud.com/player/api.js";
+  s.onload=function(){ var q=scApi._q; scApi._q=null; q.forEach(function(f){ f(); }); };
+  s.onerror=function(){ scApi._q=null; scUnfold(0); scUnfold(1); };
+  document.head.appendChild(s);
+}
+function scFmt(ms){ var s=Math.floor(ms/1000), m=Math.floor(s/60); s=s%60; return m+":"+(s<10?"0":"")+s; }
+function scUnfold(i){ var h=$("scHost"+i); if(h) h.classList.add("unfold"); }
+function scAnyPlaying(){ return SCT[0].playing || SCT[1].playing; }
+function scWidget(i, cb){
+  if(SCT[i].w){ cb(SCT[i].w); return; }
+  scApi(function(){
+    var f=$("scHost"+i).querySelector("iframe");
+    if(!f.src) f.src=f.getAttribute("data-src");
+    var w=SC.Widget(f); SCT[i].w=w;
+    w.bind(SC.Widget.Events.READY, function(){
+      w.getDuration(function(d){ SCT[i].dur=d||0; scPaint(i, 0); });
+    });
+    w.bind(SC.Widget.Events.PLAY, function(){
+      SCT[i].playing=true; SCT[i].started=true;
+      $("scPlay"+i).textContent="Pause";
+      mx2SideRadio(true);
+      if(FX.ctx && FX.ctx.state==="running" && !SCT[i]._dropped){ SCT[i]._dropped=true; FX.needleDrop(); FX.crackleBurst(1.4); }
+    });
+    w.bind(SC.Widget.Events.PAUSE, function(){
+      SCT[i].playing=false; $("scPlay"+i).textContent="Play";
+      if(!scAnyPlaying() && !mx2.playing) mx2SideRadio(false);
+    });
+    w.bind(SC.Widget.Events.FINISH, function(){
+      SCT[i].playing=false; SCT[i]._dropped=false; $("scPlay"+i).textContent="Play"; scPaint(i, 0);
+      if(!scAnyPlaying() && !mx2.playing) mx2SideRadio(false);
+    });
+    w.bind(SC.Widget.Events.PLAY_PROGRESS, function(e){ scPaint(i, e.currentPosition||0); });
+    w.bind(SC.Widget.Events.ERROR, function(){ scUnfold(i); });
+    cb(w);
+  });
+}
+function scPaint(i, pos){
+  var d=SCT[i].dur;
+  $("scFill"+i).style.width = d ? Math.min(100, pos/d*100)+"%" : "0";
+  $("scTime"+i).textContent = scFmt(pos)+" / "+(d?scFmt(d):"--:--");
+}
+function scPauseAll(except){
+  SCT.forEach(function(st, i){ if(i!==except && st.playing && st.w){ try{ st.w.pause(); }catch(e){} } });
+}
+function scToggle(i){
+  scWidget(i, function(w){
+    if(SCT[i].playing){ w.pause(); return; }
+    scPauseAll(i);
+    if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+    w.play();
+    /* se o widget nao responder (consentimento por dar, bloqueio), abre-se para a pessoa tratar la dentro */
+    setTimeout(function(){ if(!SCT[i].started) scUnfold(i); }, 2600);
+  });
+}
+[0,1].forEach(function(i){
+  $("scPlay"+i).addEventListener("click", function(){ scToggle(i); });
+  $("scBar"+i).addEventListener("click", function(ev){
+    if(!SCT[i].started){ scToggle(i); return; }
+    var r=this.getBoundingClientRect(), frac=(ev.clientX-r.left)/r.width;
+    if(SCT[i].w && SCT[i].dur){ try{ SCT[i].w.seekTo(Math.max(0, Math.min(1, frac))*SCT[i].dur); }catch(e){} }
+  });
+});
 /* imersao: ecra inteiro */
 function toggleFs(){
   if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
