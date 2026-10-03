@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Music · Focus Room Lab</title>
+<style>
+:root{--ink:#060511; --paper:#f4f1e7; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
+  --dim:#8d90b0; --line:#2b2745; --mono:"Courier New", ui-monospace, Menlo, monospace}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; background:#000; color:var(--paper); font-family:var(--mono); overflow:hidden}
+#cv{position:fixed; inset:0; width:100%; height:100%}
+
+/* portao de respiracao */
+#gate{position:fixed; inset:0; z-index:90; background:#000; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:34px; transition:opacity 1.4s ease}
+#gate.off{opacity:0; pointer-events:none}
+#gOrb{width:120px; height:120px; border-radius:50%; border:1px solid rgba(65,217,200,.5);
+  box-shadow:0 0 60px rgba(65,217,200,.12) inset, 0 0 40px rgba(65,217,200,.1)}
+#gWord{font-size:11px; letter-spacing:.5em; text-transform:uppercase; color:var(--dim)}
+#gWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:#4a4d6a; max-width:420px;
+  text-align:center; line-height:2.1}
+#gSkip{position:fixed; right:18px; bottom:16px; background:none; border:1px solid var(--line);
+  color:var(--dim); font-family:var(--mono); font-size:9px; letter-spacing:.24em;
+  text-transform:uppercase; padding:8px 12px; cursor:pointer}
+
+/* cromo da sala (desvanece) */
+.chrome{transition:opacity .8s ease}
+body.idle .chrome{opacity:0; pointer-events:none}
+#top{position:fixed; left:0; right:0; top:0; z-index:40; display:flex; align-items:center; gap:10px;
+  padding:12px 16px; background:linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,0))}
+.brand{font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--paper)}
+.brand span{color:var(--teal); margin-left:8px}
+.tbtn{cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:7px 10px; font-family:var(--mono)}
+.tbtn:hover{color:var(--amber); border-color:var(--amber)}
+.tbtn.on{color:var(--ink); background:var(--amber); border-color:var(--amber)}
+#temps{margin-left:auto; display:flex; gap:6px}
+
+/* consola lateral */
+#side{position:fixed; right:14px; top:60px; z-index:40; width:252px;
+  background:rgba(5,4,16,.84); border:1px solid var(--line); padding:14px 14px 10px}
+#side h4{margin:14px 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
+#side h4:first-child{margin-top:0}
+#pomoTime{font-size:30px; letter-spacing:.14em; color:var(--paper)}
+#pomoPhase{font-size:9px; letter-spacing:.3em; color:var(--amber); text-transform:uppercase; margin:2px 0 8px}
+.prow{display:flex; gap:6px; margin-bottom:6px}
+#cycles{display:flex; gap:4px; margin:4px 0 2px}
+#cycles i{width:16px; height:3px; background:var(--line)}
+#cycles i.done{background:var(--amber)}
+.fader{margin:0 0 9px}
+.fader label{display:flex; justify-content:space-between; font-size:9px; letter-spacing:.2em;
+  color:var(--dim); text-transform:uppercase; margin-bottom:3px}
+.fader input{width:100%; accent-color:var(--amber)}
+#valve{display:flex; flex-wrap:wrap; gap:5px}
+#valve .g{font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; padding:4px 7px;
+  border:1px solid var(--line); color:#3d405c}
+#valve .g.on{color:var(--teal); border-color:var(--teal)}
+.note{font-size:8.5px; color:#4a4d6a; letter-spacing:.1em; line-height:1.9; margin-top:6px}
+#intent{width:100%; background:#07061a; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:11px; padding:7px 9px; letter-spacing:.06em}
+
+/* intencao fixada + relogio + aneis */
+#intentTag{position:fixed; left:18px; top:16px; z-index:30; font-size:9.5px; letter-spacing:.3em;
+  text-transform:uppercase; color:rgba(244,241,231,.4)}
+#clock{position:fixed; right:18px; bottom:14px; z-index:30; font-size:10px; letter-spacing:.26em;
+  color:rgba(244,241,231,.35)}
+#rings{position:fixed; left:14px; bottom:12px; z-index:30}
+body.sealed #top, body.sealed #side, body.sealed #intentTag{display:none}
+body.sealed #clock{color:rgba(244,241,231,.22)}
+#sealHint{position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:41;
+  font-size:9px; letter-spacing:.3em; color:rgba(244,241,231,.26); text-transform:uppercase;
+  display:none}
+body.sealed #sealHint{display:block; animation:fadeHint 5s forwards}
+@keyframes fadeHint{0%,70%{opacity:1}100%{opacity:0}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="gate">
+  <div id="gOrb"></div>
+  <div id="gWord">breathe in</div>
+  <div id="gWhy">the gate: three slow breaths before the room opens. the light breathes at six cycles a minute; borrow its pace. entering focus is a small rite, like the needle.</div>
+  <button id="gSkip" type="button">skip the gate &raquo;</button>
+</div>
+
+<header id="top" class="chrome">
+  <div class="brand">FOCUS ROOM<span>lab</span></div>
+  <button class="tbtn" id="sealBtn" type="button" title="fullscreen, wake lock, everything hidden">Seal the room</button>
+  <nav id="temps">
+    <button class="tbtn tmp on" data-t="dusk" type="button">dusk</button>
+    <button class="tbtn tmp" data-t="ink" type="button">ink</button>
+    <button class="tbtn tmp" data-t="off" type="button">off</button>
+  </nav>
+</header>
+
+<aside id="side" class="chrome">
+  <h4>Pomodoro of the selector</h4>
+  <div id="pomoTime">25:00</div>
+  <div id="pomoPhase">ready</div>
+  <div class="prow">
+    <button class="tbtn" id="pomoGo" type="button">Start</button>
+    <button class="tbtn" id="pomoReset" type="button">Reset</button>
+  </div>
+  <div id="cycles"><i></i><i></i><i></i><i></i></div>
+
+  <h4>House noise desk</h4>
+  <div class="fader"><label><span>vinyl crackle</span><span id="vCk">20</span></label>
+    <input type="range" id="fCk" min="0" max="100" value="20"></div>
+  <div class="fader"><label><span>rain on the window</span><span id="vRn">0</span></label>
+    <input type="range" id="fRn" min="0" max="100" value="0"></div>
+  <div class="fader"><label><span>room tone</span><span id="vRm">14</span></label>
+    <input type="range" id="fRm" min="0" max="100" value="14"></div>
+
+  <h4>Programme valve</h4>
+  <div id="valve"></div>
+  <div class="note">in the liquid room this valve clamps the live programme to the deep crates while focus is on; here it is the dial, shown.</div>
+
+  <h4>One line of intent</h4>
+  <input id="intent" type="text" maxlength="60" placeholder="what are you on?">
+</aside>
+
+<div id="intentTag"></div>
+<div id="clock">--:--</div>
+<svg id="rings" width="120" height="120"></svg>
+<div id="sealHint">sealed &middot; esc opens the room</div>
+
+<script>
+"use strict";
+var $=function(id){ return document.getElementById(id); };
+
+/* ---------------- campo lento, tres temperaturas ---------------- */
+var TEMPS={
+  dusk:[[4,3,10],[14,10,26],[32,20,38],[58,38,36]],
+  ink: [[3,3,8],[12,12,24],[26,26,42],[44,44,60]],
+  off: [[1,1,3],[4,4,9],[8,8,14],[13,13,20]]
+};
+var temp="dusk", W=96, H=54;
+var cv=$("cv"), cx=cv.getContext("2d");
+var oc=document.createElement("canvas"); oc.width=W; oc.height=H;
+var ox=oc.getContext("2d");
+function sizeCv(){ cv.width=innerWidth; cv.height=innerHeight; }
+addEventListener("resize", sizeCv); sizeCv();
+function pal(v){
+  var st=TEMPS[temp];
+  var x=Math.max(0,Math.min(.999,v))*3, i=Math.floor(x), f=x-i;
+  var a=st[i], b=st[i+1];
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
+}
+var breakLift=0; /* sobe nos intervalos do pomodoro */
+function field(){
+  requestAnimationFrame(field);
+  var t=performance.now()/1000*.03;
+  var img=ox.createImageData(W,H), d=img.data;
+  for(var y=0;y<H;y++){
+    for(var x=0;x<W;x++){
+      var u=x/W, v=y/H;
+      var s=Math.sin(u*4.1+t*1.8)+Math.sin(v*3.3-t*1.3)+Math.sin((u+v)*3.6+t)+Math.sin(Math.hypot(u-.5,v-.56)*9-t*2.2);
+      var val=(s/4+.5)*.5+breakLift*.12;
+      var c=pal(val);
+      var k=(y*W+x)*4;
+      d[k]=c[0]; d[k+1]=c[1]; d[k+2]=c[2]; d[k+3]=255;
+    }
+  }
+  ox.putImageData(img,0,0);
+  cx.imageSmoothingEnabled=true;
+  cx.drawImage(oc,0,0,cv.width,cv.height);
+}
+field();
+document.querySelectorAll(".tmp").forEach(function(b){
+  b.addEventListener("click", function(){
+    temp=b.getAttribute("data-t");
+    document.querySelectorAll(".tmp").forEach(function(x){ x.classList.toggle("on", x===b); });
+  });
+});
+
+/* ---------------- portao de respiracao: 3 ciclos a 6/min ---------------- */
+(function(){
+  var t0=performance.now(), DUR=30000, orb=$("gOrb"), word=$("gWord");
+  function tick(){
+    var t=performance.now()-t0;
+    if(t>=DUR || !$("gate") || $("gate").classList.contains("off")){ open(); return; }
+    requestAnimationFrame(tick);
+    var ph=(t%10000)/10000; /* 10 s por ciclo */
+    var inhale=ph<.5, x= inhale ? ph*2 : (1-(ph-.5)*2);
+    var e=.5-.5*Math.cos(Math.PI*x);
+    var s=.75+.5*e;
+    orb.style.transform="scale("+s.toFixed(3)+")";
+    orb.style.boxShadow="0 0 "+(40+60*e)+"px rgba(65,217,200,"+(0.08+0.1*e)+") inset, 0 0 "+(30+50*e)+"px rgba(65,217,200,"+(0.06+0.08*e)+")";
+    word.textContent= inhale ? "breathe in" : "breathe out";
+  }
+  function open(){ $("gate").classList.add("off"); }
+  $("gSkip").addEventListener("click", open);
+  document.addEventListener("keydown", function(ev){ if(ev.key==="Enter") open(); });
+  tick();
+})();
+
+/* ---------------- cromo que desvanece (sala negra) ---------------- */
+(function(){
+  var t=null;
+  function wake(){
+    document.body.classList.remove("idle");
+    clearTimeout(t);
+    t=setTimeout(function(){ document.body.classList.add("idle"); }, 5000);
+  }
+  ["pointermove","pointerdown","keydown"].forEach(function(ev){ document.addEventListener(ev, wake); });
+  wake();
+})();
+
+/* ---------------- relogio ---------------- */
+setInterval(function(){
+  var d=new Date();
+  $("clock").textContent=(d.getHours()<10?"0":"")+d.getHours()+":"+(d.getMinutes()<10?"0":"")+d.getMinutes();
+}, 1000);
+
+/* ---------------- pomodoro do seletor ---------------- */
+var pomo={ run:false, phase:"work", left:25*60, cycles:0, focusedSec:0 };
+var FAST=/(^|[?&])fast(=|&|$)/.test(location.search);
+function pomoPaint(){
+  var m=Math.floor(pomo.left/60), s=pomo.left%60;
+  $("pomoTime").textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+  $("pomoPhase").textContent= pomo.run ? (pomo.phase==="work" ? "deep in" : "surface, breathe") : "ready";
+  var dots=$("cycles").children;
+  for(var i=0;i<dots.length;i++){ dots[i].className = i<pomo.cycles ? "done" : ""; }
+}
+setInterval(function(){
+  if(!pomo.run) return;
+  pomo.left--;
+  if(pomo.phase==="work"){
+    pomo.focusedSec+= (FAST?20:1);
+    ringsPaint();
+  }
+  if(pomo.left<=0){
+    if(pomo.phase==="work"){ pomo.phase="break"; pomo.left=5*60; pomo.cycles=Math.min(4,pomo.cycles+1); breakLift=1; duck(true); }
+    else { pomo.phase="work"; pomo.left=25*60; breakLift=0; duck(false); }
+  }
+  pomoPaint();
+}, 1000);
+$("pomoGo").addEventListener("click", function(){
+  pomo.run=!pomo.run;
+  this.textContent=pomo.run?"Pause":"Start";
+  pomoPaint();
+});
+$("pomoReset").addEventListener("click", function(){
+  pomo.run=false; pomo.phase="work"; pomo.left=25*60; pomo.cycles=0; breakLift=0; duck(false);
+  $("pomoGo").textContent="Start"; pomoPaint();
+});
+pomoPaint();
+
+/* ---------------- marcas de profundidade: um anel por 20 min ---------------- */
+function ringsPaint(){
+  var n=Math.floor(pomo.focusedSec/1200); /* 20 min */
+  var svg=$("rings");
+  if(svg.childElementCount===n) return;
+  svg.innerHTML="";
+  for(var i=0;i<Math.min(n,6);i++){
+    var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",60); c.setAttribute("cy",60); c.setAttribute("r", 8+i*9);
+    c.setAttribute("fill","none");
+    c.setAttribute("stroke","rgba(65,217,200,"+(0.28-0.03*i)+")");
+    c.setAttribute("stroke-width","1");
+    svg.appendChild(c);
+  }
+}
+
+/* ---------------- mesa de ruido da casa (gerada, nada gravado) ---------------- */
+var snd={ ac:null, ck:null, rn:null, rm:null, duck:1 };
+function noiseBuf(ac, secs, fn){
+  var len=Math.floor(ac.sampleRate*secs), b=ac.createBuffer(1, len, ac.sampleRate), d=b.getChannelData(0);
+  for(var i=0;i<len;i++){ d[i]=fn(i, len); }
+  return b;
+}
+function sndInit(){
+  if(snd.ac) return;
+  var ac=snd.ac=new (window.AudioContext||window.webkitAudioContext)();
+  /* chuva: ruido branco filtrado, leve tremor */
+  var rnSrc=ac.createBufferSource();
+  rnSrc.buffer=noiseBuf(ac, 4, function(){ return Math.random()*2-1; });
+  rnSrc.loop=true;
+  var rnF=ac.createBiquadFilter(); rnF.type="bandpass"; rnF.frequency.value=2600; rnF.Q.value=0.4;
+  var rnG=ac.createGain(); rnG.gain.value=0;
+  rnSrc.connect(rnF).connect(rnG).connect(ac.destination); rnSrc.start();
+  /* room tone: brown noise fundo */
+  var last=0;
+  var rmSrc=ac.createBufferSource();
+  rmSrc.buffer=noiseBuf(ac, 4, function(){ last=(last+(Math.random()*2-1)*.02); last*=.998; return last*3.2; });
+  rmSrc.loop=true;
+  var rmF=ac.createBiquadFilter(); rmF.type="lowpass"; rmF.frequency.value=320;
+  var rmG=ac.createGain(); rmG.gain.value=0;
+  rmSrc.connect(rmF).connect(rmG).connect(ac.destination); rmSrc.start();
+  /* crackle: estalidos esparsos */
+  var ckG=ac.createGain(); ckG.gain.value=0;
+  var ckF=ac.createBiquadFilter(); ckF.type="bandpass"; ckF.frequency.value=4200; ckF.Q.value=0.8;
+  ckF.connect(ckG).connect(ac.destination);
+  (function pop(){
+    if(snd.ac){
+      var n=ac.createBufferSource();
+      n.buffer=noiseBuf(ac, 0.02, function(i,l){ return (Math.random()*2-1)*(1-i/l); });
+      var g=ac.createGain(); g.gain.value=(0.2+Math.random()*0.8);
+      n.connect(g).connect(ckF); n.start();
+    }
+    setTimeout(pop, 40+Math.random()*260);
+  })();
+  snd.ck=ckG; snd.rn=rnG; snd.rm=rmG;
+  apply();
+}
+function apply(){
+  if(!snd.ac) return;
+  var dk=snd.duck;
+  snd.ck.gain.value=($("fCk").value/100)*0.5*dk;
+  snd.rn.gain.value=($("fRn").value/100)*0.33*dk;
+  snd.rm.gain.value=($("fRm").value/100)*0.5*dk;
+  $("vCk").textContent=$("fCk").value;
+  $("vRn").textContent=$("fRn").value;
+  $("vRm").textContent=$("fRm").value;
+}
+function duck(on){ snd.duck = on ? 0.35 : 1; apply(); }
+["fCk","fRn","fRm"].forEach(function(id){
+  $(id).addEventListener("input", function(){ sndInit(); apply(); });
+  $(id).addEventListener("pointerdown", sndInit);
+});
+
+/* ---------------- valvula de programa (mostrador) ---------------- */
+(function(){
+  var DEEP={ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1};
+  var ALL=["ambient","ambient_techno","dub_techno","hypnotic_techno","deep_house","lofi",
+    "reggae","dub","ska_rocksteady","lofi_house","liquid","intelligent_dnb","atmospheric_jungle",
+    "breakbeat","ragga_jungle","oldskool_hardcore","dubstep"];
+  var el=$("valve");
+  ALL.forEach(function(g){
+    var d=document.createElement("span");
+    d.className="g"+(DEEP[g]?" on":"");
+    d.textContent=g.replace(/_/g," ");
+    el.appendChild(d);
+  });
+})();
+
+/* ---------------- linha unica de intencao ---------------- */
+$("intent").addEventListener("change", function(){
+  $("intentTag").textContent=this.value.trim();
+});
+
+/* ---------------- modo selado ---------------- */
+var sealed=false, wlock=null;
+function seal(on){
+  sealed=on;
+  document.body.classList.toggle("sealed", on);
+  if(on){
+    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
+    if("wakeLock" in navigator){ navigator.wakeLock.request("screen").then(function(l){ wlock=l; }).catch(function(){}); }
+  } else {
+    if(document.fullscreenElement) document.exitFullscreen().catch(function(){});
+    if(wlock){ try{ wlock.release(); }catch(e){} wlock=null; }
+  }
+}
+$("sealBtn").addEventListener("click", function(){ seal(true); });
+document.addEventListener("keydown", function(ev){ if(ev.key==="Escape" && sealed) seal(false); });
+</script>
+</body>
+</html>
