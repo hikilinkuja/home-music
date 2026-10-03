@@ -1683,6 +1683,19 @@ function apiFail(){
 }
 
 /* start sequence: user pressed play, intro runs, radio starts */
+/* relogio de animacao que nao adormece: setInterval corre em separadores ocultos
+   (com passos mais grossos), ao contrario do requestAnimationFrame; usar para
+   TODAS as rampas de audio e maquinas de transicao. step devolve false para abortar. */
+function animClock(dur, step, done){
+  var t0=performance.now();
+  var h=setInterval(function(){
+    var x=Math.min(1,(performance.now()-t0)/dur);
+    var cont=step(x);
+    if(cont===false){ clearInterval(h); return; }
+    if(x>=1){ clearInterval(h); if(done) done(); }
+  }, 50);
+  return h;
+}
 var pendingFirst = null;
 function maybeStart(){
   if(!pendingFirst || !P.A.ready || started) return;
@@ -1810,20 +1823,17 @@ function startTransition(){
     })();
     function go(){
       RIG.fadeBegin(inD);
-      var t0 = performance.now(), swapped=false;
-      (function step(now){
-        if(!transitioning){ return; }
-        var x = Math.min(1, (now - t0) / 1900);
+      var swapped=false;
+      animClock(1900, function(x){
+        if(!transitioning){ return false; }
         RIG.setFade(x, inD);
         if(x >= 0.5 && !swapped){ swapped=true; hardNextAudio(t); }
-        if(x < 1){ requestAnimationFrame(step); }
-        else{
-          RIG.finish(outD);
-          rigDeck = inD;
-          transitioning = false;
-          lastT=0; lastStamp=Date.now();
-        }
-      })(performance.now());
+      }, function(){
+        RIG.finish(outD);
+        rigDeck = inD;
+        transitioning = false;
+        lastT=0; lastStamp=Date.now();
+      });
     }
     return;
   }
@@ -1849,10 +1859,10 @@ function startTransition(){
     else setTimeout(waitBoth, 250);
   })();
   function ramp(){
-    var out = P[outK], t0 = performance.now(), mid=false;
+    var out = P[outK], mid=false;
     RIG.fadeBegin(inK);
-    function step(now){
-      var x = Math.min(1, (now - t0) / FADE_DUR);
+    animClock(FADE_DUR, function(x){
+      if(!transitioning){ return false; }
       fadeVol(out, Math.cos(x * Math.PI/2));
       fadeVol(inc, Math.sin(x * Math.PI/2));
       RIG.setFade(x, inK);
@@ -1862,18 +1872,15 @@ function startTransition(){
         $("slot"+outK).classList.remove("live");
         setNow(t, true);
       }
-      if(x < 1){ requestAnimationFrame(step); }
-      else{
-        try{ out.yt.stopVideo(); }catch(e){}
-        out.pendingTrack = null;
-        RIG.finish(outK);
-        activeKey = inK;
-        rigDeck = inK;
-        transitioning = false;
-        lastT=0; lastStamp=Date.now();
-      }
-    }
-    requestAnimationFrame(step);
+    }, function(){
+      try{ out.yt.stopVideo(); }catch(e){}
+      out.pendingTrack = null;
+      RIG.finish(outK);
+      activeKey = inK;
+      rigDeck = inK;
+      transitioning = false;
+      lastT=0; lastStamp=Date.now();
+    });
   }
 }
 
@@ -2285,13 +2292,10 @@ function waitGesture(){
 function fadeAudio(a, len, cb){
   if(!a){ if(cb) cb(); return; }
   introFading=true;
-  var v0=a.volume, t0=performance.now();
-  (function st4(now){
-    var x=Math.min(1,(now-t0)/(len*1000));
+  var v0=a.volume;
+  animClock(len*1000, function(x){
     try{ a.volume=v0*(1-x); }catch(e){}
-    if(x<1) requestAnimationFrame(st4);
-    else { try{ a.pause(); }catch(e){} if(cb) cb(); }
-  })(performance.now());
+  }, function(){ try{ a.pause(); }catch(e){} if(cb) cb(); });
 }
 /* parte 2: Tubby's Dub Lesson entra nos 10 s; as frases saem, fica o plasma */
 var p2Started=false, p2Fading=false;
@@ -2310,12 +2314,11 @@ function startP2(){
     try{ introAudio2.currentTime=P2_START; }catch(e){}
     introAudio2.volume=0;
     introAudio2.play().then(function(){
-      var target=Math.max(0, Math.min(1, masterVol/100)), t0=performance.now();
-      (function up(now){
-        var x=Math.min(1,(now-t0)/900);
+      var target=Math.max(0, Math.min(1, masterVol/100));
+      animClock(900, function(x){
+        if(introDone) return false;
         try{ introAudio2.volume=target*x; }catch(e){}
-        if(x<1 && !introDone) requestAnimationFrame(up);
-      })(performance.now());
+      });
     }).catch(function(e2){ hmi("p2 play catch "+(e2&&e2.name)); startRadioUnderIntro(); endSequence(); });
   }
   if(introAudio2.readyState>=1){ go3(); }
@@ -2432,13 +2435,8 @@ function rampInFirst(){
   if(!firstRampPending) return;
   firstRampPending=false;
   /* lenta e constante: 4,5 s em linha reta */
-  var p=P[activeKey], t0=performance.now(), DURR=4500;
-  (function st2(now){
-    var x=Math.min(1,(now-t0)/DURR);
-    fadeVol(p, x);
-    if(x<1) requestAnimationFrame(st2);
-    else { FX.crackle(false); }
-  })(performance.now());
+  var p=P[activeKey], DURR=4500;
+  animClock(DURR, function(x){ fadeVol(p, x); }, function(){ FX.crackle(false); });
 }
 window.HMFX = { needle: function(){ FX.needleDrop(); FX.crackle(true); rampInFirst(); } };
 
