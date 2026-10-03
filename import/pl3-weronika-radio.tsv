@@ -1,103 +1,162 @@
 # playlist 'radio' de Weronika (spotify 5e6cknbMB4NbbHQV3JCSRu)
-# extraidas 1-100 de 157; 101-157 pendentes (quota da API anonima; nova tentativa na proxima volta)
-# n	artista	titulo	nota
-1	Blu Mar Ten	The Fountain
-2	LTJ Bukem	Music
-3	PFM	Dannys Song
-4	Swimful	Backwards
-5	Janeret	Solstice
-6	Prayer	I Want You
-7	Calibre	Turtle Duv
-8	Tom Jarmey	Long Dark Tunnel - Darkside Mix
-9	Tom Jarmey	Lurk
-10	MC Conrad, Seba	Words 2B Heard Meets Planetary Funk Alert
-11	Kirsty Hawkshaw, Seba	Face To Face Again (The Joy) - Seba Remix
-12	Seba	Planetary Funk Alert
-13	LTJ Bukem	Atlantis (I Need You)
-14	LTJ Bukem	Demons Theme Part II
-15	Silence Groove	Only You
-16	BCee, Blu Mar Ten	Rose Coloured Stained Glass Windows
-17	Coco Bryce	Adventures In Perception
-18	Naibu	Red Hand
-19	Nookie	Continental Drift
-20	Sully	Flock
-21	Technicolour, Komatic	No Evil
-22	Lenzman, Redeyes	Dizzy Heights
-23	Lenzman, Riya	Open Page
-24	Calibre	Peso
-25	Dave Owen	Nothin But Love - Original Mix
-26	Blackpocket	Last Straw
-27	Furney	Much of a Deepness
-28	dBridge, Calibre	Ponderosa
-29	Submorphics	Botanical Life
-30	RoyGreen & Protone	Jazzypants
-31	Marcus Intalex	Virgo
-32	Zero T, KILLSWSH	She Moves
-33	Submorphics	Infinite Void
-34	Total Science, Digital, Spirit	Salvation
-35	Lenzman	Roseland
-36	Submorphics	Shadow Red
-37	Furney	Destiny Unfolding Within
-38	Answer Code Request	Resonate
-39	Joakuim	8am Roller
-40	Anile	Vitalogy
-41	Mindstate, Anile	Echo Shift
-42	Chimpo	All of the Above
-43	TMSV	Abyss Watcher
-44	Private Caller	Inside
-45	Gray	Rubadub
-46	Ges-e, Shandy	Distant Dreams
-47	Ges-e, Osmani Soundz	The Calling
-48	Osmani Soundz, Nuphlo	Blueberry Junction
-49	LSB	Potshot
-50	LSB	Here With Me
-51	Fonzo	Flake
-52	Alpha Rhythm, Natus	Lunar Eclipse
-53	Nu:Logic	What I've Always Waited For
-54	Nu:Logic	Gemini's Child
-55	Universal	Live Session
-56	Seba, Lo Tek	So Long
-57	New Balance	Reflections
-58	KMC	Polaris
-59	Jamal, Submorphics	Untitled Detroit
-60	Submarine	No Sleep
-61	Submarine	Grounding
-62	LSB	Leave
-63	Mystic State	AGK
-64	Ras Demo, Turntable Dubbers	Sekkle Up the Score - Turntable Dubbers Remix
-65	Ras Demo	Dutty Gov - Potential Badboy Remix
-66	RamonPang	Neptune's Tears
-67	RMS	Back To Reality - Original Mix - Mixed	EXCLUIDA a pedido de Paulo (fragmento de mix continua, 85 s)
-68	Alix Perez	Mother Cell
-69	Casey Club	Borehole
-70	Criso	Rinse Out
-71	ENiGMA Dubz, Mystic State	Backchat
-72	DE-TU	Roadblock
-73	DE-TU	Air Time
-74	Sub Basics	Vapour
-75	Sub Basics, Headland	Fluro Biotica
-76	DE-TU	St.Paul's - City Road Dub
-77	Somah	Collie Field
-78	Somah	Meek Dub
-79	Hotsteppas, ickle	Standing Firm (ickle's Dub Mix)
-80	Jafu	Touring
-81	Calibre	possession dub
-82	Stones Taro	Obscured Breath	genero novo: uk garage/house (aprovado)
-83	Stones Taro	Clockwork Dub	genero novo: uk garage/house (aprovado)
-84	Sub Basics	Theory
-85	Intersolar, Aural Imbalance	Soulshatter - Aural Imbalance Remix
-86	Fonzo	How We Feelin'
-87	Criso, Joe Nice	Knowledge
-88	Ebende	Enabler
-89	Dambala, Lexx	Lorraine - Lexx Dub
-90	Burning Spear	Black Wa-Da-Da (Invasion)
-91	The Aggrovators	So Jah Sey Dub
-92	Prince Far I	Back Weh
-93	Mikey Dread	Saturday Night Style - Dub / Instrumental Reggae Music
-94	Scientist	Drum Song Dub
-95	Linton Kwesi Johnson	Iron Bar - Dub
-96	Sly & Robbie	Burial Dub
-97	Hollie Cook	Sugar Water Dub
-98	Black Uhuru	Dub You Haffe Dub
-99	King Tubby, Riley All Stars	Staga Dub
-100	Prince Jammy, Lee "Scratch" Perry	Rude Boy
+# COMPLETA: 157 faixas, resolvidas a 2026-10-03 (fonte: tabela publica do analisador Chosic sobre a playlist; ids Spotify confirmados por linha)
+# BPM e generos = dados Spotify via Chosic; duracao mm:ss
+# decisoes do Paulo ja registadas: 67 EXCLUIDA; 82-83 uk garage APROVADAS; 4 e 69 FICAM
+# n	spotify_id	artista	titulo	bpm	dur	generos_spotify	nota
+1	7ilEMJCPJwSUjJ4pa0aRzC	Blu Mar Ten	The Fountain	168	11:05	liquid funk, drum and bass, jungle	
+2	6ZrG74y44BWxIArOGYGXJG	LTJ Bukem	Music	155	08:49	jungle, drum and bass, liquid funk, downtempo, breakcore, breakbeat	
+3	1RdEyckqbMWiWS8NHTC6Iz	PFM	Dannys Song	157	06:55	jungle, drum and bass, liquid funk	
+4	3g83Ltj1OBOPgi7LBcyHQv	Swimful	Backwards	143	04:15	uk funky, lo-fi house	fica (decisao do Paulo)
+5	48aeRGlOTov6RXCP0bZ91m	Janeret	Solstice	160	06:07	dub techno, minimal techno, lo-fi house	
+6	6LZD04OjR4IlKe8KEJFT6T	Prayer	I Want You	160	09:06	jungle, breakbeat	
+7	2WX1OrITuTdHStCEElMEYi	Calibre	Turtle Duv	140	09:01	liquid funk, drum and bass, jungle, musique concrete	
+8	5bQ8OC6Oh9vNLt7i8fWbqT	Tom Jarmey	Long Dark Tunnel - Darkside Mix	145	06:51	jazz house, lo-fi house	
+9	2RJRyMovF1ELNIP8IeOHfV	Tom Jarmey	Lurk	180	06:37	jazz house, lo-fi house	
+10	4DK37ymlOvqogyg9Oq82sk	MC Conrad, Seba	Words 2B Heard Meets Planetary Funk Alert	168	08:46	jungle, drum and bass, liquid funk, breakbeat	
+11	0zLtlhG9ael9NXiugonW7k	Kirsty Hawkshaw, Seba	Face To Face Again (The Joy) - Seba Remix	175	06:24	trance, liquid funk, drum and bass, jungle, breakbeat	
+12	3YQRtx2YjJHEb2JUeeiKXj	Seba	Planetary Funk Alert	163	10:03	liquid funk, drum and bass, jungle, breakbeat	
+13	2527WUoKIauHY1tx5TCetu	LTJ Bukem	Atlantis (I Need You)	155	06:34	jungle, drum and bass, liquid funk, downtempo, breakcore, breakbeat	
+14	7IXc4pZYZ7UpEX2XiBYErZ	LTJ Bukem	Demons Theme Part II	145	03:46	jungle, drum and bass, liquid funk, downtempo, breakcore, breakbeat	
+15	2gS1OJ2an1S6fwM8UwNCA6	Silence Groove	Only You	174	05:59	liquid funk, drum and bass, jungle	
+16	0hYUkiA4iPtwOzWXbYgEUV	BCee, Blu Mar Ten	Rose Coloured Stained Glass Windows	85	04:39	liquid funk, drum and bass, jungle	
+17	7h4SC7FkuOaCrGNt7exKDB	Coco Bryce	Adventures In Perception	160	05:09	jungle, breakbeat, drum and bass, footwork, uk garage	
+18	2Lkrmsuu8wgGd5eWKiJrpz	Naibu	Red Hand	170	04:39	liquid funk, drum and bass, jungle	
+19	78OFsJBKZqhm09KE8NjEHn	Nookie	Continental Drift	170	06:35	jungle, drum and bass, liquid funk, breakbeat	
+20	4kmgT0hL94f89msEEgvAz2	Sully	Flock	160	04:42	jungle, breakbeat, footwork, drum and bass, uk garage	
+21	4qvRlUXRVpuiKU6mGkBVPX	Technicolour, Komatic	No Evil	174	05:07	liquid funk, drum and bass, jungle	
+22	4OzDSJJ1HpDcskxmSryvOA	Lenzman, Redeyes	Dizzy Heights	172	04:17	liquid funk, drum and bass, jungle, jazz house	
+23	0iqT5BeQEHBds5RSsJDMJL	Lenzman, Riya	Open Page	171	05:44	liquid funk, drum and bass, jungle	
+24	1iWZIiQ38CVdN28QZDFKjx	Calibre	Peso	88	06:10	liquid funk, drum and bass, jungle, musique concrete	
+25	5rtGhin74wxFojrPqgTpdY	Dave Owen	Nothin But Love - Original Mix	170	06:40	liquid funk, drum and bass, jungle	
+26	7wnKKRfKMTQVpUeKfDBHve	Blackpocket	Last Straw	86	05:51	liquid funk, jungle, drum and bass	
+27	2zzI5rcymcV8xVIlMZ6ynr	Furney	Much of a Deepness	176	04:54	liquid funk, drum and bass, jungle	
+28	0Gm3AyKVx1qxrNRB7OaRTs	dBridge, Calibre	Ponderosa	175	05:38	drum and bass, jungle, liquid funk, breakbeat, musique concrete	
+29	3WUwjEtfid2WCyobtmzdT2	Submorphics	Botanical Life	86	04:32	liquid funk, drum and bass, jungle	
+30	3RIlBEL80tSHLNfkJjmbRL	RoyGreen & Protone	Jazzypants	114	04:34	liquid funk, drum and bass, jungle	
+31	1P7YjoiynCSxZp5EtvZ0FH	Marcus Intalex	Virgo	173	05:12	drum and bass, jungle, liquid funk	
+32	1QeliItLbS0fvWbJA2dxMX	Zero T, KILLSWSH	She Moves	174	05:40	liquid funk, drum and bass, jungle	
+33	0XWGVOL6F25EWroUur0JpW	Submorphics	Infinite Void	172	04:11	liquid funk, drum and bass, jungle	
+34	5mOrTkZX2OvkxVRTZ8J6zh	Total Science, Digital, Spirit	Salvation	174	05:20	drum and bass, jungle, liquid funk, breakbeat	
+35	11cuNXtuo2UtL9T7k6MJw3	Lenzman	Roseland	174	05:19	liquid funk, drum and bass, jungle	
+36	7hkYSZ1Ry7OeBGrTzLhg0c	Submorphics	Shadow Red	172	04:24	liquid funk, drum and bass, jungle	
+37	3zmpVcFmMZSI2EVPylLW0y	Furney	Destiny Unfolding Within	174	05:20	liquid funk, drum and bass, jungle	
+38	16OA4WqX5zLLRjiFytaRGL	Answer Code Request	Resonate	145	05:30	dub techno, idm, minimal techno, breakbeat	
+39	6BTWTaw3867L7jgcLXjpAb	Joakuim	8am Roller	86	04:30	liquid funk, drum and bass, jungle	
+40	0FHtwfkB79li1cGjsgNT1z	Anile	Vitalogy	174	05:03	liquid funk, drum and bass, jungle	
+41	7hwu5XkgPHsaDVAy39CJJG	Mindstate, Anile	Echo Shift	174	05:30	liquid funk, drum and bass, jungle	
+42	0a5emyFh8QVO6EAgZLMP2S	Chimpo	All of the Above	175	03:00	jungle, drum and bass, liquid funk, footwork	
+43	7ptI1V7o6oXYI6ghZH4qhy	TMSV	Abyss Watcher	170	04:38	jungle, dubstep, dub, breakbeat, footwork, bass music	
+44	6EXiLL9Q8cf4a80Cj1Ux2j	Private Caller	Inside	155	04:33	breakbeat, jungle, uk garage, new rave	
+45	0qlFRErnxIurSI8opYL2mZ	Gray	Rubadub	177	05:05	drum and bass, jungle, bassline	
+46	3bwKJEHuVk3cCjhuwLjjOu	Ges-e, Shandy	Distant Dreams	175	05:15	dubstep, disco polo	
+47	5bgTaYIlk0cMj3NXvyeD9z	Ges-e, Osmani Soundz	The Calling	178	06:20		
+48	2jGyzvTkDWp3vsTUP28Prz	Osmani Soundz, Nuphlo	Blueberry Junction	174	05:21	jungle	
+49	1aaTt9TEpmKL2Dcp28Hz4r	LSB	Potshot	174	05:08	liquid funk, drum and bass, jungle	
+50	4p4MvXHTOdvfuP1tgmQqtK	LSB	Here With Me	174	06:48	liquid funk, drum and bass, jungle	
+51	5KMzKfeNKlNYMtWs3chCmx	Fonzo	Flake	164	03:35	uk garage, uk funky, breakbeat, bassline, jungle	
+52	73ITN8WKHIRaewDnAISy19	Alpha Rhythm, Natus	Lunar Eclipse	174	04:57	liquid funk, drum and bass	
+53	4o79FgQYn4mAXhvDzBN97X	Nu:Logic	What I've Always Waited For	174	05:48	liquid funk, drum and bass, jungle	
+54	0YqUC2EIzGUY5EB5bBTBuZ	Nu:Logic	Gemini's Child	174	05:36	liquid funk, drum and bass, jungle	
+55	0hzRdSMLzDIXnOAkxxBi5v	Universal	Live Session	165	05:40	jungle, drum and bass	
+56	6ChYON7kJVT2RNtKmQZaJL	Seba, Lo Tek	So Long	163	09:03	liquid funk, drum and bass, jungle, breakbeat, breakcore	
+57	6QYMQIQQU7mqCjPMfUPWoS	New Balance	Reflections	160	07:53	jungle, drum and bass, liquid funk	
+58	4gJNGuv4NkDFidOFjZCDSs	KMC	Polaris	165	09:21	jungle, parang, drum and bass, liquid funk	
+59	3YjoFGdkP8wBkRWCjL9pD5	Jamal, Submorphics	Untitled Detroit	174	04:10	drum and bass, liquid funk, jungle	
+60	1ccOqLy2nvepeVepQjKjwX	Submarine	No Sleep	172	06:05	drum and bass, liquid funk, jungle	
+61	3K4P9FAh7F5saOkP0oeSYL	Submarine	Grounding	174	06:29	drum and bass, liquid funk, jungle	
+62	0ivA5y2gDoMSlzWYwl4NGY	LSB	Leave	174	06:37	liquid funk, drum and bass, jungle	
+63	3n6YXg8jvQFevCBxwKLVLR	Mystic State	AGK	115	04:32	liquid funk, drum and bass, dubstep, dub	
+64	6R3gkIyMLlnLFPNwcfqPX6	Ras Demo, Turntable Dubbers	Sekkle Up the Score - Turntable Dubbers Remix	172	03:57	ragga, dub, jungle, reggae, roots reggae	
+65	459vqveA0oOpHwDizsZHw6	Ras Demo	Dutty Gov - Potential Badboy Remix	87	04:04	ragga, dub, jungle, reggae, roots reggae	
+66	7yB7LbLLmRvsGRr8sV8DDv	RamonPang	Neptune's Tears	160	02:54	idm	
+67	5LM5D4axlHlw25FSLB9yqN	RMS	Back To Reality - Original Mix - Mixed	175	01:24	jungle, drum and bass	EXCLUIDA por decisao do Paulo
+68	2efRcCOXZyTnKjO4HcRCaG	Alix Perez	Mother Cell	143	05:38	liquid funk, drum and bass, jungle, drumstep, bass music	
+69	2B4OQq13pgIqrud53V7NvZ	Casey Club	Borehole	140	02:44	uk garage, dubstep, bass music, bassline	fica (decisao do Paulo)
+70	4Ht6fq5qR4Sx5m5LAUV7oG	Criso	Rinse Out	140	03:18	dubstep, bass music, dub, uk garage	
+71	4Oet3GQtUhT2HfIrO0m4WC	ENiGMA Dubz, Mystic State	Backchat	140	04:12	chillstep, dubstep, uk garage, bass music, dub, liquid funk, drum and bass	
+72	2rK3oPAm2b7lybSfPm5Mpv	DE-TU	Roadblock	70	04:23	dubstep, dub, bass music	
+73	2mFN0YhcNokRnChgTYgSgA	DE-TU	Air Time	112	03:10	dubstep, dub, bass music	
+74	1Kjh46jVpkvJTIdL17YxSj	Sub Basics	Vapour	140	04:13	dub techno, dub, dubstep	
+75	03rKNxc25yRkokUo0rrpis	Sub Basics, Headland	Fluro Biotica	142	04:16	dub techno, dub, dubstep, bass music	
+76	5dHos3xhs2VuzarTnZc6ir	DE-TU	St.Paul's - City Road Dub	140	04:38	dubstep, dub, bass music	
+77	4TingIeNkD18ulBVMTk6j9	Somah	Collie Field	122	04:00	dubstep, dub, dub techno, bass music	
+78	6jHOxTUmWeTupc4lKz76Vy	Somah	Meek Dub	140	04:23	dubstep, dub, dub techno, bass music	
+79	3me9u39VnEjasUuU9m8QME	Hotsteppas, ickle	Standing Firm (ickle's Dub Mix)	125	04:15	dub	
+80	1NmaP7SLMd4k1MW9DNYC2E	Jafu	Touring	140	04:20	dubstep, dub	
+81	5win947SW5Xcu36eXpN1lz	Calibre	possession dub	173	05:30	liquid funk, drum and bass, jungle, musique concrete	
+82	1NVsEm8Of082v2nUEb45Nd	Stones Taro	Obscured Breath	138	05:13	breakbeat, uk garage, jungle, uk funky	uk garage; aprovada
+83	13rcE5fNdeR8fL7Y7DwSaA	Stones Taro	Clockwork Dub	132	04:54	breakbeat, uk garage, jungle, uk funky	uk garage; aprovada
+84	4piYjEAChW2nvuyElVh8Oe	Sub Basics	Theory	87	04:57	dub techno, dub, dubstep	
+85	5eXXrieno9gVU0V7HIRIYJ	Intersolar, Aural Imbalance	Soulshatter - Aural Imbalance Remix	170	07:38	liquid funk, jungle, drum and bass, breakcore, breakbeat	
+86	0LcYvSInE38358nqZO9nB4	Fonzo	How We Feelin'	132	03:42	uk garage, uk funky, breakbeat, bassline, jungle	
+87	2lWV7pJfQUcm42ZwMWoBOL	Criso, Joe Nice	Knowledge	140	03:44	dubstep, bass music, dub, uk garage, footwork, zydeco	
+88	4BVkWhE7VfpzfKB9WS0POI	Ebende	Enabler	144	04:53	breakbeat	
+89	0FphKTfLutcYLHcFXIjfhX	Dambala, Lexx	Lorraine - Lexx Dub	156	04:13	lovers rock, roots reggae, dub, roots rock, balearic	
+90	7qUN4c84nJrlMMVXku7yHr	Burning Spear	Black Wa-Da-Da (Invasion)	146	03:52	roots reggae, reggae, dub, rocksteady, ragga	
+91	7DgZYq7SeYy3663dx8bRaI	The Aggrovators	So Jah Sey Dub	77	04:20	dub, rocksteady, roots reggae, reggae	
+92	5Fjk1B7kuEVoekE0ECEzc4	Prince Far I	Back Weh	149	04:32	dub, roots reggae, reggae, rocksteady	
+93	2RhgEPQbjxUruFu4k2ylrL	Mikey Dread	Saturday Night Style - Dub / Instrumental Reggae Music	124	04:53	dub, roots reggae, reggae, rocksteady, ragga	
+94	0xFSQCZu1J1YwE8O7mdzCZ	Scientist	Drum Song Dub	112	03:42	dub, roots reggae, reggae, rocksteady	
+95	1mNX6cAZcy8BvOB2pY1uFo	Linton Kwesi Johnson	Iron Bar - Dub	143	03:45	dub, reggae, roots reggae, rocksteady, ragga	
+96	2FvpQiEbFUGdHtJRh7kWGP	Sly & Robbie	Burial Dub	123	04:16	dub, reggae, roots reggae, lovers rock, ragga, rocksteady	
+97	5sqmSva8jaD5vXCxQ6yOnj	Hollie Cook	Sugar Water Dub	142	03:59	reggae, dub, roots reggae, rocksteady	
+98	3NX89L72F48q47XNYljDm4	Black Uhuru	Dub You Haffe Dub	143	04:43	reggae, roots reggae, dub, ragga, rocksteady	
+99	46renQKZtEfaMVCUipcyb6	King Tubby, Riley All Stars	Staga Dub	167	03:11	dub, roots reggae, rocksteady, reggae, ragga	
+100	4f1GpbYe1TAYTS6NJkhr4Y	Prince Jammy, Lee Scratch Perry	Rude Boy	150	03:38	dub, roots reggae, rocksteady, reggae, ragga	
+101	16U2rckaQVKgwF8Xjz8BBA	Sly & The Revolutionaries, Jah Thomas	Cocaine - with Jah Thomas	144	03:47	dub, roots reggae, rocksteady, reggae	
+102	6sKGyo5vC7KXNyQ8yL5jWb	G. Corp	Murder	136	05:32	dub	
+103	67KpmfpxYDqClpQEyo9pUO	Stones Taro	Desaturation	136	06:41	breakbeat, uk garage, jungle, uk funky	
+104	7jdLKRh0pXdmI9AQm0aBZ2	Raphael Dion	Dem	136	06:12	dub, dub techno	
+105	5TYJRKIgOyiHsCLwIevwtZ	Another Channel	Run Dub	124	06:11	dub techno, dub	
+106	5vUb374DRVWwNmANWpHeup	Geode	Lost in Eternity	140	04:06	dubstep, dub, bass music	
+107	0NXT9XQbeXvbSUWSCmx8OR	Another Channel	Ael Na Dub	128	04:19	dub techno, dub	
+108	7peqDPfyZTuw0PXGW45wYW	Kanka	Dub in water	115	03:33	dub, ragga, reggae	
+109	6R3MarwJK1ktsTlxRoLel7	Biome	Dragon	140	04:38	dubstep, dub, bass music	
+110	00q5mZbCefYw91ORaeOcyf	Mystic State	Talk To Me	135	04:48	liquid funk, drum and bass, dubstep, dub	
+111	4ThN148xmbVjgumG3hpIOk	Tone Temple	You dirty thing	126	07:45	dub techno, dub, ballroom vogue	
+112	7IBpFvEHIMJZHjTb6o6e4j	Versa	Rainfall In Dub	128	06:11	dub techno, dub, dubstep	
+113	5WUbrSkucGgtuGgxMKjOED	willyb	Egyptus	140	03:39	melodic house, organic house	
+114	5Xv4CQ7BAcPiYmKK10pRau	Sam Binga, Rider Shafique, Magugu, En:vy	Get Down Low - En:vy Remix	174	03:02	uk garage, jungle, drum and bass, breakbeat, footwork, uk funky, bassline, drumstep, liquid funk	
+115	38gBmRO7BNAgPz35WFgZkl	King Tubby, Augustus Pablo	King Tubby Meets Rockers Uptown	132	02:32	dub, roots reggae, rocksteady, reggae, ragga	
+116	0SbMyUH5NHjA2KzdXWWAGE	The Upsetters	Super Ape	123	03:48	dub, reggae, rocksteady, roots reggae, ragga	
+117	5mAFr465SXXp7lJNa16nOr	LAS, Gantz	Firepusher	140	03:59	dubstep, dub, uk funky, bass music	
+118	2UsI0UIDMvv8KV2HGwd9AL	LAS	Tic	105	04:25	dubstep, dub, uk funky	
+119	7bhPDZYXXSkWGCTejzpjAZ	Teffa	Sputnik	140	04:00	dubstep, dub, bass music	
+120	6QByRssn0nnEgYUfOV6EXH	Teffa	A17	140	03:19	dubstep, dub, bass music	
+121	2M9S6bLH7OHjMQlJN8anoo	Mungk	Kuji	140	03:15	dubstep, dub	
+122	2V7gouQeDyiQBCKKSh9Eoe	Karma, SP:MC	Delirium - SP:MC Remix	135	04:50	dubstep, dub, uk garage, dub techno, drum and bass, breakbeat	
+123	5aybua75EwxoDtTyxUjPzz	Karma	Concentrate	140	04:38	dubstep, dub, uk garage, dub techno	
+124	3HDFsgnGedc7hYncirDqDc	Karma	How Ya Feel	143	05:47	dubstep, dub, uk garage, dub techno	
+125	2QoofITrTHmkCGXEgFPpx7	Karma	Smear Dub	140	04:34	dubstep, dub, uk garage, dub techno	
+126	2HEo9p01SQV5egeve8uQqa	El-B	Amazon	139	04:59	uk garage, uk funky, breakbeat, bassline, dubstep	
+127	1CqoE0RLm3L8gVBm9f2rJb	Forest Drive West, Lucky Pereira	Scorpion	110	07:03	dub techno, breakbeat, idm, minimal techno	
+128	2XcpXRhYwEeykJ1Fl3dq5b	Substrada	Brocky	140	05:09	dubstep, bass music, dub	
+129	4H7BEawwAKJCRSa8NeECK4	willyb	Tunisia	140	02:58	melodic house, organic house	
+130	3sZBkEGd5Pj8hpYNjWvgLN	ROCKSTONE	Dub Shotta	140	05:13	dubstep, dub	
+131	2QSyga75nFKCsS10yD2mAg	Alix Perez	Cape Reinga	140	05:49	liquid funk, drum and bass, jungle, drumstep, bass music	
+132	4Tg0ra2NwFahHXiboKtfPW	DjRUM	Showreel, Pt. 2	93	09:01	idm, dub techno, ambient	
+133	3z5hWZzvImk1r0AAfLQDj1	En:vy, Klinical	Gecko	105	03:46	drum and bass, liquid funk, dubstep	
+134	190nyMrImD5wMyHkQNTE2M	DamnSon	Still Behind	134	04:08		
+135	24nKznE6TSTys2PnEfFGQG	Youandewan	Insel 2000	134	05:05	lo-fi house	
+136	2ofsiK0hq2tFNPK0i7Peza	Jon Sable	Soft Focus	132	05:10	dub techno, lo-fi house, jazz house	
+137	5LrZy8rnQyBmUgzZblQiuT	CESRV	Avisa	140	03:42	brazilian hip hop, grime, boom bap, brazilian trap	
+138	1VxXZGHRc03u1GkiUqZJ6X	Retromigration	No More	152	04:29	jazz house, lo-fi house, nu jazz	
+139	0C2gpJ387C7kEVOsuapQEt	sangrr	Standard Riddim	140	03:40	uk garage, big beat, breakbeat	
+140	5ARtQhA9wsjXE6zhuuqawm	Raphael Dion	2. Instant Death	141	03:30	dub, dub techno	
+141	1jspe9SWE3KlafC476geOp	Holloway	The Sound	135	04:33	uk garage, breakbeat, bassline, uk funky	
+142	0vucsoNdpQSNuVwP1inztX	Ebende, Vilhelm Hasselgren	Parallel	137	05:36	breakbeat, dub techno, jungle	
+143	0VPIhU2vkKRhqfhaxfTGlT	Alix Perez, Cesco	Watch This	136	04:44	liquid funk, drum and bass, jungle, drumstep, bass music, uk garage, bassline, breakbeat, dubstep	
+144	5DEqSJgb14krIUoD7Fh60S	Surgeon	Bad Hands Break	133	06:04	minimal techno, techno, idm, dub techno, acid techno	
+145	7j88h4E6Oz8VXXs0po0cvN	Hyas	Za Effect	138	04:26	hip house, footwork, uk garage, baltimore club, breakbeat	
+146	1q5rIJy31wzkHVn3GetxAi	Hyas, Pura Pura	BOOM...BOOM ?	150	03:54	hip house, footwork, uk garage, baltimore club, breakbeat, miami bass, uk funky	
+147	6IzmFEr6iGcWfsMlNfCD2t	LEVOS	Cuparooi	133	06:19	uk garage	
+148	6W3KgMPghnxvOk9ROfezYo	not even noticed, K-Lone	Eteus - K-LONE Remix	136	04:51	breakbeat, acid house, jazz house, uk garage, uk funky, dub techno	
+149	4Dci0jdCGbhfxlmGrmk0jm	Pugilist	Anomaly	140	06:31	breakbeat, dub techno, jungle	
+150	6SLmXcSlZeQyNhFhVagomK	Answer Code Request	Calm Down	130	05:54	dub techno, idm, minimal techno, breakbeat	
+151	2ZFzwn3JvjaYSksnzuwS73	Yung.Raj	Wasteland Dream	160	04:04	footwork	
+152	2BMMC8iMpMnxpzcHKIT8vk	El-B	The Club	136	05:28	uk garage, uk funky, breakbeat, bassline, dubstep	
+153	5vZ5StjogCnxlFIv9orGZD	Main Phase	Whale Dub	134	04:53	uk garage, bassline, breakbeat, uk funky, jungle, hard house	
+154	2CKUK0pzKhsmvKGtqVx6mt	DiSKOP	Beaton	125	08:42	acid techno, minimal techno, breakbeat	
+155	14lIIQOh8OR3Bk5K84Netg	Hugo Massien	Indigo Phase	131	04:36	breakbeat	
+156	0dVA2fhXLKwg6UTTu1zKQ3	Jon Sable	Endorphin Loops	132	07:31	dub techno, lo-fi house, jazz house	
+157	4rFhYeUPNbz32mWQBAmuVL	Stones Taro	Silhouette	137	05:12	breakbeat, uk garage, jungle, uk funky	
