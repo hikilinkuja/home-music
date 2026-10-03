@@ -639,6 +639,7 @@ const GENRES = {
   dubstep: { name: "Dubstep", w: "https://en.wikipedia.org/wiki/Dubstep", note: "South London, early 2000s: garage slowed down, hollowed out, and sent to the basement. Croydon record shops, FWD at Plastic People, sub-bass you feel in your sternum before you hear it. Space is the instrument; the silence between the hits is where the dread lives. Meditate at 140." },
   dub_techno: { name: "Dub Techno", w: "https://en.wikipedia.org/wiki/Dub_techno", note: "Berlin hears King Tubby through a concrete wall. Basic Channel, 1993: two engineers press techno until only the echo remains, chords surfacing like weather fronts, hiss as holy as the kick. Every record sounds like the same gray ocean and that is the discipline. Detroit gave it pulse, Jamaica gave it space, Berlin gave it patience." },
   oldskool_hardcore: { name: "Oldskool Hardcore", w: "https://en.wikipedia.org/wiki/Breakbeat_hardcore", note: "Britain 1992, a generation discovers the pitch control. Breakbeats sped past reason, pianos stabbing at heaven, toytown samples and air horns, all mixed on a borrowed Amiga. The tabloids panicked, the fields filled, and for about thirty months every record sounded like the best night of your life. Jungle was being born in here. Hold tight." },
+  focus_zen: { name: "Zen Focus", w: "https://en.wikipedia.org/wiki/Meditation_music", note: "The focus room's own crate: bansuri breath, handpan rings, kora strings and glitch-quiet electronics. Nothing here asks for your attention; it holds the door while you work. Plays only inside the focus room." },
   uk_garage: { name: "UK Garage", w: "https://en.wikipedia.org/wiki/UK_garage", note: "London flips US garage into something swung and illegal-sounding. Two-step drums that refuse to land where you expect, bass that talks back, vocals chopped into confetti. Pirate radio raised it, champagne dances crowned it, dubstep and grime are its children. All silk shirts and sub pressure." },
   house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
@@ -649,6 +650,35 @@ const GENRES = {
    b: liner note; every concrete claim sourced via Wikipedia / Discogs / AllMusic / music press (2026-10-01).
    w: source article for the track, where one exists. */
 const TRACKS = [
+
+  /* ---- hypnotic techno : Polar Inertia, Environment Control (pedido de Paulo) ---- */
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Environment Control", y:2024, v:"RPblvnQ4b9k", s:null, w:null,
+    b:"Title cut of the French collective's Environment Control: anonymous live project in industrial penumbra, techno as weather system. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Smothering Dreams", y:2024, v:"WMyqdwZwuaI", s:null, w:null,
+    b:"Eleven minutes of slow pressure; the album's deepest shaft. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"In Dark Territory", y:2024, v:"tW-XzUoJm18", s:null, w:null,
+    b:"Scouting by sonar: pulses answered by walls. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Breaking Waves", y:2024, v:"by7oVFZs65E", s:null, w:null,
+    b:"The tide arrives in greyscale; the kick is the undertow. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Deflection V", y:2024, v:"UZkoE_xt-14", s:null, w:null,
+    b:"Trajectories bent around an unseen mass. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Modeless Singularity", y:2024, v:"OF_aadABGqc", s:null, w:null,
+    b:"The loop examined until it opens. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Arctic Horizon", y:2024, v:"cwnBakuDyRU", s:null, w:null,
+    b:"Ten minutes of white line between sea and sky. House liner." },
+  { g:"hypnotic_techno", a:"Polar Inertia", t:"Interlude (Sound Stroke)", y:2024, v:"xVQFXurlQ0o", s:null, w:null,
+    b:"A short passage of struck air between chambers. House liner." },
+
+  /* ---- zen focus : a estante da sala de foco (so toca com o foco aberto) ---- */
+  { g:"focus_zen", a:"Buddha's Flute", t:"Dreaminess", y:2023, v:"I3d1mBBLKdU", s:"https://open.spotify.com/track/5HpCkmFk2Y38XC5ihhV5Za", w:null,
+    b:"Bansuri over still water: the breathing gate's own record, chosen by the founder." },
+  { g:"focus_zen", a:"Opto (Alva Noto & Opiate)", t:"File 1", y:2001, v:"_pbzinynLc8", s:null, w:null,
+    b:"Glitch at whisper level: Carsten Nicolai and Thomas Knak trading the smallest possible sounds." },
+  { g:"focus_zen", a:"ReWildYourSoul", t:"Wild Spaces (full album)", y:2024, v:"ZXY5sIQI-_s", s:null, w:null,
+    b:"Nature-steeped ambient, one unbroken sitting." },
+  { g:"focus_zen", a:"Papis & Jordan", t:"Kora & Balafon, Full Session 2 (Goat Trail)", y:2023, v:"XVObKeLrTR0", s:null, w:null,
+    b:"Forty minutes of kora strings and balafon wood, recorded on the trail." },
+
   /* ---- morning : reggae ---- */
   { g:"reggae", a:"Bob Marley & The Wailers", t:"Natural Mystic", y:1977, v:"2U91ELKMNlE", s:"https://open.spotify.com/track/2QRq65qC4nVZ0NTmtc0IYO", w:"https://en.wikipedia.org/wiki/Natural_Mystic",
     b:"It fades in like it was always playing somewhere and you only now tuned in. Opens Exodus, the album Time magazine named best of the 20th century; Greil Marcus called this its finest song." },
@@ -1347,7 +1377,7 @@ var FX = {
 var GBPM={ reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
   lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,
   breakbeat:132, hypnotic_techno:132, deep_house:122, ragga_jungle:164, dubstep:140,
-  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94, uk_garage:133, house:124 };
+  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94, uk_garage:133, house:124, focus_zen:60 };
 
 function metaFor(t){
   return { a:t.a, t:t.t, y:t.y, bpm:(t.bpm||GBPM[t.g]||120), accent:(BLOCKS[currentBlock]&&BLOCKS[currentBlock].accent)||"#ffb12b" };
@@ -1401,6 +1431,7 @@ function genreHasTracks(gn){
 }
 function pickGenre(fromG){
   var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks).filter(function(gg){ return !window.HMFOCUS || !HMFOCUS.on || HMFOCUS.allow[gg]; });
+  if(window.HMFOCUS && HMFOCUS.on && HMFOCUS.extra){ HMFOCUS.extra.forEach(function(gg){ if(HMFOCUS.allow[gg] && genreHasTracks(gg) && bg.indexOf(gg)<0) bg.push(gg); }); }
   if(!bg.length) bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
   if(!bg.length) return null;
   function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
@@ -2051,13 +2082,13 @@ function mx2List(){
   });
 }
 window.HMSIDE={ f:1, src:{}, h:null };
-function sideFade(key, on){
+function sideFade(key, on, ms){
   HMSIDE.src[key]=!!on;
   var target=Object.keys(HMSIDE.src).some(function(k){ return HMSIDE.src[k]; }) ? 0 : 1;
   var from=HMSIDE.f;
   if(Math.abs(from-target)<0.01){ HMSIDE.f=target; return; }
   if(HMSIDE.h) clearInterval(HMSIDE.h);
-  HMSIDE.h=animClock(700, function(x){
+  HMSIDE.h=animClock(ms||700, function(x){
     HMSIDE.f=from+(target-from)*x;
     try{ applyVol("A"); applyVol("B"); }catch(e){}
   });
@@ -2359,7 +2390,13 @@ window.HM={
 };
 window.HMFOCUS={ on:false, duck:1, allow:{} };
 window.HM.side=function(on){ try{ sideFade("arcade", on); }catch(e){} };
-window.HM.sideKey=function(k, on){ try{ sideFade(k, on); }catch(e){} };
+window.HM.sideKey=function(k, on, ms){ try{ sideFade(k, on, ms); }catch(e){} };
+window.HM.skipIfBlocked=function(){
+  try{
+    if(window.HMFOCUS && HMFOCUS.on && current && !HMFOCUS.allow[current.g]){ hardNext("focus"); return true; }
+  }catch(e){}
+  return false;
+};
 window.HM.flushPeek=function(){ try{ devQ.length=0; }catch(e){} };
 window.HM.reVol=function(){ try{ applyVol("A"); applyVol("B"); }catch(e){} };
 var guardOn=false;
@@ -3153,6 +3190,7 @@ if(DESK){
 
 <div id="focus">
   <canvas id="fcCv"></canvas>
+  <div id="fcZen" style="position:absolute; left:-9999px; top:0"></div>
   <div id="fcGate">
     <div id="fcOrb"></div>
     <div id="fcWord">breathe in</div>
@@ -3224,7 +3262,7 @@ var $=function(id){ return document.getElementById(id); };
 var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null,
   temp:"dusk", breakLift:0, agitUntil:0,
   pomo:{ run:false, phase:"work", left:25*60, cycles:0, works:0, focusedSec:0 } };
-var DEEP={ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
+var DEEP={focus_zen:1, ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
 
 /* ---------- campo proprio, tres temperaturas ---------- */
 var TEMPS={
@@ -3271,9 +3309,47 @@ document.querySelectorAll(".fcT").forEach(function(b){
 
 /* ---------- portao de respiracao (primeira entrada da sessao) ---------- */
 var gateRaf=0;
+var zen={ yt:null, ready:false, fading:false };
+var ZEN_ID="I3d1mBBLKdU"; /* Buddha's Flute, Dreaminess (escolha do fundador) */
+function zenStart(){
+  zen.fading=false;
+  function mk(){
+    if(typeof YT==="undefined" || !YT.Player){ setTimeout(mk, 400); return; }
+    if(zen.yt){ try{ zen.yt.seekTo(0,true); zen.yt.setVolume(0); zen.yt.playVideo(); zenRise(); }catch(e){} return; }
+    zen.yt=new YT.Player("fcZen", { width:"1", height:"1",
+      playerVars:{ autoplay:0, controls:0, playsinline:1 },
+      events:{ onReady:function(e){
+        zen.yt=e.target; zen.ready=true;
+        try{ zen.yt.setVolume(0); zen.yt.loadVideoById(ZEN_ID); zen.yt.playVideo(); }catch(err){}
+        zenRise();
+      } } });
+  }
+  mk();
+}
+function zenRise(){
+  var t0=performance.now();
+  (function st(){
+    if(zen.fading) return;
+    var x=Math.min(1,(performance.now()-t0)/1800);
+    try{ zen.yt.setVolume(Math.round(34*x)); }catch(e){}
+    if(x<1) setTimeout(st, 80);
+  })();
+}
+function zenStop(ms){
+  if(!zen.yt || zen.fading) return;
+  zen.fading=true;
+  var v0=34, t0=performance.now();
+  (function st(){
+    var x=Math.min(1,(performance.now()-t0)/(ms||1600));
+    try{ zen.yt.setVolume(Math.round(v0*(1-x))); }catch(e){}
+    if(x<1){ setTimeout(st, 80); }
+    else { try{ zen.yt.pauseVideo(); }catch(e){} }
+  })();
+}
 function gateRun(){
   var t0=performance.now(), DUR=30000;
   $("fcGate").classList.add("on");
+  zenStart();
   (function tick(){
     if(!$("fcGate").classList.contains("on")) return;
     var t=performance.now()-t0;
@@ -3285,7 +3361,7 @@ function gateRun(){
     $("fcWord").textContent=inhale?"breathe in":"breathe out";
   })();
 }
-function gateOpen(){ $("fcGate").classList.remove("on"); FC.gateDone=true; }
+function gateOpen(){ $("fcGate").classList.remove("on"); FC.gateDone=true; zenStop(1800); }
 $("fcGateSkip").addEventListener("click", gateOpen);
 
 /* ---------- cromo que desvanece ---------- */
@@ -3348,10 +3424,13 @@ setInterval(function(){
 $("fcGo").addEventListener("click", function(){
   FC.pomo.run=!FC.pomo.run;
   this.textContent=FC.pomo.run?"Pause":"Start";
-  /* ao iniciar o relogio, a emissao regressa, ja apertada pela valvula */
+  /* ao iniciar o relogio: se o disco no ar nao pertence a valvula, troca-se ja;
+     so entao a emissao regressa em fade */
   if(FC.pomo.run && !FC.musicBack){
     FC.musicBack=true;
-    if(window.HM && HM.sideKey) HM.sideKey("focus", false);
+    if(window.HM && HM.flushPeek) HM.flushPeek();
+    if(window.HM && HM.skipIfBlocked) HM.skipIfBlocked();
+    if(window.HM && HM.sideKey) HM.sideKey("focus", false, 1800);
   }
   fcPaint();
 });
@@ -3540,8 +3619,9 @@ function focusOpen(){
   if(FC.on) return;
   FC.on=true;
   window.HMFOCUS.on=true;
-  /* a emissao desvanece para a respiracao comecar em silencio */
-  if(window.HM && HM.sideKey) HM.sideKey("focus", true);
+  /* a emissao desvanece devagar para a respiracao comecar em silencio */
+  if(window.HM && HM.sideKey) HM.sideKey("focus", true, 2600);
+  window.HMFOCUS.extra=["focus_zen"];
   FC.musicBack=false;
   if(!Object.keys(window.HMFOCUS.allow).length){
     Object.keys(DEEP).forEach(function(g){ window.HMFOCUS.allow[g]=true; });
@@ -3559,6 +3639,7 @@ function focusClose(){
   FC.on=false;
   window.HMFOCUS.on=false;
   if(window.HM && HM.sideKey) HM.sideKey("focus", false);
+  zenStop(600);
   duckBroadcast(false);
   cancelAnimationFrame(FC.raf);
   if(FC.sealed) seal(false);
