@@ -95,7 +95,7 @@ footer b{color:var(--amber)}
     <span class="sctime" id="scTime0">--:-- / --:--</span>
     <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-06-15" target="_blank" rel="noopener">SoundCloud &nearr;</a>
   </div>
-  <div class="schost" id="scHost0"><iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+  <div class="schost" id="scHost0"><iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" allow="autoplay"
     src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
 </div>
 
@@ -113,7 +113,7 @@ footer b{color:var(--amber)}
     <span class="sctime" id="scTime1">--:-- / --:--</span>
     <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-08-28" target="_blank" rel="noopener">SoundCloud &nearr;</a>
   </div>
-  <div class="schost" id="scHost1"><iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" loading="lazy" allow="autoplay"
+  <div class="schost" id="scHost1"><iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" allow="autoplay"
     src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
 </div>
 
@@ -268,6 +268,7 @@ function scToggle(i){
     setTimeout(function(){ if(!SCT[i].started) scUnfold(i); }, 2600);
   });
 }
+scWidget(0, function(){}); scWidget(1, function(){});
 [0,1].forEach(function(i){
   document.getElementById("scPlay"+i).addEventListener("click", function(){ scToggle(i); });
   document.getElementById("scBar"+i).addEventListener("click", function(ev){
