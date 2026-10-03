@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Music · Type Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Allerta+Stencil&family=Special+Elite&family=Caveat:wght@600&family=VT323&family=Press+Start+2P&family=Monoton&family=Rubik+Mono+One&family=Bungee+Shade&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#060511; --paper:#f4f1e7; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
+  --dim:#8d90b0; --line:#2b2745; --mono:"Courier New", ui-monospace, Menlo, monospace}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; background:#000; color:var(--paper); font-family:var(--mono); overflow:hidden}
+#bar{position:fixed; left:0; right:0; top:0; z-index:40; display:flex; gap:6px; align-items:center;
+  padding:10px 14px; flex-wrap:wrap; background:linear-gradient(180deg, rgba(0,0,0,.88), rgba(0,0,0,0))}
+.brand{font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--dim)}
+.tbtn{cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  font-size:9px; letter-spacing:.16em; text-transform:uppercase; padding:6px 9px; font-family:var(--mono)}
+.tbtn:hover{color:var(--amber); border-color:var(--amber)}
+.tbtn.on{color:#000; background:var(--amber); border-color:var(--amber)}
+#note{position:fixed; left:14px; bottom:12px; z-index:40; max-width:min(560px,90vw);
+  font-size:10px; color:var(--dim); letter-spacing:.08em; line-height:1.9;
+  background:rgba(0,0,0,.7); padding:8px 10px; border:1px solid var(--line)}
+#note b{color:var(--amber); font-weight:500}
+
+#stage{position:fixed; inset:0; display:flex; align-items:center; justify-content:center}
+.sample{text-align:center; padding:20px; max-width:860px}
+#word{font-size:clamp(34px,8vw,84px); line-height:1.08; margin:0 0 10px}
+#subt{font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--teal); margin:0 0 34px}
+.mcx{font-size:clamp(13px,2.2vw,19px); letter-spacing:.16em; margin:10px 0; text-transform:uppercase}
+.mcx.big{font-size:clamp(19px,3.4vw,30px); color:var(--amber)}
+#chip{display:inline-block; margin-top:30px; font-size:11px; letter-spacing:.34em;
+  text-transform:uppercase; color:var(--amber); animation:pl 1.7s ease-in-out infinite}
+@keyframes pl{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* 1 wood type de kingston */
+body.m1{background:#0b0705}
+.m1 #word{font-family:Rye; color:#ffd84d; text-shadow:0 0 22px rgba(255,120,30,.4), 3px 3px 0 #000;
+  letter-spacing:.06em; text-transform:uppercase}
+.m1 .mcx{font-family:Rye; color:#7df0c8}
+.m1 #stage{background:
+  radial-gradient(ellipse at 50% 112%, rgba(255,90,20,.22), transparent 55%),
+  repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 2px, transparent 2px 5px)}
+/* 2 stencil de sound system */
+body.m2{background:#0a0c0a}
+.m2 #word{font-family:"Allerta Stencil"; text-transform:uppercase; letter-spacing:.14em; color:#e8e4d8;
+  text-shadow:0 0 1px #000, 4px 5px 0 rgba(0,0,0,.65)}
+.m2 .mcx{font-family:"Allerta Stencil"; color:#b9c4a9}
+.m2 #stage{background:
+  radial-gradient(circle at 24% 30%, rgba(190,210,160,.08), transparent 40%),
+  repeating-linear-gradient(115deg, rgba(0,0,0,.35) 0 3px, transparent 3px 7px)}
+/* 3 split-flap de estacao */
+body.m3{background:#07080b}
+.m3 #word{font-family:var(--mono); letter-spacing:.1em; text-transform:uppercase; color:#f8f6ee}
+.m3 #word span{display:inline-block; background:#15171d; border:1px solid #23262e; border-radius:3px;
+  padding:.04em .09em; margin:0 .03em; box-shadow:inset 0 -0.5em rgba(0,0,0,.4)}
+.m3 .mcx{color:#9aa3b8; font-family:var(--mono)}
+/* 4 fanzine fotocopiado */
+body.m4{background:#101010}
+.m4 #word{font-family:"Special Elite"; color:#111; background:#ece7da; display:inline-block;
+  padding:.08em .22em; transform:rotate(-1.6deg); box-shadow:6px 7px 0 rgba(0,0,0,.8)}
+.m4 .mcx{font-family:"Special Elite"; color:#e5dfcf; text-transform:none; letter-spacing:.06em}
+.m4 #stage{background:
+  repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px),
+  radial-gradient(circle at 70% 20%, rgba(255,255,255,.05), transparent 30%)}
+/* 5 etiqueta de dubplate */
+body.m5{background:#0a0a0c}
+.m5 .sample{background:radial-gradient(circle at 50% 50%, #d8d2c2 0 26%, #0d0d10 26.5% 27.5%, transparent 28%)}
+.m5 #word{font-family:Caveat; color:#17120c; font-size:clamp(40px,7.4vw,76px); transform:rotate(-3deg)}
+.m5 #subt{color:#5a4634}
+.m5 .mcx{font-family:Caveat; color:#cfc7b4; text-transform:none; letter-spacing:.02em; font-size:clamp(18px,2.6vw,24px)}
+/* 6 fosforo de crt */
+body.m6{background:#030503}
+.m6 #word{font-family:VT323; color:#ffb94a; text-shadow:0 0 14px rgba(255,170,50,.8), 0 0 42px rgba(255,140,30,.35);
+  letter-spacing:.06em}
+.m6 .mcx{font-family:VT323; color:#8affc2; text-shadow:0 0 10px rgba(80,255,170,.6)}
+.m6 #stage{background:repeating-linear-gradient(0deg, rgba(0,0,0,.4) 0 2px, transparent 2px 4px)}
+/* 7 teletexto pirata */
+body.m7{background:#000}
+.m7 #word{font-family:"Press Start 2P"; font-size:clamp(20px,4.6vw,46px); color:#ffff00;
+  background:#0000c0; display:inline-block; padding:.22em .3em; line-height:1.4}
+.m7 .mcx{font-family:"Press Start 2P"; font-size:clamp(9px,1.5vw,13px); color:#00ffff}
+.m7 .mcx.big{color:#ff4444}
+.m7 #subt{color:#00ff66; font-family:"Press Start 2P"; font-size:9px}
+/* 8 neon de esquina */
+body.m8{background:#05060c}
+.m8 #word{font-family:Monoton; font-weight:400; color:#ff7edb;
+  text-shadow:0 0 8px #ff7edb, 0 0 26px rgba(255,80,200,.7), 0 0 64px rgba(255,60,190,.4);
+  letter-spacing:.1em}
+.m8 .mcx{color:#7df9ff; text-shadow:0 0 12px rgba(90,240,255,.7)}
+.m8 #stage{background:radial-gradient(ellipse at 50% 85%, rgba(255,70,200,.12), transparent 55%)}
+/* 9 colagem dub */
+body.m9{background:#0d0b09}
+.m9 #word span{display:inline-block; font-family:"Rubik Mono One"; font-size:.92em; padding:.04em .1em; margin:.02em}
+.m9 #word span:nth-child(odd){background:#ece4d2; color:#161008; transform:rotate(2.4deg)}
+.m9 #word span:nth-child(even){background:#e8392c; color:#f6ead0; transform:rotate(-2.8deg)}
+.m9 #word span:nth-child(3n){background:#1c355c; color:#ecd9a0; transform:rotate(1.2deg)}
+.m9 .mcx{font-family:"Special Elite"; color:#d8cfbb}
+/* 10 flyer acido 88-92 */
+body.m10{background:#0a0a00}
+.m10 #word{font-family:"Bungee Shade"; color:#ffe600; letter-spacing:.02em}
+.m10 .mcx{font-family:"Bungee Shade"; font-size:clamp(12px,2vw,17px); color:#ff9de2}
+.m10 #stage{background:
+  radial-gradient(circle at 82% 18%, rgba(255,230,0,.14) 0 60px, transparent 61px),
+  repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px)}
+</style>
+</head>
+<body class="m1">
+<header id="bar">
+  <span class="brand">HOME MUSIC &middot; TYPE LAB</span>
+  <button class="tbtn tt on" data-m="1" type="button">1 wood</button>
+  <button class="tbtn tt" data-m="2" type="button">2 stencil</button>
+  <button class="tbtn tt" data-m="3" type="button">3 flipboard</button>
+  <button class="tbtn tt" data-m="4" type="button">4 zine</button>
+  <button class="tbtn tt" data-m="5" type="button">5 dubplate</button>
+  <button class="tbtn tt" data-m="6" type="button">6 crt</button>
+  <button class="tbtn tt" data-m="7" type="button">7 teletext</button>
+  <button class="tbtn tt" data-m="8" type="button">8 neon</button>
+  <button class="tbtn tt" data-m="9" type="button">9 collage</button>
+  <button class="tbtn tt" data-m="10" type="button">10 acid</button>
+</header>
+
+<div id="stage">
+  <div class="sample">
+    <h1 id="word">HOME MUSIC</h1>
+    <div id="subt">the liquid room &middot; 24 hour selector</div>
+    <div class="mcx">Selecta locked in.</div>
+    <div class="mcx big">You are now tuned to Home Music</div>
+    <div id="chip">tap to drop the needle</div>
+  </div>
+</div>
+
+<div id="note"><b id="nK">1 &middot; wood type de Kingston</b><br><span id="nT">letras de madeira condensadas, tinta quente sobre breu: o cartaz de dancehall pregado no poste.</span></div>
+
+<script>
+"use strict";
+var NOTES={
+  1:["1 · wood type de Kingston","letras de madeira condensadas, tinta quente sobre breu: o cartaz de dancehall pregado no poste."],
+  2:["2 · stencil de sound system","letras cortadas e sobrespray, arestas sujas: as caixas de colunas pintadas a mao."],
+  3:["3 · split-flap de estacao","painel de partidas; cada linha do MC viraria placa a placa, com estalido mecanico."],
+  4:["4 · fanzine fotocopiado","xerox de alto contraste, datilografia colada, ruido de toner: a intro como primeira pagina de um zine."],
+  5:["5 · etiqueta de dubplate","um acetato com a escrita a marcador na etiqueta; o furo do disco no centro do ecra."],
+  6:["6 · fosforo de CRT","terminal ambar com bloom e scanlines, cursor a piscar: o parente serio do atual."],
+  7:["7 · teletexto pirata","blocos duros a cores primarias sobre preto: P100 HOME MUSIC."],
+  8:["8 · neon de esquina","o wordmark como tubo de neon com halo, a acender ao pulso da faixa de abertura."],
+  9:["9 · colagem dub","letras recortadas de jornais e capas, rotacoes e carimbos: cortar e colar do Black Ark."],
+  10:["10 · flyer acido 88-92","tipografia chrome e baloes de fotocopia de rave flyer: amarelo sobre preto."]
+};
+var word=document.getElementById("word");
+var PLAIN="HOME MUSIC";
+function setMode(m){
+  document.body.className="m"+m;
+  document.querySelectorAll(".tt").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-m")===String(m)); });
+  if(m===3||m===9){
+    word.innerHTML=PLAIN.split("").map(function(c){ return c===" " ? " " : "<span>"+c+"</span>"; }).join("");
+  } else {
+    word.textContent=PLAIN;
+  }
+  document.getElementById("nK").innerHTML=NOTES[m][0];
+  document.getElementById("nT").textContent=NOTES[m][1];
+}
+document.querySelectorAll(".tt").forEach(function(b){
+  b.addEventListener("click", function(){ setMode(parseInt(b.getAttribute("data-m"),10)); });
+});
+document.addEventListener("keydown", function(ev){
+  var k=parseInt(ev.key,10);
+  if(k>=1&&k<=9) setMode(k);
+  if(ev.key==="0") setMode(10);
+});
+setMode(1);
+</script>
+</body>
+</html>
