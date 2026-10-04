@@ -286,10 +286,15 @@ button{font-family:var(--mono)}
 #waVid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none;
   filter:brightness(.82) contrast(1.03)}
 #waPicWrap{position:absolute; inset:0; overflow:hidden; display:none}
-#waPic{position:absolute; left:50%; top:50%; width:118%; height:118%; object-fit:cover;
+/* a obra inteira, sempre: contain, sem recorte nem filtro (semanal e diaria) */
+#waPic{position:absolute; left:50%; top:50%; width:100%; height:100%; object-fit:contain;
   transform:translate(-50%,-50%)}
-/* daily canvas: a obra inteira, sem recorte nem filtro */
-#waPicWrap.daily #waPic{width:100%; height:100%; object-fit:contain}
+/* lente de leitura (so computador): banda de lado a lado; o rato dita o detalhe */
+#waLens{position:absolute; left:0; right:0; height:36vh; top:50%; transform:translateY(-50%);
+  display:none; z-index:2; pointer-events:none; background-repeat:no-repeat; background-color:#000;
+  border-top:1px solid rgba(244,236,217,.28); border-bottom:1px solid rgba(244,236,217,.28);
+  box-shadow:0 0 0 2000px rgba(0,0,0,.38)}
+#waPicWrap.lensing #waLens{display:block}
 #waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
 #waVeil{position:absolute; inset:0; pointer-events:none; display:none;
   background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 44%, rgba(6,5,17,.72) 100%)}
