@@ -298,11 +298,17 @@ button{font-family:var(--mono)}
 #waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
 #waVeil{position:absolute; inset:0; pointer-events:none; display:none;
   background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 44%, rgba(6,5,17,.72) 100%)}
-#waPoem{position:absolute; inset:0; display:none; align-items:center; justify-content:center;
-  text-align:center; padding:0 7vw; overflow:hidden}
+/* poema: voz dactilografada da casa (escolha do fundador); o bloco nunca desce ate ao cartao */
+#waPoem{position:absolute; inset:0 0 200px 0; display:none; align-items:center; justify-content:center;
+  text-align:left; padding:0 7vw; overflow:hidden}
 #waPoemLines{transition:transform .9s ease, opacity .8s ease}
-#waPoemLines div{font-size:clamp(15px,2.6vw,26px); letter-spacing:.28em; line-height:2.2;
-  color:var(--paper); text-shadow:0 0 26px rgba(65,217,200,.22); opacity:0; transition:opacity 1.2s ease}
+#waPoemLines div{font-family:var(--mono); font-size:14.5px; letter-spacing:.04em; line-height:2.05;
+  color:#e6dfcf; text-shadow:0 0 22px rgba(65,217,200,.16); opacity:0; transition:opacity 1.2s ease;
+  margin:0 0 .35em}
+@media (max-width:760px){
+  #waPoem{bottom:250px}
+  #waPoemLines div{font-size:13px}
+}
 #waHint{position:absolute; left:50%; top:14px; transform:translateX(-50%); z-index:4;
   background:rgba(6,5,17,.85); border:1px solid var(--line); color:var(--amber);
   font-size:9px; letter-spacing:.22em; text-transform:uppercase; padding:8px 12px;
@@ -2857,8 +2863,9 @@ function waLoop(ts){
   if(p.kind==="film"){
     $("waVeil").style.opacity=String(.34-.2*lo);
   } else if(p.kind==="poem"){
-    /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
-    var per=10, hold=14, tt=now-wa.poemT0;
+    /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro
+       (cadencia 30% mais viva, por decisao do fundador) */
+    var per=7, hold=10, tt=now-wa.poemT0;
     var box=$("waPoemLines");
     var want=Math.min(YEATS.length, Math.floor(tt/per)+1);
     while(box.childElementCount<want){
