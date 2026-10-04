@@ -144,7 +144,7 @@ var WPIECES=[
   { kind:"canvas", k:"Residency &middot; fixed work, adrift", t:"Svanen, No. 17", a:"Hilma af Klint", real:true,
     life:"Stockholm 1862, Djursholm 1944",
     who:"Swedish painter who arrived at abstraction years before it had a public name, working from the notebooks of her spiritualist circle, The Five. She ordered the abstract work kept unseen for twenty years after her death.",
-    piece:"From Group IX/SUW, The Swan series (1915): the swan dissolved into a circle of opposing halves. The canvas drifts almost imperceptibly while the room breathes with the tune on air.",
+    piece:"From Group IX/SUW, The Swan series (1915): the swan dissolved into a circle of opposing halves. The full canvas hangs still; on a computer, run the mouse across it and a reading lens opens the detail.",
     lic:"Public domain (the author died in 1944). Image via Wikimedia Commons.",
     links:[["Hilma af Klint on Wikipedia","https://en.wikipedia.org/wiki/Hilma_af_Klint"],["The image on Wikimedia Commons","https://commons.wikimedia.org/wiki/File:Hilma_af_Klint,_1915,_Svanen,_No._17.jpg"]] },
   { kind:"poem", k:"Residency &middot; kinetic poem", t:"He wishes for the Cloths of Heaven", a:"W. B. Yeats", real:true,
@@ -216,13 +216,6 @@ function waLoop(ts){
   var now=performance.now()/1000, lo=lvLo();
   if(p.kind==="film"){
     $("waVeil").style.opacity=String(.34-.2*lo);
-  } else if(p.kind==="canvas"){
-    /* a obra como ela e: sem filtros; a peca semanal mantem a deriva lenta, a diaria fica quieta */
-    if(!p.day){
-      var s=1.09+0.05*Math.sin(now*2*Math.PI/140);
-      var dx=12*Math.sin(now*2*Math.PI/173), dy=9*Math.cos(now*2*Math.PI/151);
-      $("waPic").style.transform="translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px)) scale("+s+")";
-    }
   } else if(p.kind==="poem"){
     /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
     var per=10, hold=14, tt=now-wa.poemT0;
@@ -255,8 +248,8 @@ function waShowLayers(p){
   $("waCv").style.display    = p.kind==="field" ? "block":"none";
   $("waPoem").style.display  = p.kind==="poem" ? "flex":"none";
   $("waVeil").style.display  = p.kind==="film" ? "block":"none";
-  $("waPicWrap").classList.toggle("daily", !!p.day);
-  if(p.day) $("waPic").style.transform="";
+  $("waPic").style.transform="";
+  $("waPicWrap").classList.remove("lensing");
 }
 function waShow(n){
   if(wa.wing==="day"){ dailyShow(); return; }
@@ -409,6 +402,38 @@ function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
     gesApply();
   }, {passive:false});
   w.addEventListener("dblclick", function(){ gesReset(); });
+})();
+
+/* ---------- lente de leitura (so computador): o rato sobre a tela abre uma banda
+   de lado a lado com o detalhe ampliado; no telemovel mandam os dedos ---------- */
+(function(){
+  var fine=false;
+  try{ fine=window.matchMedia && matchMedia("(pointer:fine) and (min-width:761px)").matches; }catch(e){}
+  if(!fine) return;
+  var wrap=$("waPicWrap"), img=$("waPic"), lens=$("waLens");
+  var Z=2.6;
+  function move(ev){
+    if(GES.s>1){ wrap.classList.remove("lensing"); return; }
+    if(!img.naturalWidth){ return; }
+    var box=wrap.getBoundingClientRect();
+    var W=box.width, H=box.height;
+    var s=Math.min(W/img.naturalWidth, H/img.naturalHeight);
+    var rw=img.naturalWidth*s, rh=img.naturalHeight*s;
+    var rx=(W-rw)/2, ry=(H-rh)/2;
+    var x=ev.clientX-box.left-rx, y=ev.clientY-box.top-ry;
+    if(x<0||y<0||x>rw||y>rh){ wrap.classList.remove("lensing"); return; }
+    wrap.classList.add("lensing");
+    var bw=rw*Z, bh=rh*Z;
+    var lw=lens.clientWidth||W, lh=lens.clientHeight||1;
+    var bx=lw/2-x*Z, by=lh/2-y*Z;
+    bx = bw>lw ? Math.max(Math.min(bx,0), lw-bw) : (lw-bw)/2;
+    by = bh>lh ? Math.max(Math.min(by,0), lh-bh) : (lh-bh)/2;
+    lens.style.backgroundImage="url('"+img.src+"')";
+    lens.style.backgroundSize=bw+"px "+bh+"px";
+    lens.style.backgroundPosition=bx+"px "+by+"px";
+  }
+  wrap.addEventListener("mousemove", move);
+  wrap.addEventListener("mouseleave", function(){ wrap.classList.remove("lensing"); });
 })();
 
 $("wartBtn").addEventListener("click", wartOpen);
