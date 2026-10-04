@@ -286,10 +286,15 @@ button{font-family:var(--mono)}
 #waVid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none;
   filter:brightness(.82) contrast(1.03)}
 #waPicWrap{position:absolute; inset:0; overflow:hidden; display:none}
-#waPic{position:absolute; left:50%; top:50%; width:118%; height:118%; object-fit:cover;
+/* a obra inteira, sempre: contain, sem recorte nem filtro (semanal e diaria) */
+#waPic{position:absolute; left:50%; top:50%; width:100%; height:100%; object-fit:contain;
   transform:translate(-50%,-50%)}
-/* daily canvas: a obra inteira, sem recorte nem filtro */
-#waPicWrap.daily #waPic{width:100%; height:100%; object-fit:contain}
+/* lente de leitura (so computador): banda de lado a lado; o rato dita o detalhe */
+#waLens{position:absolute; left:0; right:0; height:36vh; top:50%; transform:translateY(-50%);
+  display:none; z-index:2; pointer-events:none; background-repeat:no-repeat; background-color:#000;
+  border-top:1px solid rgba(244,236,217,.28); border-bottom:1px solid rgba(244,236,217,.28);
+  box-shadow:0 0 0 2000px rgba(0,0,0,.38)}
+#waPicWrap.lensing #waLens{display:block}
 #waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
 #waVeil{position:absolute; inset:0; pointer-events:none; display:none;
   background:radial-gradient(ellipse at 50% 46%, rgba(6,5,17,0) 44%, rgba(6,5,17,.72) 100%)}
@@ -407,7 +412,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
 
 <div id="wart" aria-label="weekly art installation">
   <video id="waVid" loop muted playsinline preload="none"></video>
-  <div id="waPicWrap"><img id="waPic" alt=""></div>
+  <div id="waPicWrap"><img id="waPic" alt=""><div id="waLens"></div></div>
   <canvas id="waCv"></canvas>
   <div id="waVeil"></div>
   <div id="waPoem"><div id="waPoemLines"></div><div id="waPoemTitle"></div></div>
@@ -2779,7 +2784,7 @@ var WPIECES=[
   { kind:"canvas", k:"Residency &middot; fixed work, adrift", t:"Svanen, No. 17", a:"Hilma af Klint", real:true,
     life:"Stockholm 1862, Djursholm 1944",
     who:"Swedish painter who arrived at abstraction years before it had a public name, working from the notebooks of her spiritualist circle, The Five. She ordered the abstract work kept unseen for twenty years after her death.",
-    piece:"From Group IX/SUW, The Swan series (1915): the swan dissolved into a circle of opposing halves. The canvas drifts almost imperceptibly while the room breathes with the tune on air.",
+    piece:"From Group IX/SUW, The Swan series (1915): the swan dissolved into a circle of opposing halves. The full canvas hangs still; on a computer, run the mouse across it and a reading lens opens the detail.",
     lic:"Public domain (the author died in 1944). Image via Wikimedia Commons.",
     links:[["Hilma af Klint on Wikipedia","https://en.wikipedia.org/wiki/Hilma_af_Klint"],["The image on Wikimedia Commons","https://commons.wikimedia.org/wiki/File:Hilma_af_Klint,_1915,_Svanen,_No._17.jpg"]] },
   { kind:"poem", k:"Residency &middot; kinetic poem", t:"He wishes for the Cloths of Heaven", a:"W. B. Yeats", real:true,
@@ -2851,13 +2856,6 @@ function waLoop(ts){
   var now=performance.now()/1000, lo=lvLo();
   if(p.kind==="film"){
     $("waVeil").style.opacity=String(.34-.2*lo);
-  } else if(p.kind==="canvas"){
-    /* a obra como ela e: sem filtros; a peca semanal mantem a deriva lenta, a diaria fica quieta */
-    if(!p.day){
-      var s=1.09+0.05*Math.sin(now*2*Math.PI/140);
-      var dx=12*Math.sin(now*2*Math.PI/173), dy=9*Math.cos(now*2*Math.PI/151);
-      $("waPic").style.transform="translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px)) scale("+s+")";
-    }
   } else if(p.kind==="poem"){
     /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
     var per=10, hold=14, tt=now-wa.poemT0;
@@ -2890,8 +2888,8 @@ function waShowLayers(p){
   $("waCv").style.display    = p.kind==="field" ? "block":"none";
   $("waPoem").style.display  = p.kind==="poem" ? "flex":"none";
   $("waVeil").style.display  = p.kind==="film" ? "block":"none";
-  $("waPicWrap").classList.toggle("daily", !!p.day);
-  if(p.day) $("waPic").style.transform="";
+  $("waPic").style.transform="";
+  $("waPicWrap").classList.remove("lensing");
 }
 function waShow(n){
   if(wa.wing==="day"){ dailyShow(); return; }
@@ -3044,6 +3042,38 @@ function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
     gesApply();
   }, {passive:false});
   w.addEventListener("dblclick", function(){ gesReset(); });
+})();
+
+/* ---------- lente de leitura (so computador): o rato sobre a tela abre uma banda
+   de lado a lado com o detalhe ampliado; no telemovel mandam os dedos ---------- */
+(function(){
+  var fine=false;
+  try{ fine=window.matchMedia && matchMedia("(pointer:fine) and (min-width:761px)").matches; }catch(e){}
+  if(!fine) return;
+  var wrap=$("waPicWrap"), img=$("waPic"), lens=$("waLens");
+  var Z=2.6;
+  function move(ev){
+    if(GES.s>1){ wrap.classList.remove("lensing"); return; }
+    if(!img.naturalWidth){ return; }
+    var box=wrap.getBoundingClientRect();
+    var W=box.width, H=box.height;
+    var s=Math.min(W/img.naturalWidth, H/img.naturalHeight);
+    var rw=img.naturalWidth*s, rh=img.naturalHeight*s;
+    var rx=(W-rw)/2, ry=(H-rh)/2;
+    var x=ev.clientX-box.left-rx, y=ev.clientY-box.top-ry;
+    if(x<0||y<0||x>rw||y>rh){ wrap.classList.remove("lensing"); return; }
+    wrap.classList.add("lensing");
+    var bw=rw*Z, bh=rh*Z;
+    var lw=lens.clientWidth||W, lh=lens.clientHeight||1;
+    var bx=lw/2-x*Z, by=lh/2-y*Z;
+    bx = bw>lw ? Math.max(Math.min(bx,0), lw-bw) : (lw-bw)/2;
+    by = bh>lh ? Math.max(Math.min(by,0), lh-bh) : (lh-bh)/2;
+    lens.style.backgroundImage="url('"+img.src+"')";
+    lens.style.backgroundSize=bw+"px "+bh+"px";
+    lens.style.backgroundPosition=bx+"px "+by+"px";
+  }
+  wrap.addEventListener("mousemove", move);
+  wrap.addEventListener("mouseleave", function(){ wrap.classList.remove("lensing"); });
 })();
 
 $("wartBtn").addEventListener("click", wartOpen);
@@ -3343,6 +3373,7 @@ if(DESK){
 <div id="focus">
   <canvas id="fcCv"></canvas>
   <div id="fcZen" style="position:absolute; left:-9999px; top:0"></div>
+  <div id="fcTune" style="position:absolute; left:-9999px; top:0"></div>
   <div id="fcGate">
     <div id="fcOrb"></div>
     <div id="fcWord">breathe in</div>
@@ -3382,7 +3413,14 @@ if(DESK){
       <button class="tbtn fcRp" data-r="3" type="button">&#9654; bell</button>
       <button class="tbtn fcRp" data-r="4" type="button">&#9654; tape</button>
     </div>
-    <div class="fc-row"><label><input type="checkbox" id="fcBlack" checked> black room (chrome fades)</label></div>
+    <div class="fc-row"><label><input type="checkbox" id="fcBlack" checked> hide this column</label></div>
+
+    <h4>Room player</h4>
+    <div class="fc-row">
+      <button class="tbtn" id="fcPlay" type="button">Play</button>
+      <button class="tbtn" id="fcSkipT" type="button">Skip</button>
+    </div>
+    <div id="fcNow" class="fc-note" style="min-height:15px; margin-top:0"></div>
 
     <h4>House noise desk</h4>
     <div class="fc-fader"><label><span>vinyl crackle</span><span id="fcVCk">0</span></label>
@@ -3394,7 +3432,7 @@ if(DESK){
 
     <h4>Programme valve</h4>
     <div id="fcValve"></div>
-    <div class="fc-note">the valve clamps the live programme: only lit crates play while the room is open, within whatever the hour block offers. it applies from the next record; the tune on air finishes its say.</div>
+    <div class="fc-note">the valve feeds this room's own player: only lit crates play in here, any hour, any crate. it applies from the next record (Skip hurries it). outside, the broadcast keeps running in silence, exactly where you left it.</div>
 
     <h4>One line of intent</h4>
     <input id="fcIntent" type="text" maxlength="60" placeholder="what are you on?">
@@ -3412,7 +3450,7 @@ if(DESK){
 (function(){
 var $=function(id){ return document.getElementById(id); };
 var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null,
-  temp:"dusk", breakLift:0, agitUntil:0,
+  temp:"dusk", breakLift:0, agitUntil:0, allow:{},
   pomo:{ run:false, phase:"work", left:25*60, cycles:0, works:0, focusedSec:0 } };
 var DEEP={focus_zen:1, ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
 
@@ -3513,8 +3551,9 @@ function gateRun(){
     $("fcWord").textContent=inhale?"breathe in":"breathe out";
   })();
 }
-function gateOpen(){ $("fcGate").classList.remove("on"); FC.gateDone=true; zenStop(1800); }
-$("fcGateSkip").addEventListener("click", gateOpen);
+/* o zen do portao retira-se muito devagar quando a respiracao acaba; no salto manual, mais depressa */
+function gateOpen(ms){ $("fcGate").classList.remove("on"); FC.gateDone=true; zenStop(ms||4500); }
+$("fcGateSkip").addEventListener("click", function(){ gateOpen(1200); });
 
 /* ---------- cromo que desvanece ---------- */
 var idleT=null;
@@ -3551,10 +3590,99 @@ function fcPaint(){
   var dots=$("fcCycles").children;
   for(var i=0;i<dots.length;i++){ dots[i].className=i<p.cycles?"done":""; }
 }
-function duckBroadcast(on){
-  window.HMFOCUS.duck = on ? 0.35 : 1;
-  if(window.HM && HM.reVol) HM.reVol();
+/* ---------- o leitor proprio da sala ----------
+   a radio la fora nunca e tocada pela valvula: fica a correr em silencio;
+   este leitor escondido toca SO os generos acesos, a qualquer hora do dia */
+var fcp={ yt:null, ready:false, making:false, q:[], playing:false, cur:null, hist:[], duck:1, started:false };
+function fcAllowed(){
+  var ks=Object.keys(FC.allow).filter(function(g){ return FC.allow[g]; });
+  if(!ks.length){ ks=Object.keys(DEEP); }
+  return ks;
 }
+function fcPick(){
+  var ok=fcAllowed();
+  var pool=TRACKS.filter(function(t){ return ok.indexOf(t.g)>=0 && fcp.hist.indexOf(t.v)<0; });
+  if(!pool.length) pool=TRACKS.filter(function(t){ return ok.indexOf(t.g)>=0; });
+  if(!pool.length) return null;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function fcVol(){
+  var v=100;
+  try{
+    var el=document.getElementById("vol");
+    if(el && el.offsetParent!==null){ v=parseInt(el.value,10); if(isNaN(v)) v=100; }
+  }catch(e){}
+  return Math.round(v*fcp.duck);
+}
+function fcPlayer(cb){
+  if(fcp.yt && fcp.ready){ if(cb) cb(); return; }
+  if(cb) fcp.q.push(cb);
+  if(fcp.making) return;
+  fcp.making=true;
+  (function boot(){
+    if(typeof YT==="undefined" || !YT.Player){ setTimeout(boot, 400); return; }
+    new YT.Player("fcTune", { width:"1", height:"1",
+      playerVars:{ autoplay:0, controls:0, playsinline:1 },
+      events:{
+        onReady:function(e){
+          fcp.yt=e.target; fcp.ready=true;
+          var q=fcp.q; fcp.q=[];
+          q.forEach(function(f){ try{ f(); }catch(err){} });
+        },
+        onStateChange:function(e){
+          if(e.data===0 && FC.on && fcp.playing) fcNext();
+        },
+        onError:function(){ if(FC.on && fcp.playing) setTimeout(fcNext, 900); }
+      } });
+  })();
+}
+function fcShow(t){
+  var el=$("fcNow"); if(!el) return;
+  el.textContent = t ? (t.a+" / "+t.t+" · "+((GENRES[t.g]||{}).name||t.g).toLowerCase()) : "";
+}
+function fcLoad(t){
+  fcp.cur=t;
+  fcp.hist.push(t.v); if(fcp.hist.length>6) fcp.hist.shift();
+  fcShow(t);
+  fcp.playing=true; $("fcPlay").textContent="Pause";
+  fcPlayer(function(){
+    try{ fcp.yt.setVolume(fcVol()); fcp.yt.loadVideoById(t.v); fcp.yt.playVideo(); }catch(e){}
+  });
+}
+function fcNext(){ var t=fcPick(); if(t) fcLoad(t); }
+function fcToggle(){
+  if(!fcp.cur){ fcNext(); return; }
+  if(fcp.playing){
+    try{ if(fcp.yt&&fcp.ready) fcp.yt.pauseVideo(); }catch(e){}
+    fcp.playing=false; $("fcPlay").textContent="Play";
+  } else {
+    try{ if(fcp.yt&&fcp.ready){ fcp.yt.setVolume(fcVol()); fcp.yt.playVideo(); } }catch(e){}
+    fcp.playing=true; $("fcPlay").textContent="Pause";
+  }
+}
+function fcStopTune(){
+  try{ if(fcp.yt&&fcp.ready) fcp.yt.pauseVideo(); }catch(e){}
+  fcp.playing=false; $("fcPlay").textContent="Play";
+}
+function fcDuck(on){
+  fcp.duck = on ? 0.35 : 1;
+  try{ if(fcp.yt&&fcp.ready) fcp.yt.setVolume(fcVol()); }catch(e){}
+}
+$("fcPlay").addEventListener("click", fcToggle);
+$("fcSkipT").addEventListener("click", fcNext);
+(function(){
+  var vol=document.getElementById("vol");
+  if(vol) vol.addEventListener("input", function(){
+    try{ if(fcp.yt&&fcp.ready) fcp.yt.setVolume(fcVol()); }catch(e){}
+  });
+})();
+document.addEventListener("keydown", function(ev){
+  if(!FC.on) return;
+  if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="SELECT"||ev.target.tagName==="TEXTAREA")) return;
+  if(ev.key===" "){ ev.preventDefault(); ev.stopImmediatePropagation(); fcToggle(); }
+  else if(ev.key==="n"){ ev.stopImmediatePropagation(); fcNext(); }
+}, true);
+function duckBroadcast(on){ fcDuck(on); }
 setInterval(function(){
   var p=FC.pomo;
   if(!FC.on || !p.run) return;
@@ -3576,13 +3704,10 @@ setInterval(function(){
 $("fcGo").addEventListener("click", function(){
   FC.pomo.run=!FC.pomo.run;
   this.textContent=FC.pomo.run?"Pause":"Start";
-  /* ao iniciar o relogio: se o disco no ar nao pertence a valvula, troca-se ja;
-     so entao a emissao regressa em fade */
-  if(FC.pomo.run && !FC.musicBack){
-    FC.musicBack=true;
-    if(window.HM && HM.flushPeek) HM.flushPeek();
-    if(window.HM && HM.skipIfBlocked) HM.skipIfBlocked();
-    if(window.HM && HM.sideKey) HM.sideKey("focus", false, 1800);
+  /* o primeiro Start poe o leitor da sala a rodar (a radio la fora continua em silencio) */
+  if(FC.pomo.run && !fcp.started){
+    fcp.started=true;
+    if(!fcp.playing) fcNext();
   }
   fcPaint();
 });
@@ -3664,7 +3789,7 @@ function ringPlay(which){
     var dl=ac.createDelay(1); dl.delayTime.value=.27;
     var fb=ac.createGain(); fb.gain.value=.42;
     dl.connect(fb); fb.connect(dl);
-    var out=ac.createGain(); out.gain.value=.5;
+    var out=ac.createGain(); out.gain.value=.22;
     dl.connect(out); out.connect(ac.destination);
     return dl;
   }
@@ -3676,7 +3801,7 @@ function ringPlay(which){
       o1.type="sawtooth"; o2.type="square";
       o1.frequency.setValueAtTime(452, tt); o1.frequency.exponentialRampToValueAtTime(392, tt+.22);
       o2.frequency.setValueAtTime(226, tt); o2.frequency.exponentialRampToValueAtTime(196, tt+.22);
-      g.gain.setValueAtTime(.0001, tt); g.gain.exponentialRampToValueAtTime(.4, tt+.02);
+      g.gain.setValueAtTime(.0001, tt); g.gain.exponentialRampToValueAtTime(.18, tt+.02);
       g.gain.exponentialRampToValueAtTime(.001, tt+.26);
       o1.connect(g); o2.connect(g); g.connect(ac.destination); g.connect(e);
       o1.start(tt); o2.start(tt); o1.stop(tt+.3); o2.stop(tt+.3);
@@ -3687,14 +3812,14 @@ function ringPlay(which){
     o.type="square"; o.frequency.value=640;
     lfo.frequency.value=7; lg.gain.value=180;
     lfo.connect(lg); lg.connect(o.frequency);
-    g1.gain.setValueAtTime(.22, t); g1.gain.setValueAtTime(.22, t+1.0); g1.gain.exponentialRampToValueAtTime(.001, t+1.35);
+    g1.gain.setValueAtTime(.10, t); g1.gain.setValueAtTime(.10, t+1.0); g1.gain.exponentialRampToValueAtTime(.001, t+1.35);
     o.connect(g1); g1.connect(ac.destination); g1.connect(e1);
     o.start(t); o.stop(t+1.4); lfo.start(t); lfo.stop(t+1.4);
   } else if(which===2){
     var o3=ac.createOscillator(), g3=ac.createGain();
     o3.type="sawtooth";
     o3.frequency.setValueAtTime(420, t); o3.frequency.exponentialRampToValueAtTime(28, t+.85);
-    g3.gain.setValueAtTime(.3, t); g3.gain.exponentialRampToValueAtTime(.001, t+.9);
+    g3.gain.setValueAtTime(.14, t); g3.gain.exponentialRampToValueAtTime(.001, t+.9);
     o3.connect(g3).connect(ac.destination);
     o3.start(t); o3.stop(t+.95);
   } else if(which===3){
@@ -3704,7 +3829,7 @@ function ringPlay(which){
       var a1=ac.createOscillator(), a2=ac.createOscillator(), gb=ac.createGain();
       a1.type="square"; a2.type="square";
       a1.frequency.value=562; a2.frequency.value=845;
-      gb.gain.setValueAtTime(.3, th); gb.gain.exponentialRampToValueAtTime(.001, th+.16);
+      gb.gain.setValueAtTime(.14, th); gb.gain.exponentialRampToValueAtTime(.001, th+.16);
       var bp=ac.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=900; bp.Q.value=1.4;
       a1.connect(bp); a2.connect(bp); bp.connect(gb); gb.connect(ac.destination); gb.connect(e3);
       a1.start(th); a2.start(th); a1.stop(th+.2); a2.stop(th+.2);
@@ -3714,7 +3839,7 @@ function ringPlay(which){
     o5.type="sawtooth";
     o5.frequency.setValueAtTime(196, t); o5.frequency.exponentialRampToValueAtTime(18, t+1.1);
     f5.type="lowpass"; f5.frequency.setValueAtTime(5200, t); f5.frequency.exponentialRampToValueAtTime(140, t+1.1);
-    g5.gain.setValueAtTime(.3, t); g5.gain.exponentialRampToValueAtTime(.001, t+1.15);
+    g5.gain.setValueAtTime(.14, t); g5.gain.exponentialRampToValueAtTime(.001, t+1.15);
     o5.connect(f5).connect(g5).connect(ac.destination);
     o5.start(t); o5.stop(t+1.2);
   }
@@ -3728,12 +3853,11 @@ function valveBuild(){
   var el=$("fcValve"); el.innerHTML="";
   Object.keys(GENRES).forEach(function(g){
     var d=document.createElement("span");
-    d.className="g"+(window.HMFOCUS.allow[g]?" on":"");
+    d.className="g"+(FC.allow[g]?" on":"");
     d.textContent=(GENRES[g].name||g).toLowerCase();
     d.addEventListener("click", function(){
-      window.HMFOCUS.allow[g]=!window.HMFOCUS.allow[g];
-      d.classList.toggle("on", !!window.HMFOCUS.allow[g]);
-      if(window.HM && HM.flushPeek) HM.flushPeek();
+      FC.allow[g]=!FC.allow[g];
+      d.classList.toggle("on", !!FC.allow[g]);
     });
     el.appendChild(d);
   });
@@ -3770,16 +3894,13 @@ document.addEventListener("keydown", function(ev){
 function focusOpen(){
   if(FC.on) return;
   FC.on=true;
-  window.HMFOCUS.on=true;
-  /* a emissao desvanece devagar para a respiracao comecar em silencio */
+  /* a radio continua a correr la fora, apenas em silencio (fade lento);
+     a valvula nunca lhe toca: alimenta so o leitor proprio da sala */
   if(window.HM && HM.sideKey) HM.sideKey("focus", true, 2600);
-  window.HMFOCUS.extra=["focus_zen"];
-  FC.musicBack=false;
-  if(!Object.keys(window.HMFOCUS.allow).length){
-    Object.keys(DEEP).forEach(function(g){ window.HMFOCUS.allow[g]=true; });
+  if(!Object.keys(FC.allow).length){
+    Object.keys(DEEP).forEach(function(g){ FC.allow[g]=true; });
   }
   valveBuild();
-  if(window.HM && HM.flushPeek) HM.flushPeek();
   $("focus").classList.add("on");
   $("focus").classList.toggle("noidle", !$("fcBlack").checked);
   if(!FC.gateDone) gateRun();
@@ -3789,10 +3910,11 @@ function focusOpen(){
 function focusClose(){
   if(!FC.on) return;
   FC.on=false;
-  window.HMFOCUS.on=false;
+  fcStopTune();
+  /* a emissao regressa exatamente onde ia: a fila principal nunca foi tocada */
   if(window.HM && HM.sideKey) HM.sideKey("focus", false);
   zenStop(600);
-  duckBroadcast(false);
+  fcDuck(false);
   cancelAnimationFrame(FC.raf);
   if(FC.sealed) seal(false);
   sndStop();
