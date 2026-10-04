@@ -217,8 +217,9 @@ function waLoop(ts){
   if(p.kind==="film"){
     $("waVeil").style.opacity=String(.34-.2*lo);
   } else if(p.kind==="poem"){
-    /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro */
-    var per=10, hold=14, tt=now-wa.poemT0;
+    /* as linhas ficam; cada nova empurra as anteriores para cima; no fim, o poema inteiro
+       (cadencia 30% mais viva, por decisao do fundador) */
+    var per=7, hold=10, tt=now-wa.poemT0;
     var box=$("waPoemLines");
     var want=Math.min(YEATS.length, Math.floor(tt/per)+1);
     while(box.childElementCount<want){
