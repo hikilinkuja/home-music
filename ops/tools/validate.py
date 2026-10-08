@@ -32,7 +32,9 @@ def node_check(code, label, module=False):
     r = subprocess.run(["node", "--check", path], capture_output=True, text=True)
     os.unlink(path)
     if r.returncode != 0:
-        fails.append(f"sintaxe JS em {label}: {r.stderr.strip().splitlines()[-1] if r.stderr else '?'}")
+        lines = r.stderr.strip().splitlines()
+        msg = next((l for l in lines if re.match(r"\w*Error\b", l)), lines[0] if lines else "?")
+        fails.append(f"sintaxe JS em {label}: {msg}")
 
 
 def scripts(html):

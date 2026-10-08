@@ -36,7 +36,14 @@ def tracks_via_node(e03):
     finally:
         os.unlink(path)
     if r.returncode != 0:
-        sys.exit("node falhou ao ler o catalogo: " + r.stderr.strip()[-300:])
+        # o node poe o local e a mensagem do erro no inicio; o fim e so pilha interna
+        head = []
+        for ln in r.stderr.strip().splitlines():
+            head.append(ln)
+            if re.match(r"\w*Error\b", ln):
+                break
+        sys.exit("node falhou ao ler o catalogo (linha contada dentro do <script> do e03):\n"
+                 + "\n".join(head[:8]))
     return json.loads(r.stdout)
 
 
