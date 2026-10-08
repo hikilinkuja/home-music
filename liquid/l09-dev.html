@@ -1,0 +1,446 @@
+<script>
+"use strict";
+/* ================= modo de estaleiro (?dev na morada): o painel do DJ automatico =================
+   Separadores:
+   - Next: os tres discos seguintes (a unica parte que espreita a fila, e so com o separador a vista)
+     mais o disco ja armado no prato livre; saltar sem o quebra-cabecas [n];
+   - Log: o registo de emissao (l03, window.HMPLOG): ultimas linhas e totais (fins por motivo,
+     tempo no ar por bloco contra o peso na caixa, faixas distintas por hora, repeticoes em 24 h,
+     intervalo entre discos), exportar CSV e JSON, limpar;
+   - Banks: o que cada um dos 7 sub-blocos pode tocar: generos com vivas, mortas, por estrear e
+     tocadas, abridores op:1, GBPM, teto da corrida, discos que restam no baralho, por onde se
+     entra no genero (ADJ, BPM, ou so pelo sorteio ponderado), generos partilhados entre blocos,
+     os que ficam fora da grelha, e a lista de faixas com o estado de cada uma;
+   - Engine: o estado do motor e o registo da abertura (hm_intro_log, l06).
+   Os separadores Log, Banks e Engine so leem copias (HMDEV.state, HMDEV.pools, HMROT, HMPLOG):
+   nunca chamam o peek, que avanca a fila. A tecla d mostra e esconde o painel. */
+(function(){
+  if(!(window.HMDEV && HMDEV.on)) return;
+  var $=function(id){ return document.getElementById(id); };
+  var panel=$("devPanel"); if(!panel) return;
+  var TABS=["next","log","banks","engine"], PANE={ next:"dvNext", log:"dvLog", banks:"dvBanks", engine:"dvEngine" };
+  var cur="next", openSet={}, paintT=null, nextSig="", userSet=false;
+  try{ var sv=localStorage.getItem("hm_dev_tab"); if(TABS.indexOf(sv)>=0) cur=sv; }catch(e){}
+
+  /* ---- utilitarios ---- */
+  function esc(x){ return String(x==null ? "" : x).replace(/[&<>"]/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;" }[c]; }); }
+  function pad(n){ return (n<10 ? "0" : "")+n; }
+  function hhmm(ms){ if(!ms) return ""; var d=new Date(ms); return pad(d.getHours())+":"+pad(d.getMinutes()); }
+  function day(ms){ if(!ms) return ""; var d=new Date(ms); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function ago(ms){
+    if(!ms) return "never";
+    var m=(Date.now()-ms)/60000;
+    if(m<90) return Math.max(0, Math.round(m))+" min ago";
+    if(m<48*60) return Math.round(m/60)+" h ago";
+    return Math.round(m/1440)+" d ago";
+  }
+  function hms(s){
+    s=Math.round(s||0);
+    var h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+    return h ? h+" h "+pad(m)+" min" : m+" min "+pad(s%60)+" s";
+  }
+  function pct(a, b){ return b>0 ? Math.round(100*a/b)+"%" : "-"; }
+  function med(a){ if(!a.length) return null; var b=a.slice().sort(function(x, y){ return x-y; }), m=b.length>>1; return b.length%2 ? b[m] : (b[m-1]+b[m])/2; }
+  function f1(x){ return x==null ? "-" : (Math.round(x*10)/10).toFixed(1); }
+  function gname(g){ return (GENRES[g] && GENRES[g].name) || g; }
+  function blabel(b){ return (BLOCKS[b] && BLOCKS[b].label) ? BLOCKS[b].label.toLowerCase() : (b || "?"); }
+  function visible(){ return panel.classList.contains("on"); }
+  function radioOn(){ try{ return !!(window.HM && HM.isOn()); }catch(e){ return false; } }
+  function wartOn(){ var w=$("wart"); return !!(w && w.classList.contains("on")); }
+  function typing(ev){
+    var tg=ev.target, tn=tg && tg.tagName;
+    return tn==="INPUT" || tn==="TEXTAREA" || tn==="SELECT" || !!(tg && tg.isContentEditable);
+  }
+
+  /* ---- separadores ---- */
+  function show(k){
+    if(TABS.indexOf(k)<0) k="next";
+    cur=k;
+    try{ localStorage.setItem("hm_dev_tab", k); }catch(e){}
+    panel.querySelectorAll("#devTabs [role=tab]").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.k===k ? "true" : "false"); });
+    TABS.forEach(function(x){ var p=$(PANE[x]); if(p) p.classList.toggle("on", x===k); });
+    panel.classList.toggle("wide", k!=="next");
+    paint();
+  }
+  function toggle(on){
+    var want=(on==null) ? !visible() : !!on;
+    userSet=true;
+    panel.classList.toggle("on", want);
+    if(want) paint();
+  }
+  function paint(){
+    if(!visible()) return;
+    try{
+      if(cur==="next") paintNext();
+      else if(cur==="log") paintLog();
+      else if(cur==="banks") paintBanks();
+      else paintEngine();
+    }catch(e){ var p=$(PANE[cur]); if(p) p.textContent="dev panel error: "+e; }
+  }
+  function paintSoon(ms){ if(paintT) clearTimeout(paintT); paintT=setTimeout(function(){ paintT=null; paint(); }, ms||600); }
+  panel.querySelectorAll("#devTabs [role=tab]").forEach(function(b){ b.addEventListener("click", function(){ show(b.dataset.k); }); });
+  $("devHide").addEventListener("click", function(){ toggle(false); });
+  /* setas entre separadores, como num tablist */
+  $("devTabs").addEventListener("keydown", function(ev){
+    if(ev.key!=="ArrowRight" && ev.key!=="ArrowLeft") return;
+    ev.preventDefault(); ev.stopPropagation();
+    var i=TABS.indexOf(cur)+(ev.key==="ArrowRight" ? 1 : -1);
+    show(TABS[(i+TABS.length)%TABS.length]);
+    var b=panel.querySelector('#devTabs [data-k="'+cur+'"]'); if(b) b.focus();
+  });
+
+  /* ---- Next: a espreitadela (so aqui se chama o peek) ---- */
+  /* o disco armado no prato livre (videoId e se ja esta pronto): o Next repinta quando muda */
+  function armedSig(st){ return (st && st.pre) ? st.pre.v+(st.pre.ready ? "r" : "l") : ""; }
+  function paintNext(){
+    if(!visible() || cur!=="next" || !radioOn()) return;
+    var ul=$("devNext"), st=null, list=[];
+    try{ st=HMDEV.state(); }catch(e){}
+    nextSig=armedSig(st);
+    try{ list=HMDEV.peek(3); }catch(e){ list=[]; }
+    ul.innerHTML="";
+    function li(tag, main, sub){
+      var el=document.createElement("li");
+      if(tag){ var i=document.createElement("i"); i.textContent=tag; el.appendChild(i); }
+      var b=document.createElement("b"); b.textContent=main;
+      var s=document.createElement("span"); s.textContent=sub;
+      el.appendChild(b); el.appendChild(s); ul.appendChild(el);
+    }
+    if(st && st.pre) li("armed on deck "+st.pre.k+(st.pre.ready ? ", ready" : ", loading"), st.pre.a+" / "+st.pre.t, gname(st.pre.g));
+    list.forEach(function(x, i){ li("", (i+1)+". "+x.a+" / "+x.t, x.g+" · "+(x.sure ? "" : "~")+x.bpm+" bpm"); });
+  }
+  function skip(){ try{ HMDEV.skip(); }catch(e){} setTimeout(paint, 900); }
+  $("devSkip").addEventListener("click", skip);
+
+  /* ---- Log: totais do registo ---- */
+  function secsOf(r){ var p=r.pos||0; if(r.dur>0) p=Math.min(p, r.dur); return Math.max(0, p); }
+  function crate(bk, dead){
+    var o={}, tot=0, B=BLOCKS[bk];
+    if(!B) return { g:o, tot:0 };
+    B.genres.forEach(function(g){
+      var n=TRACKS.filter(function(t){ return t.g===g && !dead[t.v]; }).length;
+      o[g]=n; tot+=n;
+    });
+    return { g:o, tot:tot };
+  }
+  function stats(rows, evs){
+    var S={ rows:rows.length, aired:0, sessions:{}, ends:{}, drops:{}, open:0, waiting:0, openElse:0, waitElse:0, blocks:{}, total:0,
+      hours:[], replays:0, rtop:{}, gaps:{ lift:[], cut:[] }, sound:{ lift:[], cut:[] }, tail:[], sl:0, mt:0, dead:{}, blocked:0, first:0 };
+    for(var h=0; h<24; h++) S.hours.push({ plays:0, ids:{}, distinct:0, replays:0 });
+    var aired=rows.filter(function(r){ return r.on>0; }).sort(function(a, b){ return a.on-b.on; });
+    S.aired=aired.length;
+    /* "on air now" e "waiting" so contam esta sessao; as linhas abertas de outros separadores
+       contam a parte (as de uma sessao morta sem pagehide fecham como lost no l03, ao fim de 15 min) */
+    var sid=""; try{ sid=HMPLOG.sid; }catch(e){}
+    rows.forEach(function(r){
+      S.sessions[r.s]=1;
+      var me=(r.s===sid);
+      if(r.on>0){ if(r.end) S.ends[r.end]=(S.ends[r.end]||0)+1; else if(me) S.open++; else S.openElse++; }
+      else if(r.end) S.drops[r.end]=(S.drops[r.end]||0)+1;
+      else if(me) S.waiting++;
+      else S.waitElse++;
+    });
+    var last={}, prevBy={};
+    aired.forEach(function(r){
+      if(!S.first) S.first=r.on;
+      var sec=secsOf(r), b=r.b || "?";
+      var B=S.blocks[b] || (S.blocks[b]={ secs:0, plays:0, g:{} });
+      B.secs+=sec; B.plays++; S.total+=sec;
+      var G=B.g[r.g] || (B.g[r.g]={ secs:0, plays:0 });
+      G.secs+=sec; G.plays++;
+      var H=S.hours[new Date(r.on).getHours()];
+      H.plays++; H.ids[r.v]=1;
+      if(last[r.v] && r.on-last[r.v]<86400000){ S.replays++; H.replays++; S.rtop[r.v]=(S.rtop[r.v]||{ n:0, a:r.a, t:r.t, g:r.g }); S.rtop[r.v].n++; }
+      last[r.v]=r.on;
+      S.sl+=r.sl||0; S.mt+=r.mt||0;
+      if(/^lift/.test(r.end||"") && r.dur>0) S.tail.push(Math.max(0, r.dur-(r.pos||0)));
+      var p=prevBy[r.s];
+      if(p && p.en>0){
+        var cls=/^lift/.test(p.end||"") ? "lift" : "cut";
+        S.gaps[cls].push((r.on-p.en)/1000);
+        if(r.pl) S.sound[cls].push((r.pl-p.en)/1000);
+      }
+      prevBy[r.s]=r;
+    });
+    S.hours.forEach(function(H){ H.distinct=Object.keys(H.ids).length; delete H.ids; });
+    (evs||[]).forEach(function(e){
+      if(e.e==="dead"){ var c=String((e.d && e.d.code)||"?"); S.dead[c]=(S.dead[c]||0)+1; }
+      else if(e.e==="blocked") S.blocked++;
+    });
+    S.sessions=Object.keys(S.sessions).length;
+    return S;
+  }
+  function stamp(){ var d=new Date(); return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"-"+pad(d.getHours())+pad(d.getMinutes()); }
+  function download(name, text, type){
+    try{
+      var u=URL.createObjectURL(new Blob([text], { type:type }));
+      var a=document.createElement("a"); a.href=u; a.download=name; a.style.display="none";
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 2000);
+    }catch(e){}
+  }
+  function kv(o){
+    var ks=Object.keys(o).sort(function(a, b){ return o[b]-o[a]; });
+    return ks.length ? ks.map(function(k){ return esc(k)+" <b>"+o[k]+"</b>"; }).join(", ") : '<span class="dv-dim">none</span>';
+  }
+  function gapLine(name, a){
+    if(!a.length) return "<tr><td>"+name+'</td><td class="n" colspan="4"><span class="dv-dim">no pairs yet</span></td></tr>';
+    return "<tr><td>"+name+'</td><td class="n">'+a.length+'</td><td class="n">'+f1(med(a))+'</td><td class="n">'+f1(Math.min.apply(null, a))+'</td><td class="n">'+f1(Math.max.apply(null, a))+"</td></tr>";
+  }
+  function whyText(r){
+    var w=[r.gw||"?"];
+    if(r.br) w.push("bridge"); if(r.op) w.push("opener"); if(r.fr) w.push("new"); if(r.pq) w.push("peeked"); if(r.dd) w.push("dup-swap");
+    return w.join(" ");
+  }
+  function paintLog(){
+    var el=$("dvLog"), rows=[], evs=[];
+    if(!window.HMPLOG){ el.textContent="play log module missing"; return; }
+    try{ rows=HMPLOG.rows(); evs=HMPLOG.events(); }catch(e){}
+    var S=stats(rows, evs), dead={};
+    try{ HMDEV.state().dead.forEach(function(v){ dead[v]=1; }); }catch(e){}
+    var h='<p>'+S.rows+' rows in this browser (ring of 2000), '+S.aired+' aired, '+S.sessions+' session'+(S.sessions===1 ? "" : "s")+
+      (S.first ? ', since '+day(S.first)+' '+hhmm(S.first) : '')+'. Nothing leaves the browser.</p>';
+    h+='<p><button class="tbtn" id="dvCsv" type="button">Download CSV</button><button class="tbtn" id="dvJson" type="button">Download JSON</button><button class="tbtn" id="dvClr" type="button">Clear</button></p>';
+    h+='<h5>Ends by reason</h5><p>aired: '+kv(S.ends)+(S.open ? ', on air now <b>'+S.open+'</b>' : '')+(S.openElse ? ', open in other tabs <b>'+S.openElse+'</b>' : '')+
+      '<br>never aired: '+kv(S.drops)+(S.waiting ? ', waiting <b>'+S.waiting+'</b>' : '')+(S.waitElse ? ', waiting in other tabs <b>'+S.waitElse+'</b>' : '')+'</p>';
+    h+='<p>tail left when the needle lifted (median): <b>'+f1(med(S.tail))+' s</b> over '+S.tail.length+' records. '+
+      'side-lined: <b>'+hms(S.sl)+'</b>, muted: <b>'+hms(S.mt)+'</b> of '+hms(S.total)+' on air.</p>';
+    h+='<h5>Airtime by sub-block, against the crate</h5><div class="dv-scroll"><table><tr><th>sub-block / genre</th><th class="n">plays</th><th class="n">airtime</th><th class="n">air share</th><th class="n">crate share</th></tr>';
+    var order=Object.keys(BLOCKS).concat(Object.keys(S.blocks).filter(function(b){ return !BLOCKS[b]; }));
+    order.forEach(function(b){
+      var B=S.blocks[b]; if(!B) return;
+      var C=crate(b, dead);
+      h+='<tr><td><b>'+esc(blabel(b))+'</b></td><td class="n">'+B.plays+'</td><td class="n">'+hms(B.secs)+'</td><td class="n">'+pct(B.secs, S.total)+' of all</td><td class="n"></td></tr>';
+      var gs=(BLOCKS[b] ? BLOCKS[b].genres.slice() : []);
+      Object.keys(B.g).forEach(function(g){ if(gs.indexOf(g)<0) gs.push(g); });
+      gs.forEach(function(g){
+        var G=B.g[g] || { secs:0, plays:0 };
+        h+='<tr><td>&nbsp;&nbsp;'+esc(gname(g))+'</td><td class="n">'+G.plays+'</td><td class="n">'+hms(G.secs)+'</td><td class="n">'+pct(G.secs, B.secs)+'</td><td class="n">'+(C.g[g]!=null ? pct(C.g[g], C.tot)+' ('+C.g[g]+')' : '<span class="dv-warn">off block</span>')+'</td></tr>';
+      });
+    });
+    h+='</table></div>';
+    h+='<h5>Distinct tracks per hour of the day</h5><div class="dv-scroll"><table><tr><th>hour</th><th class="n">plays</th><th class="n">distinct</th><th class="n">replays &lt; 24 h</th><th>sub-block now</th></tr>';
+    S.hours.forEach(function(H, i){
+      if(!H.plays) return;
+      h+='<tr><td>'+pad(i)+':00</td><td class="n">'+H.plays+'</td><td class="n">'+H.distinct+'</td><td class="n">'+H.replays+'</td><td>'+esc(blabel(HMDEV.blockAt(i)))+'</td></tr>';
+    });
+    h+='</table></div>';
+    var rt=Object.keys(S.rtop).sort(function(a, b){ return S.rtop[b].n-S.rtop[a].n; }).slice(0, 8);
+    h+='<h5>Replays within 24 h</h5><p><b>'+S.replays+'</b> of '+S.aired+' plays ('+pct(S.replays, S.aired)+') repeat a record aired less than 24 h before'+
+      (rt.length ? ':</p><ol>'+rt.map(function(v){ var x=S.rtop[v]; return '<li>'+esc(x.a)+' / '+esc(x.t)+' <span class="dv-dim">('+esc(gname(x.g))+')</span> <b>+'+x.n+'</b></li>'; }).join("")+'</ol>' : '.</p>');
+    h+='<h5>Gap between records (s, same session)</h5><table><tr><th>after</th><th class="n">pairs</th><th class="n">median</th><th class="n">min</th><th class="n">max</th></tr>'+
+      gapLine("lift, to on air", S.gaps.lift)+gapLine("lift, to playing", S.sound.lift)+gapLine("cut, to on air", S.gaps.cut)+gapLine("cut, to playing", S.sound.cut)+'</table>';
+    h+='<h5>Dead and blocked videos</h5><p>dead by error code: '+kv(S.dead)+'; blocked players: <b>'+S.blocked+'</b></p>';
+    h+='<h5>Last 60 rows</h5><div class="dv-scroll"><table><tr><th>on air</th><th>sub-block</th><th>genre</th><th>track</th><th>why</th><th>end</th><th class="n">played</th><th class="n">side/mute</th></tr>';
+    rows.slice(-60).reverse().forEach(function(r){
+      var when=r.on ? hhmm(r.on) : '<span class="dv-dim">'+hhmm(r.pk)+' picked</span>';
+      var end=r.end ? (/^lift/.test(r.end) ? '<span class="dv-ok">'+esc(r.end)+'</span>' : '<span class="dv-warn">'+esc(r.end)+'</span>') : (r.on ? "on air" : '<span class="dv-dim">armed</span>');
+      h+='<tr><td>'+when+'</td><td>'+esc(r.b)+'</td><td>'+esc(gname(r.g))+'</td><td>'+esc(r.a)+' / '+esc(r.t)+'</td><td>'+esc(whyText(r))+
+        '</td><td>'+end+(r.ec ? ' <span class="dv-warn">#'+r.ec+'</span>' : '')+'</td><td class="n">'+Math.round(r.pos||0)+' / '+(r.dur||"?")+' s</td><td class="n">'+Math.round(r.sl||0)+' / '+Math.round(r.mt||0)+'</td></tr>';
+    });
+    el.innerHTML=h+'</table></div>';
+    $("dvCsv").addEventListener("click", function(){ download("home-music-playlog-"+stamp()+".csv", HMPLOG.csv(), "text/csv;charset=utf-8"); });
+    $("dvJson").addEventListener("click", function(){ download("home-music-playlog-"+stamp()+".json", HMPLOG.json(), "application/json"); });
+    $("dvClr").addEventListener("click", function(){
+      if(window.confirm("Clear the play log stored in this browser? The record on air keeps being logged.")){ HMPLOG.clear(); paint(); }
+    });
+  }
+
+  /* ---- Banks: o que cada sub-bloco pode tocar ---- */
+  /* as escolhas possiveis do pickGenre(fromG) entre os generos bg (a mesma regra do motor:
+     primo de ADJ mais proximo em BPM 72%, o segundo 28%; sem primo, o BPM mais proximo;
+     sem entrada em ADJ, sorteio ponderado pelas faixas por estrear) */
+  function pickFrom(fromG, bg){
+    var adj=HMDEV.adj, gb=HMDEV.gbpm;
+    function d(a, b){ return Math.abs((gb[a]||120)-(gb[b]||120)); }
+    if(fromG && adj[fromG]){
+      var near=adj[fromG].filter(function(x){ return bg.indexOf(x)>=0 && x!==fromG; });
+      if(near.length){
+        near.sort(function(a, b){ return d(a, fromG)-d(b, fromG); });
+        return near.length>1 ? [{ g:near[0], how:"adj", p:72 }, { g:near[1], how:"adj2", p:28 }] : [{ g:near[0], how:"adj", p:100 }];
+      }
+      var rest=bg.filter(function(x){ return x!==fromG; });
+      if(rest.length){ rest.sort(function(a, b){ return d(a, fromG)-d(b, fromG); }); return [{ g:rest[0], how:"bpm", p:100 }]; }
+    }
+    return bg.map(function(x){ return { g:x, how:"weighted", p:null }; });
+  }
+  function banks(){
+    var st=HMDEV.state(), pools=HMDEV.pools(), rot=(window.HMROT && HMROT.map) || {};
+    var dead={}, peek={}, pos={}, owner={}, keys=Object.keys(BLOCKS);
+    st.dead.forEach(function(v){ dead[v]=1; });
+    st.peeked.forEach(function(v, i){ peek[v]=i+1; });
+    Object.keys(pools).forEach(function(g){ pools[g].forEach(function(v, i){ pos[v]=[i+1, pools[g].length]; }); });
+    keys.forEach(function(bk){ BLOCKS[bk].genres.forEach(function(g){ (owner[g]=owner[g] || []).push(bk); }); });
+    function alive(g){ return TRACKS.some(function(t){ return t.g===g && !dead[t.v]; }); }
+    var out=keys.map(function(bk, bi){
+      var B=BLOCKS[bk], bg=B.genres.filter(alive), prev=keys[(bi+keys.length-1)%keys.length];
+      var R={ key:bk, label:B.label, range:B.range, now:(bk===st.block), prev:prev, genres:[], alive:0, never:0, dead:0, enters:[] };
+      B.genres.forEach(function(g){
+        var ts=TRACKS.filter(function(t){ return t.g===g; });
+        var al=ts.filter(function(t){ return !dead[t.v]; });
+        var pl=al.filter(function(t){ return rot[t.v]; });
+        var oldest=pl.map(function(t){ return rot[t.v]; }).sort(function(a, b){ return a-b; })[0] || 0;
+        var reach=[], weighted=[];
+        bg.forEach(function(f){
+          if(f===g) return;
+          pickFrom(f, bg).forEach(function(c){
+            if(c.g!==g) return;
+            if(c.how==="weighted") weighted.push(f); else reach.push({ from:f, how:c.how, p:c.p });
+          });
+        });
+        var G={ g:g, name:gname(g), total:ts.length, alive:al.length, dead:ts.length-al.length,
+          never:al.length-pl.length, played:pl.length, oldest:oldest, op:ts.filter(function(t){ return t.op; }).length,
+          gbpm:HMDEV.gbpm[g] || null, exact:ts.filter(function(t){ return t.bpm; }).length, run:HMDEV.runCap(g),
+          deck:(pools[g] ? pools[g].length : null), shared:owner[g].filter(function(x){ return x!==bk; }),
+          adj:!!HMDEV.adj[g], reach:reach, weightedFrom:weighted, weightedOnly:!reach.length };
+        G.tracks=function(){
+          return ts.map(function(t){
+            var s=[];
+            if(st.current===t.v) s.push("on air");
+            if(st.pre && st.pre.v===t.v) s.push("armed");
+            if(peek[t.v]) s.push("peeked #"+peek[t.v]);
+            if(dead[t.v]) s.push("dead");
+            s.push(rot[t.v] ? "played "+ago(rot[t.v]) : "never played");
+            if(pos[t.v]) s.push("deck "+pos[t.v][0]+"/"+pos[t.v][1]);
+            if(t.op) s.push("op:1");
+            return { v:t.v, a:t.a, t:t.t, y:t.y, s:s.join(", "), dead:!!dead[t.v], fresh:!rot[t.v] };
+          });
+        };
+        R.genres.push(G);
+        R.alive+=G.alive; R.never+=G.never; R.dead+=G.dead;
+      });
+      if(bk==="dawn") R.enters.push({ from:"06:00", to:"ambient", how:"dawn override (forced)" });
+      else BLOCKS[prev].genres.forEach(function(f){
+        var cs=pickFrom(f, bg);
+        R.enters.push({ from:f, to:cs.map(function(c){ return c.g; }).join(" / "), how:cs[0] ? cs[0].how+(cs.length>1 && cs[0].how!=="weighted" ? "/"+cs[1].how : "") : "?" });
+      });
+      return R;
+    });
+    var off=Object.keys(GENRES).filter(function(g){ return !owner[g]; }).map(function(g){
+      return { g:g, name:gname(g), total:TRACKS.filter(function(t){ return t.g===g; }).length };
+    });
+    return { blocks:out, off:off, current:st.block };
+  }
+  function paintBanks(){
+    var el=$("dvBanks"), D=banks(), h='';
+    el.querySelectorAll("details[data-k]").forEach(function(d){ openSet[d.dataset.k]=d.open; });
+    h+='<p>What each sub-block can play now, from the catalogue, this browser\'s rotation memory and this session\'s dead links. '+
+      'Decks are dealt per genre: never-played records first, then the longest unheard.</p>';
+    D.blocks.forEach(function(R){
+      h+='<div class="dv-blk'+(R.now ? ' now' : '')+'" data-b="'+esc(R.key)+'"><h5>'+esc(R.label)+' '+esc(R.range)+(R.now ? ' &middot; on air now' : '')+'</h5>';
+      h+='<p>'+R.alive+' playable, '+R.never+' never played'+(R.dead ? ', <span class="dv-warn">'+R.dead+' dead this session</span>' : '')+'. enters from '+
+        (R.key==="dawn" ? 'the 06:00 dawn override: ambient first' : esc(blabel(R.prev))+': '+
+        R.enters.map(function(e){ return esc(e.from)+' &rarr; '+esc(e.to)+' <span class="dv-dim">('+esc(e.how)+')</span>'; }).join(", "))+'</p>';
+      h+='<div class="dv-scroll"><table><tr><th>genre</th><th class="n">alive</th><th class="n">dead</th><th class="n">never</th><th class="n">played</th><th>oldest play</th><th class="n">op:1</th><th class="n">bpm</th><th class="n">run</th><th class="n">deck</th><th>reached from</th></tr>';
+      R.genres.forEach(function(G){
+        var reach=G.reach.map(function(x){ return esc(x.from)+' '+x.how+(x.p<100 ? ' '+x.p+'%' : ''); });
+        if(G.weightedFrom.length) reach.push('weighted after '+G.weightedFrom.map(esc).join(", "));
+        var rtxt=(G.weightedOnly ? '<span class="dv-warn">weighted only</span>'+(G.weightedFrom.length ? ' <span class="dv-dim">(after '+G.weightedFrom.map(esc).join(", ")+', or at session start)</span>' : ' <span class="dv-dim">(session start)</span>') : reach.join("; "));
+        h+='<tr><td>'+esc(G.name)+(G.shared.length ? ' <span class="dv-warn">shared deck with '+G.shared.map(esc).join(", ")+'</span>' : '')+(G.adj ? '' : ' <span class="dv-dim">(no ADJ entry)</span>')+'</td>'+
+          '<td class="n">'+G.alive+'</td><td class="n">'+(G.dead ? '<span class="dv-warn">'+G.dead+'</span>' : 0)+'</td><td class="n">'+G.never+'</td><td class="n">'+G.played+'</td>'+
+          '<td>'+(G.oldest ? ago(G.oldest) : '<span class="dv-dim">none</span>')+'</td><td class="n">'+G.op+'</td><td class="n">'+(G.gbpm||"?")+(G.exact ? ' ('+G.exact+' exact)' : '')+'</td>'+
+          '<td class="n">'+(G.run[0]===G.run[1] ? G.run[0] : G.run[0]+'-'+G.run[1])+'</td><td class="n">'+(G.deck==null ? '<span class="dv-dim">not dealt</span>' : G.deck)+'</td><td>'+rtxt+'</td></tr>';
+        var k=R.key+":"+G.g;
+        h+='<tr><td colspan="11"><details data-k="'+esc(k)+'"'+(openSet[k] ? ' open' : '')+'><summary>'+G.total+' tracks</summary><ol></ol></details></td></tr>';
+      });
+      h+='</table></div></div>';
+    });
+    h+='<div class="dv-blk"><h5>Off the grid</h5><p>'+(D.off.length ? D.off.map(function(o){ return esc(o.name)+' <b>'+o.total+'</b>'; }).join(", ")+
+      ': in no sub-block, so never on the radio grid (lo-fi hip hop and the zen crate belong to the focus room).' : 'none')+'</p></div>';
+    el.innerHTML=h;
+    /* as listas enchem-se so quando se abrem (sao mais de mil faixas) */
+    var byK={};
+    D.blocks.forEach(function(R){ R.genres.forEach(function(G){ byK[R.key+":"+G.g]=G; }); });
+    function fill(d){
+      var G=byK[d.dataset.k], ol=d.querySelector("ol");
+      if(!G || !ol || ol.childNodes.length) return;
+      ol.innerHTML=G.tracks().map(function(t){
+        return '<li'+(t.dead ? ' class="dv-warn"' : '')+'>'+esc(t.a)+' / '+esc(t.t)+(t.y ? ' ('+t.y+')' : '')+' <span class="'+(t.fresh ? 'dv-ok' : 'dv-dim')+'">'+esc(t.s)+'</span></li>';
+      }).join("");
+    }
+    el.querySelectorAll("details[data-k]").forEach(function(d){
+      if(d.open) fill(d);
+      d.addEventListener("toggle", function(){ openSet[d.dataset.k]=d.open; if(d.open) fill(d); });
+    });
+  }
+
+  /* ---- Engine: estado e registo da abertura ---- */
+  function table(o){
+    return '<table>'+Object.keys(o).map(function(k){
+      var v=o[k];
+      if(Array.isArray(v)) v=v.length+(v.length ? ": "+v.slice(0, 12).join(" ")+(v.length>12 ? " ..." : "") : "");
+      else if(v && typeof v==="object") v=JSON.stringify(v);
+      return '<tr><th>'+esc(k)+'</th><td>'+esc(v)+'</td></tr>';
+    }).join("")+'</table>';
+  }
+  function introRows(){ try{ var a=JSON.parse(localStorage.getItem("hm_intro_log") || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+  function paintEngine(){
+    var el=$("dvEngine"), h='';
+    try{ h+='<h5>Engine</h5>'+table(HMDEV.state()); }catch(e){ h+='<p class="dv-warn">HMDEV.state failed: '+esc(e)+'</p>'; }
+    try{ if(window.HMENG) h+='<h5>Decks</h5>'+table(HMENG.state()); }catch(e){}
+    try{
+      var I=HMPLOG.info(), rk=0, rb=0;
+      try{ var rs=localStorage.getItem("hm_rot") || ""; rb=rs.length; rk=Object.keys(JSON.parse(rs || "{}")).length; }catch(e){}
+      h+='<h5>Storage (this browser only)</h5>'+table({ "play log session":I.sid, "rows this session":I.mine, "open rows":I.open.map(function(o){ return o.v+(o.on ? " on air" : o.armed ? " armed" : " waiting"); }),
+        "events this session":I.events, "hm_plog size":Math.round(I.bytes/1024)+" KB (ring "+I.cap+")", "hm_plog_ev size":Math.round(I.evBytes/1024)+" KB (ring "+I.ecap+")",
+        "quota trims":I.quota, "last save":I.lastSave ? hhmm(I.lastSave)+":"+pad(new Date(I.lastSave).getSeconds()) : "-",
+        "hm_rot":rk+" records, "+Math.round(rb/1024)+" KB" });
+    }catch(e){}
+    var L=introRows().slice().reverse();
+    h+='<h5>Intro log (hm_intro_log, last '+L.length+')</h5>';
+    if(!L.length) h+='<p class="dv-dim">no intro recorded in this browser yet</p>';
+    else {
+      h+='<div class="dv-scroll"><table><tr><th>when</th><th>outcome</th><th class="n">ms</th><th>via</th><th>detail</th><th class="n">lines</th></tr>';
+      L.forEach(function(e){
+        var bad=!(e.why==="ok" || e.why==="complete");
+        var det=[];
+        if(e.code) det.push("media error "+e.code);
+        if(e.name) det.push(e.name);
+        if(e.rej && e.rej!==e.name) det.push("rejected "+e.rej);
+        det.push("ready "+e.rs+", net "+e.ns+", at "+e.ct+" s");
+        if(e.pre!=null) det.push("preloaded to "+e.pre);
+        if(e.pe) det.push("preload error "+e.pe);
+        if(e.rt) det.push("retried at the tap");
+        if(e.off) det.push("offline");
+        h+='<tr><td>'+day(e.ts)+' '+hhmm(e.ts)+'</td><td>'+(bad ? '<span class="dv-warn">'+esc(e.why)+'</span>' : '<span class="dv-ok">'+esc(e.why)+'</span>')+'</td><td class="n">'+(e.el||0)+'</td><td>'+esc(e.via)+'</td><td>'+esc(det.join("; "))+'</td><td class="n">'+(e.lines||0)+'</td></tr>';
+      });
+      h+='</table></div>';
+    }
+    el.innerHTML=h;
+  }
+
+  /* ---- teclas: d mostra e esconde; n salta (nunca a escrever, nem na ala da arte, nem antes da radio) ---- */
+  document.addEventListener("keydown", function(ev){
+    if(ev.ctrlKey || ev.metaKey || ev.altKey || typing(ev)) return;
+    if(ev.key==="d" || ev.key==="D"){ toggle(); }
+    else if(ev.key==="n" && !wartOn() && radioOn()){ skip(); }
+  });
+  /* repinta quando a faixa do cartao ou o bloco mudam */
+  var mo=new MutationObserver(function(){ if(cur==="next") paintNext(); else if(cur!=="engine") paintSoon(700); });
+  ["tArtist", "blockLabel"].forEach(function(id){ var n=$(id); if(n) mo.observe(n, { childList:true, characterData:true, subtree:true }); });
+  setInterval(function(){
+    if(!visible() || cur==="next") return;
+    if(cur==="engine") paint();
+    else if(!panel.matches(":hover")) paint();
+  }, 4000);
+  /* o Next repinta quando o disco armado muda (a antecipacao arma o seguinte 40 s antes do fim,
+     sem mexer no cartao, e o MutationObserver so via a troca, quando o armado ja tinha saido).
+     A leitura e uma copia; o peek so corre no repintar, como numa troca de separador */
+  setInterval(function(){
+    if(!visible() || cur!=="next" || !radioOn()) return;
+    var sg=""; try{ sg=armedSig(HMDEV.state()); }catch(e){}
+    if(sg!==nextSig) paintNext();
+  }, 1000);
+  /* o painel so aparece com a radio no ar: por cima do splash (z-index 89 contra 80 e 81) tapava o
+     toque de arranque e o skip the intro. A tecla d ja funciona antes; se a pessoa o abrir ou
+     fechar antes do arranque, a escolha dela fica */
+  show(cur);
+  var boot=setInterval(function(){
+    if(!radioOn()) return;
+    clearInterval(boot);
+    if(!userSet) panel.classList.add("on");
+    paint();
+  }, 800);
+  window.HMDEVUI={ show:show, toggle:toggle, paint:paint, stats:stats, banks:banks, pickFrom:pickFrom };
+})();
+</script>

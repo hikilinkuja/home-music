@@ -1,0 +1,275 @@
+<script>
+"use strict";
+/* ================= registo de emissao (play log) =================
+   Pedido do Paulo (10/2026): guardar o registo das musicas tocadas para avaliar o DJ automatico.
+   Uma linha por disco: quando foi escolhido, armado, posto no ar e retirado; bloco e sub-bloco;
+   genero, artista, titulo, videoId; BPM mostrado e se e exato; porque foi escolhido (run, adj,
+   adj2, bpm, weighted, force; ponte, abridor, estreia, ultima vez no ar); como acabou (lift, skip,
+   dev, error, stalled, timeout, block-override, unload; lost para a sessao que morreu sem o
+   pagehide, ver o merged); segundos ouvidos contra a duracao;
+   segundos com a radio de lado ou em mute. Mais um anel de eventos (blocos, radio de lado, mute,
+   videos mortos ou bloqueados, arranque).
+   Montado ANTES do l05: o motor chama window.HMPLOG.* (pelo plog da secao 11 do build-liquid.py)
+   desde o primeiro setNow. Sem DOM. Corre sempre, com ou sem ?dev; o painel (l09) so le.
+   Fica so neste browser (localStorage, aneis de 2000 linhas e 600 eventos): nada sai daqui. */
+window.HMPLOG=(function(){
+  var KEY="hm_plog", EKEY="hm_plog_ev", VER=1, MAX=2000, EMAX=600;
+  /* uma linha aberta de outra sessao sem sinal ha mais do que isto fecha como lost: o separador
+     morreu sem pagehide (descartado pelo browser, morto pelo sistema do telemovel, crash). Cada
+     sessao viva carimba as suas linhas abertas (ls) em cada gravacao, no maximo de 5 em 5 min */
+  var STALE=15*60000, BEAT=5*60000;
+  var SID=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  /* os sub-blocos da grelha fina e o bloco largo da sala antiga a que pertencem (06-13, 13-20, 20-06) */
+  var PARENT={ dawn:"morning", kingston:"morning", groove:"afternoon", flight:"afternoon", skank:"afternoon",
+    pressure:"night", afterhours:"night", morning:"morning", afternoon:"afternoon", night:"night" };
+  var mine=[], myEv=[], open=[], seq=0, eseq=0;
+  var cap=MAX, ecap=EMAX, quota=0, saveT=null, soft=false, lastSave=0, unloaded=[];
+  /* instante do ultimo Clear (deste separador ou lido do disco): o que acabou antes dele nao volta */
+  var clr=0;
+  function now(){ return Date.now(); }
+  function cut(x){ return String(x==null ? "" : x).slice(0, 80); }
+  function r1(x){ return Math.round(x*10)/10; }
+  function rd(k){ try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } }
+  function tkey(r){ return r.on || r.pk || 0; }
+  function byTime(a, b){ return (tkey(a)-tkey(b)) || (a.s<b.s ? -1 : a.s>b.s ? 1 : a.i-b.i); }
+
+  /* ---- linhas ---- */
+  function find(t){
+    if(!t) return null;
+    for(var i=open.length-1; i>=0; i--){ if(open[i].t===t) return open[i]; }
+    return null;
+  }
+  function place(r, ctx){
+    if(!ctx) return;
+    if(ctx.b){ r.b=ctx.b; r.bp=PARENT[ctx.b] || ""; }
+    r.ov=ctx.ov ? 1 : 0;
+    if(ctx.dk) r.dk=ctx.dk;
+    r.sm=ctx.sm ? 1 : 0;
+    if(ctx.bpm){ r.bpm=ctx.bpm; r.bx=ctx.bx ? 1 : 0; }
+  }
+  function mk(t, why, ctx){
+    why=why || {};
+    var r={ s:SID, i:++seq, pk:why.pk || now(), on:0, pl:0, en:0,
+      bp:"", b:"", ov:0, g:t.g || "", a:cut(t.a), t:cut(t.t), y:t.y || "", v:t.v || "",
+      bpm:0, bx:0, gw:why.gw || "?", br:why.br ? 1 : 0, op:why.op ? 1 : 0, fr:why.fr ? 1 : 0,
+      lp:why.lp || 0, pq:why.pq ? 1 : 0, dd:why.dd ? 1 : 0,
+      rl:(why.rl==null ? "" : why.rl), pn:(why.pl==null ? "" : why.pl),
+      dk:"", sm:0, end:"", pos:0, dur:0, sl:0, mt:0, bf:0, ec:0, ls:0 };
+    place(r, ctx);
+    mine.push(r);
+    if(mine.length>cap) mine.splice(0, mine.length-cap);
+    var e={ r:r, t:t, lt:0 };
+    open.push(e);
+    return e;
+  }
+  function fin(e, why, cur, dur){
+    var r=e.r;
+    if(!r.end){
+      r.end=why || "?"; r.en=now();
+      if(cur!=null && isFinite(cur) && cur>r.pos) r.pos=r1(cur);
+      if(dur>0) r.dur=Math.round(dur);
+      if(r.dur>0 && r.pos>r.dur) r.pos=r.dur;
+    }
+    open=open.filter(function(x){ return x!==e; });
+    soon();
+  }
+  /* um disco armado no prato (ainda fora do ar); um segundo armado sem o primeiro sair e um gancho
+     em falta: o antigo fecha como superseded, para se ver no registo */
+  function arm(t, why, ctx){
+    if(!t) return;
+    var e=find(t);
+    if(e && e.r.on) return;
+    open.slice().forEach(function(x){ if(x!==e && x.armed && !x.r.on) fin(x, "superseded"); });
+    if(!e) e=mk(t, why, ctx);
+    e.armed=true; place(e.r, ctx);
+    soon();
+  }
+  /* o disco entra no cartao: no ar ja (ctx.on), ou a espera do fim da abertura (primeiro disco) */
+  function start(t, why, ctx){
+    if(!t) return;
+    ctx=ctx || {};
+    var e=find(t);
+    if(e && e.r.on && e.r.end) e=null;
+    if(!e) e=mk(t, why, ctx);
+    place(e.r, ctx);
+    e.armed=false;
+    open.slice().forEach(function(x){ if(x!==e && x.r.on) fin(x, "superseded"); });
+    if(ctx.on && !e.r.on) onAir(e);
+    soon();
+  }
+  function air(t){
+    var e=find(t); if(!e) return;
+    if(!e.r.on) onAir(e);
+    soon();
+  }
+  /* no ar; se o leitor ja estava a rodar (o primeiro disco roda mudo durante a abertura, e o
+     play pode chegar antes do setNow), o "playing" conta daqui */
+  function onAir(e){
+    e.r.on=now(); e.lt=e.r.on;
+    if(e.st===1 && !e.r.pl) e.r.pl=e.r.on;
+  }
+  function state(k, st, t, active){
+    var e=find(t); if(!e) return;
+    e.st=st;
+    if(!e.r.on) return;
+    if(st===1 && !e.r.pl){ e.r.pl=now(); soft=true; }
+    else if(st===3 && active && e.r.pl){ e.r.bf++; soft=true; }
+  }
+  function tick(t, cur, dur, side, mu){
+    var e=find(t); if(!e || !e.r.on) return;
+    var r=e.r, n=now(), dt=e.lt ? Math.min(60, Math.max(0, (n-e.lt)/1000)) : 0;
+    e.lt=n;
+    if(cur>r.pos) r.pos=r1(cur);
+    if(dur>0) r.dur=Math.round(dur);
+    if(side!=null && side<0.5) r.sl=r1(r.sl+dt);
+    if(mu) r.mt=r1(r.mt+dt);
+    soft=true;
+  }
+  function end(t, why, cur, dur){
+    var e=find(t); if(!e) return;
+    fin(e, why, cur, dur);
+  }
+  function dead(t, code, deck, role){
+    if(!t) return;
+    event("dead", { v:t.v, code:code, deck:deck, role:role, g:t.g, a:cut(t.a), t:cut(t.t) });
+    var e=find(t); if(e) e.r.ec=code;
+  }
+  function event(type, d){
+    myEv.push({ s:SID, n:++eseq, ts:now(), e:type, d:d || {} });
+    if(myEv.length>ecap) myEv.splice(0, myEv.length-ecap);
+    soon();
+  }
+
+  /* ---- guardar: re-ler e fundir, para dois separadores abertos nao se apagarem um ao outro.
+     As linhas desta sessao valem as daqui; as das outras sessoes valem as do disco.
+     O Clear grava a sua marca (c) com o registo: cada separador que a le larga da memoria o que
+     ja tinha acabado antes dela (senao a gravacao seguinte de outro separador repunha tudo) e
+     guarda-a nas suas gravacoes. Linhas abertas de outra sessao sem carimbo recente fecham como
+     lost; um separador so congelado que volte repoe as suas, porque as desta sessao valem as daqui ---- */
+  function kept(r){ return !r.en || r.en>clr; }
+  function merged(){
+    var o=rd(KEY), disk=(o && o.v===VER && o.r) || [], c=(o && o.c) || 0, n0=now();
+    if(c>clr){ clr=c; mine=mine.filter(kept); }
+    disk.forEach(function(r){
+      if(r && r.s!==SID && !r.end && n0-(r.ls || r.on || r.pk || 0)>STALE){
+        r.end=r.on ? "lost" : "lost-before-air";
+        r.en=r.ls || r.on || r.pk || n0;
+      }
+    });
+    var out=disk.filter(function(r){ return r && r.s!==SID && kept(r); }).concat(mine);
+    out.sort(byTime);
+    if(out.length>cap) out=out.slice(out.length-cap);
+    return out;
+  }
+  function mergedEv(){
+    var o=rd(EKEY), disk=(o && o.v===VER && o.e) || [], c=(o && o.c) || 0;
+    if(c>clr) clr=c;
+    if(clr) myEv=myEv.filter(function(x){ return x.ts>clr; });
+    var out=disk.filter(function(x){ return x && x.s!==SID && x.ts>clr; }).concat(myEv);
+    out.sort(function(a, b){ return (a.ts-b.ts) || (a.n-b.n); });
+    if(out.length>ecap) out=out.slice(out.length-ecap);
+    return out;
+  }
+  /* quota cheia: fica a metade mais nova; devolve quantas linhas couberam, ou -1 se nao houve corte */
+  function write(k, arr, wrap){
+    var cutN=false;
+    for(var n=0; n<8; n++){
+      try{ localStorage.setItem(k, JSON.stringify(wrap(arr))); return cutN ? arr.length : -1; }
+      catch(e){
+        quota++; cutN=true;
+        if(!arr.length) return 0;
+        arr=arr.slice(Math.ceil(arr.length/2));
+      }
+    }
+    return 0;
+  }
+  function save(){
+    if(saveT){ clearTimeout(saveT); saveT=null; }
+    soft=false; lastSave=now();
+    open.forEach(function(e){ e.r.ls=lastSave; });
+    try{
+      /* depois de um corte por quota o anel fica desse tamanho (o corte nao se repete a cada
+         gravacao) e volta a crescer 100 de cada vez enquanto couber */
+      var n=write(KEY, merged(), function(x){ return { v:VER, c:clr, r:x }; });
+      cap=(n>=0) ? Math.max(20, n) : Math.min(MAX, cap+100);
+      var m=write(EKEY, mergedEv(), function(x){ return { v:VER, c:clr, e:x }; });
+      ecap=(m>=0) ? Math.max(20, m) : Math.min(EMAX, ecap+100);
+    }catch(e){}
+  }
+  function soon(){ if(!saveT) saveT=setTimeout(save, 400); }
+  /* a posicao dos discos no ar vai para o disco a cada 60 s (e em cada inicio e fim, e ao
+     esconder ou fechar a pagina); o anel cheio tem ~800 KB e gravar custa ~15 ms (~50 ms num
+     telemovel lento), por isso nao a cada tique */
+  setInterval(function(){ if(soft || (open.length && now()-lastSave>BEAT)) save(); }, 60000);
+  /* fecho da pagina: o que estiver aberto fecha como unload, e grava-se ja (sincrono).
+     Se a pagina voltar da cache do browser (bfcache), as linhas reabrem */
+  function bye(){
+    unloaded=[];
+    open.slice().forEach(function(e){
+      fin(e, e.r.on ? "unload" : "unload-before-air");
+      unloaded.push({ e:e });
+    });
+    save();
+  }
+  window.addEventListener("pagehide", bye);
+  window.addEventListener("pageshow", function(ev){
+    if(!ev.persisted || !unloaded.length) return;
+    unloaded.forEach(function(u){ u.e.r.end=""; u.e.r.en=0; u.e.lt=now(); open.push(u.e); });
+    unloaded=[];
+    save();
+  });
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="hidden") save(); });
+
+  /* ---- exportar ---- */
+  function pad(n){ return (n<10 ? "0" : "")+n; }
+  function iso(ms){
+    if(!ms) return "";
+    var d=new Date(ms), o=-d.getTimezoneOffset(), sg=o>=0 ? "+" : "-";
+    o=Math.abs(o);
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds())+
+      sg+pad(Math.floor(o/60))+":"+pad(o%60);
+  }
+  /* colunas fixas do CSV: [cabecalho, campo, tipo] (t = instante, b = 0/1, y = ano, vazio se
+     desconhecido: as linhas antigas guardavam 0) */
+  var COLS=[
+    ["session","s"],["seq","i"],["picked","pk","t"],["on_air","on","t"],["playing","pl","t"],["ended","en","t"],
+    ["block","bp"],["sub_block","b"],["block_override","ov","b"],["genre","g"],["artist","a"],["title","t"],["year","y","y"],
+    ["video_id","v"],["bpm_shown","bpm"],["bpm_exact","bx","b"],["why","gw"],["bridge","br","b"],["opener","op","b"],
+    ["never_played","fr","b"],["previous_play","lp","t"],["peeked","pq","b"],["dup_swap","dd","b"],["run_left","rl"],
+    ["pool_left","pn"],["end_reason","end"],["reached_s","pos"],["duration_s","dur"],["sidelined_s","sl"],["muted_s","mt"],
+    ["buffering","bf"],["error_code","ec"],["deck","dk"],["phone_mode","sm","b"],["last_seen","ls","t"]
+  ];
+  function q(x){ x=(x==null ? "" : String(x)); return /[",\r\n]/.test(x) ? '"'+x.replace(/"/g, '""')+'"' : x; }
+  function csv(rows){
+    rows=rows || merged();
+    var h=COLS.map(function(c){ return c[0]; }).join(",");
+    return h+"\r\n"+rows.map(function(r){
+      return COLS.map(function(c){ var v=r[c[1]]; return q(c[2]==="t" ? iso(v) : c[2]==="b" ? (v ? 1 : 0) : c[2]==="y" ? (v || "") : v); }).join(",");
+    }).join("\r\n")+(rows.length ? "\r\n" : "");
+  }
+  function introLog(){ var a=rd("hm_intro_log"); return Array.isArray(a) ? a : []; }
+  function json(){
+    var cols={}; COLS.forEach(function(c){ cols[c[1]]=c[0]; });
+    return JSON.stringify({ app:"home-music liquid play log", version:VER, exported:iso(now()), session:SID,
+      columns:cols, rows:merged().map(function(r){ if(r.y!==0) return r; var x={}; for(var k in r) x[k]=r[k]; x.y=""; return x; }),
+      events:mergedEv(), intro:introLog() }, null, 1);
+  }
+  function clear(){
+    /* os discos ainda abertos (no ar, armado) continuam a ser registados depois de limpar; a
+       marca clr vai com o registo, para os outros separadores largarem o que ja acabou */
+    clr=now();
+    mine=open.map(function(e){ return e.r; }); myEv=[];
+    try{ localStorage.removeItem(KEY); localStorage.removeItem(EKEY); }catch(e){}
+    save();
+  }
+  function info(){
+    var b=0, eb=0;
+    try{ b=(localStorage.getItem(KEY) || "").length; eb=(localStorage.getItem(EKEY) || "").length; }catch(e){}
+    return { sid:SID, mine:mine.length, open:open.map(function(e){ return { v:e.r.v, on:e.r.on, armed:!!e.armed }; }),
+      events:myEv.length, cap:cap, ecap:ecap, quota:quota, bytes:b, evBytes:eb, lastSave:lastSave };
+  }
+  return { sid:SID, arm:arm, start:start, air:air, state:state, tick:tick, end:end, dead:dead, event:event,
+    rows:function(){ return merged(); }, events:function(){ return mergedEv(); }, intro:introLog,
+    save:save, clear:clear, csv:csv, json:json, iso:iso, cols:COLS.map(function(c){ return c[0]; }), info:info };
+})();
+</script>

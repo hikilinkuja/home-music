@@ -36,7 +36,9 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 - Excluir de qualquer importação: sets e mixes acima de 21 minutos, álbuns inteiros, vídeos
   de compilação, conteúdo gerado por IA, spam, versões ao vivo, covers, e crossovers pop ou EDM
   de festival que choquem com o perfil underground da rádio (lista em
-  `ops/queue/exclusions.tsv`). Declarar as exclusões no relatório.
+  `ops/queue/exclusions.tsv`; com `title` preenchido exclui só essa faixa). Declarar as
+  exclusões no relatório. Faixas retiradas ficam em `ops/queue/hold-*.tsv` (linha literal do
+  e03, para reposição exata).
 - Curadoria: sons quintessenciais e underground de cada género, com o Discogs e sítios de
   seleção exigente como referência. Nunca inventar avaliações, datas ou factos nos textos.
 - Este repositório é público: nunca guardar tokens, chaves ou dados pessoais em ficheiros.
@@ -62,8 +64,18 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   02-06 afterhours (hypnotic_techno, deep_house, dub_techno). Teste: `?block=nome`.
 - Motor: permanência por género proporcional à caixa, rotação persistente
   (localStorage `hm_rot`), sorteio ponderado por faixas por estrear, ponte entre blocos.
-- Fontes da liquid: `liquid/l01-head.html`, `l02-body.html`, `l04-vj.html`, `l06-art.html`,
-  `l07-focus.html`, `l08-arcade.html`. O motor `liquid/l05-engine.html` é GERADO por
+- Troca de disco na liquid (v4.0, secção 10 do `build-liquid.py`): cada disco toca até ao fim;
+  levantar da agulha, 2,0 s de silêncio, pousar da agulha, música 0,4 s depois. O kit dub do
+  intervalo só soa depois de reggae, dub, ska_rocksteady e ragga_jungle (tabela `GAPKIT`; os
+  outros kits, backspin, spinback, tapestop, riser, siren, airhorn, echothrow, esperam escolha
+  do Paulo). Os efeitos da emissão calam-se com a rádio de lado (foco, arcada) ou em mute.
+- Registo de emissão: `HMPLOG` (l03) guarda cada disco em localStorage `hm_plog` (2000 linhas),
+  exportável em CSV e JSON no painel `?dev` (tecla d: separadores Next, Log, Banks, Engine);
+  `hm_intro_log` guarda porque a introdução falhou, quando falha. Os dados nunca saem do browser.
+- Fontes da liquid, pela ordem de montagem em `ops/tools/build.sh`: `liquid/l01-head.html`,
+  `l02-body.html`, o catálogo `radio/e03-data.html`, `l03-plog.html` (tem de ficar antes do
+  l05, que o chama), `l04-vj.html`, `l05-engine.html`, `l06-art.html`, `l07-focus.html`,
+  `l08-arcade.html`, `l09-dev.html`. O motor `liquid/l05-engine.html` é GERADO por
   `liquid/build-liquid.py` a partir de `radio/e05-engine.html`: nunca editar o l05 à mão.
 - Fontes da sala antiga: `radio/e01-head.html`, `e02-body.html`, `e04a/b/c-stage.html`,
   `e05-engine.html` (congeladas).
@@ -77,7 +89,7 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 2. Editar as fontes ou o catálogo; nunca editar à mão `index.html` nem `liquid/index.html`.
 3. `bash ops/tools/build.sh` monta as duas salas e corre `ops/tools/validate.py`
    (sintaxe JavaScript, caracteres proibidos, videoIds, géneros). Não publicar com falhas.
-4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v3.8), e
+4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v4.1), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a
    `https://hikilinkuja.github.io/home-music/liquid/index.html?cb=<tempo>`.

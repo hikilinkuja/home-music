@@ -12,8 +12,9 @@ cd "$HERE/../.."
 python3 liquid/build-liquid.py
 python3 ops/tools/arcade_data.py
 
-cat liquid/l01-head.html liquid/l02-body.html radio/e03-data.html liquid/l04-vj.html \
-    liquid/l05-engine.html liquid/l06-art.html liquid/l07-focus.html liquid/l08-arcade.html \
+cat liquid/l01-head.html liquid/l02-body.html radio/e03-data.html liquid/l03-plog.html \
+    liquid/l04-vj.html liquid/l05-engine.html liquid/l06-art.html liquid/l07-focus.html \
+    liquid/l08-arcade.html liquid/l09-dev.html \
     > liquid/index.html
 
 cat radio/e01-head.html radio/e02-body.html radio/e03-data.html radio/e04a-stage.html \

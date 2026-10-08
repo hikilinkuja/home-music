@@ -135,7 +135,7 @@
   <div id="fcFloat">25:00</div>
   <svg id="fcRings" width="120" height="120"></svg>
   <div id="fcSealHint">sealed &middot; esc breaks the seal and returns to the room</div>
-  <button class="tbtn fc-chrome" id="fcExit" type="button">Back to the full room</button>
+  <button class="tbtn fc-chrome back" id="fcExit" type="button">Back to the full room</button>
 </div>
 
 <script>
@@ -434,45 +434,165 @@ function ringsPaint(){
   }
 }
 
-/* ---------- mesa de ruido (discos CC0 escolhidos) ---------- */
+/* ---------- mesa de ruido (discos CC0 escolhidos) ----------
+   caminho principal: cada disco carrega em modo CORS anonimo e passa pelo WebAudio
+   (MediaElementSource, ganho proprio, barramento da mesa com limitador, saida); so assim a
+   chuva passa do teto de .volume (1,0), e os ganhos mandam tambem no iOS, que ignora .volume.
+   recurso: se o pedido CORS falhar (evento error em modo anonimo) ou nao houver WebAudio, o
+   disco recarrega sem crossOrigin e volta ao .volume; a chuva junta entao, acima do meio do
+   fader, uma segunda copia do mesmo loop meio loop desfasada (soma incoerente, cerca de +3 dB,
+   chuva mais densa), as duas ate 1,0: cerca de +3,9 dB (x1,57) sobre o maximo antigo (0,9) */
 var SMP={
   ck:"https://cdn.freesound.org/previews/719/719879_7597896-hq.mp3",
   rn:"https://cdn.freesound.org/previews/869/869851_19205925-hq.mp3",
   fp:"https://cdn.freesound.org/previews/484/484338_5902878-hq.mp3"
 };
-var snd={ els:null, rctx:null };
+var DID={ ck:"fcCk", rn:"fcRn", fp:"fcFp" };
+/* nivel em amplitude sobre o ficheiro, x de 0 a 1. crepitar e lareira: 0,9*x, como sempre.
+   chuva: 0,9*x*(1+x*x), curva lisa quase igual a antiga em baixo (0,24 a um quarto) que dobra
+   no topo: 0,56 a meio, 1,05 a tres quartos, 1,8 no maximo (+6 dB, cerca de 50% mais alto ao ouvido) */
+function sndLvl(k, x){ return k==="rn" ? .9*x*(1+x*x) : .9*x; }
+/* limitador da mesa: joelho duro a -1,5 dBFS, 20:1 (medido: a soma das tres a +6 dBFS sai abaixo
+   de -0,4 dBFS). o compressor do WebAudio junta um ganho de compensacao, (1/ganho a escala
+   cheia)^0,6, que o trim desfaz: abaixo do limiar, ganho unitario */
+var LIM={ th:-1.5, ratio:20 };
+var snd={ els:null, g:null, vt:null, cv:null, gen:0, tick:0, bus:null, rctx:null, nc:{} };
+function sndPlay(a){ try{ var p=a.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+function sndKill(a){ try{ a.pause(); a.removeAttribute("src"); a.load(); }catch(e){} }
+function sndEl(src, cors){
+  var a=new Audio(); a.loop=true; a.preload="auto";
+  if(cors) a.crossOrigin="anonymous";
+  a.src=src;
+  return a;
+}
+function sndBus(){
+  var ac=rctx();
+  if(!ac || !ac.createMediaElementSource) return null;
+  if(!snd.bus){
+    try{
+      var lim=ac.createDynamicsCompressor(), trim=ac.createGain();
+      lim.threshold.value=LIM.th; lim.knee.value=0; lim.ratio.value=LIM.ratio;
+      lim.attack.value=.003; lim.release.value=.25;
+      trim.gain.value=Math.pow(10, .6*(LIM.th-LIM.th/LIM.ratio)/20);
+      lim.connect(trim); trim.connect(ac.destination);
+      snd.bus=lim;
+    }catch(e){ return null; }
+  }
+  return ac;
+}
+/* recurso por disco: elemento novo sem crossOrigin, nivel por .volume; a chuva leva a segunda copia */
+function sndPlain(k){
+  var a=sndEl(SMP[k], false); a.volume=0;
+  snd.els[k]=a; snd.vt[k]=0; snd.cv[k]=0;
+  if(k==="rn"){ var b=sndEl(SMP.rn, false); b.volume=0; snd.els.rn2=b; snd.vt.rn2=0; snd.cv.rn2=0; }
+}
+function sndWeb(k, ac){
+  var a=sndEl(SMP[k], true), g=null, gen=snd.gen;
+  try{
+    g=ac.createGain(); g.gain.value=0;
+    ac.createMediaElementSource(a).connect(g); g.connect(snd.bus);
+  }catch(e){
+    try{ if(g) g.disconnect(); }catch(e2){}
+    sndKill(a); sndPlain(k); return;
+  }
+  a.addEventListener("error", function(){
+    if(gen!==snd.gen || !snd.els || snd.els[k]!==a) return;
+    /* sem cabecalho CORS o elemento preso ao grafo so daria silencio: troca-se por um novo,
+       e o disco fica no recurso ate a pagina recarregar (sem novo pedido falhado a cada entrada) */
+    snd.nc[k]=1;
+    try{ g.disconnect(); }catch(e){}
+    delete snd.g[k];
+    sndKill(a);
+    sndPlain(k);
+    sndApply();
+  });
+  snd.els[k]=a; snd.g[k]=g;
+  sndPlay(a);
+}
 function sndInit(){
   if(snd.els) return;
-  snd.els={};
-  Object.keys(SMP).forEach(function(k){
-    var a=new Audio(SMP[k]); a.loop=true; a.volume=0; a.preload="auto";
-    snd.els[k]=a;
-    var p=a.play(); if(p&&p.catch)p.catch(function(){});
-  });
+  snd.els={}; snd.g={}; snd.vt={}; snd.cv={}; snd.gen++;
+  var ac=sndBus();
+  Object.keys(SMP).forEach(function(k){ if(ac && !snd.nc[k]) sndWeb(k, ac); else sndPlain(k); });
   sndApply();
+}
+/* a segunda copia da chuva entra meio loop a frente da primeira, para nunca somarem em fase */
+function sndHalf(){
+  var a=snd.els.rn, b=snd.els.rn2;
+  function go(){
+    var d=isFinite(a.duration) ? a.duration : b.duration;
+    if(d>0 && isFinite(d)){ try{ b.currentTime=(a.currentTime+d/2)%d; }catch(e){} }
+  }
+  if(b.readyState>=1) go(); else b.addEventListener("loadedmetadata", go, { once:true });
+}
+/* recurso: o play sai ja aqui, dentro do gesto no fader; o .volume segue numa rampa curta */
+function sndTo(k, v){
+  var a=snd.els[k];
+  snd.vt[k]=v;
+  if(v>0 && a.paused){ if(k==="rn2") sndHalf(); sndPlay(a); }
+  if(!snd.tick) snd.tick=setInterval(sndTick, 25);
+}
+/* rampa de .volume (constante de cerca de 60 ms) para os saltos do fader nao estalarem;
+   o elemento que chega a zero para, e assim cala-se mesmo onde .volume e ignorado. O valor da
+   rampa vive em snd.cv e nunca se le de volta do elemento: no iOS o .volume le sempre 1 e
+   ignora a escrita, e a rampa nunca chegava ao zero (o disco ficava a tocar e o intervalo vivo) */
+function sndTick(){
+  var live=false;
+  if(snd.els) Object.keys(snd.vt).forEach(function(k){
+    var a=snd.els[k], to=snd.vt[k], v=snd.cv[k]||0, d=to-v;
+    v=Math.abs(d)<.005 ? to : v+d*.35;
+    snd.cv[k]=v;
+    try{ a.volume=v; }catch(e){}
+    if(v!==to) live=true;
+    else if(to===0 && !a.paused) a.pause();
+  });
+  if(!live){ clearInterval(snd.tick); snd.tick=0; }
 }
 function sndApply(){
   if(!snd.els) return;
-  snd.els.ck.volume=Math.min(1, $("fcCk").value/100*.9);
-  snd.els.rn.volume=Math.min(1, $("fcRn").value/100*.9);
-  snd.els.fp.volume=Math.min(1, $("fcFp").value/100*.9);
+  Object.keys(DID).forEach(function(k){
+    var x=Math.max(0, Math.min(1, ($(DID[k]).value||0)/100)), lv=sndLvl(k, x);
+    if(snd.g[k]){
+      var p=snd.g[k].gain, t=snd.rctx.currentTime;
+      p.cancelScheduledValues(t); p.setTargetAtTime(lv, t, .05);
+      if(snd.els[k].paused) sndPlay(snd.els[k]);
+    } else if(k==="rn" && snd.els.rn2){
+      /* ate meio fader so a primeira copia, pela curva normal; dai para cima a primeira sobe
+         a 1,0 e a segunda entra de 0 a 1,0 */
+      var u=Math.max(0, (x-.5)/.5), m=sndLvl("rn", .5);
+      sndTo("rn", u>0 ? m+(1-m)*u : lv);
+      sndTo("rn2", u);
+    } else sndTo(k, Math.min(1, lv));
+  });
   $("fcVCk").textContent=$("fcCk").value;
   $("fcVRn").textContent=$("fcRn").value;
   $("fcVFp").textContent=$("fcFp").value;
 }
 ["fcCk","fcRn","fcFp"].forEach(function(id){
-  $(id).addEventListener("input", function(){ sndInit(); sndApply(); });
+  /* o gesto no fader acorda o contexto de audio (suspenso pelo autoplay ou interrompido no iOS) */
+  $(id).addEventListener("input", function(){ rctx(); sndInit(); sndApply(); });
 });
 function sndStop(){
   if(!snd.els) return;
-  Object.keys(snd.els).forEach(function(k){ try{ snd.els[k].pause(); }catch(e){} });
-  snd.els=null;
+  var els=snd.els, g=snd.g, ac=snd.rctx;
+  snd.gen++; snd.els=null; snd.g=null; snd.vt=null; snd.cv=null;
+  if(snd.tick){ clearInterval(snd.tick); snd.tick=0; }
+  /* os ganhos do WebAudio descem em cerca de 30 ms antes de parar, sem estalido; o .volume para logo */
+  Object.keys(g).forEach(function(k){
+    try{ var t=ac.currentTime; g[k].gain.cancelScheduledValues(t); g[k].gain.setTargetAtTime(0, t, .03); }catch(e){}
+  });
+  Object.keys(els).forEach(function(k){ if(!g[k]) sndKill(els[k]); });
+  setTimeout(function(){
+    Object.keys(g).forEach(function(k){ sndKill(els[k]); try{ g[k].disconnect(); }catch(e){} });
+  }, 200);
 }
 
 /* ---------- os cinco toques (sintetizados) ---------- */
 function rctx(){
   if(!snd.rctx){ try{ snd.rctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
-  if(snd.rctx && snd.rctx.state==="suspended"){ try{ snd.rctx.resume(); }catch(e){} }
+  if(snd.rctx && snd.rctx.state!=="running" && snd.rctx.state!=="closed"){
+    try{ var p=snd.rctx.resume(); if(p&&p.catch) p.catch(function(){}); }catch(e){}
+  }
   return snd.rctx;
 }
 function ringPlay(which){

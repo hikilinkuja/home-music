@@ -12,29 +12,34 @@
 <div id="introCredit"><b>opening tune</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive</div>
 
 <div id="wart" aria-label="weekly art installation">
+  <nav id="waBar" aria-label="art wing">
+    <button class="tbtn back" id="waBack" type="button" title="close the art wing [w]">&lsaquo; Back to the radio</button>
+    <div class="wa-wings" role="group" aria-label="which wall">
+      <button class="tbtn waWing on" data-wing="week" type="button" aria-pressed="true">This week</button>
+      <button class="tbtn waWing" data-wing="day" type="button" aria-pressed="false">Daily canvas</button>
+    </div>
+    <button class="tbtn" id="waFsBtn" type="button" title="full screen">Immerse</button>
+  </nav>
   <video id="waVid" loop muted playsinline preload="none"></video>
   <div id="waPicWrap"><img id="waPic" alt=""><div id="waLens"></div></div>
   <canvas id="waCv"></canvas>
   <div id="waVeil"></div>
   <div id="waPoem"><div id="waPoemLines"></div><div id="waPoemTitle"></div></div>
-  <div id="waHint">rotate the phone for the full piece &middot; pinch to zoom, drag to pan</div>
+  <div id="waHint">pinch to zoom, then drag to pan</div>
   <button class="wa-nav" id="waPrev" type="button" title="previous piece">&lsaquo;</button>
   <button class="wa-nav" id="waNext" type="button" title="next piece">&rsaquo;</button>
   <div id="waCap">
     <div class="k"><span id="waK"></span> <span id="waNum"></span></div>
     <div class="t" id="waT"></div>
-    <div class="a" id="waA"></div>
-    <div class="row">
-      <button class="tbtn" id="waWingBtn" type="button">Daily canvas</button>
-      <button class="tbtn" id="waFichaBtn" type="button">Room sheet</button>
-      <button class="tbtn" id="waFsBtn" type="button">Immerse</button>
-      <button class="tbtn" id="waBack" type="button">Back to the radio</button>
+    <div class="wa-arow">
+      <div class="a" id="waA"></div>
+      <button class="bmore" id="waFichaBtn" type="button" aria-controls="wartFicha" aria-expanded="false">room sheet</button>
     </div>
   </div>
   <aside id="wartFicha">
     <button id="wartFichaClose" type="button">&times;</button>
     <h3 id="waFT">&hellip;</h3>
-    <p class="fsub">room sheet &middot; week <span id="waWeek"></span> programme</p>
+    <p class="fsub" id="waFSub">room sheet</p>
     <div id="waBadge">demonstration ficha &middot; fictional resident</div>
     <div class="fk">artist</div><p class="fv" id="waFArtist"></p>
     <div class="fk">life</div><p class="fv" id="waFLife"></p>
@@ -211,10 +216,22 @@
 
   <div id="toast" role="status"></div>
 
-  <div id="devPanel">
-    <h4>Dev &middot; up next</h4>
-    <ul id="devNext"></ul>
-    <button class="tbtn" id="devSkip" type="button">Skip, no questions [n]</button>
+  <div id="devPanel" role="region" aria-label="dev panel">
+    <div id="devTabs" role="tablist" aria-label="dev panel tabs">
+      <button type="button" role="tab" id="dvTabNext" data-k="next" aria-controls="dvNext" aria-selected="true">Next</button>
+      <button type="button" role="tab" id="dvTabLog" data-k="log" aria-controls="dvLog" aria-selected="false">Log</button>
+      <button type="button" role="tab" id="dvTabBanks" data-k="banks" aria-controls="dvBanks" aria-selected="false">Banks</button>
+      <button type="button" role="tab" id="dvTabEngine" data-k="engine" aria-controls="dvEngine" aria-selected="false">Engine</button>
+      <button type="button" id="devHide" title="hide the panel [d]" aria-label="hide the panel">&times;</button>
+    </div>
+    <section class="dv-pane on" id="dvNext" role="tabpanel" aria-labelledby="dvTabNext">
+      <h4>Dev &middot; up next</h4>
+      <ul id="devNext"></ul>
+      <button class="tbtn" id="devSkip" type="button">Skip, no questions [n]</button>
+    </section>
+    <section class="dv-pane" id="dvLog" role="tabpanel" aria-labelledby="dvTabLog"></section>
+    <section class="dv-pane" id="dvBanks" role="tabpanel" aria-labelledby="dvTabBanks"></section>
+    <section class="dv-pane" id="dvEngine" role="tabpanel" aria-labelledby="dvTabEngine"></section>
   </div>
 
   <div id="braveTip">

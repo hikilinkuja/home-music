@@ -1,5 +1,32 @@
 # Registo das voltas
 
+## 2026-10-08: v4.0, notas do Paulo, ronda 1 (sessão Claude Code na nuvem)
+
+- Importações: continuam bloqueadas pela rede (YouTube, Ishkur, SoundCloud, Discogs com 403).
+- Catálogo 1192 para 1179: 7 retiradas a pedido do Paulo (exclusões por faixa no
+  `exclusions.tsv`, formato novo com coluna `title`), 5 duplicados exatos, 1 em espera (BCee /
+  Blu Mar Ten). Auditoria de géneros: 100 mudanças aplicadas (entre elas Flowrian «Thank You»
+  de dub para liquid, Pender Street Steppers «Our Time» de lofi_house para deep_house, dez dubs
+  clássicos que estavam em ragga_jungle, intelligent_dnb de 4 para 22).
+- Motor da liquid (secção 10 do `build-liquid.py`): fim do corte antecipado (a troca começava
+  24 s antes do fim e cada disco perdia cerca de 14 s, 19 s no telemóvel); ritual novo de
+  levantar, 2 s, pousar; sons de agulha refeitos; kit dub só depois de reggae, dub, ska e
+  ragga jungle; efeitos da emissão calados no foco, na arcada e em mute; rampa do primeiro
+  disco corrigida.
+- Sala de foco: chuva com o máximo a +6 dB (GainNode e limitador; recurso a duas cópias
+  desfasadas, cerca de +3,9 dB, se o freesound recusar CORS); «Back to the full room» com
+  debrum vermelho.
+- Galeria: barra de topo com «Back to the radio» (debrum vermelho), «This week» / «Daily
+  canvas» e «Immerse»; filme inteiro no telemóvel (`object-fit:contain`, pinça só na peça,
+  ecrã inteiro do vídeo no iPhone); falhas do «daily canvas» corrigidas.
+- Registo de emissão `HMPLOG` (l03) e painel `?dev` com separadores Next, Log, Banks, Engine
+  (l09); atraso de três discos do `?dev` na mudança de bloco corrigido; introdução mais
+  robusta (pré-carregamento, 10 s de margem, registo `hm_intro_log`).
+- Diagnóstico da introdução: nenhum commit a partiu; o mais provável é falha ou lentidão do
+  archive.org (sem registo de incidente encontrado para 4 a 7 de outubro).
+- Revisão adversarial: 11 achados confirmados, todos menores, corrigidos.
+- Em fila: importações (rede), decisões do Paulo listadas no `HANDOFF.md`.
+
 ## 2026-10-08: v3.8, manutenção; importações bloqueadas pela rede (sessão Claude Code na nuvem)
 
 - Faixas novas: 0 (catálogo inalterado, 1192 faixas). As tarefas 1 (resto do Ishkur) e 2

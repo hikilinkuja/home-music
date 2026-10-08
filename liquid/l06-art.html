@@ -15,7 +15,60 @@ var $=function(id){ return document.getElementById(id); };
    um segundo de sulco vazio, a agulha encontra o disco, e a emissao sobe. */
 var P_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
 var P_START=0, P_FADE=28.5, MC_AT_TRK=[6, 10.5, 15, 19, 23, 26.2];
-var intro={ audio:null, tick:null, shown:0, fading:false, done:false, started:false };
+/* robustez (10/2026, «a musica e o texto da abertura deixaram de funcionar uns dias»): o disco
+   pede-se logo ao carregar a pagina (preload) e o toque so o poe a tocar; desde o toque tem
+   I_BUDGET ms para soar (evento playing), no lugar da antiga guarda de 4 s; parado I_STALL ms
+   depois de comecar, a radio entra; o click tambem arranca (o iOS pode nao aceitar o pointerdown
+   como gesto); e cada abertura deixa o desfecho no localStorage hm_intro_log (anel de I_LOGMAX,
+   lido no separador Engine do ?dev): ok, complete, error (codigo), refused (nome da recusa),
+   timeout, stalled, user-skip, com os ms desde o toque */
+var I_BUDGET=10000, I_STALL=8000, I_LOGMAX=30;
+var intro={ audio:null, tick:null, shown:0, fading:false, done:false, started:false,
+  t0:0, via:"", playing:false, clickTried:false, waitClick:null, guard:null, rej:"",
+  preErr:0, preRs:0, retried:false, lastCt:0, lastMove:0 };
+function introLog(why, info){
+  var a=intro.audio, e={ ts:Date.now(), why:why, el:(intro.t0 ? Math.round(performance.now()-intro.t0) : 0),
+    via:intro.via, lines:intro.shown, pre:intro.preRs, pe:intro.preErr, rt:(intro.retried ? 1 : 0) };
+  try{ e.rs=a.readyState; e.ns=a.networkState; e.ct=Math.round((a.currentTime||0)*10)/10; if(a.error) e.code=a.error.code; }catch(x){}
+  if(intro.rej) e.rej=intro.rej;
+  try{ if(navigator.onLine===false) e.off=1; }catch(x){}
+  if(info){ Object.keys(info).forEach(function(k){ if(info[k]!=null) e[k]=info[k]; }); }
+  try{
+    var L=JSON.parse(localStorage.getItem("hm_intro_log") || "[]");
+    if(!Array.isArray(L)) L=[];
+    L.push(e);
+    if(L.length>I_LOGMAX) L=L.slice(L.length-I_LOGMAX);
+    localStorage.setItem("hm_intro_log", JSON.stringify(L));
+  }catch(x){}
+}
+/* a abertura nao vai tocar: regista porque e segue para a radio. Antes do toque, um erro do
+   preload so fica anotado (o toque tenta outra vez) */
+function introFail(why, info){
+  if(!intro.started){
+    if(why==="error"){ try{ intro.preErr=(intro.audio && intro.audio.error && intro.audio.error.code) || -1; }catch(e){ intro.preErr=-1; } }
+    return;
+  }
+  if(intro.done) return;
+  introLog(why, info);
+  sequenceIntoRadio();
+}
+function makeIntroAudio(){
+  var a=new Audio();
+  a.preload="auto";
+  a.addEventListener("error", function(){ introFail("error"); });
+  a.addEventListener("playing", function(){
+    if(!intro.started || intro.done) return;
+    intro.lastMove=performance.now();
+    if(!intro.playing){
+      intro.playing=true;
+      if(intro.guard){ clearTimeout(intro.guard); intro.guard=null; }
+      introLog("ok");
+    }
+  });
+  a.src=P_SRC;
+  return a;
+}
+try{ intro.audio=makeIntroAudio(); }catch(e){ intro.audio=null; }
 
 function showLine(i){
   var line=MC_LINES[i], mc=$("mc");
@@ -31,6 +84,8 @@ var VINYL_SRC="https://cdn.freesound.org/previews/625/625771_9351406-hq.mp3";
 function sequenceIntoRadio(){
   if(intro.done) return; intro.done=true;
   if(intro.tick){ clearInterval(intro.tick); intro.tick=null; }
+  if(intro.guard){ clearTimeout(intro.guard); intro.guard=null; }
+  if(intro.waitClick){ clearTimeout(intro.waitClick); intro.waitClick=null; }
   try{ if(intro.audio) intro.audio.pause(); }catch(e){}
   $("splash").classList.add("off");
   $("introCredit").classList.remove("on");
@@ -81,8 +136,30 @@ function fadeOutIntro(ms){
     setTimeout(sequenceIntoRadio, ms);
   }
 }
-function startIntro(){
+/* play no gesto; uma recusa NotAllowedError no pointerdown espera pelo click do mesmo toque */
+function introPlay(via){
+  var a=intro.audio, p=null;
+  try{ p=a.play(); }catch(e){ introRefused(e, via); return; }
+  if(p && p.then) p.then(null, function(e){ introRefused(e, via); });
+}
+function introRefused(e, via){
+  if(intro.done || intro.playing) return;
+  var name=(e && e.name) || "Error";
+  intro.rej=name;
+  if(name==="NotAllowedError" && via!=="click" && !intro.clickTried){
+    if(!intro.waitClick) intro.waitClick=setTimeout(function(){
+      intro.waitClick=null;
+      if(!intro.done && !intro.playing && !intro.clickTried) introFail("refused", { name:name, att:via });
+    }, 1500);
+    return;
+  }
+  /* AbortError: a carga foi interrompida, nao recusada; decide a guarda dos I_BUDGET ms */
+  if(name==="AbortError") return;
+  introFail("refused", { name:name, att:via });
+}
+function startIntro(ev){
   if(intro.started || intro.done) return; intro.started=true;
+  intro.t0=performance.now(); intro.via=(ev && ev.type) || "?";
   if(window.HM){ HM.fxResume(); if(HM.prime) HM.prime(); }
   $("tapHint").style.display="none";
   $("mc").classList.add("on");
@@ -90,27 +167,50 @@ function startIntro(){
   var vol=0.8;
   try{ var sv=localStorage.getItem("hm_vol"); if(sv!==null) vol=Math.max(0,Math.min(100,parseInt(sv,10)||80))/100; }catch(e){}
   try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches) vol=1; }catch(e){}
-  var a=new Audio(P_SRC);
-  intro.audio=a;
+  var a=intro.audio;
+  if(!a){
+    try{ a=intro.audio=makeIntroAudio(); }
+    catch(e){ introFail("no-audio", { name:(e && e.name) || "Error" }); return; }
+  }
+  intro.preRs=a.readyState;
+  /* o preload falhou antes do toque: uma tentativa nova, ja dentro do gesto */
+  if(a.error || intro.preErr){ intro.retried=true; try{ a.src=P_SRC; }catch(e){} }
   a.volume=vol;
-  a.addEventListener("error", function(){ sequenceIntoRadio(); });
-  var p=a.play();
-  if(p && p.catch) p.catch(function(){ sequenceIntoRadio(); });
-  /* rede de seguranca: sem progresso em 4 s (rede, bloqueio), a radio entra na mesma */
-  setTimeout(function(){
-    if(!intro.done && (!a.currentTime || a.currentTime < P_START+0.4)) sequenceIntoRadio();
-  }, 4000);
+  introPlay(intro.via);
+  /* rede de seguranca: o disco tem I_BUDGET ms desde o toque para soar (rede lenta, servidor do
+     Internet Archive em baixo, bloqueio); se nao soar, a radio entra na mesma */
+  intro.guard=setTimeout(function(){
+    intro.guard=null;
+    if(!intro.done && !intro.playing) introFail("timeout");
+  }, I_BUDGET);
   intro.tick=setInterval(function(){
     var t=a.currentTime||0;
     while(intro.shown<MC_LINES.length && t>=MC_AT_TRK[intro.shown]){ showLine(intro.shown); intro.shown++; }
     /* o telefone e a ultima coisa que se ouve: fade curto, corte antes da bateria seguinte */
-    if(t>=P_FADE) fadeOutIntro(2600);
+    if(t>=P_FADE){ if(!intro.fading && !intro.done) introLog("complete"); fadeOutIntro(2600); }
+    else if(intro.playing && !intro.fading){
+      /* encravado depois de comecar: sem avanco em I_STALL ms, a radio entra */
+      var n=performance.now();
+      if(t>intro.lastCt+0.05){ intro.lastCt=t; intro.lastMove=n; }
+      else if(n-intro.lastMove>I_STALL) introFail("stalled");
+    }
   }, 100);
 }
 $("splash").addEventListener("pointerdown", startIntro);
-$("tapHint").addEventListener("keydown", function(ev){ if(ev.key==="Enter"||ev.key===" ") startIntro(); });
+/* o click do mesmo toque: arranca se o pointerdown nao chegou, ou tenta o play outra vez */
+$("splash").addEventListener("click", function(ev){
+  if(!intro.started){ startIntro(ev); return; }
+  if(intro.done || intro.playing || intro.clickTried) return;
+  intro.clickTried=true;
+  introPlay("click");
+});
+$("tapHint").addEventListener("keydown", function(ev){ if(ev.key==="Enter"||ev.key===" ") startIntro(ev); });
 $("skipIntro").addEventListener("click", function(){
-  if(!intro.started){ if(window.HM) HM.fxResume(); }
+  if(!intro.started){
+    if(window.HM) HM.fxResume();
+    /* a abertura ja nao vai tocar: o preload para aqui */
+    try{ if(intro.audio){ intro.audio.removeAttribute("src"); intro.audio.load(); } }catch(e){}
+  } else if(!intro.done && !intro.fading){ introLog("user-skip"); }
   if(intro.started && !intro.fading){ fadeOutIntro(600); } else { sequenceIntoRadio(); }
 });
 
@@ -161,12 +261,12 @@ var WPIECES=[
     links:[] }
 ];
 /* as quatro pecas estao todas em cartaz na mesma semana; o cartaz renova a cada semana */
-var wa={ on:false, raf:0, cur:0, poemT0:0, wing:"week", hinted:false };
+var wa={ on:false, raf:0, cur:0, poemT0:0, wing:"week", hinted:{}, hintT:0, kind:"", opener:null };
 
 function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
 function waFillFicha(p){
   $("waFT").innerHTML=p.t;
-  $("waWeek").textContent=String(isoWeek(new Date()));
+  $("waFSub").textContent="room sheet · week "+isoWeek(new Date())+" programme";
   $("waBadge").style.display=p.real?"none":"inline-block";
   $("waFArtist").innerHTML=p.a;
   $("waFLife").textContent=p.life;
@@ -212,7 +312,7 @@ function fgStep(cv){
 function waLoop(ts){
   if(!wa.on) return;
   wa.raf=requestAnimationFrame(waLoop);
-  var p=(wa.wing==="day")?{kind:"canvas",day:true}:WPIECES[wa.cur];
+  var p={kind:wa.kind};
   var now=performance.now()/1000, lo=lvLo();
   if(p.kind==="film"){
     $("waVeil").style.opacity=String(.34-.2*lo);
@@ -244,6 +344,7 @@ function waLoop(ts){
   }
 }
 function waShowLayers(p){
+  wa.kind=p.kind;
   $("waVid").style.display   = p.kind==="film" ? "block":"none";
   $("waPicWrap").style.display= p.kind==="canvas" ? "block":"none";
   $("waCv").style.display    = p.kind==="field" ? "block":"none";
@@ -251,6 +352,44 @@ function waShowLayers(p){
   $("waVeil").style.display  = p.kind==="film" ? "block":"none";
   $("waPic").style.transform="";
   $("waPicWrap").classList.remove("lensing");
+  if(p.kind==="field"){
+    var c=$("waCv");
+    c.width=Math.min(innerWidth, 1600); c.height=Math.min(innerHeight, 1000);
+  }
+  waFsPaint();
+  waHintFor(p.kind);
+}
+/* o palco da obra (l01): mede a barra e o cartao para a obra nunca ficar por baixo deles */
+function waMeasure(){
+  if(!wa.on) return;
+  var w=$("wart"), bar=$("waBar"), cap=$("waCap");
+  var bh=bar.offsetTop+bar.offsetHeight, ch=w.clientHeight-cap.offsetTop;
+  if(bh>0) w.style.setProperty("--wa-bh", bh+"px");
+  if(ch>0 && cap.offsetHeight>0) w.style.setProperty("--wa-ch", ch+"px");
+}
+try{
+  if(window.ResizeObserver){
+    var waRO=new ResizeObserver(function(){ waMeasure(); });
+    waRO.observe($("waBar")); waRO.observe($("waCap"));
+  }
+}catch(e){}
+window.addEventListener("resize", waMeasure);
+/* a dica (ecras de toque, uma vez por sessao para o filme e uma para as telas): so diz o que
+   e verdade; com o filme inteiro no ecra, deitar o telemovel so o torna maior */
+function waHintFor(kind){
+  var h=$("waHint");
+  if(h.classList.contains("on") && h.getAttribute("data-k")!==kind){ clearTimeout(wa.hintT); h.classList.remove("on"); }
+  if(!wa.on || wa.hinted[kind] || (kind!=="film" && kind!=="canvas")) return;
+  var touch=false;
+  try{ touch=matchMedia("(pointer:coarse)").matches; }catch(e){}
+  if(!touch) return;
+  wa.hinted[kind]=true;
+  h.setAttribute("data-k", kind);
+  h.innerHTML=((kind==="film" && innerHeight>innerWidth) ? "turn the phone sideways for a larger film &middot; " : "")+
+    "pinch to zoom, then drag to pan";
+  h.classList.add("on");
+  clearTimeout(wa.hintT);
+  wa.hintT=setTimeout(function(){ h.classList.remove("on"); }, 5200);
 }
 function waShow(n){
   if(wa.wing==="day"){ dailyShow(); return; }
@@ -275,46 +414,62 @@ function waShow(n){
     var bx=$("waPoemLines"); bx.innerHTML=""; bx.style.opacity="1";
     $("waPoemTitle").textContent="W. B. Yeats · He wishes for the Cloths of Heaven · 1899";
   }
-  if(p.kind==="field"){
-    var c=$("waCv");
-    c.width=Math.min(innerWidth, 1600); c.height=Math.min(innerHeight, 1000);
-  }
 }
-function wartOpen(){
+function wartOpen(byKey){
+  var kb=(byKey===true);
+  try{ kb = kb || !!(document.activeElement && document.activeElement.matches(":focus-visible")); }catch(e){}
   if(wa.on) return;
   wa.on=true;
   if(wa.wing==="day"){ dailyShow(); } else { waShow(wa.cur); }
   $("wart").classList.add("on");
+  waMeasure();
   wa.raf=requestAnimationFrame(waLoop);
-  try{
-    if(!wa.hinted && matchMedia("(max-width:760px)").matches){
-      wa.hinted=true;
-      var h=$("waHint"); h.classList.add("on");
-      setTimeout(function(){ h.classList.remove("on"); }, 5200);
-    }
-  }catch(e){}
+  /* quem chega pelo teclado entra na ala: o foco que ficou na emissao (por baixo) passa para o
+     regresso; com o rato ou o dedo nada muda (nenhum anel a acender sozinho) */
+  wa.opener=document.activeElement;
+  if(kb && !$("wart").contains(document.activeElement)){ try{ $("waBack").focus({preventScroll:true}); }catch(e){} }
+}
+function waFicha(on){
+  $("wartFicha").classList.toggle("on", on);
+  $("waFichaBtn").setAttribute("aria-expanded", on?"true":"false");
 }
 function wartClose(){
   if(!wa.on) return;
   wa.on=false;
   cancelAnimationFrame(wa.raf);
   try{ $("waVid").pause(); }catch(e){}
-  $("wartFicha").classList.remove("on");
+  var inside=$("wart").contains(document.activeElement);
+  waFicha(false);
   $("wart").classList.remove("on");
+  $("waHint").classList.remove("on");
+  var o=wa.opener; wa.opener=null;
+  if(inside && o && o!==document.body && o.focus && document.contains(o) && !$("wart").contains(o)){
+    try{ o.focus({preventScroll:true}); }catch(e){}
+  }
 }
 /* ---------------- daily canvas: um quadro por dia, colecao aberta do Art Institute of Chicago ---------------- */
-var DAILY={ got:false, piece:null };
+var DAILY={ got:false, piece:null, busy:false, cb:null };
 function dayOfYear(){
   var d=new Date(), y0=new Date(d.getFullYear(),0,0);
   return Math.floor((d-y0)/86400000);
 }
+/* got so fica verdadeiro com um quadro na mao: uma falha deixa voltar a pedir; um pedido de cada vez */
 function dailyFetch(cb){
   if(DAILY.got){ cb(); return; }
+  DAILY.cb=cb;
+  if(DAILY.busy) return;
+  DAILY.busy=true;
   var doy=dayOfYear();
   var page=((doy*7)%90)+1;
   var u="https://api.artic.edu/api/v1/artworks/search?q=painting&query[term][is_public_domain]=true"+
     "&fields=id,title,artist_display,date_display,image_id,short_description,medium_display,credit_line&limit=12&page="+page;
-  fetch(u).then(function(r){ return r.json(); }).then(function(d){
+  var ctl=null, tm=0;
+  try{ ctl=new AbortController(); tm=setTimeout(function(){ try{ ctl.abort(); }catch(e){} }, 12000); }catch(e){ ctl=null; }
+  function done(){
+    clearTimeout(tm); DAILY.busy=false;
+    var f=DAILY.cb; DAILY.cb=null; if(f) f();
+  }
+  fetch(u, ctl ? {signal:ctl.signal} : undefined).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
     var arts=(d.data||[]).filter(function(a){ return a.image_id; });
     if(!arts.length) throw 0;
     var a=arts[doy%arts.length];
@@ -324,33 +479,54 @@ function dailyFetch(cb){
       who:a.short_description || ("Notes from the museum record: "+(a.medium_display||"")+(a.credit_line? (". "+a.credit_line):"")),
       link:"https://www.artic.edu/artworks/"+a.id
     };
-    DAILY.got=true; cb();
-  }).catch(function(){ DAILY.piece=null; DAILY.got=true; cb(); });
+    DAILY.got=true;
+  }).catch(function(){ DAILY.piece=null; DAILY.got=false; }).then(done);
+}
+var DAILY_PIECE="Daily canvas: every day the house hangs one public-domain work from the Art Institute of Chicago open collection, chosen by the calendar. Tomorrow the wall changes.";
+var DAILY_LIC="Public-domain artwork; image and record served by the Art Institute of Chicago open API (CC0 designated data).";
+/* a ficha do quadro do dia; sem quadro (a pedir, ou o museu sem resposta) diz isso mesmo */
+function dailyFicha(d, why){
+  $("waFSub").textContent="room sheet · daily canvas · day "+dayOfYear();
+  $("waBadge").style.display="none";
+  $("waFT").textContent = d ? d.t : "Daily canvas";
+  $("waFArtist").textContent = d ? d.artist : "(no painting on the wall yet)";
+  $("waFLife").textContent = d ? d.date : "(none)";
+  $("waFWho").textContent = d ? d.who : why;
+  $("waFPiece").textContent=DAILY_PIECE;
+  $("waFLic").textContent=DAILY_LIC;
+  var L=$("waFLinks"); L.innerHTML="";
+  var a=document.createElement("a");
+  a.textContent = d ? "This work at the Art Institute of Chicago ↗" : "The Art Institute of Chicago open collection ↗";
+  a.href = d ? d.link : "https://www.artic.edu/collection";
+  a.target="_blank"; a.rel="noopener"; L.appendChild(a);
 }
 function dailyShow(){
+  try{ $("waVid").pause(); }catch(e){}
+  $("waK").innerHTML="Daily canvas · one painting a day";
+  $("waNum").textContent="· day "+dayOfYear();
+  if(!DAILY.got){
+    /* enquanto o museu responde: parede vazia e ficha do dia, nunca a da residencia */
+    $("waT").textContent="Opening the museum door";
+    $("waA").textContent="asking the open collection for today's painting";
+    dailyFicha(null, "The house is asking the Art Institute of Chicago open collection for today's painting.");
+    waShowLayers({kind:"none"});
+    gesReset();
+  }
   dailyFetch(function(){
+    /* a resposta pode chegar com a ala fechada ou ja de volta a semana: nao lhes toca */
+    if(!wa.on || wa.wing!=="day") return;
     try{ $("waVid").pause(); }catch(e){}
     var d=DAILY.piece;
-    $("waK").innerHTML="Daily canvas · one painting a day";
-    $("waNum").textContent="· day "+dayOfYear();
     if(!d){
       $("waT").textContent="The museum door is closed";
-      $("waA").textContent="could not reach the open collection; try again in a moment";
+      $("waA").textContent="the open collection did not answer; press Daily canvas to try again";
+      dailyFicha(null, "The Art Institute of Chicago open collection did not answer this time. Press Daily canvas again to ask once more.");
       waShowLayers({kind:"field"});
       return;
     }
     $("waT").textContent=d.t;
     $("waA").textContent=d.artist.split("\n")[0];
-    $("waFT").textContent=d.t;
-    $("waBadge").style.display="none";
-    $("waFArtist").textContent=d.artist;
-    $("waFLife").textContent=d.date;
-    $("waFWho").textContent=d.who;
-    $("waFPiece").textContent="Daily canvas: every day the house hangs one public-domain work from the Art Institute of Chicago open collection, chosen by the calendar. Tomorrow the wall changes.";
-    $("waFLic").textContent="Public-domain artwork; image and record served by the Art Institute of Chicago open API (CC0 designated data).";
-    var L=$("waFLinks"); L.innerHTML="";
-    var a=document.createElement("a"); a.textContent="This work at the Art Institute of Chicago ↗";
-    a.href=d.link; a.target="_blank"; a.rel="noopener"; L.appendChild(a);
+    dailyFicha(d);
     if($("waPic").src!==d.img) $("waPic").src=d.img;
     waShowLayers({kind:"canvas", day:true});
     gesReset();
@@ -372,7 +548,7 @@ function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
 (function(){
   var w=$("wart");
   w.addEventListener("pointerdown", function(ev){
-    if(ev.target.closest("#waCap")||ev.target.closest("#wartFicha")||ev.target.closest(".wa-nav")) return;
+    if(ev.target.closest("#waCap")||ev.target.closest("#wartFicha")||ev.target.closest(".wa-nav")||ev.target.closest("#waBar")) return;
     GES.pts[ev.pointerId]=[ev.clientX, ev.clientY];
     var ks=Object.keys(GES.pts);
     if(ks.length===2){
@@ -396,7 +572,7 @@ function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
   function up(ev){ delete GES.pts[ev.pointerId]; GES.d0=0; }
   w.addEventListener("pointerup", up); w.addEventListener("pointercancel", up);
   w.addEventListener("wheel", function(ev){
-    if(!gesTarget()) return;
+    if(!gesTarget() || ev.target.closest("#wartFicha")) return;
     ev.preventDefault();
     GES.s=Math.max(1, Math.min(4, GES.s*(ev.deltaY<0?1.08:0.93)));
     if(GES.s===1){ GES.x=0; GES.y=0; }
@@ -437,14 +613,23 @@ function gesReset(){ GES.s=1; GES.x=0; GES.y=0;
   wrap.addEventListener("mouseleave", function(){ wrap.classList.remove("lensing"); });
 })();
 
-$("wartBtn").addEventListener("click", wartOpen);
+$("wartBtn").addEventListener("click", function(){ wartOpen(false); });
 $("waBack").addEventListener("click", wartClose);
-$("waWingBtn").addEventListener("click", function(){
-  wa.wing = (wa.wing==="week") ? "day" : "week";
-  this.textContent = (wa.wing==="week") ? "Daily canvas" : "This week: residency";
-  $("waPrev").style.display=$("waNext").style.display=(wa.wing==="week")?"":"none";
+/* as duas paredes, em botoes segmentados na barra; carregar outra vez no quadro do dia,
+   depois de o museu nao responder, volta a pedir */
+function waWing(w){
+  if(w===wa.wing){ if(w==="day" && !DAILY.got && !DAILY.busy) dailyShow(); return; }
+  wa.wing=w;
+  document.querySelectorAll("#waBar .waWing").forEach(function(x){
+    var on=x.getAttribute("data-wing")===w;
+    x.classList.toggle("on", on); x.setAttribute("aria-pressed", on?"true":"false");
+  });
+  $("waPrev").style.display=$("waNext").style.display=(w==="week")?"":"none";
   gesReset();
-  if(wa.wing==="day"){ dailyShow(); } else { waShow(wa.cur); }
+  if(w==="day"){ dailyShow(); } else { waShow(wa.cur); }
+}
+document.querySelectorAll("#waBar .waWing").forEach(function(b){
+  b.addEventListener("click", function(){ waWing(b.getAttribute("data-wing")); });
 });
 $("waPrev").addEventListener("click", function(){ waShow(wa.cur-1); });
 $("waNext").addEventListener("click", function(){ waShow(wa.cur+1); });
@@ -454,16 +639,39 @@ document.addEventListener("keydown", function(ev){
   if(ev.key==="ArrowRight"){ ev.preventDefault(); ev.stopImmediatePropagation(); waShow(wa.cur+1); }
   else if(ev.key==="ArrowLeft"){ ev.preventDefault(); ev.stopImmediatePropagation(); waShow(wa.cur-1); }
 }, true);
-$("waFichaBtn").addEventListener("click", function(){ $("wartFicha").classList.toggle("on"); });
-$("wartFichaClose").addEventListener("click", function(){ $("wartFicha").classList.remove("on"); });
+$("waFichaBtn").addEventListener("click", function(){ waFicha(!$("wartFicha").classList.contains("on")); });
+$("wartFichaClose").addEventListener("click", function(){ waFicha(false); });
+/* Immerse: ecra inteiro para a sala; onde a pagina nao o pode ter (iPhone), o filme vai
+   sozinho para o leitor do proprio video, inteiro; nas outras pecas o botao nao aparece */
+function waFilmOn(){ return wa.wing==="week" && WPIECES[wa.cur].kind==="film"; }
+function waFsPage(){
+  var d=document, el=d.documentElement;
+  return !!((el.requestFullscreen && d.fullscreenEnabled!==false) || (el.webkitRequestFullscreen && d.webkitFullscreenEnabled));
+}
+function waFsVid(){
+  var v=$("waVid");
+  if(!waFilmOn() || !v.webkitEnterFullscreen) return;
+  try{ v.webkitEnterFullscreen(); }catch(e){}
+}
+function waFsPaint(){
+  $("waFsBtn").style.display=(waFsPage() || (waFilmOn() && $("waVid").webkitEnterFullscreen)) ? "" : "none";
+}
 $("waFsBtn").addEventListener("click", function(){
-  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
-  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+  var d=document, el=d.documentElement, r;
+  if(d.fullscreenElement || d.webkitFullscreenElement){
+    r = d.exitFullscreen ? d.exitFullscreen() : (d.webkitExitFullscreen ? d.webkitExitFullscreen() : null);
+    if(r && r.catch) r.catch(function(){});
+    return;
+  }
+  if(el.requestFullscreen && d.fullscreenEnabled!==false){
+    r=el.requestFullscreen(); if(r && r.catch) r.catch(function(){ waFsVid(); });
+  } else if(el.webkitRequestFullscreen && d.webkitFullscreenEnabled){ el.webkitRequestFullscreen(); }
+  else { waFsVid(); }
 });
 document.addEventListener("keydown", function(ev){
   if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="TEXTAREA")) return;
-  if(ev.key==="w" && intro.done){ wa.on ? wartClose() : wartOpen(); }
-  if(ev.key==="Escape" && wa.on){ if($("wartFicha").classList.contains("on")) $("wartFicha").classList.remove("on"); else wartClose(); }
+  if(ev.key==="w" && intro.done){ wa.on ? wartClose() : wartOpen(true); }
+  if(ev.key==="Escape" && wa.on){ if($("wartFicha").classList.contains("on")) waFicha(false); else wartClose(); }
 });
 
 /* ---------------- 3. leitor com estaleiro (so computador) ---------------- */
@@ -553,31 +761,7 @@ if(DESK){
   });
 })();
 
-/* ---------------- 4b. modo de estaleiro (?dev na morada) ---------------- */
-(function(){
-  if(!(window.HMDEV && HMDEV.on)) return;
-  var panel=$("devPanel");
-  panel.classList.add("on");
-  function paint(){
-    var list;
-    try{ list=HMDEV.peek(3); }catch(e){ list=[]; }
-    var ul=$("devNext"); ul.innerHTML="";
-    list.forEach(function(x,i){
-      var li=document.createElement("li");
-      var b=document.createElement("b"); b.textContent=(i+1)+". "+x.a+" / "+x.t;
-      var s=document.createElement("span"); s.textContent=x.g+" · "+(x.sure?"":"~")+x.bpm+" bpm";
-      li.appendChild(b); li.appendChild(s); ul.appendChild(li);
-    });
-  }
-  $("devSkip").addEventListener("click", function(){ HMDEV.skip(); setTimeout(paint, 900); });
-  document.addEventListener("keydown", function(ev){
-    if(ev.key==="n" && !wa.on){ HMDEV.skip(); setTimeout(paint, 900); }
-  });
-  /* repinta quando a faixa do cartao muda */
-  var mo=new MutationObserver(function(){ paint(); });
-  mo.observe($("tArtist"), {childList:true, characterData:true, subtree:true});
-  var boot=setInterval(function(){ if(window.HM && HM.isOn()){ clearInterval(boot); paint(); } }, 800);
-})();
+/* ---------------- 4b. modo de estaleiro (?dev na morada): mudou-se para o liquid/l09-dev.html ---------------- */
 
 /* ---------------- 5. gift a tune: recomendacoes da sala ---------------- */
 (function(){
@@ -693,6 +877,7 @@ window.HMDAWN=(function(){
     o2.start(t0+.8); o2.stop(t0+2.5);
   }
   function play(){
+    if(window.HM && HM.fxAudible && !HM.fxAudible()) return;
     var today=new Date().toDateString();
     try{ if(localStorage.getItem("hm_dawn")===today) return; localStorage.setItem("hm_dawn", today); }catch(e){}
     var ac=fx(); if(!ac) return;

@@ -17,12 +17,38 @@ package managers» marcado. Primeiro comando de cada sessão, para confirmar:
 `curl -sS -o /dev/null -w "%{http_code}\n" https://www.youtube.com/` (200 ou 30x; 000 com
 «CONNECT tunnel failed, response 403» significa que continua bloqueado).
 
-## Situação do catálogo (v3.7, publicada a 2026-10-04)
+O bloqueio continuava na segunda volta do mesmo dia (v4.0): também `soundcloud.com`,
+`on.soundcloud.com`, `w.soundcloud.com` e `www.discogs.com` devolvem 403.
 
-1192 faixas: dub_techno 123, uk_garage 108, liquid 107, deep_house 97, breakbeat 93,
-house 75, ragga_jungle 64, dubstep 64, reggae 63, lofi_house 60, dub 55, hypnotic_techno 53,
-atmospheric_jungle 53, ambient_techno 50, ambient 46, ska_rocksteady 35, focus_zen 27,
-lofi 10, oldskool_hardcore 5, intelligent_dnb 4.
+## Situação do catálogo (v4.0, publicada a 2026-10-08)
+
+1179 faixas: dub_techno 117, liquid 108, deep_house 101, uk_garage 92, breakbeat 89,
+house 82, dubstep 80, reggae 67, dub 56, lofi_house 52, ragga_jungle 52, hypnotic_techno 51,
+ambient_techno 51, ambient 47, atmospheric_jungle 37, ska_rocksteady 32, focus_zen 27,
+intelligent_dnb 22, lofi 10, oldskool_hardcore 6.
+
+Auditoria de géneros de 2026-10-08 (`ops/queue/genre-audit-2026-10-08.tsv`): 1185 faixas
+revistas por 21 auditores, cada mudança verificada por um segundo revisor cético; 100 mudanças
+aplicadas, 14 rejeitadas por falta de prova, 118 faixas ficaram «incertas» (sem mudança) e 61
+foram assinaladas para o Paulo (covers, mixes longos no focus_zen, crossovers, géneros sem
+chave, vídeos suspeitos). Retiradas: 7 a pedido do Paulo (com exclusão por faixa), 5 duplicados
+exatos e BCee / Blu Mar Ten «Rose Coloured Stained Glass Windows» (em espera; linha literal em
+`ops/queue/hold-2026-10-08.tsv`).
+
+Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
+- vídeos suspeitos no ragga_jungle que parecem os originais dancehall ou roots e não as versões
+  jungle (Michael Prophet «Gunman», King Kong «Trouble Again», Capleton «Cold Blooded
+  Murderer», Buju Banton «Move Your Body», General Malice «Clubshakin», Cutty Ranks
+  «Original Rude Boy Style») e outros (Burial «Lambeth», «Bassline» «Falsehood», Conquest
+  «Forever», Tina Moore, Edward Oberon, Zeno, Total Science and SPY): confirmar ouvindo, ou
+  re-resolver quando o YouTube abrir;
+- covers do reggae e do ska, mixes acima de 21 minutos no focus_zen, crossovers (Rui Da Silva,
+  Chase and Status, Chaka Demus and Pliers), disco sem chave própria;
+- a ligação do SoundCloud (`on.soundcloud.com/qlz3ssIMuiOLfJq4PN`) dá «We can't find that
+  playlist»: pedir o endereço completo;
+- secção de comentários: escolher conceito e backend (giscus exige ativar Discussions e
+  instalar a app; anónimo exige Cloudflare Worker);
+- kits de som do intervalo para os outros géneros (amostras enviadas ao Paulo).
 
 Fontes já tratadas:
 - Playlist «radio» da Weronika: 156 de 157 no ar (a 67 foi excluída pelo Paulo).
