@@ -35,6 +35,8 @@ chave, vídeos suspeitos). Retiradas: 7 a pedido do Paulo (com exclusão por fai
 exatos e BCee / Blu Mar Ten «Rose Coloured Stained Glass Windows» (em espera; linha literal em
 `ops/queue/hold-2026-10-08.tsv`).
 
+Lista completa das faixas assinaladas e incertas, com motivos: `ops/queue/genre-audit-flags-2026-10-08.tsv`.
+
 Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
 - vídeos suspeitos no ragga_jungle que parecem os originais dancehall ou roots e não as versões
   jungle (Michael Prophet «Gunman», King Kong «Trouble Again», Capleton «Cold Blooded
@@ -48,7 +50,21 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
   playlist»: pedir o endereço completo;
 - secção de comentários: escolher conceito e backend (giscus exige ativar Discussions e
   instalar a app; anónimo exige Cloudflare Worker);
-- kits de som do intervalo para os outros géneros (amostras enviadas ao Paulo).
+- kits de som do intervalo para os outros géneros (amostras enviadas ao Paulo; gravar de novo com
+  `node ops/tools/fx_previews.js PASTA`);
+- zoom das pinturas no computador: que ideias implementar (`ops/notes/2026-10-08/`, ficheiro 3);
+- uk_garage sem vizinho na tabela ADJ do motor: só entra por sorteio (ficheiro 5 das notas).
+
+## Próxima ronda (proposta)
+
+Sessão nova, a partir deste ficheiro. Ordem sugerida, uma ronda de cada vez, conforme as decisões
+do Paulo:
+1. Se a rede estiver aberta: tarefas 1 e 2 (importações por script, nível high, sem agentes).
+2. Catálogo: aplicar as decisões sobre as faixas assinaladas (nível high).
+3. Motor: kits do intervalo escolhidos pelo Paulo, com o seu teste em `ops/tests/` (nível max).
+4. Comentários e zoom: só depois de o Paulo escolher conceito e backend.
+Em cada ronda: estimativa antes de começar, `bash ops/tests/run.sh` antes de publicar,
+`HANDOFF` e `LOG` atualizados no fim.
 
 Fontes já tratadas:
 - Playlist «radio» da Weronika: 156 de 157 no ar (a 67 foi excluída pelo Paulo).

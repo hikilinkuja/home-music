@@ -43,6 +43,23 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   seleção exigente como referência. Nunca inventar avaliações, datas ou factos nos textos.
 - Este repositório é público: nunca guardar tokens, chaves ou dados pessoais em ficheiros.
 
+## Gastos e qualidade (decidido pelo Paulo a 2026-10-08)
+
+- Trabalhar sozinho por omissão. Subagentes ou fluxos de agentes só com estimativa prévia
+  (número de agentes, tokens, tempo) e autorização expressa do Paulo.
+- Pedidos com muitos itens: propor rondas e executar uma de cada vez; o que for só proposta
+  (desenho, opções) fica em texto até o Paulo escolher.
+- Trabalho em massa por scripts (resolver, validar, montar, testar); o modelo supervisiona e lê
+  resumos, nunca saídas inteiras.
+- Ler o necessário, não o mínimo: trechos quando chegam, ficheiros inteiros quando é preciso
+  compreender.
+- A poupança nunca justifica publicar sem testar: cada funcionalidade nova traz o seu teste em
+  `ops/tests/`, os testes correm antes de publicar e, no motor, o diff é revisto antes do commit.
+- Uma sessão por ronda, com o `ops/HANDOFF.md` atualizado no fim. Nível de esforço (escolhido pelo
+  Paulo em cada mensagem): max para o motor, high para o resto.
+- «Motor» é o código que decide e toca a música: `liquid/build-liquid.py` (gera o l05), o l03
+  (registo) e o l04 (visual da troca). Catálogo, galeria, botões e textos não são motor.
+
 ## Arquitetura
 
 - Catálogo: `radio/e03-data.html` define `BLOCKS`, `GENRES` (nome, Wikipédia, nota por género),
@@ -81,6 +98,10 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   `e05-engine.html` (congeladas).
 - Som do «dawn override»: `sfx/dawn-mc.mp3` ainda não existe; o módulo HMDAWN (l06) toca os
   efeitos e salta a voz até o Paulo enviar a gravação.
+- Notas de análise (mapas do motor, da galeria, da sala de foco, diagnósticos, conceitos de
+  comentários e de zoom): `ops/notes/2026-10-08/` (ler o README dessa pasta primeiro).
+- Amostras dos sons da troca de disco, para o Paulo escolher kits:
+  `node ops/tools/fx_previews.js PASTA` (não guardar as amostras no repositório).
 
 ## Montar, validar e publicar
 
@@ -89,6 +110,9 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 2. Editar as fontes ou o catálogo; nunca editar à mão `index.html` nem `liquid/index.html`.
 3. `bash ops/tools/build.sh` monta as duas salas e corre `ops/tools/validate.py`
    (sintaxe JavaScript, caracteres proibidos, videoIds, géneros). Não publicar com falhas.
+   Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
+   corre os testes no Chromium com o YouTube simulado, cerca de 6 minutos; ver
+   `ops/tests/README.md`). Com `FAIL`, não publicar.
 4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v4.1), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a

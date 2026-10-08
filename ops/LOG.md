@@ -1,5 +1,19 @@
 # Registo das voltas
 
+## 2026-10-08: v4.1-ops, testes e notas no repositório (sessão Claude Code na nuvem)
+
+- Testes automáticos da liquid em `ops/tests/` (`bash ops/tests/run.sh`): galeria e filme no
+  telemóvel, efeitos calados no foco e em mute, chuva, registo e painel `?dev`, introdução,
+  troca de disco. Correm no Chromium com o YouTube simulado, sem rede, em cerca de 6 minutos.
+- Ferramenta `ops/tools/fx_previews.js` para gravar as amostras dos sons da troca de disco.
+- Notas de análise da v4.0 em `ops/notes/2026-10-08/`; faixas assinaladas e incertas da
+  auditoria em `ops/queue/genre-audit-flags-2026-10-08.tsv`.
+- `CLAUDE.md`: política de gastos e qualidade decidida pelo Paulo (trabalho sozinho por omissão,
+  agentes só com estimativa e autorização, rondas, testes antes de publicar, max no motor e high
+  no resto) e passo dos testes no procedimento de publicação.
+- Lição da v4.0: 68 agentes e cerca de 8,8 milhões de tokens numa volta; o mapeamento custou um
+  sétimo, a auditoria exaustiva e a revisão em várias camadas o resto.
+
 ## 2026-10-08: v4.0, notas do Paulo, ronda 1 (sessão Claude Code na nuvem)
 
 - Importações: continuam bloqueadas pela rede (YouTube, Ishkur, SoundCloud, Discogs com 403).
