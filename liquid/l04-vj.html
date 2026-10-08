@@ -1,0 +1,140 @@
+<script>
+"use strict";
+/* ================= o liquido: fundo permanente da estacao =================
+   Sete campos escolhidos no VJ Lab, todos no mesmo motor mate: o primeiro
+   segue a paleta do bloco horario; os outros fixam a sua. Energia pelos
+   niveis reais da emissao, pulso pelo BPM do genero, troca no botao Field. */
+window.LV={A:0,B:0,xf:0,prog:0,bpm:118,beatPh:0};
+window.RIG={
+  ok:true, ctl:{},
+  setNext:function(){},
+  prepare:function(k,cb){
+    setTimeout(function(){ if(window.HMFX) HMFX.needle(); }, 1900);
+    if(cb) setTimeout(cb, 3100);
+  },
+  fadeBegin:function(){},
+  setFade:function(x){ LV.xf=x; },
+  finish:function(){},
+  quick:function(){ setTimeout(function(){ if(window.HMFX) HMFX.needle(); }, 700); },
+  first:function(){ setTimeout(function(){
+    /* a sala liquida ja fez o som da agulha na abertura: aqui so entra a rampa */
+    if(window.HM && HM.rampOnly) HM.rampOnly();
+    else if(window.HMFX) HMFX.needle();
+  }, 150); },
+  setLevels:function(a,b){ LV.A=a||0; LV.B=b||0; },
+  setProgress:function(p){ LV.prog=p||0; },
+  setTempo:function(bpm){ if(bpm>0) LV.bpm=bpm; }
+};
+
+(function(){
+  var C=document.getElementById("vj"), G=C.getContext("2d");
+  var W=256, H=144;
+  C.width=W; C.height=H;
+  var IMG=G.createImageData(W,H);
+  var PALS={
+    morning:["#02030a","#0a1020","#122636","#1d4038","#3a5226","#6a6a2a","#8a7a30"],
+    afternoon:["#030309","#0d0a22","#1c1340","#3a2a4e","#5a4020","#7a5422","#8a6428"],
+    night:["#020208","#0a0618","#180d30","#301442","#4a1e30","#6a3420","#7a4422"]
+  };
+  /* os campos aprovados no VJ Lab (1 a 7; o 8 ficou de fora) */
+  var FIELDS=[
+    {name:"Programme tide", block:true, warp:1, radial:1, speed:1},
+    {name:"Thermal dusk", stops:["#040208","#1a0a18","#3a1226","#5a1e2e","#7a3428","#8a5430"], warp:1.4, radial:1, speed:0.7},
+    {name:"North sea", stops:["#020607","#06201e","#0a3832","#145046","#24604c","#3a7452"], warp:1.2, radial:1, speed:0.9},
+    {name:"Ink & bone", stops:["#050508","#101018","#1e1e2a","#30303e","#484856","#60606e"], warp:1, radial:0.6, speed:0.8, grain:1},
+    {name:"Aurora bands", stops:["#020308","#0c1028","#1c3038","#2a5444","#4a4870","#6a8862"], warp:2.2, radial:0.3, bands:1, speed:0.6},
+    {name:"Smoke rings", stops:["#030309","#0d0a22","#1c1340","#38264a","#584030","#7a5a34"], warp:0.7, radial:2.2, speed:0.8},
+    {name:"Data rain", stops:["#050408","#141020","#262036","#4a3a30","#6a5636","#8a743c"], columns:1, warp:0.5, radial:0, speed:0.5}
+  ];
+  /* cada visita abre num campo ao calhas: a sala nunca recebe duas vezes com a mesma luz */
+  var fieldIx=Math.floor(Math.random()*FIELDS.length);
+  function hex(h){ return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+  function blockOf(h){ return (h>=6&&h<13)?"morning":(h>=13&&h<20)?"afternoon":"night"; }
+  function stopsNow(){
+    var f=FIELDS[fieldIx];
+    var raw=f.block? PALS[blockOf(new Date().getHours())] : f.stops;
+    return raw.map(hex);
+  }
+  var ST=stopsNow();
+  setInterval(function(){ ST=stopsNow(); }, 60000);
+  window.HMFIELD={
+    next:function(){
+      fieldIx=(fieldIx+1)%FIELDS.length;
+      ST=stopsNow();
+      var tag=document.getElementById("fieldName");
+      if(tag){
+        tag.textContent=(fieldIx+1)+" / "+FIELDS[fieldIx].name;
+        tag.classList.add("on");
+        clearTimeout(this._t);
+        this._t=setTimeout(function(){ tag.classList.remove("on"); }, 1700);
+      }
+      return FIELDS[fieldIx].name;
+    }
+  };
+  var last=0, lastT=0;
+  function frame(ts){
+    requestAnimationFrame(frame);
+    if(ts-last<40) return;
+    var dt=lastT? (ts-lastT)/1000 : 0.04;
+    last=ts; lastT=ts;
+    LV.beatPh += dt*2*Math.PI*(LV.bpm/60);
+    var f=FIELDS[fieldIx];
+    var t=ts/1000*f.speed;
+    var lvl=Math.min(1, LV.A+LV.B);
+    var energy=0.3+0.7*lvl;
+    var vib=1+(0.05+0.09*lvl)*Math.sin(LV.beatPh);
+    var sp=t*(0.3+energy*0.45);
+    var cx=W*0.5+Math.sin(t*0.13)*58, cy=H*0.5+Math.cos(t*0.10)*34;
+    var cx2=W*0.3+Math.cos(t*0.09)*48, cy2=H*0.7+Math.sin(t*0.12)*30;
+    var d=IMG.data, n=ST.length;
+    for(var y=0;y<H;y++){
+      var wy=y+9*f.warp*Math.sin(y*0.017+sp*0.6);
+      var dy=(y-cy)*1.5, dy2=(y-cy2)*1.5;
+      for(var x=0;x<W;x++){
+        var v;
+        if(f.columns){
+          v=Math.sin(x*0.16+Math.sin(y*0.012+sp*0.5)*2.2)
+           +Math.sin(y*0.02-sp*1.4)
+           +Math.sin((x*0.05+y*0.004)+sp*0.3)*vib;
+          v=(v+3)/6;
+        } else {
+          var wx=x+12*f.warp*Math.sin(y*0.034+sp*0.75)+6*f.warp*Math.sin(x*0.016-sp*0.45);
+          var dx=x-cx, dx2=x-cx2;
+          v=Math.sin(wx*0.036+sp*0.7)
+           +Math.sin(wy*(f.bands?0.11:0.055)-sp*0.5)
+           +Math.sin((wx*0.021+wy*0.031)+sp*0.38)
+           +f.radial*Math.sin(Math.sqrt(dx*dx+dy*dy)*0.082-sp*1.2)*vib
+           +(f.radial>1.5? Math.sin(Math.sqrt(dx2*dx2+dy2*dy2)*0.07+sp*0.9)*0.8 : 0);
+          v=(v+4.8)/9.6;
+        }
+        v=Math.max(0,Math.min(1,Math.pow(v, 1.9-0.85*energy)))*(0.35+0.65*energy);
+        if(f.grain){ v+=(Math.random()-0.5)*0.05; v=Math.max(0,Math.min(1,v)); }
+        var fq=v*(n-1); if(fq>n-1.001)fq=n-1.001;
+        var i0=fq|0, fr=fq-i0, a2=ST[i0], b2=ST[i0+1];
+        var p=(y*W+x)*4;
+        d[p]  =a2[0]+(b2[0]-a2[0])*fr;
+        d[p+1]=a2[1]+(b2[1]-a2[1])*fr;
+        d[p+2]=a2[2]+(b2[2]-a2[2])*fr;
+        d[p+3]=255;
+      }
+    }
+    G.putImageData(IMG,0,0);
+  }
+  requestAnimationFrame(frame);
+
+  /* a luz da sala: fica no escuro ate a intro mandar subir; a musica acompanha
+     (a rampa do leitor na sala liquida tem a mesma duracao) */
+  window.LVfx={
+    unveil:function(ms){
+      var lv=document.getElementById("lightVeil");
+      if(!lv) return;
+      var t0=performance.now();
+      var h=setInterval(function(){
+        var x=Math.min(1,(performance.now()-t0)/(ms||8000));
+        lv.style.opacity=String((0.9*(1-x)).toFixed(3));
+        if(x>=1){ clearInterval(h); lv.style.display="none"; }
+      }, 50);
+    }
+  };
+})();
+</script>

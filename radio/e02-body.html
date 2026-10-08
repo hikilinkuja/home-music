@@ -1,0 +1,159 @@
+<!-- ============ SPLASH ============ -->
+<canvas id="vj" width="160" height="90"></canvas>
+<div id="introVeil"></div>
+<div id="splash">
+  <div class="sp-inner">
+    <div id="mc" aria-live="polite"></div>
+    <div id="tapHint" role="button" tabindex="0">tap for sound</div>
+    <button id="skipIntro" type="button">skip the intro &raquo;</button>
+    <div id="introCredit"><b>opening tune</b><br>Koncrete Roots, Sound Killah<br>Dub ina Midlands &middot; Dubophonic 2014 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive</div>
+  </div>
+</div>
+
+<!-- ============ STAGE ============ -->
+<canvas id="px" width="320" height="180"></canvas>
+
+<!-- ============ APP CHROME ============ -->
+<div id="app">
+  <header id="top">
+    <div class="brand"><b>HOME MUSIC</b><span>24-hour selector</span></div>
+    <div class="onair"><span class="dot"></span><span class="lbl">on air &middot; </span><span id="blockLabel">&hellip;</span></div>
+    <div class="hdr-btns">
+      <div id="clock">--:--</div>
+      <button class="tbtn" id="genreBtn" type="button">The sound</button>
+      <button class="tbtn" id="histBtn" type="button">Session log</button>
+      <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
+      <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
+    </div>
+  </header>
+
+  <div id="hud">
+    <div class="vidpanel">
+      <div class="vp-top"><span class="lab">Live feed &middot; monitor 1</span><span class="dot"></span></div>
+      <div class="vp-screen">
+        <div class="yt-slot" id="slotA"><div id="ytA"></div></div>
+        <div class="yt-slot" id="slotB"><div id="ytB"></div></div>
+        <div id="standby">
+          <div class="big">Home Music</div>
+          <div id="standbyMsg">tuning&hellip;</div>
+        </div>
+      </div>
+      <div class="vp-ctrl">
+        <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
+        <button class="tbtn" id="skipBtn" type="button" title="earn the skip">Skip</button>
+        <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
+      </div>
+    </div>
+
+    <section id="now" aria-live="polite">
+      <div class="chiprow">
+        <span id="gChip">&hellip;</span>
+        <span id="tYear"></span>
+        <span id="tBpm"></span>
+      </div>
+      <h2 id="tArtist">Warming up the amps</h2>
+      <div id="tTitle">&nbsp;</div>
+      <p id="tBlurb">The selector is checking the clock and pulling tonight's crate.</p>
+      <div class="t-links">
+        <a id="aYT" href="#" target="_blank" rel="noopener">&#9654; YouTube</a>
+        <a id="aSP" href="#" target="_blank" rel="noopener">&#9678; Spotify</a>
+        <a id="aSrc" href="#" target="_blank" rel="noopener" hidden>&#9636; Liner source</a>
+        <button class="tbtn" id="danceBtn" type="button">&#9737; The dance nearby</button>
+      </div>
+    </section>
+  </div>
+
+  <button id="needle" type="button">touch to drop the needle</button>
+
+  <aside id="genrePanel" class="panel" aria-label="about this genre">
+    <button class="pclose" data-close="genrePanel" type="button">&times;</button>
+    <h3>The Sound</h3>
+    <p class="psub">what you are hearing, and why</p>
+    <div id="gName">&hellip;</div>
+    <p id="gNote">&hellip;</p>
+    <div id="gTrackCount"></div>
+    <div class="g-links">
+      <a id="gWiki" href="#" target="_blank" rel="noopener">This genre on Wikipedia &nearr;</a>
+      <a id="gIshkur" href="https://music.ishkur.com/" target="_blank" rel="noopener">The full genre map: Ishkur's Guide &nearr;</a>
+    </div>
+    <div id="gExt" hidden></div>
+    <div class="credits">
+      <b>HOME MUSIC</b> &middot; broadcast from the living room. Programme follows your clock: morning 06-13, afternoon 13-20, night 20-06. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. Genre map: Ishkur's Guide. Opening tune: Koncrete Roots, Sound Killah, from Dub ina Midlands (Dubophonic, 2014), licensed CC BY-NC-ND 4.0, streamed whole and unedited from the Internet Archive. The rite of the 45, performed whole under the moon: jacket out of the stash, record out of its paper sleeve, the cover on display while it plays, needle down, tempo set, the fade, and the spent record sleeved and shelved again. Every step is a drawn pose fired by the radio's own engine. Just watch. Shortcuts: [&rarr;] next &middot; [m] mute.
+    </div>
+  </aside>
+
+  <aside id="dancePanel" class="panel" aria-label="events near you">
+    <button class="pclose" data-close="dancePanel" type="button">&times;</button>
+    <h3>The Dance Nearby</h3>
+    <p class="psub">rooms playing in this spirit, around you</p>
+    <div class="dance-row">
+      <input id="danceCity" type="text" placeholder="your city" aria-label="city">
+      <button class="tbtn" id="danceGo" type="button">Search</button>
+    </div>
+    <ul id="danceList" class="dance-list"></ul>
+    <p id="danceNote" class="dance-note"></p>
+  </aside>
+
+  <aside id="histPanel" class="panel" aria-label="session history">
+    <button class="pclose" data-close="histPanel" type="button">&times;</button>
+    <h3>Session Log</h3>
+    <p class="psub">everything played since you tuned in</p>
+    <ul id="histList"><li class="h-empty">Nothing yet. The needle just dropped.</li></ul>
+  </aside>
+
+
+  <div id="mixPanel" class="drawer" aria-label="mixtapes">
+    <div class="dw-in">
+      <button class="pclose" id="mixClose" type="button">&times;</button>
+      <h3 class="dw-title">Mixtapes</h3>
+      <p class="dw-sub">sessions by the founders. the radio keeps playing under this shelf; press play on a tape and the radio steps aside until you close it.</p>
+      <section class="dw-tape">
+        <h4>liquid dnb for street market wandering <span>Weronika &middot; 15.06.2026 &middot; liquid dnb</span></h4>
+        <div class="scrow">
+          <button class="tbtn scPlay" id="scPlay0" data-sc="0" type="button">Play</button>
+          <div class="scbar" id="scBar0" data-sc="0"><i class="scfill" id="scFill0"></i></div>
+          <span class="sctime" id="scTime0">--:-- / --:--</span>
+          <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-06-15" target="_blank" rel="noopener">SoundCloud &nearr;</a>
+        </div>
+        <div class="schost" id="scHost0"><iframe title="liquid dnb for street market wandering, by Weronika" class="scmini" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-06-15&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
+      </section>
+      <section class="dw-tape">
+        <h4>UNDERGROUND BASS SOUNDz <span>Weronika &middot; 28.08.2026 &middot; uk bass / 140 / dubby</span></h4>
+        <div class="scrow">
+          <button class="tbtn scPlay" id="scPlay1" data-sc="1" type="button">Play</button>
+          <div class="scbar" id="scBar1" data-sc="1"><i class="scfill" id="scFill1"></i></div>
+          <span class="sctime" id="scTime1">--:-- / --:--</span>
+          <a class="sclink" href="https://soundcloud.com/weronika-wo-owiec-4912334/01-rec-2026-08-28" target="_blank" rel="noopener">SoundCloud &nearr;</a>
+        </div>
+        <div class="schost" id="scHost1"><iframe title="UNDERGROUND BASS SOUNDz, by Weronika" class="scmini" allow="autoplay"
+          data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fweronika-wo-owiec-4912334%2F01-rec-2026-08-28&color=%23ffb12b&auto_play=false&hide_related=true&show_comments=false&show_teaser=false"></iframe></div>
+      </section>
+      <section class="dw-tape">
+        <h4>Tubby's Lesson <span>the founders &middot; dub 1975-83</span></h4>
+        <div class="dw-yt"><div id="mxYt2"></div><div class="dw-idle" id="mxIdle2">seven records, needle lifted between each one</div></div>
+        <div class="dw-ctl">
+          <button class="tbtn" id="mxPlay2" type="button">Play</button>
+          <button class="tbtn" id="mxNext2" type="button">Next</button>
+          <span class="dw-now" id="mxNow2"></span>
+        </div>
+        <ol class="dw-list" id="mxList2"></ol>
+      </section>
+    </div>
+  </div>
+
+  <div id="skill" role="dialog" aria-label="earn the skip">
+    <div class="sk-card">
+      <button class="sk-close" id="skClose" type="button">&times;</button>
+      <div class="sk-title">Earn the skip</div>
+      <div class="sk-sub">no free rides on this station. tap the pulse of the tune now playing: eight taps, inside three BPM. half or double time counts.</div>
+      <div class="sk-target">TARGET <b id="skTarget">--</b> BPM</div>
+      <button id="skPad" type="button">Tap</button>
+      <div class="sk-meter">YOURS <b id="skBpm">--</b></div>
+      <div class="sk-dots" id="skDots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="sk-msg" id="skMsg"></div>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+</div>

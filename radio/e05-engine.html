@@ -1,0 +1,1501 @@
+<script>
+/* ================= HOME MUSIC ENGINE v5 : drives the pixel rite ================= */
+(function(){
+"use strict";
+
+var $ = function(id){ return document.getElementById(id); };
+var RIG = window.RIG || {ok:false, ctl:{}, prepare:function(k,cb){ if(cb) setTimeout(cb,300); },
+  fadeBegin:function(){}, setFade:function(){}, finish:function(){}, quick:function(){},
+  first:function(){}, setLevels:function(){}, setProgress:function(){}, setTempo:function(){}, setNext:function(){}};
+var SIMPLE = window.matchMedia("(pointer:coarse)").matches; /* touch devices: single player, rig still performs */
+var XFADE_LEAD = 24;     /* o rito completo do vinil leva ~11s antes de a rampa poder comecar */
+var FADE_DUR = 6000;     /* ms, the audible crossfade; the rig hand rides the knob in sync */
+
+/* ---------------- FX : web audio dub kit ---------------- */
+var FX = {
+  ctx:null, master:null, echoIn:null,
+  init: function(){
+    if(this.ctx) return;
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain(); this.master.gain.value = 0.7;
+      this.master.connect(this.ctx.destination);
+      var delay = this.ctx.createDelay(1.5); delay.delayTime.value = 0.36;
+      var fb = this.ctx.createGain(); fb.gain.value = 0.52;
+      var lp = this.ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 1700;
+      delay.connect(lp); lp.connect(fb); fb.connect(delay);
+      var wet = this.ctx.createGain(); wet.gain.value = 0.9;
+      delay.connect(wet); wet.connect(this.master);
+      this.echoIn = delay;
+    }catch(e){ this.ctx = null; }
+  },
+  resume: function(){ if(this.ctx && this.ctx.state === "suspended"){ this.ctx.resume(); } },
+  setVol: function(v){ if(this.master) this.master.gain.value = 0.7 * v; },
+  env: function(g, t0, a, peak, rel){
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.linearRampToValueAtTime(peak, t0 + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + rel);
+  },
+  stab: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, g=c.createGain();
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=900; bp.Q.value=1.1;
+    g.connect(bp);
+    var dry=c.createGain(); dry.gain.value=0.35; bp.connect(dry); dry.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.75; bp.connect(s); s.connect(this.echoIn);
+    [220, 261.6, 329.6].forEach(function(f,i){
+      var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f; o.detune.value=(i-1)*7;
+      o.connect(g); o.start(t); o.stop(t+0.4);
+    });
+    this.env(g, t, 0.01, 0.24, 0.3);
+  },
+  phone: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this, pairs=[[697,1209],[770,1336],[852,1477],[941,1336],[770,1209]];
+    pairs.forEach(function(p,i){
+      var t=c.currentTime + i*0.13, g=c.createGain();
+      var dry=c.createGain(); dry.gain.value=0.5; g.connect(dry); dry.connect(self.master);
+      var s=c.createGain(); s.gain.value=0.5; g.connect(s); s.connect(self.echoIn);
+      p.forEach(function(f){
+        var o=c.createOscillator(); o.type="sine"; o.frequency.value=f;
+        o.connect(g); o.start(t); o.stop(t+0.12);
+      });
+      self.env(g, t, 0.005, 0.11, 0.1);
+    });
+  },
+  siren: function(dur){
+    if(!this.ctx) return;
+    dur = dur || 1.2;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="triangle"; o.frequency.value=540;
+    var lfo=c.createOscillator(); lfo.type="sine"; lfo.frequency.value=4.2;
+    var lg=c.createGain(); lg.gain.value=130; lfo.connect(lg); lg.connect(o.frequency);
+    var g=c.createGain(); o.connect(g);
+    var dry=c.createGain(); dry.gain.value=0.05; g.connect(dry); dry.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.6; g.connect(s); s.connect(this.echoIn);
+    o.start(t); lfo.start(t); o.stop(t+dur+0.1); lfo.stop(t+dur+0.1);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.08, t+0.1);
+    g.gain.setValueAtTime(0.08, t+dur-0.3);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  },
+  kick: function(at){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime+(at||0);
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(96,t); o.frequency.exponentialRampToValueAtTime(48, t+0.12);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.3);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.32, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.26);
+  },
+  rim: function(at, wet){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime+(at||0);
+    var len=Math.floor(c.sampleRate*0.06), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1900; bp.Q.value=2.2;
+    var g=c.createGain(); g.gain.value=0.16;
+    src.connect(bp); bp.connect(g); g.connect(this.master);
+    if(wet){ var s2=c.createGain(); s2.gain.value=0.9; g.connect(s2); s2.connect(this.echoIn); }
+    src.start(t);
+  },
+  bubble: function(at){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this, t0=at||0;
+    [0,0.17].forEach(function(dt0,i){
+      var t=c.currentTime+t0+dt0, g2=c.createGain();
+      var lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=760;
+      g2.connect(lp);
+      var dry=c.createGain(); dry.gain.value=0.3; lp.connect(dry); dry.connect(self.master);
+      var s2=c.createGain(); s2.gain.value=0.35; lp.connect(s2); s2.connect(self.echoIn);
+      [146.8, 220].forEach(function(f){
+        var o=c.createOscillator(); o.type="square"; o.frequency.value=f*(i?1.002:1);
+        o.connect(g2); o.start(t); o.stop(t+0.11);
+      });
+      self.env(g2, t, 0.004, 0.09, 0.09);
+    });
+  },
+  oneDrop: function(){
+    /* dois compassos de one drop a 72 BPM: kick no 3, rim com eco no 3 e meio */
+    var self=this, beat=60/72;
+    [0,1].forEach(function(bar){
+      var b0=bar*4*beat;
+      self.kick(b0+2*beat);
+      self.rim(b0+2*beat, true);
+      self.rim(b0+3.5*beat, bar===1);
+      self.bubble(b0+1*beat); self.bubble(b0+3*beat);
+    });
+  },
+  needleDrop: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, self=this;
+    /* toque surdo do braco a pousar */
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(82,t); o.frequency.exponentialRampToValueAtTime(48, t+0.07);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.12);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.18, t+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.11);
+    /* estalido do contacto */
+    var len=Math.floor(c.sampleRate*0.05), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.4); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1400;
+    var g2=c.createGain(); g2.gain.value=0.2;
+    src.connect(hp); hp.connect(g2); g2.connect(this.master);
+    var s2=c.createGain(); s2.gain.value=0.5; g2.connect(s2); s2.connect(this.echoIn);
+    src.start(t+0.03);
+    /* chiado do sulco a assentar */
+    var ln2=Math.floor(c.sampleRate*2.2), b2=c.createBuffer(1,ln2,c.sampleRate), d2=b2.getChannelData(0);
+    for(var j=0;j<ln2;j++){ d2[j]=(Math.random()*2-1)*0.5 + ((Math.random()<0.004)?(Math.random()*2-1)*1.6:0); }
+    var sr2=c.createBufferSource(); sr2.buffer=b2;
+    var bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=5200; bp.Q.value=0.8;
+    var g3=c.createGain();
+    sr2.connect(bp); bp.connect(g3); g3.connect(this.master);
+    sr2.start(t+0.06);
+    g3.gain.setValueAtTime(0.0001,t+0.06);
+    g3.gain.linearRampToValueAtTime(0.085, t+0.3);
+    g3.gain.setValueAtTime(0.085, t+1.2);
+    g3.gain.exponentialRampToValueAtTime(0.0001, t+2.2);
+  },
+  sub: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(62,t); o.frequency.exponentialRampToValueAtTime(40, t+0.7);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.95);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.3, t+0.05);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.9);
+  },
+  skank: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, self=this;
+    [0,0.34].forEach(function(dt0){
+      var t=c.currentTime+dt0, g2=c.createGain();
+      var lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=1200;
+      g2.connect(lp);
+      var dry=c.createGain(); dry.gain.value=0.2; lp.connect(dry); dry.connect(self.master);
+      var s2=c.createGain(); s2.gain.value=0.7; lp.connect(s2); s2.connect(self.echoIn);
+      [174.6, 220, 261.6].forEach(function(f){
+        var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f;
+        o.connect(g2); o.start(t); o.stop(t+0.22);
+      });
+      self.env(g2, t, 0.005, 0.12, 0.16);
+    });
+  },
+  horn: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime, g2=c.createGain();
+    var lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=900;
+    g2.connect(lp);
+    var dry=c.createGain(); dry.gain.value=0.3; lp.connect(dry); dry.connect(this.master);
+    var s2=c.createGain(); s2.gain.value=0.8; lp.connect(s2); s2.connect(this.echoIn);
+    [110, 164.8, 220].forEach(function(f,i){
+      var o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f; o.detune.value=(i-1)*5;
+      o.connect(g2); o.start(t); o.stop(t+1.3);
+    });
+    g2.gain.setValueAtTime(0.0001,t);
+    g2.gain.linearRampToValueAtTime(0.16, t+0.5);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t+1.25);
+  },
+  sweep: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(980, t+0.7);
+    var g=c.createGain(); o.connect(g);
+    var s=c.createGain(); s.gain.value=0.8; g.connect(s); s.connect(this.echoIn);
+    var dry=c.createGain(); dry.gain.value=0.12; g.connect(dry); dry.connect(this.master);
+    o.start(t); o.stop(t+0.85);
+    this.env(g, t, 0.04, 0.16, 0.75);
+  },
+  rewind: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(55, t+0.45);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    var s=c.createGain(); s.gain.value=0.5; g.connect(s); s.connect(this.echoIn);
+    o.start(t); o.stop(t+0.5);
+    this.env(g, t, 0.01, 0.22, 0.42);
+  },
+  crackle: function(on){
+    if(!this.ctx) return;
+    if(on){
+      if(this._ck) return;
+      var c=this.ctx, len=c.sampleRate*2, buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+      for(var i=0;i<len;i++){ d[i] = (Math.random() < 0.0018) ? (Math.random()*2-1)*0.8 : (Math.random()*2-1)*0.012; }
+      var src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+      var g=c.createGain(); g.gain.value=0.16; src.connect(g); g.connect(this.master);
+      src.start(); this._ck={src:src,g:g};
+    }else if(this._ck){
+      var ck=this._ck; this._ck=null;
+      ck.g.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime+0.6);
+      setTimeout(function(){ try{ck.src.stop();}catch(e){} }, 700);
+    }
+  },
+  /* o crepitar como na realidade: uma janela curta que se apaga sozinha */
+  crackleBurst: function(dur){
+    if(!this.ctx) return;
+    this.crackle(true);
+    var self=this;
+    clearTimeout(this._ckT);
+    this._ckT=setTimeout(function(){ self.crackle(false); }, Math.max(300,(dur||2.2)*1000));
+  },
+  /* levantar a agulha: varrimento leve, estalido, meio segundo de sulco e silencio */
+  needleLift: function(){
+    if(!this.ctx) return;
+    var c=this.ctx, t=c.currentTime;
+    var o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(52,t); o.frequency.exponentialRampToValueAtTime(90,t+0.09);
+    var g=c.createGain(); o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.14);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.12,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
+    var len=Math.floor(c.sampleRate*0.04), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.2); }
+    var src=c.createBufferSource(); src.buffer=buf;
+    var hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1600;
+    var g2=c.createGain(); g2.gain.value=0.14;
+    src.connect(hp); hp.connect(g2); g2.connect(this.master);
+    src.start(t+0.05);
+  },
+  transitionFx: function(){
+    var self=this;
+    self.kick(); self.rim(0.02,true);
+    setTimeout(function(){ self.bubble(); }, 480);
+    setTimeout(function(){ self.sub(); }, 1100);
+    setTimeout(function(){ self.rim(0,true); }, 1900);
+    if(Math.random()<0.4){ setTimeout(function(){ self.phone(); }, 2600); }
+  }
+};
+
+/* tempo per genre: the resident's groove locks to what is on air */
+var GBPM={ reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
+  lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,
+  breakbeat:132, hypnotic_techno:132, deep_house:122, ragga_jungle:164, dubstep:140,
+  dub_techno:118, oldskool_hardcore:150, ska_rocksteady:94, uk_garage:133, house:124, focus_zen:60 };
+
+function metaFor(t){
+  return { a:t.a, t:t.t, y:t.y, bpm:(t.bpm||GBPM[t.g]||120), accent:(BLOCKS[currentBlock]&&BLOCKS[currentBlock].accent)||"#ffb12b" };
+}
+
+/* ---------------- scheduling ---------------- */
+function blockKeyFor(h){ if(h>=6 && h<13) return "morning"; if(h>=13 && h<20) return "afternoon"; return "night"; }
+var OVERRIDE = (function(){
+  try{
+    var m = window.location.search.match(/[?&]block=(morning|afternoon|night)/);
+    return m ? m[1] : null;
+  }catch(e){ return null; }
+})();
+var currentBlock = OVERRIDE || blockKeyFor(new Date().getHours());
+var deadIds = {};
+var current = null;
+/* vizinhanca entre generos: a transicao muda sempre para um som familiar */
+var ADJ={
+  reggae:["dub","ska_rocksteady"],
+  dub:["reggae","ska_rocksteady","lofi","ambient_techno","dub_techno","dubstep"],
+  ska_rocksteady:["reggae","dub"],
+  lofi:["dub","ambient","lofi_house"],
+  ambient:["lofi","ambient_techno","dub_techno","liquid"],
+  ambient_techno:["ambient","dub","dub_techno","deep_house","hypnotic_techno"],
+  dub_techno:["dub","ambient","ambient_techno","deep_house","hypnotic_techno"],
+  lofi_house:["lofi","deep_house","breakbeat","liquid"],
+  liquid:["intelligent_dnb","atmospheric_jungle","ambient","lofi_house"],
+  intelligent_dnb:["liquid","atmospheric_jungle"],
+  atmospheric_jungle:["liquid","intelligent_dnb","ragga_jungle","oldskool_hardcore","breakbeat"],
+  breakbeat:["lofi_house","atmospheric_jungle","oldskool_hardcore","hypnotic_techno"],
+  deep_house:["lofi_house","hypnotic_techno","ambient_techno","dub_techno"],
+  hypnotic_techno:["deep_house","ambient_techno","dub_techno","dubstep","breakbeat"],
+  dubstep:["hypnotic_techno","ragga_jungle","dub"],
+  ragga_jungle:["dubstep","atmospheric_jungle","oldskool_hardcore"],
+  oldskool_hardcore:["ragga_jungle","breakbeat","atmospheric_jungle"]
+};
+var pools={}, currentGenre=null, runLeft=0;
+
+function shuffle(arr){
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; }
+  return arr;
+}
+function poolFor(gn){
+  if(!pools[gn] || !pools[gn].length){
+    pools[gn] = shuffle(TRACKS.filter(function(t){ return t.g===gn && !deadIds[t.v]; }));
+  }
+  return pools[gn];
+}
+function genreHasTracks(gn){
+  return TRACKS.some(function(t){ return t.g===gn && !deadIds[t.v]; });
+}
+function pickGenre(fromG){
+  var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
+  if(!bg.length) return null;
+  function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
+  if(fromG && ADJ[fromG]){
+    var near = ADJ[fromG].filter(function(gn){ return bg.indexOf(gn)>=0 && gn!==fromG; });
+    if(near.length){
+      /* entre os primos, o de tempo mais proximo quase sempre: a corrente nao da saltos */
+      near.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return (near.length>1 && Math.random()<0.28) ? near[1] : near[0];
+    }
+    /* sem primo direto no bloco: o genero do bloco com o BPM mais proximo */
+    var rest = bg.filter(function(gn){ return gn!==fromG; });
+    if(rest.length){
+      rest.sort(function(a,b){ return dBpm(a,fromG)-dBpm(b,fromG); });
+      return rest[0];
+    }
+  }
+  return bg[Math.floor(Math.random()*bg.length)];
+}
+function buildQueue(){ currentGenre=null; runLeft=0; }
+function nextTrack(){
+  var bg = BLOCKS[currentBlock].genres;
+  if(!currentGenre || bg.indexOf(currentGenre)<0 || !genreHasTracks(currentGenre) || runLeft<=0){
+    var nx = pickGenre(currentGenre);
+    if(!nx) return null;
+    currentGenre = nx;
+    runLeft = 3 + Math.floor(Math.random()*3);
+  }
+  var pool = poolFor(currentGenre);
+  if(!pool.length) return null;
+  var t = pool.shift();
+  if(current && t && t.v === current.v && pool.length){ pool.push(t); t = pool.shift(); }
+  runLeft--;
+  return t;
+}
+
+/* ---------------- YouTube players + mix state ---------------- */
+var apiReady=false, started=false, radioOn=false;
+var P = { A:{k:"A", yt:null, slot:"slotA", ready:false}, B:{k:"B", yt:null, slot:"slotB", ready:false} };
+var activeKey="A";
+var rigDeck="A";             /* which rig deck currently holds the live stream */
+var masterVol = 80;
+var muted=false;
+var transitioning=false;
+var retryCount=0;
+var lastT=0, lastStamp=0;
+
+try{ var sv = localStorage.getItem("hm_vol"); if(sv!==null){ masterVol = Math.max(0, Math.min(100, parseInt(sv,10)||80)); } }catch(e){}
+
+function other(k){ return k==="A" ? "B" : "A"; }
+function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
+function applyVol(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return;
+  var f = (p.fade==null?1:p.fade);
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f)))); }catch(e){}
+}
+function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
+function audibleLevel(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return 0;
+  var st=-9; try{ st=p.yt.getPlayerState(); }catch(e){ return 0; }
+  if(st!==1 || muted) return 0;
+  var f = (p.fade==null?1:p.fade);
+  return (masterVol/100) * f;
+}
+
+/* feed the VU meters and the tonearm creep */
+setInterval(function(){
+  if(!radioOn) return;
+  /* o botao segue sempre o estado real */
+  var mb=$("muteBtn");
+  if(mb){ var want = muted ? "Unmute" : "Mute"; if(mb.textContent!==want){ mb.textContent=want; mb.classList.toggle("on", muted); } }
+  var la=0, lb=0;
+  ["A","B"].forEach(function(k){
+    var v = audibleLevel(k);
+    if(deckOfPlayer(k)==="A"){ la=Math.max(la,v); } else { lb=Math.max(lb,v); }
+  });
+  RIG.setLevels(la, lb);
+}, 280);
+
+window.onYouTubeIframeAPIReady = function(){
+  apiReady = true;
+  makePlayer("A"); if(!SIMPLE) makePlayer("B");
+};
+function ensureLoaded(p, vid){
+  if(!p || !p.ready || !p.yt || !vid) return false;
+  if(p.loadedId === vid) return true;
+  try{ p.yt.loadVideoById(vid); p.loadedId = vid; return true; }catch(e){ return false; }
+}
+function makePlayer(k){
+  var p = P[k];
+  p.yt = new YT.Player("yt"+k, {
+    width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:0, disablekb:1, fs:0, iv_load_policy:3, modestbranding:1, rel:0, playsinline:1,
+      origin: window.location.origin, widget_referrer: window.location.href },
+    events:{
+      onReady: function(e){ p.yt = e.target; p.ready=true; if(k==="A"){ maybeStart(); } },
+      onStateChange: function(e){ onState(k, e.data); },
+      onError: function(e){ onYtError(k, e.data); }
+    }
+  });
+}
+function loadApi(){
+  var s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = function(){ apiFail(); };
+  document.head.appendChild(s);
+  setTimeout(function(){ if(!apiReady) apiFail(); }, 9000);
+}
+var apiFailed = false;
+function apiFail(){
+  if(apiReady) return;
+  apiFailed = true;
+  $("standbyMsg").textContent = "cannot reach YouTube from this network. the radio needs it to spin.";
+}
+
+/* start sequence: user pressed play, intro runs, radio starts */
+/* relogio de animacao que nao adormece: setInterval corre em separadores ocultos
+   (com passos mais grossos), ao contrario do requestAnimationFrame; usar para
+   TODAS as rampas de audio e maquinas de transicao. step devolve false para abortar. */
+function animClock(dur, step, done){
+  var t0=performance.now();
+  var h=setInterval(function(){
+    var x=Math.min(1,(performance.now()-t0)/dur);
+    var cont=step(x);
+    if(cont===false){ clearInterval(h); return; }
+    if(x>=1){ clearInterval(h); if(done) done(); }
+  }, 50);
+  return h;
+}
+var pendingFirst = null;
+function maybeStart(){
+  if(!pendingFirst || !P.A.ready || started) return;
+  try{ P.A.yt.mute(); }catch(e){}
+  if(ensureLoaded(P.A, pendingFirst.v)){ started = true; }
+  else { setTimeout(maybeStart, 400); }
+}
+var firstLogged = false;
+function beginRadio(){
+  radioOn = true;
+  var p = P[activeKey];
+  $("standbyMsg").textContent = "dropping the needle…";
+  function go(){
+    if(!p.ready){ if(!apiFailed){ setTimeout(go, 300); } return; }
+    if(!started){ try{ p.yt.mute(); }catch(e){} if(ensureLoaded(p, pendingFirst.v)) started=true; }
+    if(!started){ setTimeout(go, 500); return; }
+    try{
+      p.yt.unMute(); muted=false;
+      fadeVol(p, 0);
+      p.yt.seekTo(0, true);
+      p.yt.playVideo();
+    }catch(e){}
+    if(!firstLogged && current){
+      firstLogged = true; pushHistory(current);
+      firstRampPending = true;
+      /* o crackle so entra quando a agulha toca o disco: antes disso, silencio */
+      if(RIG.setNext) RIG.setNext(metaFor(current));
+      RIG.first(deckOfPlayer(activeKey));
+      /* rede de seguranca: se o gancho da agulha nao disparar, a rampa entra na mesma */
+      setTimeout(function(){ if(firstRampPending && window.HMFX){ window.HMFX.needle(); } }, 9500);
+    }
+    setTimeout(checkAudible, 6000);
+  }
+  go();
+}
+var needleTries = 0;
+function checkAudible(){
+  var p = P[activeKey];
+  if(!p.ready){ setTimeout(checkAudible, 800); return; }
+  var st=-9, mu=false;
+  try{ st = p.yt.getPlayerState(); mu = p.yt.isMuted(); }catch(e){}
+  if(st === 1 && !mu){ needleTries = 0; return; }
+  if(!started && pendingFirst){ ensureLoaded(p, pendingFirst.v) && (started=true); }
+  if((st === 3 || st === -1) && needleTries++ < 5){ setTimeout(checkAudible, 1200); return; }
+  /* mostrar o proprio leitor para o arranque manual, venha o bloqueio de onde vier */
+  $("slot"+activeKey).classList.add("live");
+  $("standby").classList.add("off");
+  $("needle").textContent = (st === 1 && mu) ? "muted by the browser. tap for sound" : "silent? press play on the monitor";
+  $("needle").classList.add("on");
+}
+$("needle") && $("needle").addEventListener("click", function(){
+  var p = P[activeKey];
+  try{ p.yt.unMute(); muted=false; fadeVol(p,1); p.yt.playVideo(); }catch(e){}
+  FX.resume();
+  $("needle").classList.remove("on");
+});
+
+function onState(k, st){
+  if(st === 1){
+    if(k === activeKey){
+      $("standby").classList.add("off");
+      $("slot"+k).classList.add("live");
+      var muNow=false; try{ muNow=P[k].yt.isMuted(); }catch(e){}
+      if(!muNow || muted){ $("needle").classList.remove("on"); }
+      lastT = 0; lastStamp = Date.now();
+    }
+    retryCount = 0;
+  }
+  if(st === 0 && k === activeKey && !transitioning){ hardNext("ended"); }
+}
+function onYtError(k, code){
+  var p = P[k];
+  if(code === 153 || code === 2){
+    $("slot"+k).classList.add("live");
+    $("standby").classList.add("off");
+    $("needle").textContent = "player blocked by browser privacy settings";
+    $("needle").classList.add("on");
+    return;
+  }
+  var bad = p.pendingTrack || (k===activeKey ? current : null);
+  if(bad){ deadIds[bad.v] = true; }
+  if(transitioning && k !== activeKey){
+    transitioning = false;
+    if(retryCount++ < 4){ startTransition(); }
+  } else if(k === activeKey){
+    if(retryCount++ < 5){ hardNext("error"); }
+    else { $("standbyMsg").textContent = "too many dead links in a row. check the connection."; $("standby").classList.remove("off"); }
+  }
+}
+
+/* hard cut (errors, manual skip): the rig does a fast same-deck swap */
+function hardNextAudio(t, quiet){
+  var p = P[activeKey];
+  p.pendingTrack = t;
+  setNow(t, true);
+  ensureLoaded(p, t.v);
+  try{ p.yt.unMute(); fadeVol(p, quiet?0:1); }catch(e){}
+}
+var swapPending=false;
+function hardNext(reason){
+  if(swapPending) return;
+  var t = nextTrack(); if(!t) return;
+  if(reason === "ended"){
+    /* o disco chegou ao fim: agulha fora, sulco a morrer, maos no proximo */
+    swapPending=true;
+    if(window.HMFX) HMFX.lift();
+    $("standbyMsg").textContent = "changing the record\u2026";
+    setTimeout(function(){
+      swapPending=false;
+      if(!radioOn) return;
+      if(RIG.setNext) RIG.setNext(metaFor(t));
+      firstRampPending=true; rampDur=2000;
+      hardNextAudio(t, true);
+      RIG.quick(deckOfPlayer(activeKey));
+      /* salvaguarda: se o gancho da agulha nao vier, a rampa entra na mesma */
+      setTimeout(function(){ if(firstRampPending && window.HMFX){ HMFX.needle(); } }, 6000);
+    }, 2600);
+    return;
+  }
+  if(RIG.setNext) RIG.setNext(metaFor(t));
+  hardNextAudio(t);
+  RIG.quick(deckOfPlayer(activeKey));
+}
+
+/* the changeover: the rig walks to the idle deck, swaps the record, drops the
+   needle, then rides the crossfader while the audio does the same 6s ramp */
+function startTransition(){
+  if(transitioning || !radioOn) return;
+  var t = nextTrack(); if(!t) return;
+
+  if(SIMPLE){
+    transitioning = true;
+    var inD = other(rigDeck), outD = rigDeck;
+    var prepped = false;
+    if(RIG.setNext) RIG.setNext(metaFor(t));
+    RIG.prepare(inD, function(){ prepped = true; });
+    FX.transitionFx();
+    var waited = 0;
+    (function waitPrep(){
+      if(!transitioning) return;
+      if(prepped){ go(); }
+      else if((waited += 250) > 14000){ go(); }
+      else setTimeout(waitPrep, 250);
+    })();
+    function go(){
+      RIG.fadeBegin(inD);
+      var swapped=false;
+      animClock(1900, function(x){
+        if(!transitioning){ return false; }
+        RIG.setFade(x, inD);
+        if(x >= 0.5 && !swapped){ swapped=true; hardNextAudio(t); }
+      }, function(){
+        RIG.finish(outD);
+        rigDeck = inD;
+        transitioning = false;
+        lastT=0; lastStamp=Date.now();
+      });
+    }
+    return;
+  }
+
+  var inc = P[other(activeKey)];
+  if(!inc.ready){ hardNext(); return; }
+  transitioning = true;
+  inc.pendingTrack = t;
+  fadeVol(inc, 0);
+  ensureLoaded(inc, t.v);
+  try{ inc.yt.unMute(); }catch(e){}
+  var inK = other(activeKey), outK = activeKey;
+  var prepped = false;
+  if(RIG.setNext) RIG.setNext(metaFor(t));
+  RIG.prepare(inK, function(){ prepped = true; });
+  FX.transitionFx();
+  var waited=0;
+  (function waitBoth(){
+    var st=-9; try{ st = inc.yt.getPlayerState(); }catch(e){}
+    if(!transitioning) return;            /* aborted by the error handler */
+    if(st === 1 && prepped){ ramp(); }
+    else if((waited += 250) > 30000){ transitioning=false; hardNext(); }
+    else setTimeout(waitBoth, 250);
+  })();
+  function ramp(){
+    var out = P[outK], mid=false;
+    RIG.fadeBegin(inK);
+    animClock(FADE_DUR, function(x){
+      if(!transitioning){ return false; }
+      fadeVol(out, Math.cos(x * Math.PI/2));
+      fadeVol(inc, Math.sin(x * Math.PI/2));
+      RIG.setFade(x, inK);
+      if(x >= 0.45 && !mid){
+        mid = true;
+        $("slot"+inK).classList.add("live");
+        $("slot"+outK).classList.remove("live");
+        setNow(t, true);
+      }
+    }, function(){
+      try{ out.yt.stopVideo(); }catch(e){}
+      out.pendingTrack = null;
+      RIG.finish(outK);
+      activeKey = inK;
+      rigDeck = inK;
+      transitioning = false;
+      lastT=0; lastStamp=Date.now();
+    });
+  }
+}
+
+/* watchdog */
+setInterval(function(){
+  if(!radioOn || transitioning) return;
+  var p = P[activeKey]; if(!p.ready) return;
+  var st=-9, cur=0, dur=0;
+  try{ st=p.yt.getPlayerState(); cur=p.yt.getCurrentTime(); dur=p.yt.getDuration(); }catch(e){ return; }
+  if(st === 1){
+    if(cur !== lastT){ lastT=cur; lastStamp=Date.now(); }
+    else if(Date.now() - lastStamp > 14000){ hardNext("stalled"); return; }
+    if(dur > 0){ RIG.setProgress(deckOfPlayer(activeKey), cur/dur); }
+    if(dur > 40 && (dur - cur) <= XFADE_LEAD){ startTransition(); }
+  }
+}, 600);
+
+/* block changes */
+function applyBlockTheme(){
+  var b = BLOCKS[currentBlock];
+  document.body.style.setProperty("--blk", b.accent);
+  $("blockLabel").textContent = b.label + " " + b.range + (OVERRIDE ? " (override)" : "");
+}
+setInterval(function(){
+  if(OVERRIDE) return;
+  var bk = blockKeyFor(new Date().getHours());
+  if(bk !== currentBlock){
+    currentBlock = bk;
+    buildQueue();
+    applyBlockTheme();
+    toast("PROGRAMME CHANGE · " + BLOCKS[bk].label);
+    FX.horn();
+  }
+}, 20000);
+
+/* clock */
+function tickClock(){
+  var d=new Date();
+  $("clock").textContent = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ---------------- UI ---------------- */
+function spotifyLink(t){
+  return t.s ? t.s : "https://open.spotify.com/search/" + encodeURIComponent(t.a + " " + t.t);
+}
+function setNow(t, push){
+  current = t;
+  var g = GENRES[t.g];
+  if(RIG.setTempo){ RIG.setTempo(t.bpm||GBPM[t.g]||120); }
+  $("gChip").textContent = g.name;
+  $("tYear").textContent = t.y ? String(t.y) : "";
+  $("tBpm").textContent = (t.bpm? "" : "~") + (t.bpm||GBPM[t.g]||120) + " BPM";
+  $("tArtist").textContent = t.a;
+  $("tTitle").textContent = t.t;
+  $("tBlurb").textContent = t.b;
+  $("aYT").href = "https://www.youtube.com/watch?v=" + t.v;
+  $("aSP").href = spotifyLink(t);
+  var src = $("aSrc");
+  if(t.w){ src.href = t.w; src.hidden = false; } else { src.hidden = true; }
+  $("gName").textContent = g.name;
+  $("gNote").textContent = g.note;
+  var gw = $("gWiki");
+  if(g.w){ gw.href = g.w; gw.hidden = false; } else { gw.hidden = true; }
+  var n = TRACKS.filter(function(x){ return x.g===t.g; }).length;
+  $("gTrackCount").textContent = n + " records from this sound in tonight's crate.";
+  /* amostra do painel estendido: escrita de fora primeiro, a nossa so como argamassa */
+  var ext=$("gExt");
+  if(ext){
+    var gx=(typeof GEXT!=="undefined") && GEXT[t.g];
+    if(gx && !gx.records){
+      var ks0=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
+      gx={ quote:gx.quote, quote2:gx.quote2, lineage:gx.lineage, note:gx.note, eph:gx.eph,
+        records: ks0.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+          r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
+          u:"https://www.youtube.com/watch?v="+k.v }; }),
+        links: gx.links || [
+          { n:"Ishkur's Guide, this genre's entry", u:"https://music.ishkur.com/" },
+          { n:"Discogs, releases in this style", u:"https://www.discogs.com/search/?q="+encodeURIComponent(g.name)+"&type=release" },
+          { n:"This genre on Wikipedia", u:(g.w||"https://en.wikipedia.org/wiki/Electronic_music") }
+        ] };
+    }
+    if(!gx){
+      /* todos os generos mostram ja o painel estendido: registos da propria
+         estante e portas para fora; os dossiers ricos chegam genero a genero */
+      var ks=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
+      gx={
+        records: ks.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+          r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
+          u:"https://www.youtube.com/watch?v="+k.v }; }),
+        links:[
+          { n:"Ishkur's Guide, this genre's entry", u:"https://music.ishkur.com/" },
+          { n:"Discogs, releases in this style", u:"https://www.discogs.com/search/?q="+encodeURIComponent(g.name)+"&type=release" },
+          { n:"This genre on Wikipedia", u:(g.w||"https://en.wikipedia.org/wiki/Electronic_music") }
+        ],
+        note:"Extended dossier for this genre (quotes, lineage, ephemera) lands with the panel rollout; dub carries the full sample."
+      };
+    }
+    if(gx){
+      var h='';
+      if(gx.quote) h+='<blockquote>&ldquo;'+gx.quote.t+'&rdquo;<cite><a href="'+gx.quote.u+'" target="_blank" rel="noopener">'+gx.quote.src+'</a></cite></blockquote>';
+      if(gx.quote2) h+='<blockquote>&ldquo;'+gx.quote2.t+'&rdquo;<cite><a href="'+gx.quote2.u+'" target="_blank" rel="noopener">'+gx.quote2.src+'</a></cite></blockquote>';
+      h+='<div class="gx-h">Key records</div><ul class="gx-list">';
+      gx.records.forEach(function(r){ h+='<li><a href="'+r.u+'" target="_blank" rel="noopener">'+r.n+'</a><span>'+r.r+'</span></li>'; });
+      h+='</ul>';
+      if(gx.lineage) h+='<div class="gx-h">Lineage</div><p class="gx-p">'+gx.lineage.t+' <a href="'+gx.lineage.u+'" target="_blank" rel="noopener">WhoSampled ↗</a></p>';
+      if(gx.links && gx.links.length){
+        h+='<div class="gx-h">Go deeper</div><ul class="gx-list">';
+        gx.links.forEach(function(l){ h+='<li><a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a></li>'; });
+        h+='</ul>';
+      }
+      if(gx.note) h+='<p class="gx-note">'+gx.note+'</p>';
+      ext.innerHTML=h; ext.hidden=false;
+    } else { ext.hidden=true; ext.innerHTML=""; }
+  }
+  document.title = t.a + " · Home Music";
+  if(push){ pushHistory(t); }
+}
+function pushHistory(t){
+  var ul = $("histList");
+  var empty = ul.querySelector(".h-empty"); if(empty) empty.remove();
+  var d=new Date();
+  var li = document.createElement("li");
+  var tm = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  li.innerHTML = '<div class="h-time">' + tm + ' · ' + GENRES[t.g].name.toUpperCase() + '</div>' +
+    '<div class="h-art"></div><div class="h-tit"></div>' +
+    '<div class="h-links"><a target="_blank" rel="noopener">YOUTUBE</a><a target="_blank" rel="noopener">SPOTIFY</a></div>';
+  li.querySelector(".h-art").textContent = t.a;
+  li.querySelector(".h-tit").textContent = t.t + (t.y ? " (" + t.y + ")" : "");
+  var as = li.querySelectorAll(".h-links a");
+  as[0].href = "https://www.youtube.com/watch?v=" + t.v;
+  as[1].href = spotifyLink(t);
+  ul.insertBefore(li, ul.firstChild);
+  while(ul.children.length > 60){ ul.removeChild(ul.lastChild); }
+}
+var toastTimer=null;
+function toast(msg){
+  var el=$("toast"); el.textContent=msg; el.classList.add("on");
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ el.classList.remove("on"); }, 3400);
+}
+
+/* volume + mute */
+var volEl = $("vol"); volEl.value = masterVol;
+volEl.addEventListener("input", function(){
+  masterVol = parseInt(volEl.value,10);
+  try{ localStorage.setItem("hm_vol", String(masterVol)); }catch(e){}
+  applyVol("A"); applyVol("B");
+  FX.setVol(masterVol/100);
+  if(introAudio && !introFading){ try{ introAudio.volume=masterVol/100; }catch(e){} }
+});
+FX.setVol(masterVol/100);
+function toggleMute(){
+  muted = !muted;
+  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ muted ? p.yt.mute() : p.yt.unMute(); }catch(e){} } });
+  if(introAudio){ try{ introAudio.muted = muted; }catch(e){} }
+  $("muteBtn").classList.toggle("on", muted);
+  $("muteBtn").textContent = muted ? "Unmute" : "Mute";
+}
+$("muteBtn").addEventListener("click", toggleMute);
+
+/* panels */
+function bindPanel(btnId, panelId){
+  $(btnId).addEventListener("click", function(){
+    var p=$(panelId), was=p.classList.contains("on");
+    document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+    if(!was) p.classList.add("on");
+  });
+}
+bindPanel("genreBtn","genrePanel"); bindPanel("histBtn","histPanel");
+/* ---------------- the dance nearby: pistas por regiao, Europa e America primeiro ----------------
+   sem servidor proprio: geolocalizacao do browser, cidade por Nominatim (OpenStreetMap),
+   e ligacoes construidas para os diretorios que cobrem cada regiao. */
+var DANCE_TERM={ reggae:"reggae", dub:"dub sound system", ska_rocksteady:"ska reggae",
+  lofi:"beats", ambient:"ambient", ambient_techno:"ambient techno", dub_techno:"dub techno",
+  lofi_house:"house", liquid:"drum and bass", intelligent_dnb:"drum and bass",
+  atmospheric_jungle:"jungle drum and bass", breakbeat:"breakbeat", deep_house:"deep house",
+  hypnotic_techno:"techno", ragga_jungle:"jungle", oldskool_hardcore:"rave", dubstep:"dubstep" };
+var US19={ "san francisco":"BayArea","oakland":"BayArea","los angeles":"LosAngeles","new york":"NYC",
+  "brooklyn":"NYC","seattle":"Seattle","portland":"PNW","miami":"Miami","chicago":"CHI",
+  "detroit":"Detroit","denver":"Denver","austin":"Texas","dallas":"Texas","houston":"Texas",
+  "atlanta":"Atlanta","boston":"MASS","philadelphia":"PHL","washington":"DC","toronto":"Toronto",
+  "vancouver":"Vancouver","montreal":"Montreal","phoenix":"Phoenix","las vegas":"LasVegas" };
+function danceLinks(city, cc){
+  var g=(current&&current.g)||"dub";
+  var term=DANCE_TERM[g]||"electronic";
+  var citySlug=(city||"").toLowerCase().replace(/[^a-z0-9]+/g,"");
+  var q=encodeURIComponent(term+" "+(city||""));
+  var out=[];
+  if(cc){ out.push({n:"Resident Advisor: events in "+(city||cc.toUpperCase()), u:"https://ra.co/events/"+cc.toLowerCase()+"/"+citySlug}); }
+  else { out.push({n:"Resident Advisor", u:"https://ra.co/events"}); }
+  if(cc==="us"||cc==="ca"){
+    var k=(city||"").toLowerCase(), reg=null;
+    Object.keys(US19).some(function(x){ if(k.indexOf(x)>=0){ reg=US19[x]; return true; } return false; });
+    out.push({n:"19hz underground listings"+(reg?": "+reg:""), u: reg? "https://19hz.info/eventlisting_"+reg+".php" : "https://19hz.info/"});
+  }
+  out.push({n:"Bandsintown: "+term, u:"https://www.bandsintown.com/?came_from=257&search="+q});
+  out.push({n:"Songkick: "+term+" near "+(city||"you"), u:"https://www.songkick.com/search?utf8=%E2%9C%93&type=upcoming&query="+q});
+  if(!cc || ["pt","es","fr","de","it","nl","be","gb","ie","pl","cz","at","ch","dk","se","no","fi","gr","hu","ro","us"].indexOf(cc)>=0){
+    out.push({n:"DICE: around "+(city||"you"), u:"https://dice.fm/browse"});
+  }
+  return out;
+}
+var DANCE_DB=null, DANCE_DB_TRIED=false;
+function danceDb(cb){
+  if(DANCE_DB || DANCE_DB_TRIED){ cb(DANCE_DB); return; }
+  var base=(location.pathname.indexOf("/liquid")>=0)? "../" : "";
+  fetch(base+"events/europe.json").then(function(r){ return r.ok? r.json() : null; })
+    .then(function(j){ DANCE_DB_TRIED=true; DANCE_DB=j; cb(j); })
+    .catch(function(){ DANCE_DB_TRIED=true; cb(null); });
+}
+function fmtDay(iso){
+  try{
+    var d=new Date(iso);
+    if(isNaN(d)) return iso.slice(0,10);
+    var wd=["sun","mon","tue","wed","thu","fri","sat"][d.getDay()];
+    return wd+" "+String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0");
+  }catch(e){ return ""; }
+}
+function danceRender(city, cc, note){
+  var ul=$("danceList"); ul.innerHTML="";
+  var put=function(html){ var li=document.createElement("li"); li.innerHTML=html; ul.appendChild(li); };
+  danceDb(function(db){
+    var hit=null;
+    if(db && db.cities && city){
+      hit=db.cities[(city||"").toLowerCase()];
+    }
+    if(hit && hit.events && hit.events.length){
+      hit.events.slice(0,8).forEach(function(ev){
+        put('<a href="'+ev.u+'" target="_blank" rel="noopener">'+ev.t+' ↗</a>'+
+            '<span class="dance-meta">'+fmtDay(ev.d)+(ev.v? " · "+ev.v : "")+" · via "+ev.src.toUpperCase()+'</span>');
+      });
+      put('<span class="dance-more">more doors:</span>');
+    } else if(db && city){
+      put('<span class="dance-more">no harvested listings for '+city+' yet (collector refreshes every 48 h, Europe first); the doors below search live:</span>');
+    }
+    danceLinks(city, cc).forEach(function(l){
+      put('<a href="'+l.u+'" target="_blank" rel="noopener">'+l.n+' ↗</a>');
+    });
+    $("danceNote").textContent = note || "";
+  });
+}
+function danceLocate(){
+  $("danceNote").textContent="asking your browser for a rough position…";
+  if(!navigator.geolocation){ danceRender(null,null,"no geolocation in this browser; type a city instead."); return; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var la=pos.coords.latitude.toFixed(3), lo=pos.coords.longitude.toFixed(3);
+    fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+la+"&lon="+lo+"&zoom=10")
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var a=j.address||{};
+        var city=a.city||a.town||a.municipality||a.village||a.county||"";
+        var cc=(a.country_code||"").toLowerCase();
+        $("danceCity").value=city;
+        danceRender(city, cc, "listings in the spirit of the sound now playing, near "+(city||"you")+". underground first: trust the small rooms.");
+      })
+      .catch(function(){ danceRender(null,null,"could not name your city; type it below."); });
+  }, function(){ danceRender(null,null,"location declined, fair enough: type a city instead."); }, {maximumAge:600000, timeout:8000});
+}
+$("danceBtn").addEventListener("click", function(){
+  document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+  $("dancePanel").classList.add("on");
+  if(!$("danceList").children.length) danceLocate();
+});
+$("danceGo").addEventListener("click", function(){
+  var c=$("danceCity").value.trim();
+  danceRender(c||null, null, c? "listings around "+c+"." : "");
+});
+$("danceCity").addEventListener("keydown", function(e){ if(e.key==="Enter"){ $("danceGo").click(); } });
+
+/* ---------------- a prateleira das mixtapes: gaveta sobre a emissao ----------------
+   abrir nao toca no som; dar play numa tape poe a radio de lado (mute) e fechar devolve-a */
+var MXT2=[
+  {a:"King Tubby & The Aggrovators", t:"Dub Fi Gwan", y:1977, v:"qu3RXnGFQa8"},
+  {a:"Max Romeo & The Upsetters", t:"Chase the Devil", y:1976, v:"5_U9wsBVvqU"},
+  {a:"Lee \"Scratch\" Perry & The Upsetters", t:"Disco Devil", y:1977, v:"vjC2WT7VOyE"},
+  {a:"Yabby You", t:"Deliver Me From My Enemies (dub plate mix)", y:1977, v:"uVXlm4He6Mc"},
+  {a:"Pablo Gad", t:"Blood Suckers", y:1979, v:"ISIWjpRquGA"},
+  {a:"Scientist", t:"Dance of the Vampires", y:1981, v:"iCpPaTeL2BE"},
+  {a:"Johnnie Clarke", t:"Young Rebel", y:1983, v:"Dmujamx8Hww"}
+];
+var mx2={i:-1, yt:null, ready:false, playing:false, mutedRadio:false, loadedFrames:false};
+function mx2List(){
+  var ol=$("mxList2"); if(!ol) return;
+  ol.innerHTML="";
+  MXT2.forEach(function(x,i){
+    var li=document.createElement("li");
+    li.textContent=x.a+" / "+x.t+" ("+x.y+")";
+    if(i===mx2.i) li.className="on";
+    li.addEventListener("click", function(){ mx2Go(i); });
+    ol.appendChild(li);
+  });
+}
+function mx2SideRadio(on){
+  /* on=true: a radio poe-se de lado enquanto a tape toca */
+  if(on){ if(!muted){ toggleMute(); mx2.mutedRadio=true; } }
+  else { if(mx2.mutedRadio){ mx2.mutedRadio=false; if(muted) toggleMute(); } }
+}
+function mx2Player(cb){
+  if(mx2.yt && mx2.ready){ cb(); return; }
+  if(typeof YT==="undefined" || !YT.Player){ setTimeout(function(){ mx2Player(cb); }, 400); return; }
+  mx2.yt=new YT.Player("mxYt2", { width:"100%", height:"100%",
+    playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, playsinline:1 },
+    events:{
+      onReady:function(e){ mx2.yt=e.target; mx2.ready=true; cb(); },
+      onStateChange:function(e){
+        if(e.data===1 && !mx2.playing){
+          /* play nativo sobre o disco ja carregado */
+          if(typeof scPauseAll==="function") scPauseAll(-1);
+          mx2.playing=true; $("mxPlay2").textContent="Pause";
+          mx2SideRadio(true);
+          if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+        }
+        if(e.data===0){
+          if(mx2.i<MXT2.length-1){
+            /* agulha fora, meio compasso de sulco, proximo disco */
+            if(window.HMFX) HMFX.lift();
+            setTimeout(function(){ mx2Go(mx2.i+1); }, 1800);
+          } else {
+            mx2.playing=false; $("mxPlay2").textContent="Play";
+            $("mxNow2").textContent="side B ran out. thanks for sitting through.";
+            mx2SideRadio(false);
+          }
+        }
+      }
+    }
+  });
+}
+function mx2Go(i){
+  if(typeof scPauseAll==="function") scPauseAll(-1);
+  mx2.i=i; mx2List();
+  var x=MXT2[i];
+  $("mxNow2").textContent=(i+1)+"/"+MXT2.length+" "+x.a+" / "+x.t;
+  $("mxIdle2").style.display="none";
+  mx2SideRadio(true);
+  if(FX.ctx && FX.ctx.state==="running"){ FX.needleDrop(); FX.crackleBurst(1.6); }
+  mx2Player(function(){
+    setTimeout(function(){ mx2.yt.loadVideoById(x.v); mx2.yt.playVideo(); mx2.playing=true; $("mxPlay2").textContent="Pause"; }, 320);
+  });
+}
+$("mixBtn").addEventListener("click", function(){
+  var d=$("mixPanel");
+  d.classList.add("on");
+  if(!mx2.loadedFrames){
+    mx2.loadedFrames=true;
+    d.querySelectorAll("iframe[data-src]").forEach(function(f){ f.src=f.getAttribute("data-src"); });
+    mx2List();
+    scWidget(0, function(){}); scWidget(1, function(){});
+  }
+  /* primeiro disco ja no prato: carregado, a espera do play */
+  if(mx2.i<0 && !mx2.playing){
+    mx2Player(function(){
+      if(mx2.i>=0 || mx2.playing) return;
+      try{ mx2.yt.cueVideoById(MXT2[0].v); }catch(e){}
+      $("mxIdle2").style.display="none";
+      mx2.i=0; mx2List();
+      $("mxNow2").textContent="1/"+MXT2.length+" "+MXT2[0].a+" / "+MXT2[0].t;
+    });
+  }
+});
+function mx2Close(){
+  $("mixPanel").classList.remove("on");
+  if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+  if(typeof scPauseAll==="function") scPauseAll(-1);
+  mx2SideRadio(false);
+}
+$("mixClose").addEventListener("click", mx2Close);
+$("mxPlay2").addEventListener("click", function(){
+  if(mx2.i<0){ mx2Go(0); return; }
+  if(!mx2.ready) return;
+  if(mx2.playing){ mx2.yt.pauseVideo(); mx2.playing=false; this.textContent="Play"; mx2SideRadio(false); }
+  else { mx2SideRadio(true); mx2.yt.playVideo(); mx2.playing=true; this.textContent="Pause"; }
+});
+$("mxNext2").addEventListener("click", function(){ if(mx2.i<MXT2.length-1) mx2Go(mx2.i+1); });
+
+/* ---------------- tapes soundcloud: cromo nativo sobre a API oficial do widget ---------------- */
+var SCT=[{dur:0, playing:false, started:false, w:null},{dur:0, playing:false, started:false, w:null}];
+function scApi(cb){
+  if(window.SC && SC.Widget){ cb(); return; }
+  if(scApi._q){ scApi._q.push(cb); return; }
+  scApi._q=[cb];
+  var s=document.createElement("script"); s.src="https://w.soundcloud.com/player/api.js";
+  s.onload=function(){ var q=scApi._q; scApi._q=null; q.forEach(function(f){ f(); }); };
+  s.onerror=function(){ scApi._q=null; scUnfold(0); scUnfold(1); };
+  document.head.appendChild(s);
+}
+function scFmt(ms){ var s=Math.floor(ms/1000), m=Math.floor(s/60); s=s%60; return m+":"+(s<10?"0":"")+s; }
+function scUnfold(i){ var h=$("scHost"+i); if(h) h.classList.add("unfold"); }
+function scAnyPlaying(){ return SCT[0].playing || SCT[1].playing; }
+function scWidget(i, cb){
+  if(SCT[i].w){ cb(SCT[i].w); return; }
+  scApi(function(){
+    var f=$("scHost"+i).querySelector("iframe");
+    if(!f.src) f.src=f.getAttribute("data-src");
+    var w=SC.Widget(f); SCT[i].w=w;
+    w.bind(SC.Widget.Events.READY, function(){
+      w.getDuration(function(d){ SCT[i].dur=d||0; scPaint(i, 0); });
+    });
+    w.bind(SC.Widget.Events.PLAY, function(){
+      SCT[i].playing=true; SCT[i].started=true;
+      $("scPlay"+i).textContent="Pause";
+      mx2SideRadio(true);
+      if(FX.ctx && FX.ctx.state==="running" && !SCT[i]._dropped){ SCT[i]._dropped=true; FX.needleDrop(); FX.crackleBurst(1.4); }
+    });
+    w.bind(SC.Widget.Events.PAUSE, function(){
+      SCT[i].playing=false; $("scPlay"+i).textContent="Play";
+      if(!scAnyPlaying() && !mx2.playing) mx2SideRadio(false);
+    });
+    w.bind(SC.Widget.Events.FINISH, function(){
+      SCT[i].playing=false; SCT[i]._dropped=false; $("scPlay"+i).textContent="Play"; scPaint(i, 0);
+      if(!scAnyPlaying() && !mx2.playing) mx2SideRadio(false);
+    });
+    w.bind(SC.Widget.Events.PLAY_PROGRESS, function(e){ scPaint(i, e.currentPosition||0); });
+    w.bind(SC.Widget.Events.ERROR, function(){ scUnfold(i); });
+    cb(w);
+  });
+}
+function scPaint(i, pos){
+  var d=SCT[i].dur;
+  $("scFill"+i).style.width = d ? Math.min(100, pos/d*100)+"%" : "0";
+  $("scTime"+i).textContent = scFmt(pos)+" / "+(d?scFmt(d):"--:--");
+}
+function scPauseAll(except){
+  SCT.forEach(function(st, i){ if(i!==except && st.playing && st.w){ try{ st.w.pause(); }catch(e){} } });
+}
+function scToggle(i){
+  scWidget(i, function(w){
+    if(SCT[i].playing){ w.pause(); return; }
+    scPauseAll(i);
+    if(mx2.playing && mx2.yt){ try{ mx2.yt.pauseVideo(); }catch(e){} mx2.playing=false; $("mxPlay2").textContent="Play"; }
+    w.play();
+    /* se o widget nao responder (consentimento por dar, bloqueio), abre-se para a pessoa tratar la dentro */
+    setTimeout(function(){ if(!SCT[i].started) scUnfold(i); }, 2600);
+  });
+}
+[0,1].forEach(function(i){
+  $("scPlay"+i).addEventListener("click", function(){ scToggle(i); });
+  $("scBar"+i).addEventListener("click", function(ev){
+    if(!SCT[i].started){ scToggle(i); return; }
+    var r=this.getBoundingClientRect(), frac=(ev.clientX-r.left)/r.width;
+    if(SCT[i].w && SCT[i].dur){ try{ SCT[i].w.seekTo(Math.max(0, Math.min(1, frac))*SCT[i].dur); }catch(e){} }
+  });
+});
+/* imersao: ecra inteiro */
+function toggleFs(){
+  if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+  else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
+}
+$("fsBtn").addEventListener("click", toggleFs);
+document.addEventListener("fullscreenchange", function(){
+  $("fsBtn").classList.toggle("on", !!document.fullscreenElement);
+  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";
+});
+document.querySelectorAll(".pclose").forEach(function(b){
+  b.addEventListener("click", function(){
+    var tgt=b.getAttribute("data-close");
+    if(tgt){ $(tgt).classList.remove("on"); }
+  });
+});
+/* ---------------- earn the skip: bater o tempo liberta a agulha ----------------
+   escolha do dono da casa: saltar de faixa custa um desafio de beat-match.
+   oito toques, mediana dentro de 3 BPM do alvo (meio tempo e dobro contam);
+   falhar fecha a cabina por vinte segundos. */
+var SK={taps:[], open:false, lockUntil:0, lockTick:null};
+function skMedian(a){ var b=a.slice().sort(function(x,y){return x-y;}); var m=b.length>>1; return b.length%2? b[m] : (b[m-1]+b[m])/2; }
+function skTargets(){ var t0=(current&&(current.bpm||GBPM[current.g]))||120; return [[t0,3],[t0/2,2],[t0*2,6]]; }
+function skReset(){
+  SK.taps=[];
+  $("skBpm").textContent="--";
+  document.querySelectorAll("#skDots i").forEach(function(d){ d.classList.remove("f"); });
+  $("skMsg").textContent=""; $("skMsg").className="sk-msg";
+}
+function skLockLeft(){ return Math.max(0, SK.lockUntil-Date.now()); }
+function skShowLock(){
+  $("skPad").disabled=true;
+  var m=$("skMsg"); m.className="sk-msg bad";
+  function up(){
+    var s=Math.ceil(skLockLeft()/1000);
+    if(s<=0){ clearInterval(SK.lockTick); SK.lockTick=null; $("skPad").disabled=false; skReset(); return; }
+    m.textContent="missed it. the booth is closed: "+s+" s";
+  }
+  up();
+  if(SK.lockTick) clearInterval(SK.lockTick);
+  SK.lockTick=setInterval(up, 250);
+}
+function skOpen(){
+  if(!radioOn || !current) return;
+  SK.open=true;
+  $("skTarget").textContent=String(current.bpm||GBPM[current.g]||120);
+  $("skill").classList.add("on");
+  skReset();
+  if(skLockLeft()>0) skShowLock(); else $("skPad").disabled=false;
+}
+function skCloseBox(){
+  SK.open=false;
+  $("skill").classList.remove("on");
+  if(SK.lockTick){ clearInterval(SK.lockTick); SK.lockTick=null; }
+}
+function skPass(){
+  var m=$("skMsg"); m.className="sk-msg ok"; m.textContent="locked in. pull up!";
+  FX.rim(0.02,true);
+  setTimeout(function(){ skCloseBox(); FX.rewind(); setTimeout(hardNext, 350); }, 650);
+}
+function skFail(){
+  SK.lockUntil=Date.now()+20000;
+  skShowLock();
+}
+function skTap(){
+  if(skLockLeft()>0 || !SK.open) return;
+  var now=performance.now();
+  SK.taps.push(now);
+  if(SK.taps.length>8) SK.taps.shift();
+  var dots=document.querySelectorAll("#skDots i");
+  for(var i=0;i<dots.length;i++) dots[i].classList.toggle("f", i<SK.taps.length);
+  if(SK.taps.length>=3){
+    var iv=[]; for(var j=1;j<SK.taps.length;j++) iv.push(SK.taps[j]-SK.taps[j-1]);
+    var bpm=60000/skMedian(iv);
+    $("skBpm").textContent=String(Math.round(bpm));
+    if(SK.taps.length===8){
+      var ok=skTargets().some(function(c){ return Math.abs(bpm-c[0])<=c[1]; });
+      if(ok) skPass(); else skFail();
+    }
+  }
+}
+$("skPad").addEventListener("pointerdown", function(e){ e.preventDefault(); skTap(); });
+$("skClose").addEventListener("click", skCloseBox);
+$("skipBtn").addEventListener("click", skOpen);
+/* o botao Field existe so na sala liquida: troca o campo do fundo */
+var fieldBtn=$("fieldBtn");
+if(fieldBtn && window.HMFIELD){
+  fieldBtn.addEventListener("click", function(){ HMFIELD.next(); });
+}
+
+document.addEventListener("keydown", function(e){
+  if(e.target && (e.target.tagName==="INPUT")) return;
+  if(e.key === "Escape"){
+    document.querySelectorAll(".panel").forEach(function(x){ x.classList.remove("on"); });
+    if(SK.open) skCloseBox();
+    if($("mixPanel").classList.contains("on")) mx2Close();
+  }
+  if(!radioOn) return;
+  if(SK.open && (e.key===" " || e.code==="Space")){ e.preventDefault(); skTap(); return; }
+  if(e.key === "ArrowRight"){ skOpen(); }
+  if(e.key === "m" || e.key === "M"){ toggleMute(); }
+  if(e.key === "f" || e.key === "F"){ toggleFs(); }
+  if((e.key === "v" || e.key === "V") && window.HMFIELD){ HMFIELD.next(); }
+});
+
+/* ---------------- intro: o disco de abertura ----------------
+   Koncrete Roots, Sound Killah (Dub ina Midlands, Dubophonic 2014, CC BY-NC-ND 4.0).
+   Toca em streaming, inteira e sem cortes, do Internet Archive; aos 23 s a
+   coreografia arranca para a agulha pousar com os 30 s; o veu negro clareia
+   ao ritmo do proprio relogio da faixa. */
+var P1_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+var P2_SRC="https://archive.org/download/DPH010/06_Rakoon_Tubbys_Dub_Lesson.mp3";
+var INTRO_LEN=30, P1_FADE=28.5, P2_START=10, P2_PREP=25.15, P2_FADE=28.5, HARD1=42, HARD2=34;
+var MC_AT=[6, 10.5, 15, 19, 23, 26.2];
+var introTimers=[], introDone=false, introTick=null, introAudio=null, introAudio2=null;
+var mcShown=0, beginCalled=false, introFading=false, phase=1, endSeqDone=false;
+/* diagnostico da abertura, visivel em window.HMI */
+window.HMI={log:[]};
+function hmi(ev){ try{ HMI.log.push((performance.now()/1000).toFixed(1)+" "+ev); }catch(e){} }
+function showLine(i){
+  var line=MC_LINES[i], mc=$("mc");
+  var div=document.createElement("div");
+  div.className="mc-line" + (line.big ? " big" : "");
+  div.textContent=line.t;
+  mc.appendChild(div);
+  void div.offsetWidth; div.classList.add("show");
+}
+function startRadioUnderIntro(){
+  if(beginCalled) return; beginCalled=true;
+  beginRadio();
+}
+/* ---- a camada vj: plasma liquido mate, cor continua e deformacao de dominio ---- */
+var vjOn=false, vjG=null, vjImg=null, vjStops=[], vjLast=0;
+var VJW=192, VJH=108;
+function vjInit(){
+  var c=$("vj");
+  vjG=c.getContext("2d");
+  c.width=VJW; c.height=VJH;
+  vjImg=vjG.createImageData(VJW,VJH);
+  ["#030309","#0d0a22","#1c1340","#3a2a4e","#5a4020","#7a5422"]
+  .forEach(function(h){ vjStops.push([parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]); });
+}
+function introClock(){
+  if(phase===2) return (introAudio2 && introAudio2.currentTime)||P2_START;
+  return (introAudio && introAudio.currentTime)||0;
+}
+function vjFrame(ts){
+  if(!vjOn) return;
+  requestAnimationFrame(vjFrame);
+  if(ts-vjLast<40) return;           /* ~25 fps */
+  vjLast=ts;
+  var at=introClock();
+  var t=ts/1000;
+  var energy=(phase===2)?1:0.16+0.84*Math.min(1, at/26);
+  var vib=1+0.11*Math.sin(at*2*Math.PI*1.25);
+  var cx=VJW*0.5+Math.sin(t*0.16)*44, cy=VJH*0.5+Math.cos(t*0.12)*26;
+  var sp=t*(0.3+energy*0.6);
+  var d=vjImg.data, n=vjStops.length;
+  for(var y=0;y<VJH;y++){
+    var wy=y+7*Math.sin(y*0.021+sp*0.7);
+    var dy=(y-cy)*1.55;
+    for(var x=0;x<VJW;x++){
+      /* deformacao de dominio: as coordenadas fluem antes de medir o campo */
+      var wx=x+9*Math.sin(y*0.045+sp*0.85)+5*Math.sin(x*0.02-sp*0.5);
+      var dx=x-cx;
+      var v=Math.sin(wx*0.047+sp*0.8)
+           +Math.sin(wy*0.07-sp*0.55)
+           +Math.sin((wx*0.027+wy*0.04)+sp*0.42)
+           +Math.sin(Math.sqrt(dx*dx+dy*dy)*0.1-sp*1.35)*vib;
+      v=(v+4)/8;
+      v=Math.pow(v, 2.0-0.95*energy)*energy;
+      /* cor continua pela rampa de paradas, sem quantizar: liquido e sem emendas */
+      var f=v*(n-1); if(f<0)f=0; if(f>n-1.001)f=n-1.001;
+      var i0=f|0, fr=f-i0, a2=vjStops[i0], b2=vjStops[i0+1];
+      var p=(y*VJW+x)*4;
+      d[p]  =a2[0]+(b2[0]-a2[0])*fr;
+      d[p+1]=a2[1]+(b2[1]-a2[1])*fr;
+      d[p+2]=a2[2]+(b2[2]-a2[2])*fr;
+      d[p+3]=255;
+    }
+  }
+  vjG.putImageData(vjImg,0,0);
+}
+function vjStart(){ if(vjOn) return; vjInit(); vjOn=true; $("vj").classList.add("on"); requestAnimationFrame(vjFrame); }
+function vjFade(){ $("vj").classList.add("out"); setTimeout(vjStop, 2600); }
+function vjStop(){ vjOn=false; var c=$("vj"); c.classList.remove("on"); c.classList.remove("out"); }
+
+/* o veu negro: escuro ate aos 9 s, depois abre com a faixa */
+function veilK(t){
+  if(t<=9) return 1;
+  var u=Math.min(1,(t-9)/(INTRO_LEN-9));
+  var s=u*u*(3-2*u);
+  return 1-s;
+}
+var awaitingGesture=false;
+function waitGesture(){
+  if(awaitingGesture || introDone) return;
+  awaitingGesture=true;
+  $("tapHint").classList.add("on");
+  function go2(){
+    if(!awaitingGesture) return;
+    awaitingGesture=false;
+    $("tapHint").classList.remove("on");
+    FX.resume();
+    if(introAudio && introAudio.paused){ introAudio.play().catch(function(){ finishIntro(); }); }
+  }
+  document.addEventListener("pointerdown", go2, {once:true});
+  document.addEventListener("keydown", go2, {once:true});
+}
+function fadeAudio(a, len, cb){
+  if(!a){ if(cb) cb(); return; }
+  introFading=true;
+  var v0=a.volume;
+  animClock(len*1000, function(x){
+    try{ a.volume=v0*(1-x); }catch(e){}
+  }, function(){ try{ a.pause(); }catch(e){} if(cb) cb(); });
+}
+/* parte 2: Tubby's Dub Lesson entra nos 10 s; as frases saem, fica o plasma */
+var p2Started=false, p2Fading=false;
+function startP2(){
+  if(p2Started || introDone) return; p2Started=true; phase=2;
+  hmi("startP2 rs="+(introAudio2?introAudio2.readyState:"x"));
+  $("mc").style.opacity="0";
+  var cr=$("introCredit");
+  cr.style.opacity="0";
+  setTimeout(function(){
+    cr.innerHTML="<b>opening tune, part two</b><br>Rakoon, Tubby's Dub Lesson<br>Explorations in Dub &middot; Dubophonic 2013 &middot; CC BY-NC-ND 4.0<br>streaming from the Internet Archive";
+    cr.style.opacity="1";
+  }, 1300);
+  if(!introAudio2){ endSequence(); return; }
+  function go3(){
+    try{ introAudio2.currentTime=P2_START; }catch(e){}
+    introAudio2.volume=0;
+    introAudio2.play().then(function(){
+      var target=Math.max(0, Math.min(1, masterVol/100));
+      animClock(900, function(x){
+        if(introDone) return false;
+        try{ introAudio2.volume=target*x; }catch(e){}
+      });
+    }).catch(function(e2){ hmi("p2 play catch "+(e2&&e2.name)); startRadioUnderIntro(); endSequence(); });
+  }
+  if(introAudio2.readyState>=1){ go3(); }
+  else{
+    introAudio2.addEventListener("loadedmetadata", go3, {once:true});
+    setTimeout(function(){ if(!introDone && introAudio2.readyState<1){ hmi("p2 meta timeout"); startRadioUnderIntro(); endSequence(); } }, 5000);
+  }
+}
+/* o fim: silencio, a luz sobe no palco, a agulha pousa, a musica cresce */
+function endSequence(){
+  if(endSeqDone) return; endSeqDone=true;
+  hmi("endSequence");
+  introDone=true; cleanupIntro();
+  startRadioUnderIntro();
+  var veil=$("introVeil");
+  vjFade();
+  $("splash").classList.add("off");
+  setTimeout(function(){ $("splash").style.display="none"; }, 1500);
+  $("app").classList.remove("intro");
+  veil.classList.add("on");
+  veil.style.transition="none"; veil.style.opacity="0.88";
+  void veil.offsetWidth;
+  var t0=performance.now();
+  (function lift(now){
+    var x=Math.min(1,(now-t0)/4200);
+    veil.style.opacity=String((0.88*(1-x)).toFixed(3));
+    if(x<1){ requestAnimationFrame(lift); }
+    else { veil.classList.remove("on"); veil.style.transition=""; introDone=true; cleanupIntro(); }
+  })(performance.now());
+}
+function cleanupIntro(){
+  introTimers.forEach(clearTimeout);
+  if(introTick){ clearInterval(introTick); introTick=null; }
+}
+function runIntro(){
+  $("splash").classList.add("dark");
+  var veil=$("introVeil");
+  veil.classList.add("on"); veil.style.opacity="1";
+  $("mc").classList.add("on");
+  vjStart();
+  setTimeout(function(){ if(!introDone) $("skipIntro").classList.add("on"); }, 1500);
+  setTimeout(function(){ if(!introDone) $("introCredit").classList.add("on"); }, 2600);
+  introAudio=new Audio(P1_SRC);
+  introAudio.preload="auto";
+  try{ introAudio.volume=Math.max(0, Math.min(1, masterVol/100)); }catch(e){}
+  introAudio.addEventListener("error", function(){ if(phase===1 && !p2Started) finishIntro(); });
+  introAudio.play().catch(function(err){
+    if(err && err.name==="NotAllowedError"){ waitGesture(); }
+    else { finishIntro(); }
+  });
+  /* a segunda faixa comeca a carregar ja */
+  introAudio2=new Audio(P2_SRC);
+  introAudio2.preload="auto";
+  introAudio2.addEventListener("error", function(){ hmi("p2 error ev"); if(phase===2 && !endSeqDone){ startRadioUnderIntro(); endSequence(); } });
+  /* sem progresso em 8 s (e sem espera por gesto): a emissao nao fica presa ao arquivo */
+  introTimers.push(setTimeout(function(){
+    if(!introDone && !awaitingGesture && phase===1 && (!introAudio || introAudio.currentTime<0.4)) finishIntro();
+  }, 8000));
+  var p1Fading=false;
+  introTick=setInterval(function(){
+    if(introDone) return;
+    if(phase===1){
+      var t=(introAudio && introAudio.currentTime)||0;
+      veil.style.opacity=veilK(t).toFixed(3);
+      while(mcShown<MC_LINES.length && t>=MC_AT[mcShown]){ showLine(mcShown); mcShown++; }
+      if(!p1Fading && t>=P1_FADE){ p1Fading=true; fadeAudio(introAudio, 1.5, startP2); }
+      if(t>=HARD1){ p1Fading=true; fadeAudio(introAudio, 0.6, startP2); }
+    } else {
+      var t2=(introAudio2 && introAudio2.currentTime)||0;
+      HMI.p2t=t2;
+      if(t2>=P2_PREP) startRadioUnderIntro();
+      if(!p2Fading && t2>=P2_FADE && (firstLogged || t2>=HARD2)){
+        p2Fading=true; hmi("p2 fade @"+t2.toFixed(1));
+        fadeAudio(introAudio2, 1.5, endSequence);
+      }
+      if(t2>=HARD2+2 && !endSeqDone){ hmi("p2 hard @"+t2.toFixed(1)); endSequence(); }
+    }
+  }, 120);
+}
+function finishIntro(){
+  /* o salto: despacha tudo e entrega a emissao */
+  if(introDone) return; introDone=true;
+  awaitingGesture=false;
+  cleanupIntro();
+  if(introAudio) fadeAudio(introAudio, 0.45);
+  if(introAudio2) fadeAudio(introAudio2, 0.45);
+  if(vjOn && !$("vj").classList.contains("out")) vjFade();
+  var veil=$("introVeil");
+  veil.style.opacity="0";
+  setTimeout(function(){ veil.classList.remove("on"); }, 600);
+  $("splash").classList.add("off");
+  setTimeout(function(){ $("splash").style.display="none"; }, 1000);
+  $("app").classList.remove("intro");
+  startRadioUnderIntro();
+}
+$("skipIntro").addEventListener("click", finishIntro);
+
+/* ---------------- arranque automatico: sem ecra de press play ---------------- */
+function firstGesture(){
+  FX.resume();
+  setTimeout(function(){
+    if(FX._pendingNeedle){ FX._pendingNeedle=false; if(window.HMFX) HMFX.needle(); }
+    if(radioOn && !muted){
+      var p=P[activeKey];
+      try{ p.yt.unMute(); p.yt.playVideo(); }catch(e){}
+    }
+  }, 120);
+}
+document.addEventListener("pointerdown", firstGesture, {once:true});
+document.addEventListener("keydown", firstGesture, {once:true});
+(function autoStart(){
+  FX.init();
+  $("app").classList.add("on");
+  $("app").classList.add("intro");
+  buildQueue(); applyBlockTheme();
+  pendingFirst = nextTrack();
+  setNow(pendingFirst, false);
+  loadApi();
+  maybeStart();
+  runIntro();
+})();
+
+var firstRampPending=false, rampDur=4500;
+function rampInFirst(){
+  if(!firstRampPending) return;
+  firstRampPending=false;
+  /* lenta e constante, em linha reta */
+  var p=P[activeKey], DURR=rampDur;
+  rampDur=4500;
+  animClock(DURR, function(x){ fadeVol(p, x); }, function(){ FX.crackle(false); });
+}
+window.HMFX = {
+  needle: function(){
+    if(!FX.ctx || FX.ctx.state!=="running"){ FX._pendingNeedle=true; return; }
+    FX.needleDrop(); FX.crackleBurst(2.4); rampInFirst();
+  },
+  lift: function(){
+    if(!FX.ctx || FX.ctx.state!=="running") return;
+    FX.needleLift(); FX.crackleBurst(1.3);
+  }
+};
+
+window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
+  return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE };
+}};
+
+})();
+</script>
+</body>
+</html>

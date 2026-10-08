@@ -1,0 +1,324 @@
+/* ================= desenho da cena ================= */
+function stars(){
+  for(var i=0;i<96;i++){
+    var sx=(i*73+17)%320, sy=(i*47+9)%(WATY-48);
+    var tw=((i*13+Math.floor(now*2))%19)===0;
+    PX(sx,sy, tw?C.starB:C.star);
+  }
+  PX(30,12,C.paper); R(28,14,5,1,C.paper); R(30,12,1,5,C.paper);
+  PX(290,22,C.paper); R(288,24,5,1,C.paper); R(290,22,1,5,C.paper);
+}
+function moon(){
+  var r=MOON.r + (moonFlash>0 ? Math.round(moonFlash*3) : 0);
+  DISC(MOON.x,MOON.y,r+5,C.halo);
+  if(moonFlash>0) DISC(MOON.x,MOON.y,r+3,"#2a2348");
+  DISC(MOON.x,MOON.y,r,C.moon);
+  g.fillStyle=C.moonL;
+  for(var sy=-r; sy<-Math.floor(r*0.25); sy++){
+    var w2=Math.floor(Math.sqrt(r*r-sy*sy));
+    for(var sx=-w2; sx<=w2; sx+=2) g.fillRect(MOON.x+sx+((sy%2)?1:0),MOON.y+sy,1,1);
+  }
+  DISC(MOON.x-14,MOON.y+7,6,C.crater);
+  DISC(MOON.x+13,MOON.y+17,4,C.crater);
+  DISC(MOON.x+5,MOON.y-8,3,C.crater);
+}
+function city(){
+  R(0,84,58,WATY-84,C.K); R(34,76,10,WATY-76,C.K); R(38,70,1,7,C.K); PX(38,69,C.red);
+  R(300,74,20,WATY-74,C.K); PX(306,72,C.red);
+  R(62,94,16,WATY-94,C.K);
+}
+function drawSoundsystem(){
+  /* a muralha de tres colunas: a cadeia de vias dos sistemas de dub,
+     de baixo para cima scoop sobre scoop, kick bin, medios, cornetas,
+     regua de bullets e o stencil; control tower a parte, ligada por cabo */
+  var lvl=Math.min(1, levels.A+levels.B);
+  var pu=Math.pow(Math.max(0,Math.sin(beatPh)),2)*lvl;
+  var pu2=Math.pow(Math.max(0,Math.sin(beatPh+2.1)),2)*lvl;
+  function cab(x,y,w,h,face){
+    R(x,y,w,h,face); R(x,y,w,1,C.rockL); R(x,y,1,h,"#1c1838"); R(x+w-1,y,1,h,"#05040c");
+    PX(x+1,y+1,"#2a2448"); PX(x+w-2,y+1,"#2a2448"); PX(x+1,y+h-2,"#2a2448"); PX(x+w-2,y+h-2,"#2a2448");
+  }
+  function cone(cx,cy,r,hot){
+    DISC(cx,cy,r,"#0a0918");
+    g.fillStyle="#2a2348";
+    for(var a=-r;a<=r;a++){ var hh=Math.floor(Math.sqrt(r*r-a*a)); PX(cx+a,cy-hh,"#2a2348"); PX(cx+a,cy+hh,"#15112a"); }
+    DISC(cx,cy,Math.max(1,Math.floor(r*0.4)),"#141128");
+    PX(cx,cy, hot?C.amber:"#3a2f18");
+  }
+  function scoopBox(x,y,w,h,hot){
+    cab(x,y,w,h,"#0d0b1a");
+    var mw=Math.floor(w*0.62), mh=Math.floor(h*0.5);
+    var mx=x+Math.floor((w-mw)/2), my=y+h-mh-2;
+    R(mx-1,my-1,mw+2,mh+2,"#1a1632");
+    R(mx,my,mw,mh, hot?"#0a0620":"#020106");
+    R(mx,my+Math.floor(mh*0.45),mw,2, hot?"#2a2254":"#15122a");
+    R(mx+Math.floor(mw/2)-1,my,2,mh,"#100d22");
+    PX(x+3,y+3,"#3a3160"); PX(x+w-4,y+3,"#3a3160");
+  }
+  function kickBin(x,y,w,h,hot){
+    cab(x,y,w,h,"#0e0c1e");
+    R(x+3,y+3,w-6,h-6,"#0a0918");
+    D2(x+3,y+3,w-6,h-6, hot?"#2a2454":"#1e1a38",2);
+    DISC(x+Math.floor(w/2),y+Math.floor(h/2),Math.floor(Math.min(w,h)*0.32), hot?"#0d0a20":"#070512");
+  }
+  function midBox(x,y,w,h,hot){
+    cab(x,y,w,h,"#0d0b1c");
+    cone(x+Math.floor(w*0.3), y+Math.floor(h/2), Math.floor(h*0.34), hot);
+    cone(x+Math.floor(w*0.7), y+Math.floor(h/2), Math.floor(h*0.34), false);
+    D2(x+2,y+2,w-4,2,"#191536",2);
+  }
+  function hornRow(x,y,w,n,hot){
+    var hw=Math.floor(w/n);
+    for(var i=0;i<n;i++){
+      var hx=x+i*hw;
+      g.fillStyle="#0e0c1e";
+      g.beginPath(); g.moveTo(hx+2,y+10); g.lineTo(hx+hw-2,y+10); g.lineTo(hx+hw-5,y+3); g.lineTo(hx+5,y+3); g.closePath(); g.fill();
+      R(hx+Math.floor(hw/2)-2,y+10,4,3,"#161330");
+      R(hx+5,y+3,hw-10,1,"#241d44");
+      PX(hx+Math.floor(hw/2),y+6, (hot&&i===0)?C.teal:"#16322c");
+    }
+  }
+  function bulletRow(x,y,n){
+    for(var i=0;i<n;i++){
+      var bx=x+i*9;
+      R(bx,y,6,4,"#141130");
+      PX(bx+6,y+1,"#241d44"); PX(bx+6,y+2,"#241d44");
+      PX(bx+2,y+1,(pu>0.55&&i%2===0)||(pu2>0.55&&i%2===1)?C.moonL:"#2a2448");
+    }
+  }
+  var base=WATY, colw=30;
+  for(var c2=0;c2<3;c2++){
+    var x=4+c2*(colw+3);
+    var hotc=(c2===1)?(pu2>0.3):(pu>0.3);
+    scoopBox(x,base-24,colw,24, hotc);
+    scoopBox(x,base-46,colw,22, (c2===1)?(pu>0.3):(pu2>0.3));
+    kickBin(x,base-62,colw,16, hotc&&pu>0.55);
+    midBox(x,base-76,colw,14, (c2===1?pu2:pu)>0.35);
+    hornRow(x,base-89,colw,2, (c2===1?pu2:pu)>0.5);
+    R(x+1,base-89,1,89,"#181530"); R(x+colw-2,base-89,1,89,"#181530");
+  }
+  bulletRow(16,base-95,8);
+  T3("HOME MUSIC HI-FI", 20, base-101, "#3a3160");
+  R(18,base-102,68,1,"#241d3c");
+  /* cabos da muralha para a cabina */
+  LINE(98,base-30, BOOTH.x+6, PLATY-2, "#141130",1);
+  LINE(98,base-52, BOOTH.x+2, PLATY-4, "#100d26",1);
+  /* ---- control tower na margem direita: preamp, sirene e candeeiro ---- */
+  var tx=280, tb=WATY;
+  R(tx,tb-16,22,16,"#0d0b1c"); R(tx,tb-16,22,1,C.rockL);
+  R(tx-2,tb-20,26,4,"#15122a");
+  R(tx+1,tb-27,20,7,"#0a0918");
+  [3,8,13,18].forEach(function(k,i){
+    PX(tx+k,tb-24, (Math.floor(beatPh*0.6)%4)===i&&lvl>0.05 ? C.moonL : C.amber);
+  });
+  PX(tx+17,tb-26, (Math.floor(now)%4===0)?C.red:"#5a2420");
+  R(tx+3,tb-33,8,5,"#15122a"); PX(tx+6,tb-31,C.red);
+  R(tx+14,tb-31,1,4,"#241d44"); DISC(tx+14,tb-33,2,C.moonL); PX(tx+14,tb-33,C.paper);
+  R(tx+2,tb-16,1,16,"#181530"); R(tx+19,tb-16,1,16,"#05040c");
+  /* cabo da cabina para a control tower */
+  LINE(BOOTH.x+BOOTH.w-4, PLATY-2, tx+2, tb-14, "#141130",1);
+}
+function waterScene(){
+  R(0,WATY,320,180-WATY,C.water);
+  R(0,WATY,320,1,C.wline);
+  /* reflexo da lua */
+  g.fillStyle=C.moon;
+  for(var ry=WATY+2; ry<178; ry+=2){
+    var off=((ry*7)%3)-1, w3=Math.max(3, 26-(ry-WATY));
+    for(var rx=-w3; rx<=w3; rx+=3) g.fillRect(MOON.x+rx+off, ry, 1,1);
+  }
+  /* reflexo da figura e da cabina */
+  g.fillStyle="#100d20";
+  R(FIG.x-1, WATY+2, 3, 10, "#100d20");
+  R(BOOTH.x+10, WATY+2, BOOTH.w-20, 2, "#0e0c1e");
+  R(6, WATY+2, 92, 3, "#0d0b1e"); R(278, WATY+2, 26, 2, "#0d0b1e");
+  PX(19, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e"); PX(52, WATY+4, levels.B>0.05?"#4a3a1c":"#0d0b1e");
+  PX(85, WATY+4, levels.A>0.05?"#4a3a1c":"#0d0b1e");
+  PX(294, WATY+3, "#4a3e20");
+  PX(DECK.A.x, WATY+3, levels.A>0.05?"#5a2a28":"#100d20");
+  PX(DECK.B.x, WATY+3, levels.B>0.05?"#5a4a20":"#100d20");
+  R(60,WATY+8,56,1,C.ripple); R(150,WATY+14,70,1,C.ripple); R(40,WATY+22,70,1,C.ripple); R(210,WATY+24,60,1,C.ripple);
+}
+function platform(){
+  R(56,PLATY,212,8,C.rock);
+  R(56,PLATY,212,1,C.rockL);
+  g.fillStyle=C.rock;
+  g.beginPath(); g.moveTo(120,PLATY+8); g.lineTo(146,WATY); g.lineTo(190,WATY); g.lineTo(206,PLATY+8); g.closePath(); g.fill();
+}
+/* a capa: artwork tipografico com dados reais */
+function initials(m){
+  if(!m) return "HM";
+  var a=(m.a||"").replace(/[^A-Za-z0-9 ]/g,"").split(" ").filter(function(x){return x;});
+  var s=(a[0]?a[0][0]:"H")+(a[1]?a[1][0]:(a[0]&&a[0][1]?a[0][1]:"M"));
+  return s.toUpperCase();
+}
+function T3S(str,x,y,c,sc){
+  str=String(str).toUpperCase();
+  var cx=Math.round(x);
+  for(var k=0;k<str.length;k++){
+    var gl=F35[str[k]]||F35[" "];
+    for(var j=0;j<gl.length;j++) for(var i=0;i<gl[j].length;i++) if(gl[j][i]==="1") R(cx+i*sc,y+j*sc,sc,sc,c);
+    cx+=(gl[0].length+1)*sc;
+  }
+}
+function jacketArt(x,y,s,m){
+  var acc=(m&&m.accent)||C.amber;
+  R(x,y,s,s,C.jack);
+  R(x,y,s,1,C.jackL); R(x,y,1,s,C.jackL);
+  R(x+1,y+1,s-2,Math.max(2,Math.floor(s*0.22)),acc);
+  var ini=initials(m);
+  if(s>=14){
+    T3S(ini, x+Math.floor(s/2)-Math.floor(tw3(ini)/2)*1, y+Math.floor(s*0.38), C.paper, 1);
+    R(x+2,y+s-4,s-4,1,"#4a4468");
+  }
+}
+function drawStash(){
+  R(STASH.x-8, BTOP, 18, PLATY-BTOP, C.ink);
+  R(STASH.x-8, BTOP, 18, 1, "#14102a");
+  for(var i=0;i<stashN;i++){
+    R(STASH.x-6, BTOP-3-i*3, 14, 2, i%2?C.jack:C.jackL);
+    PX(STASH.x+6, BTOP-3-i*3, (i%3===0)?C.amber:C.jack);
+  }
+}
+function drawEasel(){
+  /* feixe de lua sobre o expositor */
+  g.fillStyle="#241d3c";
+  for(var by=14; by<BTOP-18; by+=2){ var bx=EASEL.x+Math.floor((BTOP-by)*0.12); PX(bx,by,"#2a2348"); PX(bx+5,by+1,"#241d3c"); }
+  LINE(EASEL.x-6,BTOP, EASEL.x-2,BTOP-14, C.K,1);
+  LINE(EASEL.x+6,BTOP, EASEL.x+2,BTOP-14, C.K,1);
+  if(easel.has){ jacketArt(EASEL.x-8, BTOP-24, 16, easel.meta||meta); }
+  if(asideJacket){ R(EASEL.x-26, BTOP-3, 12, 2, C.jackL); PX(EASEL.x-16,BTOP-3,asideJacket.accent||C.amber); }
+  if(asideSleeve){ R(EASEL.x-24, BTOP-6, 9, 5, C.sleeve); R(EASEL.x-24, BTOP-6, 9, 1, C.sleeveS); }
+}
+function drawDeck(k){
+  var d=decks[k], x=DECK[k].x;
+  R(x-16,BTOP-4,32,4,C.ink);
+  ELL(x,BTOP-4,16,5,"#100d20");
+  ELL(x,BTOP-5,14,4,"#0d0b18");
+  if(d.disc){
+    ELL(x,BTOP-6,12,3,C.K);
+    var a=d.ang;
+    var mx=Math.round(Math.cos(a)*9), my=Math.round(Math.sin(a)*2);
+    PX(x+mx,BTOP-6+my,C.amber);
+    PX(x-mx,BTOP-6-my,"#2a2348");
+    PX(x,BTOP-7,C.red);
+  }
+  /* braco da agulha */
+  var na=d.armDown?1:0;
+  var ax0=x+13, ay0=BTOP-9;
+  var ax1=x+4+Math.round(d.prog*4), ay1=BTOP-7-Math.round((1-na)*4);
+  R(ax0,ay0,2,3,C.K);
+  LINE(ax0,ay0+1,ax1,ay1,C.K,1);
+  PX(ax1,ay1+1,d.armDown?C.teal:"#2a2348");
+  /* botao e pitch */
+  PX(x-12,BTOP-2,d.run?C.teal:"#2a2348");
+  R(x+9,BTOP-1,6,1,"#2a2348");
+  PX(x+10+Math.round(((k==="A"?0:1))*0+2),BTOP-2,C.paper);
+}
+function drawMixer(){
+  R(MIX.x-10,BTOP-6,20,6,C.ink);
+  var vA=Math.min(4,Math.round(levels.A*5)), vB=Math.min(4,Math.round(levels.B*5));
+  for(var i=0;i<4;i++){
+    PX(MIX.x-6, BTOP-3-i, i<vA ? (i>2?C.red:C.teal) : "#161228");
+    PX(MIX.x+6, BTOP-3-i, i<vB ? (i>2?C.red:C.amber) : "#161228");
+  }
+  R(MIX.x-7,BTOP-1,14,1,C.K);
+  R(MIX.x-7+Math.round(xf*12),BTOP-2,2,2,C.paper);
+}
+function drawBooth(){
+  R(BOOTH.x,BTOP,BOOTH.w,10,C.ink);
+  R(BOOTH.x,BTOP,BOOTH.w,1,"#14102a");
+  R(BOOTH.x+4,PLATY-2,BOOTH.w-8,1,"#0a0816");
+  drawDeck("A"); drawDeck("B"); drawMixer(); drawStash(); drawEasel();
+  /* monograma na frente */
+  T3("HM", MIX.x-3, PLATY-7, "#201a38");
+}
+/* ---------- a silhueta ---------- */
+var FIGC="#191634", RIM="#9a7f4a";
+function drawFig(){
+  var x=Math.round(FIG.x), yTop=PLATY-26;
+  var hb=(busy()?0:(Math.sin(beatPh)>0.3?1:0));
+  /* sombra */
+  ELL(x+1,PLATY+1,5,1,"#030208");
+  /* cabeca */
+  R(x-2,yTop+hb,5,4,FIGC);
+  R(x-2,yTop+hb,5,1,"#241f44");
+  PX(x+3,yTop+hb+1,RIM); PX(x+3,yTop+hb+2,RIM);
+  /* tronco */
+  R(x-2,yTop+4,5,11,FIGC);
+  R(x+3,yTop+5,1,9,RIM);
+  PX(x-3,yTop+6,"#100e24");
+  /* bracos */
+  var sh1={x:x-2,y:yTop+6}, sh2={x:x+3,y:yTop+6};
+  var h1=FIG.hand, h2=FIG.hand2;
+  if(!h1 && !h2){
+    h1={x:x-6,y:BTOP-1}; h2={x:x+6,y:BTOP-1};
+    if(!busy()){ h2={x:x+6+(Math.sin(beatPh)>0?1:0), y:BTOP-1}; }
+  }
+  if(h1){ var e1={x:(sh1.x+h1.x)/2-2,y:(sh1.y+h1.y)/2+2}; LINE(sh1.x,sh1.y,e1.x,e1.y,FIGC,2); LINE(e1.x,e1.y,h1.x,h1.y,FIGC,2); }
+  if(h2){ var e2={x:(sh2.x+h2.x)/2+2,y:(sh2.y+h2.y)/2+2}; LINE(sh2.x,sh2.y,e2.x,e2.y,FIGC,2); LINE(e2.x,e2.y,h2.x,h2.y,FIGC,2); }
+  /* pernas */
+  var st=Math.round(FIG.step);
+  R(x-2-st,yTop+15,2,PLATY-(yTop+15),FIGC);
+  R(x+1+st,yTop+15,2,PLATY-(yTop+15),FIGC);
+  PX(x+2+st,yTop+17,RIM);
+  /* objeto transportado segue a mao 1 */
+  if(FIG.carry==="jacket" && h1){
+    jacketArt(h1.x-5,h1.y-5,11,jacket.m||nextMeta);
+    if(jacket.peek>0){ R(h1.x+6,h1.y-3,Math.round(jacket.peek*4),6,C.sleeve); }
+  }
+  if(FIG.carry==="sleeve" && h1){ R(h1.x-4,h1.y-4,8,8,C.sleeve); R(h1.x-4,h1.y-4,8,1,C.sleeveS); }
+  if(FIG.carry==="disc" && h1){ DISC(h1.x,h1.y,4,C.K); g.fillStyle=C.moonL;
+    for(var a=-4;a<=4;a++){ var hh=Math.floor(Math.sqrt(16-a*a)); PX(h1.x+a,h1.y-hh,C.moonL); } PX(h1.x,h1.y,C.red); }
+}
+/* ---------- grandes planos ---------- */
+function drawCut(){
+  if(!cut.kind) return;
+  var p=cut.t/cut.dur;
+  if(p>=1){ cut.kind=null; return; }
+  if(cut.kind==="needle"){
+    var w2=96,h2=56,x2=10,y2=10;
+    R(x2-1,y2-1,w2+2,h2+2,C.paper); R(x2,y2,w2,h2,C.ink);
+    ELL(x2+40,y2+40,34,10,"#0d0b18");
+    ELL(x2+40,y2+38,30,8,C.K);
+    var sp=now*6;
+    PX(x2+40+Math.round(Math.cos(sp)*22), y2+38+Math.round(Math.sin(sp)*5), C.amber);
+    PX(x2+40,y2+36,C.red);
+    var na=cut.na===undefined?p:cut.na;
+    var ny=y2+16+Math.round(Math.min(1,p*1.6)*14);
+    R(x2+78,y2+8,3,6,C.K);
+    LINE(x2+79,y2+12, x2+52, ny, C.paper,1);
+    PX(x2+52,ny+1,C.teal);
+    T3("A AGULHA", x2+2, y2+h2+3, C.dim);
+  }
+  if(cut.kind==="pitch"){
+    var w3=96,h3=50,x3=10,y3=10;
+    R(x3-1,y3-1,w3+2,h3+2,C.paper); R(x3,y3,w3,h3,C.ink);
+    var ps=pitchShow||{from:120,to:120};
+    var vv=Math.round(ps.from+(ps.to-ps.from)*Math.min(1,p*1.25+((p>0.5&&p<0.7)?Math.sin(p*40)*0.02:0)));
+    T3S(String(vv), x3+14, y3+10, (Math.abs(vv-ps.to)<1)?C.teal:C.paper, 3);
+    T3("BPM", x3+66, y3+20, C.dim2);
+    R(x3+8,y3+40,80,1,"#2a2348");
+    R(x3+8+Math.round(Math.min(1,p*1.25)*76),y3+38,3,5,C.paper);
+    T3("O TEMPO", x3+2, y3+h3+3, C.dim);
+  }
+  if(cut.kind==="fader"){
+    var w4=96,h4=40,x4=224,y4=10;
+    R(x4-1,y4-1,w4+2,h4+2,C.paper); R(x4,y4,w4,h4,C.ink);
+    R(x4+8,y4+20,80,2,"#2a2348");
+    R(x4+6+Math.round(xf*76),y4+16,4,9,C.paper);
+    T3("A",x4+8,y4+6,C.red); T3("B",x4+82,y4+6,C.amber);
+    for(var i2=0;i2<4;i2++){
+      PX(x4+20+i2, y4+32, i2<Math.round(levels.A*5)?C.teal:"#161228");
+      PX(x4+70+i2, y4+32, i2<Math.round(levels.B*5)?C.amber:"#161228");
+    }
+    T3("A PASSAGEM", x4+2, y4+h4+3, C.dim);
+  }
+}
+function draw(){
+  R(0,0,320,180,C.sky);
+  D2(0,0,320,40,C.sky2,3);
+  stars(); moon(); city(); drawSoundsystem(); platform();
+  drawFig();
+  drawBooth(); waterScene(); drawCut();
+}

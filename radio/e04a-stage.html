@@ -1,0 +1,128 @@
+<script>
+/* ================= HOME MUSIC : PALCO PIXEL, O RITO DO 45 =================
+   Escola E: silhueta contra a lua. Cena unica 320x180 + grandes planos de
+   inserto nos gestos de precisao. API compativel com o motor da radio:
+   setNext, prepare, fadeBegin, setFade, finish, quick, first,
+   setLevels, setProgress, setTempo, e um relogio de poses quadro a quadro. */
+window.RIG=(function(){
+"use strict";
+var stub={ok:false, ctl:{}, setNext:function(){}, prepare:function(k,cb){ if(cb) setTimeout(cb,300); },
+  fadeBegin:function(){}, setFade:function(){}, finish:function(){}, quick:function(){},
+  first:function(){}, setLevels:function(){}, setProgress:function(){}, setTempo:function(){}};
+try{
+var canvas=document.getElementById("px");
+if(!canvas) return stub;
+var g=canvas.getContext("2d");
+g.imageSmoothingEnabled=false;
+
+/* ---------- paleta fechada ---------- */
+var C={
+  sky:"#080714", sky2:"#0b0a1c", star:"#39406a", starB:"#8d90b0",
+  halo:"#1c1836", moon:"#ffb12b", moonL:"#ffd98a", crater:"#d8891c",
+  K:"#04030a", ink:"#060511", rock:"#0c0b1a", rockL:"#181530",
+  water:"#0b0a1c", ripple:"#141228", wline:"#1a1732",
+  red:"#e8392c", teal:"#41d9c8", amber:"#ffb12b", paper:"#f4ecd9",
+  dim:"#5a6a94", dim2:"#8d90b0", sleeve:"#d8cfae", sleeveS:"#b8ae8c",
+  jack:"#241d3c", jackL:"#3a3160"
+};
+
+/* ---------- utilitarios de pixel ---------- */
+function R(x,y,w,h,c){ g.fillStyle=c; g.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h))); }
+function PX(x,y,c){ R(x,y,1,1,c); }
+function DISC(cx,cy,r,c){ g.fillStyle=c; cx=Math.round(cx); cy=Math.round(cy);
+  for(var dy=-r;dy<=r;dy++){ var w=Math.floor(Math.sqrt(r*r-dy*dy)); g.fillRect(cx-w,cy+dy,w*2+1,1);} }
+function ELL(cx,cy,rx,ry,c){ g.fillStyle=c; cx=Math.round(cx); cy=Math.round(cy);
+  for(var dy=-ry;dy<=ry;dy++){ var w=Math.floor(rx*Math.sqrt(Math.max(0,1-(dy*dy)/(ry*ry)))); g.fillRect(cx-w,cy+dy,w*2+1,1);} }
+function LINE(x0,y0,x1,y1,c,th){
+  th=th||1;
+  x0=Math.round(x0); y0=Math.round(y0); x1=Math.round(x1); y1=Math.round(y1);
+  var dx=Math.abs(x1-x0), dy=Math.abs(y1-y0), sx=x0<x1?1:-1, sy=y0<y1?1:-1, err=dx-dy;
+  while(true){
+    R(x0,y0,th,th,c);
+    if(x0===x1 && y0===y1) break;
+    var e2=2*err;
+    if(e2>-dy){ err-=dy; x0+=sx; }
+    if(e2<dx){ err+=dx; y0+=sy; }
+  }
+}
+function D2(x,y,w,h,c,step){ g.fillStyle=c; step=step||2;
+  for(var j=0;j<h;j++) for(var i=(j%step); i<w; i+=step) g.fillRect(x+i,y+j,1,1); }
+var F35={
+ A:["010","101","111","101","101"],B:["110","101","110","101","110"],C:["011","100","100","100","011"],
+ D:["110","101","101","101","110"],E:["111","100","110","100","111"],F:["111","100","110","100","100"],
+ G:["011","100","101","101","011"],H:["101","101","111","101","101"],I:["111","010","010","010","111"],
+ J:["001","001","001","101","010"],K:["101","110","100","110","101"],L:["100","100","100","100","111"],
+ M:["10001","11011","10101","10001","10001"],N:["1001","1101","1011","1001","1001"],O:["010","101","101","101","010"],
+ P:["110","101","110","100","100"],Q:["010","101","101","011","001"],R:["110","101","110","110","101"],
+ S:["011","100","010","001","110"],T:["111","010","010","010","010"],U:["101","101","101","101","111"],
+ V:["101","101","101","101","010"],W:["10101","10101","10101","10101","01010"],X:["101","010","010","010","101"],
+ Y:["101","101","010","010","010"],Z:["111","001","010","100","111"],
+ "0":["010","101","101","101","010"],"1":["010","110","010","010","111"],"2":["110","001","010","100","111"],
+ "3":["111","001","011","001","111"],"4":["101","101","111","001","001"],"5":["111","100","110","001","110"],
+ "6":["011","100","111","101","111"],"7":["111","001","010","010","010"],"8":["111","101","111","101","111"],
+ "9":["111","101","111","001","110"],
+ ".":["0","0","0","0","1"],",":["00","00","00","01","10"],":":["0","1","0","1","0"],"/":["001","001","010","100","100"],
+ "'":["1","1","0","0","0"],"-":["000","000","111","000","000"],"&":["010","101","010","101","011"]," ":["00","00","00","00","00"]
+};
+function T3(str,x,y,c){
+  str=String(str).toUpperCase();
+  var cx=Math.round(x); y=Math.round(y);
+  for(var k=0;k<str.length;k++){
+    var gl=F35[str[k]]||F35[" "];
+    for(var j=0;j<gl.length;j++) for(var i=0;i<gl[j].length;i++) if(gl[j][i]==="1"){ g.fillStyle=c; g.fillRect(cx+i,y+j,1,1); }
+    cx+=gl[0].length+1;
+  }
+  return cx-Math.round(x)-1;
+}
+function tw3(str){ str=String(str).toUpperCase(); var w=0;
+  for(var k=0;k<str.length;k++){ var gl=F35[str[k]]||F35[" "]; w+=gl[0].length+1; } return Math.max(0,w-1); }
+
+/* ---------- geografia da cena ---------- */
+var MOON={x:238, y:44, r:33};
+var PLATY=96;               /* topo da plataforma */
+var WATY=128;               /* linha de agua */
+var BOOTH={x:96, w:132, h:10};             /* cabina: tampo em PLATY-10 */
+var DECK={A:{x:122}, B:{x:196}};           /* centros dos pratos */
+var MIX={x:159};
+var STASH={x:74};                          /* pilha de capas, a esquerda */
+var EASEL={x:258};                         /* expositor da capa, a direita */
+var BTOP=PLATY-10;                          /* tampo da cabina */
+
+/* ---------- estado ---------- */
+var now=0;
+var cam="wide";
+var levels={A:0,B:0};
+var tempoBPM=120, beatHz=2, beatPh=0;
+var moonFlash=0;
+var decks={
+  A:{disc:true, run:true, ang:0, vel:1, armDown:true, prog:0.3},
+  B:{disc:false, run:false, ang:0, vel:0, armDown:false, prog:0}
+};
+var xf=0;                   /* 0 = A, 1 = B */
+var meta={a:"HOME MUSIC", t:"WARMING UP", y:"", bpm:120, accent:"#ffb12b"};   /* a tocar / exposta */
+var nextMeta=null;
+var pitchShow=null;          /* {from,to,t01} mostrador do acerto de bpm */
+/* objetos do rito */
+var easel={has:true, meta:null};
+var jacket={st:"none", x:0, y:0};    /* none / stash / hand / easel / aside */
+var sleevO={st:"none", x:0, y:0};    /* sleeve em transito */
+var discO={st:"none", x:0, y:0};     /* disco em transito */
+var asideJacket=null;                /* capa da faixa anterior pousada de lado */
+var asideSleeve=true;                /* sleeve da faixa anterior na cabina */
+var stashN=5;
+/* figura */
+var FIG={x:MIX.x, y:PLATY, pose:"idle", hand:null, hand2:null, carry:null, step:0};
+/* inserto (grande plano) */
+var cut={kind:null, t:0, dur:0};
+function cutIn(kind,dur){ cut.kind=kind; cut.t=0; cut.dur=dur; }
+
+/* ---------- tweens e sequencias ---------- */
+var tweens=[], seqs=[];
+function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+function tween(set,dur,done){ tweens.push({set:set,dur:dur,t:0,done:done}); }
+function runSeq(steps){ seqs.push({t:0, steps:steps.map(function(s){ return {t:s.t, fn:s.fn, done:false}; })}); }
+function busy(){ return seqs.length>0; }
+function walkTo(x,dur){
+  var fx=FIG.x;
+  tween(function(v){ FIG.x=fx+(x-fx)*ease(v); FIG.step=Math.sin(v*Math.PI*4)*1.5; }, dur, function(){ FIG.step=0; });
+}

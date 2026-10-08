@@ -1,0 +1,520 @@
+idx	genre	year	artist	title	status	video_id	channel	secs
+0	dub_techno	2000	Photek	Glamourama	T	s75IH2ZfQRg	Photek - Topic	331
+1	dub_techno	2017	Zzzzra	Aquilonia	T	pE6kzBpqtpk	Zzzzra - Topic	397
+7	dub_techno	2012	Hawkinson	Tiefdruck	T	HvDcrxty1bg	Hawkinson - Topic	396
+8	dub_techno	2011	Fingers In The Noise	Amazone	c	MDcyriUogWE	deepmore78	405
+9	dub_techno	2002	Signer	Building Memories Without You	T	K6H377t9nGw	Carpark Records	374
+2	dub_techno	2005	Shockt	Slo-Mo	S2	Ml34h9g4vfk	swivel	424
+3	dub_techno	2000	Outernational Spacelords	Cape East	S2	8vrUeLFZMoI	Dickgoodbody	422
+5	dub_techno	1996	Psycho Plasma	Forbidden Planet	S5	3XUg9FC51U4	Topic	513
+6	dub_techno	2011	Lars Leonhard	Glideslope	S5	fAWkenTN8Qc	Topic	356
+10	dub_techno	2015	Cosmic Replicant	Evening Reflections	S2	dFO0bhq9XEY	Chill Space	444
+14	dub_techno	2015	Purl	Inre Sken	S3	DDYlxE34egA	Purl	590
+15	dub_techno	1996	Modal	Powder	S5	Lv01f59DDeQ	Topic	393
+11	dub_techno	2006	Yagya	Deepchord Redesigns 1	S2	0vXkp4xK9eM	AcidLad	461
+12	dub_techno	1996	Bandulu	Shroud	S2	_3g3OUKspHM	TECHNO	526
+13	dub_techno	2013	Gabriel Le Mar	Dreamtechnologies	S2	xolQ2njdDc4	Chill Space	358
+16	dub_techno	2015	The Orb	Gods Mirrorball	S3	LVS_z7aGi9E	The Orb	885
+17	dub_techno	2015	Martin Schulte	Researches of Depths	S4	jQ_MD6Zo9z8	Topic	364
+19	dub_techno	1995	Metro Dade	Tyguin	S5	T90j47rlV3Y	Topic	500
+20	dub_techno	2003	Unit 4	Bodydub (Bangkok Impact Remix)	S5	AyiTJTp8E1M	Topic	373
+21	dub_techno	2014	Lars Leonhard	Deeper Direction	S5	tL33l798J8Q	Topic	420
+22	dub_techno	2006	L.B. Dub Corp	Calling The Spirit	S4	zmEhYZmffaU	Topic	340
+23	dub_techno	2000	Dietrich Schoenemann	Autumn Ground	S5	8szLZpnLzxI	Topic	355
+24	dub_techno	2015	Martin Nonstatic	Inside Eyesight	S5	t7hr1_7PhzI	Topic	404
+25	dub_techno	2012	Markus Homm	Red One	S5	pYenZ2nPOZU	Topic	474
+26	dub_techno	2000	Luomo	The Right Wing	S5	pw49ALPOajU	Topic	969
+27	dub_techno	2006	T++	Aquatic	S5	s-dLUNaSWIQ	Topic	519
+28	dub_techno	2001	Stewart Walker	Proof Of The Long Dark Night	S5	vh2tcEycwRw	Topic	378
+29	dub_techno	2012	Silent Harbour	Profundal Zone	S4	lddnD7Coct0	Topic	462
+30	dub_techno	1998	Theo Parrish	Heal Yourself And Move	S2	NEFrNP-BLcI	Paulcloud	620
+31	dub_techno	2000	Banned X	Thats Dub	S5	oSFktwrisKs	Topic	410
+32	dub_techno	2001	The Other People Place	Eye Contact	S5	Glk0Vp2n1hQ	Topic	330
+33	dub_techno	1996	Monolake	Cyan	S5	X1SazPaZqm8	Topic	715
+34	dub_techno	2017	Aes Dana	Otherness	S5	bpj3c0LjtZ0	Topic	485
+35	dub_techno	1994	Basic Channel	Octaedre	S5	8c1G8Ay_pws	Topic	793
+38	dub_techno	2013	Krill.Minima	Kronen Dab	S4	8jVQEsYlRC0	Topic	360
+39	dub_techno	1999	Gas	Oktember	S2	4-ucG1EHmwg	mambule2	911
+40	dub_techno	1997	Grey Area	Amphibia	S5	lw9mH_CBvnk	Topic	385
+41	dub_techno	2009	Perc	Mathlete	S5	pGdeUP3p1Y8	Topic	486
+42	dub_techno	1995	Model 500	Last Transport (To Alpha Centauri)	S2	6HMTXZ0XQCk	R&S	314
+43	dub_techno	2000	Convextion	Crawling And Hungry	S5	9ix-Xmo7H24	Topic	182
+45	dub_techno	1996	Secret Cinema	Timeless Altitude	S5	3SvouCQz8tk	Topic	391
+49	dub_techno	1998	Round Four	Found A Way	S5	A2qgfvZgAlg	Topic	404
+50	dub_techno	1995	Octave One	Terraforming	S5	4sZnv_2rCPU	Topic	315
+51	dub_techno	1999	Grey Area	Iona	S5	3fqa7WE7gBU	Topic	424
+54	dub_techno	1993	Human Mesh Dance	Dahlia	S5	_b0mJB7pebw	Topic	309
+55	dub_techno	1994	Abacus	The Abacus Chat	S5	Io_Tr3EDiDA	Topic	135
+56	dub_techno	1998	Der Dritte Raum	Mondmelodie	S4	aaj4jRhYhEM	Topic	313
+57	dub_techno	1993	Blunted Dummies	House For All	S5	Z_-GTssXeoY	Topic	235
+58	ragga_jungle	2000	Heretic and Top Cat	Bunn The Sensi (Serial Killaz Mix)	S2	PRvjraL-cKo	mixleaf	305
+60	ragga_jungle	1994	Shy FX and UK Apache	Original Nuttah	S3	GclYmrvWyuY	SHY FX	232
+61	ragga_jungle	1996	Johnny Osbourne	Jungle Buddy Bye (Hiroo Onoda Dub)	S5	wvZ65RiNjME	Topic	315
+63	ragga_jungle	1993	Energy Zone	Jungle Zone 6	S2	W7JAHhFqMkQ	Sub-Bass Frenzy	329
+65	ragga_jungle	2007	Chase and Status	Dumpling Riddim	S2	4pRGotC_3s4	fan	388
+66	ragga_jungle	1994	Buju Banton	Move Your Body	S2	OmsO5URWWSc	GSM	264
+67	ragga_jungle	2007	Rub A Dub Soldiers	Fightin	S2	XDwGHoW5BF8	PolarisWorld	343
+68	ragga_jungle	2004	Dead Dred	Dread Bass	S2	oQgnzCUBcsE	HLD	244
+69	ragga_jungle	2006	Crystal Clear ft Spikey T	Blaze	S5	ujt7KgbH7Lo	Topic	356
+70	ragga_jungle	2006	The Qemists	Iron Shirt	S2	nMSz2L1x2Vw	fan	395
+71	ragga_jungle	2005	Criminal Sound	Ganja Field	S2	XkqkOplIKBg	Mr Cheetah	366
+72	ragga_jungle	1993	Capleton	Cold Blooded Murderer	S3	29rxRTvlJXI	Capleton	222
+73	ragga_jungle	1996	King Kong	Trouble Again	S5	FOrvtq_9bhg	Topic	219
+74	ragga_jungle	2006	Taxman	Too Bad	S5	DPbiP-TTg7E	Topic	357
+75	ragga_jungle	2006	Visionary ft Peter Ranking	Soundboy Burial	S2	CY3SUei8lSY	fan	191
+76	ragga_jungle	1995	Josey Wales	Jungle and Western Cowboy Style	S5	j3uc46xz9WU	Topic	310
+77	ragga_jungle	2005	Benny Page	Better Believe (Benny Page Remix)	S4	Vw7BFg6hFSM	Topic	394
+78	ragga_jungle	1994	Undercover Agent	Ruffer	S2	Oh7f6SD4KoU	ECLEKTIKMAN	386
+79	ragga_jungle	1994	Rude Bwoy Monty	Steppas Anthem (Linerz Remix)	S4	88IuQsh1K5I	Topic	332
+80	ragga_jungle	1993	Bizzy B and Peshay	All Crew Hold Tight	S2	4qLbz_k92uo	fan	344
+81	ragga_jungle	1995	Urban Shakedown	Some Justice 95	S3	uSQcNLTDz-A	Urban Shakedown	357
+82	ragga_jungle	1996	Redrose and Rebel	Guntalk	S2	-LSmtBkUusU	fan	350
+83	ragga_jungle	2002	General Malice	Clubshakin	S4	MeF_jNGcCiA	Topic	167
+84	ragga_jungle	1995	Michael Prophet	Gunman	S4	7TJ0REf6bbQ	Topic	225
+85	ragga_jungle	2004	Basic Operations	4th Street Sound Click	S4	U-rnj-t52Js	Topic	388
+86	ragga_jungle	2003	Kenny Ken ft MC Fats	Drum and Bass Souljah	S2	XtDhqRg0pn0	fan	438
+87	ragga_jungle	1997	Tribe Of Issachar	Champion Natty (97 Dub Plate)	S2	N2oSD0M_zk0	fan	367
+89	ragga_jungle	1995	Prizna ft Demolition Man	Fire	S2	8d9SgMBvNpM	fan	362
+91	ragga_jungle	2006	RCola and Jacky Murda ft Bass Nacho	Cowboy Run	S2	1q3Nu9jMxgs	fan	300
+92	ragga_jungle	1995	Blackstar feat Top Cat	Champion DJ	S5	pzmgycOmhqo	Topic	155
+93	ragga_jungle	2004	Peter Hype	Champion Girls (Peter Hype Remix)	S4	FqCIjAsak5o	Topic	274
+94	ragga_jungle	2001	B-Boy 3000	Warrior	S4	988lZd0ajuo	Topic	414
+95	reggae	1994	Dawn Penn	You Dont Love Me (No No No)	S3	JGqzdEmjAUE	Official	201
+96	ragga_jungle	1994	Bounty Killer and Beenie Man	Borderline Mobster	S5	_ytKC8Vs-Cw	Topic	317
+97	ragga_jungle	2007	Jacky Murda	Murderer	S2	v_O_eX2f54c	fan	337
+98	ragga_jungle	1993	Bass Ballistics	Kick Dis One	S2	NnE6B0Bzsh8	fan	280
+99	ragga_jungle	1992	Family Foundation	Express Yourself	S2	Aa81Fz1RZRA	fan	231
+100	ragga_jungle	2004	Breakage	4 Me	S5	DGFRNBTvQhk	Topic	435
+101	ragga_jungle	1994	Barrington Levy	Under Mi Sensi (Jungle Spliff)	S3	2b0_9CUgazs	Barrington Levy	321
+103	ragga_jungle	2006	Soundclash	Rootsman	S5	HltcU0bMzlc	Topic	349
+104	ragga_jungle	1995	Cutty Ranks	Original Rude Boy Style	S5	ll9QZx-5wuU	Topic	240
+105	ragga_jungle	2004	Debaser	Cant Smoke Weed In Peace	S2	Orx8TMYHFUg	raggabwoy	218
+106	ragga_jungle	2008	Bong Selecta	Guntest	S3	OQbAkQoQyjw	BongSelecta	249
+107	ragga_jungle	1994	DJ Dub Rush	Now U Know	S2	rW0RpWIJYRg	fan	357
+108	ragga_jungle	1994	M-Beat feat General Levy	Incredible	S5	_YGbDEUVibE	Topic	270
+109	ragga_jungle	1994	Frankie Paul	Bring Yuh Body (Tom and Jerry Remix)	S5	ZZemFLw2obQ	Topic	285
+110	ragga_jungle	1994	The Dubster	Retreat	S4	snpNPU59-sw	Topic	492
+114	uk_garage	2015	Mark Henning	Trojan	S3	RXg516xzcSw	Mark Henning	417
+115	uk_garage	1998	Divine Soul	Shake That Ass (Black and White Dub)	S5	AhBNjj6YXaQ	Topic	344
+117	uk_garage	2008	The Count Of Monte Cristal	Bounce That Ass	S5	10fINoeHvHg	Topic	283
+120	uk_garage	1998	Mr Spring	Voyager 1.56	S2	YXhvHIHMICI	fan	479
+121	uk_garage	1997	Natural Born Chillers	Rock The Funky Beat	S5	Q5lx-nm-Blc	Topic	388
+124	uk_garage	1997	Double 99	Ripgroove	S5	yvLuZEh5PWs	Topic	368
+126	uk_garage	1997	Scott Garcia	A London Thing	S3	dlEXa_EYRAs	Scott Garcia	229
+129	uk_garage	2001	Anthill Mob	Burnin (Refix)	S2	iHPYkiDF_cQ	fan	256
+133	uk_garage	2008	Project Bassline	Drop The Pressure	S5	ESYMmYrFYS8	Topic	307
+134	uk_garage	1997	DJ Pooch	Let the Bass Roll (Dub Mix)	S5	17I_bMg00YM	Topic	323
+137	uk_garage	2011	Walton	Aggy	S5	iP18DOAkNMs	Topic	242
+138	uk_garage	1997	187 Lockdown	Gunman	S2	clnEkzPF_4Y	fan	195
+140	uk_garage	1994	George Morel	Lets Groove	S5	am3rls3C3KE	Topic	418
+141	uk_garage	1998	Northbank	Musik	S2	gMYvUCkM2Ug	Bassline Classics	350
+143	uk_garage	1998	Danny J Lewis	Spend The Night	S3	C6fVqgLc0tM	Danny J Lewis	435
+145	uk_garage	2011	Funkystepz	Hurricane Riddim	S5	fOm32J-37U8	Topic	274
+148	uk_garage	1998	Ramsey and Fen	Love Bug (Original Bump Mix)	S5	VV6UYY-m4XA	Topic	358
+152	uk_garage	1997	The Dreem Teem	The Theme	S5	wd6Q7aKLNCE	Topic	278
+154	uk_garage	1997	ADR ft Brown Girl	Burnin (RIP Vocal Mix)	S2	jOisW9byQkk	fan	310
+156	uk_garage	1998	187 Lockdown	Kung Fu	S5	-gg5PYhHJls	Topic	392
+158	uk_garage	2009	Rico Tubbs	Hip Rave Anthem	S5	9XuZY2JhvXc	Topic	302
+160	uk_garage	2010	LV feat Okmalumkoolkat	Boomslang	S2	NuhNRvt8s2E	Hyperdub	167
+161	uk_garage	1997	De Bos	On The Run	S5	VQgSBSQGw1U	Topic	182
+163	uk_garage	1998	Bump and Flex	Long Time Coming (Big Up Version)	S2	gm2rKVIbsgM	fan	359
+164	uk_garage	2002	Ed Case	Early Morning	S2	mGBAVoAku2A	fan	311
+166	uk_garage	2001	K Warren and Richie Dan	Temptation	S2	tSjOug9KxZ0	fan	238
+167	uk_garage	1999	Monster Boy	Im Sorry	S2	9OemYZUPjO4	fan	294
+168	uk_garage	2000	Wideboys	Westside	S3	2HIfx78xJMg	WideboysTV	393
+169	uk_garage	2000	MJ Cole	Crazy Love (Todd Edwards Underground Mix)	S3	Xru77RFf6c0	MJ Cole	374
+172	uk_garage	2000	Lonyo and Comme Ci Comme Ca	Summer Of Love	S2	_5ohKtNykR8	fan	369
+174	uk_garage	1998	Groove Chronicles	Stone Cold	S2	RT4FHEbzdSM	fan	338
+177	uk_garage	2000	Horsepower Productions	Lets Dance (Club Mix)	S5	7gabwTFFHIc	Topic	399
+178	uk_garage	2001	Horsepower Productions ft Laila	Givin Up On Love	S2	QFxdkHRpz7Q	fan	428
+179	uk_garage	1999	Y Tribe	Enough Is Enough	S2	wESrOSFD2YU	fan	277
+180	uk_garage	1999	Artful Dodger and Romina Johnson	Moving Too Fast	S5	QMXYo-UbGEM	Topic	239
+181	uk_garage	2001	Stanton Warriors	Right Here	S2	ll5pdUhv2fQ	fan	258
+182	uk_garage	1997	Dem 2	Destiny	S5	zz4U1B7enkM	Topic	246
+184	uk_garage	2000	DJ Zinc	138 Trek	S3	TDg0gPcO5Eg	DJ Zinc	310
+186	uk_garage	2001	M-Dubs	Bump N Grind (Original Vocal Mix)	S5	ODKkURk7GbY	Topic	287
+187	uk_garage	1999	Zed Bias	Neighbourhood	S4	w6-MlRH1VFE	Topic	216
+190	uk_garage	1998	Box Clever	Talk To Me	S4	-a2KolL152U	Topic	416
+191	uk_garage	2000	Wookie	Down On Me	S3	Hfu8SRTFiQA	Wookie	329
+192	uk_garage	2000	Dinamyte	Dynamite (Dancehall Queen)	S2	BcF_CqdRH5I	fan	335
+193	uk_garage	1998	M-Dubs	Over Here	S2	w8eeavV5qUU	fan	369
+194	uk_garage	1999	B-15 Project	Girls Like Us	S5	CJdx36buAX0	Topic	188
+195	uk_garage	1999	DJ Luck and MC Neat	A Little Bit Of Luck	S3	gO2WIdqWaJ0	Official	350
+199	uk_garage	1998	Antonio	Hyperfunk	S5	bOdofQDUrKs	Topic	377
+200	uk_garage	1997	Dreem Teem vs Artful Dodger	It Aint Enough	S2	Oiv2OReHbu8	fan	260
+201	uk_garage	1997	Indo	R U Sleeping (Bump N Flex Mix)	S5	ag7qVo7_H0Q	Topic	366
+202	uk_garage	1999	Sunship feat Anita Kelsey	Try Me Out	S3	cZBp1BQf-xM	Sunship	304
+203	uk_garage	2010	Lojik	White Room	S2	-xyEQgkD3uw	fan	353
+205	uk_garage	2007	Aaron Spectre	Say More Fire	S5	ucdTfSoWPfA	Topic	454
+206	uk_garage	2009	LV feat Errol Bellot	Dont Judge	S2	66_DXrTdRLA	LV	324
+208	uk_garage	2008	Dubwoofa	Kingdom Come	S5	i1t54pFZB_E	Topic	329
+210	uk_garage	2009	Von D	Cross of Hendaye	S4	PhntX9_voLs	Topic	356
+211	uk_garage	2012	Volor Flex feat Bulb	City Pressure	S2	y8yXnU1zmS0	Apollo	249
+214	uk_garage	2014	Martyn	Mega Drive Generation	S5	srY4zxrWk0U	Topic	378
+216	uk_garage	2014	Burial	Lambeth	S5	x6w62ArRrH4	Topic	209
+217	uk_garage	2011	Cooly G	Its Serious	S3	7IFWlDINFmw	Cooly G	228
+218	uk_garage	2011	Pinch	Retribution	S5	UBrB29Dvamo	Topic	306
+219	uk_garage	2013	J-Kenzo	Cause and Effect	S5	oRMAwynub4I	Topic	305
+222	uk_garage	2010	Babe Rainbow	Popcommon	S5	zAQihVIOzq0	Topic	176
+223	uk_garage	2008	Martyn	Twenty Four	S5	aLX8O_Zn3jU	Topic	389
+224	uk_garage	2007	Pangaea	Coiled	S5	3o38BOeNXUw	Topic	334
+225	uk_garage	2006	Burial	U Hurt Me	S5	BTVOfXaq-_w	Topic	323
+227	uk_garage	2007	Burial	Archangel	S2	8k_f2QK77ew	Hyperdub	239
+229	uk_garage	2007	L-Wiz	Centurion	S2	YqZ37ItNP7M	GetDarker	315
+230	uk_garage	2011	Kode9 and The Spaceape	Black Smoke	S5	CS9AtxS4qmQ	Topic	292
+231	uk_garage	2009	2562	Narita	S5	s4kGsplde60	Topic	309
+232	uk_garage	2008	D1	Chocolate Orange	S5	ngh8Pn25aQA	Topic	375
+233	uk_garage	2013	Burial	Rival Dealer	S5	RaLBan1UUe0	Topic	646
+237	uk_garage	2010	Skream	Repercussions Of A Razorblade	S2	L1rHER3AQnM	fan	301
+240	uk_garage	2009	23 Hz and Numaestro	Zumo	S5	PctpOrethBs	Topic	356
+241	uk_garage	2008	Zomby	Euphoria	S5	cIfbILqhpiE	Topic	208
+243	uk_garage	2007	Conquest	Forever	S4	PUHONjY92D4	Topic	484
+244	uk_garage	2010	Command Strange	Morning Noon and Night	S5	V7_VGPCLb2o	Topic	359
+247	uk_garage	2014	Lee Gamble	DSM	S5	z1sN1AWl6Vw	Topic	219
+249	uk_garage	2011	Bassline	Falsehood	S3	McfjcKyKaZE	fan	269
+251	dubstep	2007	Skream and Cluekid	Sandsnake	S2	zCUIjjSXDL0	fan	356
+252	dubstep	2010	Original Sin and Taxman	Take No More	S5	HdXCs81z3Eg	Topic	275
+253	dubstep	2011	Roksonix	2 Bad	S3	o5ZeJ8SvhOM	fan	149
+254	dubstep	2009	Chasing Shadows	Flashing Lights	S2	Br6zLUgsSu0	fan	340
+255	dubstep	2007	Goth-Trad	Swamp	S4	nBJposRaSyA	Topic	389
+256	dubstep	2004	Digital Mystikz	Twis Up	S2	n69C-QCNyhI	fan	356
+257	dubstep	2008	Kromestar	Pissed Off	S5	7w55Y-W1rY0	Topic	305
+260	dubstep	2007	Zinc ft Slarta John	Flim (Skream Remix)	S2	8o2HruHzYG4	fan	350
+262	dubstep	2006	D1	Degrees	S5	BYTfyaMWRzM	Topic	298
+263	dubstep	2008	Unitz	The Drop	S5	D_xyRp8Q2Go	Topic	284
+264	dubstep	2006	Bass Clef	Cannot Be Straightened	S5	zj-qhLP0FR0	Topic	282
+265	dubstep	2008	Zeno	Shades of Yellow	S2	tt_lzMS41rA	fan	128
+267	dubstep	2008	Skream	Oskillatah	S3	K8-aj0kvgrk	Skream	291
+268	dubstep	2012	Youngsta	Destruction	S3	cIwmSvFuRho	fan	332
+270	dubstep	2007	Geeneus	Star Buck	S2	2X6t7JnjRg4	fan	342
+271	dubstep	2003	DJ Hatcha	Dub Express	S2	kKpnqP2CrSU	fan	272
+273	dubstep	2006	Soundproof Productions	Marv	S2	xx2skHm6HU4	Boka Records	337
+274	dubstep	2006	Kode9	9 Samurai	S5	FXkKqer-iVk	Topic	221
+276	dubstep	2006	Benga	Flame	S2	8gWLD1P1aUI	fan	287
+278	dubstep	2007	Distinction	Afterlife	S3	KJpPpn_wq3U	Distinction	313
+281	dubstep	2003	Benny Ill vs DJ Hatcha	Highland Spring	S2	th1rDR0jgh4	Dubstep Classics	210
+285	dubstep	2008	Benga and Coki	Night	S2	rNStVlJWy88	TempaOfficial	175
+287	dubstep	2005	Slaughter Mob	Tinji	S5	Xh1oVUaY6do	Topic	282
+288	dubstep	2002	Kryptic Minds	One of Us	S5	VPnm09nhd74	Topic	361
+291	dubstep	2008	Clouds	Mighty Eye Ball Rays	S5	7NcDe_sZXVY	Topic	318
+292	dubstep	2007	Babylon System	Loaded	S5	UjW-LmnWfSw	Topic	370
+293	dubstep	2006	Digital Mystikz	Haunted	S2	YpghASBYERo	Dubstep Classics	243
+294	dubstep	2006	Emalkay	Gut Feeling	S3	vc9HT09mvsQ	Emalkay	261
+295	dubstep	2007	F1 and Kromestar	Behind Closed Doors	S2	FNCj3JBL37I	fan	276
+296	dubstep	2008	Roommate	Rudebwoy Shuffle	S5	76VA2SrFqjw	Topic	309
+297	dubstep	2004	Loefah	Jungle Infiltrator	S2	LpD6mqh5O6k	Dubstep Classics	247
+298	dubstep	2006	Mala	Left Leg Out	S2	x-POroSLj58	Dubstep Classics	362
+301	dubstep	2014	The Bug feat Flowdan	Dirty	S5	3jeq-TITvVY	Topic	177
+302	dubstep	2007	Rusko	Original Cut	S3	dN4WT5E-2RY	Rusko	267
+303	dubstep	2014	Mala	Expected	S4	j_Anz8jXvkY	Topic	268
+305	dubstep	2011	J-Kenzo	The Roteks	S5	t-7mAChWJQk	Topic	392
+306	dubstep	2007	Coki	Red Eye	S2	5yKxn54lXW8	Dubstep Classics	271
+307	dubstep	2007	The Bug feat Killa P and Flowdan	Skeng (Autechre Remix)	S5	eUdhBU0KuLw	Topic	319
+308	dubstep	2007	Caspa	Big Headed Slags	S3	vmqSievaJf0	Official	285
+309	dubstep	2007	Loefah	Disco Rekah	S4	T6KeptbB6YQ	Topic	319
+310	dubstep	2007	Benga	26 Basslines	S5	FhnXdIZhMlY	Topic	303
+313	dubstep	2008	Neil Landstrumm	Little Help From Rustie	S5	QVklOOLKnfA	Topic	215
+316	breakbeat	2006	Brainkiller	Destroy The World	S5	epRlZivCCP0	Topic	421
+318	breakbeat	2002	Koma and Bones	Powercut (Rewired Remix)	S5	3-IDL0mu2ms	Topic	310
+319	breakbeat	2008	Shimon and Nixon	Whitenoise	S4	2JQOclpgtK0	Topic	373
+320	breakbeat	2002	Baobinga	Nukka	S2	mzDAIc4UeKY	fan	415
+322	breakbeat	2006	Brothers Bud	Dont Stop	S5	JblFE8bALqk	Topic	461
+323	breakbeat	2002	Terminalhead	Mind Of Your Own	S2	fGwNX1TtZbM	fan	212
+324	breakbeat	2000	2 Inda Bush	In Effect (Krafty Kuts Remix)	S5	5WVi8drxQh0	Topic	314
+326	breakbeat	2001	Uberzone	Rhythm Device	S2	B8A3dNDxGcc	fan	374
+328	breakbeat	1999	Proper Filthy Naughty	Stitch Up	S2	C7HayIq2ecQ	fan	350
+329	breakbeat	2005	Deekline and Wizard	All Your Love	S5	jBbrXQqukzc	Topic	155
+331	breakbeat	2002	Mindmuggaz	Get Funky	S2	nnIbdqcG32c	fan	352
+333	breakbeat	2002	Eddie Richards	Dark 1.3	S5	OsrHC8bDoHs	Topic	374
+334	breakbeat	2007	Rennie Pilgrem	Dutty Work	S2	6WKyL5zMxS8	fan	440
+336	breakbeat	2001	Tipper	Furlong	S3	aX_yocHSs9Y	Tippermusic	344
+338	breakbeat	2003	Factor-E	Move This Bass (Infiniti Mix)	S5	R6n3aKiOEHM	Topic	523
+343	breakbeat	2000	Waveform	Proteus 4	S2	S5jctryiTWw	fan	350
+345	breakbeat	2004	Afrika Bambaataa feat TC Izlam	Almighty Ra	S5	8NB29Wea6W0	Topic	314
+346	breakbeat	2001	Krafty Kuts	Funky Ass Beats (Ed Solo Mix)	S3	gSUely4jVBM	Krafty Kuts	314
+348	breakbeat	2002	Sol_Dat	The Duke Arrives	S2	hIUcWewYQn8	fan	284
+349	breakbeat	2003	Stanton Warriors	Break Me With You	S2	0ZcbT6V0cko	fan	375
+353	breakbeat	2000	BT	Fibonacci Sequence	S3	sCGNa6csdVM	BT	570
+354	breakbeat	2001	Plump DJs	Big Groovy Fucker (RePlumped)	S5	6rv2LHNN5MU	Topic	276
+358	breakbeat	2003	Brothers Bud vs Z2	Herbgrinder	S5	mzgqUzi2qpM	Topic	403
+359	breakbeat	2004	Madox	Plasticfunk	S3	lpFhD__YtWM	Madox	366
+361	breakbeat	2000	PMT	Gyromancer	S2	4j8Oy7K2yug	fan	459
+364	breakbeat	2001	Disco Assassins	Visions Of You	S2	IrVcGUSbsFs	fan	330
+365	breakbeat	2005	Agent K	Come Again	S5	jeNHAQKwYxY	Topic	338
+367	breakbeat	1999	Themroc	The Boy Cant Take It	S2	DtwjQ-03v8E	fan	328
+368	breakbeat	2004	Drumattic Twins	Rocksteady	S5	cBmRCfNYCHU	Topic	374
+374	breakbeat	2006	Platinum Mules	The Hammer	S2	Octw09Qbrz8	fan	455
+376	breakbeat	2001	Kosheen	Hungry	S3	9TgvLOmDrBs	Official	219
+377	breakbeat	2002	T-Power feat Blade	Dangerous	S5	MqpS304pbBQ	Topic	291
+378	breakbeat	2009	Drumattic Twins	Dont Be So Drumattic	S4	SdCLhiuugX4	Topic	304
+381	breakbeat	1995	CDee and Dove	Get Funky	S2	vg5RD8LQv5U	fan	450
+385	breakbeat	1992	Peter Bouncer	Love Is All We Need	S2	nIjouEiwgKI	fan	296
+396	breakbeat	1991	Meat Beat Manifesto	Original Control (Version 1)	S5	48O-YEGAZwY	Topic	323
+401	breakbeat	2004	Evil Nine	We Have The Energy	S5	NmpjGvBMoNg	Topic	317
+403	breakbeat	1991	Kenny Dope Powerhouse 3	Making A Living	S5	OpVNWraab7Y	Official	296
+404	breakbeat	1993	God Within	Raincry (Spiritual Thirst)	S5	NvxTdtkcsxE	Topic	350
+407	breakbeat	1991	Silver Bullet	Ruff Karnage	S5	857tGEJGYtc	Topic	385
+408	breakbeat	1987	Bomb The Bass	Beat Dis	S5	MTNmKqUmV1w	Topic	203
+412	breakbeat	1992	Nicolette	Wicked Mathematics	S2	x55xtiERTMY	fan	247
+417	breakbeat	1988	Shades Of Rhythm	Just Feel It	S2	CE34e64xrHg	fan	381
+418	breakbeat	2000	Bushwacka	Monster	S3	imddcazXhtA	Official	455
+420	breakbeat	1990	Lost	The Gonzo	S5	GQHdIIrpMqQ	Topic	442
+428	breakbeat	1990	The Ragga Twins	Hooligan 69	S5	aSEX2noTObI	Topic	249
+432	breakbeat	2005	Elite Force	Ghetto Fabulous	S5	g8c7b_9EkQ4	Topic	444
+434	breakbeat	1992	Dee Patten	Whos The Bad Man	S2	29fqWCGj0Ww	fan	327
+439	breakbeat	1992	Chops EMC and Extensive	Me Israelites	S5	8M8CBPmcDDA	Topic	213
+442	breakbeat	1989	Shut Up And Dance	20 To Get In	S2	q_2R-MPKTBQ	fan	254
+444	breakbeat	1997	Propellerheads	Take California	S5	81bG15gsl70	Topic	467
+447	breakbeat	1990	Mental Cube	Chile Of The Bass Generation	S5	Su3-4vjA3EA	Topic	245
+451	breakbeat	1990	Meat Beat Manifesto	Radio Babylon	S5	TEe5mpmKxW8	Topic	384
+453	breakbeat	1989	Renegade Soundwave	The Phantom (Carl Cox Rewire)	S5	91ZgnB78mdo	Topic	329
+458	breakbeat	1991	Dimension	Flatline	S2	UWNzkUBeHOk	fan	245
+466	breakbeat	1989	16 Bit	Hi-Score	S5	b9aNpWoxZrI	Topic	281
+468	breakbeat	1991	Holy Ghost Inc	Stealth	S2	OlHXj84G51U	fan	275
+473	breakbeat	1993	Effective Force	Diamond Bullet	S2	55fmSAyTttI	fan	339
+476	breakbeat	1989	The Beat Pirate	Good Times (Free Yourself)	S5	RhKnaN5eqbo	Topic	354
+481	breakbeat	1992	The Ultraviolet Catastrophe	Trip Harder	S2	LuTD5Z68B4k	fan	404
+482	breakbeat	1989	Addis Posse	Let The Warriors Dance	S5	OS8_ZXQ0uAc	Topic	310
+484	breakbeat	1988	The Break Boys	And The Break Goes On	S5	4T_NGFORxGo	Topic	369
+487	breakbeat	2006	Drumattic Twins	Pumped Up Funk	S5	ovbLqn-2fek	Topic	400
+488	breakbeat	1998	The Wiseguys	Ooh La La	S5	Dzhh8IHH4wo	Topic	354
+493	breakbeat	1990	N-Joi	Anthem	S3	mDURChQ7w54	Official	241
+494	breakbeat	2004	Geeneus	Congo	S5	iaJoMQDNyv8	Topic	345
+495	breakbeat	1989	The Black Dog	Age Of Slack	S2	XPAw_fzsnkk	fan	478
+499	breakbeat	1993	Full Moon Scientist	Old Man Rivers Crying	S5	LNJVCpShkm8	Topic	686
+501	breakbeat	1994	Depth Charge	Shaolin Buddha Finger	S5	ebT3nvsEuo0	Topic	408
+504	breakbeat	1992	Awareness	Anguish	S2	jIS5d2vTA3w	fan	379
+507	breakbeat	1994	Bassbin Twins	Dirty Crystal	S2	jMLIYfATwyE	fan	396
+508	breakbeat	1997	Freestylers feat Tenor Fly	B-Boy Stance	S3	hxScb8i9hoE	Official	277
+513	breakbeat	1996	M5	Sanctuary	S5	QNAxiQ7Ul-k	Topic	359
+514	breakbeat	1992	Timebase	Unity	S5	Sa28h4mrRbE	Topic	315
+517	atmospheric_jungle	2012	Thesis	Blessing In Disguise	S3	XiStx5CPI1c	Thesis	473
+519	atmospheric_jungle	2009	Stranjah	Concentration	S5	jHnqX2iltAk	Topic	527
+522	atmospheric_jungle	1996	Flytronix	The Rhode Tune	S2	Ynv58lvsnRI	fan	535
+523	atmospheric_jungle	1998	Blu Mar Ten	Global Access	S3	KE3pfabR7sQ	Blu Mar Ten	627
+525	atmospheric_jungle	1996	Voyager	Hypersleep (97 Revamp)	S5	IN48khbyVzM	Topic	499
+526	atmospheric_jungle	1997	Artemis	Elysian Fields	S2	5_1uGy3tGY4	fan	546
+528	atmospheric_jungle	2005	Big Bud	Miracle	S2	_TI1S6Yk6Bg	fan	514
+529	atmospheric_jungle	2000	Hidden Agenda	Vindication	S2	MrHhXfMe0wg	fan	405
+530	atmospheric_jungle	1996	Source Direct	Complexities	S2	mRWZXlQ2oIs	fan	497
+532	atmospheric_jungle	2010	Method One	Aquamarine	S2	aAU7Zj8Pl7M	fan	347
+535	atmospheric_jungle	2005	Seba and Paradox	Move On	S5	iZBzUiNeAFg	Topic	402
+537	atmospheric_jungle	2006	Logistics	City Life	S5	f7Mgu8Yj-eY	Topic	272
+538	atmospheric_jungle	1999	Artemis	Fairlight	S2	Jy1Mi2EFQbw	fan	449
+541	atmospheric_jungle	2013	Etherwood	In The Moment	S3	UCbTkAw2Bdc	Etherwood	311
+542	atmospheric_jungle	1998	Big Bud	Blue 52	S5	s-56Ez3ar8o	Topic	534
+544	atmospheric_jungle	1996	Doc Scott	Tokyo Dawn	S5	H9dNVcT24CA	Topic	372
+546	atmospheric_jungle	1994	Spring Heel Jack	Double Edge Dub	S2	1Brsx7mI64E	fan	339
+548	atmospheric_jungle	2006	Nucleus and Paradox	Elusion Theme	S5	VuXTDtUcG9o	Topic	443
+549	atmospheric_jungle	2001	Future Engineers	Time and Place	S4	fHIMiYDqUAA	Topic	322
+550	atmospheric_jungle	1999	Axis	Euphony (Instrumental Mix)	S5	dezlbJrnayc	Topic	318
+553	atmospheric_jungle	2009	Electrosoul System	To My Galaxy	S5	slvjkAnGWJA	Topic	344
+556	atmospheric_jungle	1997	Talisman and Hudson	Leaving Planet Earth	S5	hwaciPNjcSQ	Topic	362
+557	atmospheric_jungle	1998	Moonchild	Possible Worlds	S2	RULso5NetBQ	fan	579
+558	atmospheric_jungle	1994	4 Hero	Follow Your Heart (Part One)	S5	ArY4J9LPP1k	Topic	376
+560	atmospheric_jungle	1998	PHD and MC Conrad	3 By 4	S2	TSDAUsFrj9o	fan	402
+562	atmospheric_jungle	1996	Carlito	Cascade	S2	4DOCyaJdLbM	fan	384
+564	atmospheric_jungle	1993	Metalheads	You And Me (The Beauty The Beast)	S2	ZOxMyvaWO70	fan	425
+566	atmospheric_jungle	1998	Mark J	Flight 19	S2	un9wp_0Zw1c	fan	342
+569	atmospheric_jungle	1994	Doc Scott	Far Away	S5	qqdvFf0i8Hw	Topic	476
+574	atmospheric_jungle	2000	Omni Trio	Who Are You (Aquasky Remix)	S5	T0bx74S8EOI	Topic	463
+575	atmospheric_jungle	2017	Naibu	Case Study	S5	0tElocwoHxI	Topic	299
+578	atmospheric_jungle	1994	Aquarius	Aquatic	S2	3pqGFVLxpYk	Mobius	374
+593	atmospheric_jungle	1995	Aquasky	Dezires	S5	q56pO5_mdUk	Topic	439
+594	atmospheric_jungle	1996	PHD and Funky Technicians	Above and Beyond (Instrumental)	S5	dZCYXxPheIk	Topic	433
+603	atmospheric_jungle	2015	Satl ft Malaky	Tell Me	S2	9aqWWj8QBc8	Ledge Sounds	242
+604	atmospheric_jungle	1999	KMC	System (Instrumental Mix)	S5	xceNwAK8pvc	Topic	403
+605	atmospheric_jungle	1993	Omni Trio	Renegade Snares (Foul Play Remix)	S2	3nbVsorrCEg	fan	370
+609	atmospheric_jungle	2016	Seba	Eidolon	S4	RiM732pySXc	Topic	332
+617	atmospheric_jungle	1997	Blame	Alpha 7	S2	IC9mrxnWmAk	fan	501
+620	atmospheric_jungle	1999	Funky Technicians	Airtight (Total Science Remix)	S4	VoRIP-gAEAo	Topic	584
+624	atmospheric_jungle	1998	Future Engineers	Components	S2	cfOdglLrYUI	fan	420
+625	atmospheric_jungle	2016	Stunna	Frozen Lake	S5	Ux1TL-YFDHg	Topic	361
+630	atmospheric_jungle	2013	Utah Jazz	A Sardinian Way	S5	7VScS_jl3Zg	Topic	322
+633	liquid	2009	ATP	I Still Believe	S5	1YOFM9AUlvI	Topic	401
+634	liquid	2012	Beta 2 feat Pete Josef	Love Finds Me	S5	g24V5aR7fpU	Topic	359
+636	liquid	2006	Autumn	Its Always About The Girl	S5	Hk3IIeMKHns	Topic	336
+639	liquid	2007	Chino	Jade Sunrise	S5	n0uNhpUCLX4	Topic	403
+641	liquid	2007	Blu Mar Ten	All Over Again	S3	Pv5F0-U1dA8	Blu Mar Ten	311
+644	liquid	2007	Method One	The 47 (Northstar Remix)	S2	S8EQSW-YyNQ	fan	440
+645	liquid	2017	Hugh Hardie	Love Troubles	S5	Yv19c5DWnoI	Topic	254
+647	liquid	2010	Total Science and SPY	Above the Clouds	S2	FAE2NCXLkEc	Shogun Audio	170
+653	liquid	2007	Mist-I-Cal	Time to Fly	S5	6xTWJ3TLPIk	Topic	382
+655	liquid	2010	Random Movement	Kids In The Sea	S5	35pP0JY2BzI	Topic	413
+656	liquid	2009	Edward Oberon	Change Everything	S2	VUtFWVuZnkE	fan	652
+657	liquid	2013	Submorphics	Summer Soul	S2	1bF_9dW3zGw	Ledge Sounds	272
+659	liquid	2009	Mistabishi	Heavensake	S5	Hv55eiPkZdY	Topic	244
+661	liquid	2010	Netsky feat Darrison	Escape	S3	nw2-DdKCsx8	Netsky	358
+663	liquid	2003	London Elektricity	Different Drum	S3	Fz761BWtB4U	Official	444
+664	liquid	2017	Makoto	Flow	S5	Njv9d7-AnfQ	Topic	299
+669	liquid	2012	Pro Luxe	Give Me Your Heart	S3	1ckvVzM3wxw	Pro Luxe	275
+672	liquid	2004	Hive	Last Call	S2	lrRO7c1fRA4	fan	396
+674	liquid	2011	Grafix	Devotion	S2	ibbdmx86M-0	fan	312
+677	liquid	2009	Danny Byrd ft Zarif	California	S2	5kKVAdm5zNM	UKF	301
+679	liquid	2007	Photek	Things	S2	BOHtHs5XFnk	fan	355
+681	liquid	2006	Redeyes	What You Gave Up	S5	AdwvqoBO1OY	Topic	381
+683	liquid	2017	Dimension	Black Church	S3	TluBUhItKAE	Dimension	323
+686	liquid	2003	Cyantific	Be True	S5	B2oOtT1FGOM	Topic	446
+690	liquid	2012	Command Strange	Candy	S5	3VXkLHYlV8Y	Topic	303
+694	liquid	2003	XRS	Calypso	S2	SckYUuGJ370	fan	358
+696	liquid	2010	Phil Tangent	Lunar	S5	zxXQS5w2YA4	Topic	456
+697	liquid	2013	BCee	Our Time	S3	D6hNyqb_Ofs	BCee	339
+700	liquid	2007	High Contrast	Forever And A Day	S3	_R2NuWXZT28	Official	452
+704	liquid	2013	Camo and Krooked ft Metrik	Aurora	S2	JKwbjTwC5mA	Hospital	192
+705	liquid	2012	Lenzman	Wordsworth	S3	Sboj3fb6oKY	Official	199
+707	liquid	2013	Simplification	Love Forever	S5	fquZT_CsbWU	Topic	388
+708	liquid	2002	Peshay feat Co-Ordinate	You Got Me Burning	S3	2TuuIX2PWZA	Official	360
+712	liquid	2010	Arje	Reconstruction	S2	1IgX9pjAVzU	fan	420
+714	liquid	2013	Klute	Turnaround	S5	yZRDhRJJcH8	Topic	341
+716	liquid	2001	Uncut	Midnight	S2	5_ecXJiM4l0	fan	194
+717	liquid	2005	Chris Su	Solaris Theme	S5	k92KG2jYEPw	Topic	382
+718	liquid	2008	Bachelors Of Science	The Ice Dance	S5	8UaKhIsibp4	Topic	332
+721	liquid	2007	Madmen and Poets	Cryptic Flames	S5	CaqxJU-KUrs	Topic	355
+723	liquid	2004	Dynamite MC	Ride	S5	rV8eczfCbsY	Topic	337
+728	liquid	2012	Nic Zigzag	Great September	S5	cBMya4B3HiU	Topic	292
+731	liquid	2002	High Contrast	Return Of Forever	S3	XoSscshAG-4	Official	500
+732	liquid	2008	Calibre	Alone In A Crowd	S3	WjeA8QS4oVs	Calibre	293
+734	liquid	2007	Kubiks and Greenfly	Flashback	S2	hUhRC4FE5CY	fan	369
+735	liquid	2002	DJ Marky and XRS feat Stamina MC	LK	S5	Xu9TuPhQWy4	Topic	330
+737	liquid	2013	Fred V and Grafix	Downpour	S5	PT5ffHfbDr4	Topic	314
+738	liquid	2002	Danny C	The Mexican	S5	QEn-dUb4YXQ	Topic	275
+743	liquid	2013	Deeper South	East Meets South	S5	-2XOgN0BZx0	Topic	435
+746	ambient_techno	2014	Cosmic Replicant	Waves Bubbles	S5	rsiLOVuU-w0	Topic	329
+749	ambient_techno	1993	Deep Space Network	Om	S2	yNW6HOFuNi4	fan	467
+751	ambient_techno	1995	Kinder Atom	Scanus	S5	Ed6IpNnDVgc	Topic	543
+753	ambient_techno	1992	Aphex Twin	Xtal	S2	2tOutF8B3f8	fan	295
+754	ambient_techno	1994	The Fires Of Ork	Talk To The Stars	S2	Zxg4j0gL2ts	Biophon	709
+755	ambient_techno	1995	David Moufang	P.M.	S2	ljJws6OLcTI	fan	932
+758	ambient_techno	1995	The Higher Intelligence Agency	Pinkgreen	S2	sVi8VnuHjRI	fan	473
+761	ambient_techno	2014	Orson Wells	Drifting	S2	PEupzQHI9G0	fan	422
+766	ambient_techno	2000	Christian Kleine	Minus Time	S5	Mq4aT6cM3dI	Topic	338
+768	ambient_techno	1993	Shades Of Orion	Did You Ever Retire A Human	S5	Jx3rXeTBer4	Topic	767
+771	ambient_techno	2001	Dntel	Why Im So Unhappy	S5	tPohl9rsVxU	Topic	421
+774	ambient_techno	1997	Plaid	Abla Eedio	S5	6TuELLYvF_c	Topic	477
+777	ambient_techno	1993	A Positive Life	Pleidean Communication	S5	ITAdZ6DWau0	Topic	440
+779	ambient_techno	1993	The Higher Intelligence Agency	Orange	S2	lPfchSFwkwc	fan	405
+782	ambient_techno	1990	Neutron 9000	The Way to Heaven	S5	jqG28a_5P_A	Topic	297
+784	ambient_techno	2017	Derek Carr	Terrahawk	S5	LGDDBLfvA3s	Topic	359
+785	ambient_techno	2011	Tycho	Daydream	S3	xombuoSt9L0	Tycho	335
+786	ambient_techno	2004	Fennesz	The Point of It All	S5	Boe1tUHf3vo	Topic	302
+791	ambient_techno	2004	Cell	Blue Embers	S5	jM8I4MKNxtQ	Topic	425
+797	ambient_techno	2007	The Dandelion Council	Gemstones	S4	w0CJv5_36rY	Topic	180
+801	ambient_techno	2000	Son.sine	Upekah	S5	TCmumdKNmNQ	Topic	538
+805	ambient_techno	2015	Si Matthews	World 9	S5	8118xYo6JmM	Topic	470
+810	ambient_techno	2009	Forces Of Nature	Lunar Survey	S5	1JluKU9IWi8	Topic	321
+813	ambient_techno	1993	Pentatonik	Devotion	S5	jpMednxPWdM	Topic	335
+817	ambient_techno	1998	Bola	Aguilla	S5	4348DuH-nes	Topic	384
+821	ambient_techno	2007	Theo Parrish	Galactic Ancestors	S2	LyKCfu-1st4	fan	696
+824	ambient_techno	1991	Biosphere	Baby Interphase	S5	8qxBjcGjS3M	Topic	308
+826	ambient_techno	1992	Psychick Warriors Ov Gaia	Obsidian	S2	tGXszMUQXxI	fan	1232
+828	ambient_techno	1994	Robert Leiner	From Beyond And Back	S2	1KpK_7KDsjY	fan	411
+832	ambient_techno	1996	Spacetime Continuum	Vertigo	S2	c1NMMYI5iVA	fan	456
+835	ambient_techno	2000	Arovane	yua:e	S4	MJ4osCkAXlk	Topic	492
+837	ambient_techno	1998	Boards Of Canada	Telephasic Workshop	S3	u8tyqgRaY_g	Official	396
+839	ambient_techno	1993	Autechre	Kalpol Introl	S5	9CVRYtMkNKQ	Topic	199
+841	ambient_techno	2002	Funckarma	Noir	S5	GbPe7wLuoIU	Topic	309
+846	ambient_techno	1994	Tournesol	Henka	S5	bxCR_1DppEE	Topic	688
+853	ambient_techno	2013	Johan Agebjorn	Ambient Robot Dance	S5	sgXePUjtWa8	Topic	529
+854	ambient_techno	2003	Bola	Forcasa 3	S5	XQQpa-djlFk	Topic	325
+858	ambient_techno	2014	Plaid	Slam	S5	PWaHo33wL8w	Topic	348
+899	ambient	1983	Brian Eno	An Ending (Ascent)	S3	OlaTeXX3uH8	Official	262
+871	ambient	1980	Harold Budd and Brian Eno	The Plateaux Of Mirror	S5	mwJTwG5r5Ks	Topic	254
+918	ambient	1991	The Orb	A Huge Ever Growing Pulsating Brain	S3	MlsY8MQ2CWE	Official	1129
+926	ambient	1994	Biosphere	Decryption	S5	wlG-F5ex_9A	Topic	364
+1008	ambient	2005	Biosphere	Drifter	S4	w4N34CAVJ4g	Topic	260
+938	ambient	2011	Marconi Union	Weightless	S2	UfcAVejslrU	JustMusicTV	489
+924	ambient	2011	Carbon Based Lifeforms	System	S3	zYalsDftg6I	Official	451
+933	ambient	2002	Solar Fields	Spiritual Ocean	S3	r9CYaviME2M	Official	339
+890	ambient	2015	36	Sine Dust	S3	L2xCq4CGsWE	Official	330
+935	ambient	2009	36	Inside (2:56am Mix)	S3	c_FDWJDFq7U	Official	340
+889	ambient	2006	Helios	Sons Of Light And Darkness	S5	cz--gbpPOYA	Topic	273
+904	ambient	1997	HIA and Pete Namlook	Secret Location	S2	bTScOxuY5Ng	fan	592
+1014	ambient	1988	Steve Roach	Magnificent Gallery	S5	D0tmJZFucLA	Topic	373
+979	ambient	1993	Sun Electric	Love 2 Love	S2	VGwQM8Pb-1E	fan	244
+1002	ambient	1993	Dreamfish	School Of Fish	S5	wMKAEPwrHuI	Topic	1102
+1010	ambient	1993	Coldcut	Autumn Leaves (Irresistible Force Mix)	S3	W13I8DIKcyE	Official	427
+1006	ambient	1994	Spacetime Continuum	A Low Frequency Inversion Field	S5	lspj8Woyxv0	Topic	789
+870	ambient	1995	Speedy J	Fill 17	S3	ik6GeSvPu-c	Official	161
+952	ambient	1980	Laraaji	Meditation No. 2	S5	kEu3vJ3ux0E	Topic	471
+961	ambient	1983	Iasos	Helios and Vesta	S5	etXafX_xDvs	Topic	772
+989	ambient	1995	William Orbit	Ogive No.1	S3	5Hvyla9X_8U	Official	405
+1061	ambient	2005	Deaf Center	Path To Lucy	S5	oGOH_2bpM9A	Topic	295
+1109	ambient	2003	Tim Hecker	Spectral	S2	Uqe6BZ0xj48	fan	490
+1032	ambient	2008	Celer	The Carved God Is Gone	S5	bpGP2qfOQtE	Topic	770
+1071	ambient	1984	Harold Budd and Brian Eno	An Echo Of Night	S5	3cMGhPA4jl4	Topic	149
+943	ambient	1994	Robert Rich	Night Spinning Inward (Film Mix)	S3	fcDd6dyaq1Q	Official	282
+1105	ambient	2017	Si Matthews	Celestial Orientation	S5	Vaqqpe3y-Gs	Topic	1108
+981	ambient	2015	State Azure	Vertigo	S3	l5JKV-DMkZc	Official	541
+1011	ambient	2016	Stormloop	Into the Dawn	S5	suncCTxyXTQ	Topic	435
+957	ambient	2014	Mick Chillage	Solitude	S5	i6KW9-KPcIc	Topic	1009
+1016	ambient	2006	Peter James	In The Face Of Loss	S3	ox5xwOkpvmw	Peter James	353
+1082	ambient	2015	Olan Mill	Isla Del Sol	S4	qmK5aVG2S60	Topic	368
+1025	ambient	2010	Pleq and Segue	The Seed (Tomasz Mrenca Remix)	S5	O7Sz8UrPZ7k	Topic	404
+914	ambient	1994	FFWD	Hempire	S2	IbhEKKnwAZ4	fan	195
+868	ambient	1988	Kevin Braheny	Ice Forests of Orion	S5	8CC-Axnw_gY	Topic	302
+877	ambient	1997	Pulusha	Isolation Part One	S2	pz1CBtGeN30	fan	691
+887	ambient	1999	Roderick Julian Modell	Cool Watery Depths	S2	91DO2GVq-bs	fan	600
+895	ambient	2012	Sounds From The Ground	Chrome Horizon	S3	Vv4XKqIb-eY	Official	300
+916	ambient	1987	Jonn Serrie	And the Stars Go With You	S3	yJks_Tn35vM	Official	260
+920	ambient	1994	Dr Atmo and Oliver Lieb	Music to Films Movement	S2	IXUAq33Tgj0	fan	717
+931	ambient	2015	Northumbria	Catch a Falling Knife Pt I	S5	ZsLfieKIWZk	Topic	399
+934	ambient	1996	Shades Of Orion	Beteigeuzian Ritual	S4	AQ522egOZ1Y	Topic	414
+1129	house	1986	Jamie Principle	Your Love	S5	rB8tFzTG3Xo	Topic	408
+1140	house	1986	Marshall Jefferson	Move Your Body (The House Music Anthem)	S5	RhKMMh4qOL8	Topic	469
+1153	house	1986	JM Silk	I Cant Turn Around (House Mix)	S5	t-01sI91oQU	Topic	455
+1165	house	1987	CeCe Rogers	Someday	S5	-zraH7HkcOk	Topic	236
+1193	house	1988	Royal House	Can You Party	S5	AS_Ybbh5e1s	Topic	311
+1293	house	1988	Todd Terry Project	Weekend (Club Version)	S3	ivK6jTNc7gU	Official	345
+1285	house	1991	MK	Burning (Vibe Mix Edit)	S3	BezYw_JpwE4	Official	204
+1297	house	1992	Gypsymen	Hear The Music	S2	e_mPqFEhmz0	fan	396
+1123	house	1987	Steve Silk Hurley	Jack Your Body (1986 Club Mix)	S5	_eDf8IGSh0Q	Topic	307
+1227	house	1995	Tina Moore	Never Gonna Let You Go	S5	_MFtoi1Ezso	Topic	255
+1270	house	1994	Delacy	Hideaway (Deep Dish Remix)	S5	tUyUUMAKbfY	Topic	716
+1335	house	1997	Ultra Nate	Free (Mood II Swing Extended Vocal)	S3	Ch0LGQjdMEo	Official	496
+1243	house	1990	Underground Solution	Luv Dancin	S3	bW49GUEDeks	fan	502
+1319	house	1983	First Choice	Let No Man Put Asunder (Shep Pettibone Mix)	S5	SeM-ANuGldQ	Topic	482
+1223	house	1982	Peech Boys	Dont Make Me Wait	S5	zNg-vgcgWIQ	Topic	444
+1322	house	1997	Nuyorican Soul	Runaway	S5	-7Bj0PHJzYA	Topic	473
+1529	deep_house	1996	Mood II Swing	All Night Long	S5	MUqVU9_1iGQ	Topic	496
+1325	house	1995	Todd Edwards	Dancing For Heaven	S5	oT6Y43KOt5U	Topic	350
+1324	house	1991	Sounds Of Blackness	The Pressure (Frankie Knuckles Mix)	S5	FpAOQ0NojZI	Topic	505
+1134	house	1986	Farley Jackmaster Funk ft Darryl Pandy	Love Cant Turn Around	S2	LDtbXxemnPw	fan	216
+1538	deep_house	1996	Moodymann	I Cant Kick This Feeling When It Hits	S5	HN-VLcK3N_Y	Topic	486
+1547	deep_house	1998	Moodymann	Mahogany Brown	S5	1R6UZlgZecg	Topic	334
+1525	deep_house	1986	Virgo	Free Yourself	S2	j5NDni1aSXI	fan	420
+1556	deep_house	1989	Virgo	In a Vision	S5	FSZfShOMoFQ	Topic	288
+1619	deep_house	1991	Frankie Knuckles	The Whistle Song	S5	jH2nU1spf_g	Topic	418
+1620	deep_house	1997	Eddie Amador	House Music	S2	i5vnIX1niDQ	fan	361
+1286	house	1994	Round One	Im Your Brother (Club Version)	S5	PlRM2PWfb2Y	Topic	395
+1516	deep_house	1990	Dream 2 Science	My Love Turns to Liquid	S5	vGWMHfyol6c	Topic	323
+1560	deep_house	1997	Mike Huckaby	The Jazz Republic	S5	HUJhZ0ernYw	Topic	423
+1581	deep_house	2005	Ron Trent and Chez Damier	Morning Factory	S5	qD1EMKahRTc	Topic	552
+9001	ska	1965	The Skatalites	Guns of Navarone	S2	wtESlTKBa4s	fan	382
+9002	ska	1965	Don Drummond	Man In The Street	S5	q1ReQxcjKtY	Topic	205
+9003	ska	1965	Roland Alphonso	Phoenix City	S5	fj65rB4PI4w	Topic	182
+9004	ska	1964	Prince Buster	Al Capone	S3	GBdXyLgjJuA	Official	180
+9005	ska	1963	Prince Buster	Madness	S3	1T8ZPCN4RsQ	Official	163
+9007	ska	1967	The Ethiopians	Train to Skaville	S5	6BgEHtHMR64	Topic	176
+9008	ska	1964	Justin Hinds and The Dominoes	Carry Go Bring Come	S5	zOXcaGuwTRA	Topic	166
+9009	ska	1967	Desmond Dekker	007 (Shanty Town)	S5	0mC2orBm3tc	Topic	155
+9010	ska	1969	Toots and The Maytals	Monkey Man	S3	Amdi2a1k1L0	Official	224
+9011	ska	1968	Toots and The Maytals	54-46 Thats My Number	S3	u8g8bBGz6Vc	Official	207
+9012	ska	1969	Harry J Allstars	Liquidator	S5	Vott6In7Tf8	Topic	187
+9013	ska	1969	The Pioneers	Long Shot (Kick De Bucket)	S5	L0xwYPW01dI	Topic	171
+9014	ska	1966	Alton Ellis	Rock Steady	S4	IdROsWHUG3A	Topic	160
+9015	ska	1967	Alton Ellis	Im Still In Love	S4	mQn_jPaC6mQ	Topic	207
+9016	ska	1967	The Paragons	The Tide Is High	S5	2SwKPvCKV08	Topic	163
+9017	ska	1970	The Melodians	Rivers Of Babylon	S5	gnUKcEwT7NI	Topic	256
+9018	ska	1967	The Heptones	Pretty Looks Isnt All	S5	qbInQIUa93U	Topic	156
+9019	ska	1974	Ken Boothe	Everything I Own	S5	SCLzBtjC9a8	Topic	225
+9020	ska	1966	Delroy Wilson	Dancing Mood	S5	ueJeFWgxuYw	Topic	171
+9021	ska	1967	Phyllis Dillon	Dont Stay Away	S5	X2iWT-Zv5Z0	Topic	157
+9022	ska	1967	The Techniques	Queen Majesty	S5	AndHf7744-E	Topic	193
+9023	ska	1968	The Uniques	My Conversation	S5	H1O5hGhTwUc	Topic	224
+9024	ska	1967	Dandy Livingstone	Rudy A Message to You	S5	jnMTB66klos	Topic	169
+9025	ska	1972	Jimmy Cliff	The Harder They Come	S3	pmc5H6zAi6M	Official	220
+9026	ska	1966	Bob Andy	Ive Got To Go Back Home	S2	7ZntxQaE7sI	fan	190
+9027	ska	1964	Millie Small	My Boy Lollipop	S5	HKP7nDaj-Wo	Topic	121
+9028	ska	1966	Stranger Cole	Rough and Tough	S5	0wb3I1idC10	Topic	181
+9029	ska	1962	Derrick Morgan	Forward March	S2	4RYaMH9wB84	Trojan	180
+9030	ska	1968	The Gaylads	ABC Rocksteady	S5	L_ss0Bs5xi0	Topic	129
