@@ -391,5 +391,11 @@ new_fz='''    var fz=$("tFresh");
 assert old_fz in s and s.count(old_fz)==1
 s=s.replace(old_fz,new_fz)
 
+# 9) painel estendido do genero: sem ano no catalogo, sem parenteses (nada de «(undefined)»)
+old_yr='''n:k.a+", "+k.t+" ("+k.y+")",'''
+new_yr='''n:k.a+", "+k.t+(k.y?" ("+k.y+")":""),'''
+assert s.count(old_yr)==2
+s=s.replace(old_yr,new_yr)
+
 open('liquid/l05-engine.html','w',encoding='utf-8').write(s)
 print('l05 regenerado:',len(s))

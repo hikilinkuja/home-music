@@ -211,7 +211,7 @@ function withYT(cb){ if(ytReadyQ===null){ cb(); } else { ytReadyQ.push(cb); } }
     });
     if(name===good){ score++; }
     else { btn.classList.add("bad"); lives--; }
-    $("ndReveal").textContent="it was "+cur.a+" / "+cur.t+" ("+cur.y+"), "+good+".";
+    $("ndReveal").textContent="it was "+cur.a+" / "+cur.t+(cur.y?" ("+cur.y+")":"")+", "+good+".";
     paint();
     if(lives<=0){
       $("ndStart").textContent="Session over. again?";

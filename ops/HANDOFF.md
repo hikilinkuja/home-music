@@ -5,6 +5,18 @@ sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 f
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
 
+## Bloqueio de rede (sessão de 2026-10-08)
+
+A política de rede do ambiente na nuvem recusou (HTTP 403 do proxy de saída) todos os
+pedidos a `www.youtube.com`, `youtube.com`, `m.youtube.com`, `music.youtube.com`,
+`i.ytimg.com`, `music.ishkur.com` e `hikilinkuja.github.io`; PyPI e GitHub passam.
+As tarefas 1 e 2 não chegaram a começar (nenhum ficheiro de fila novo). Antes de as
+retomar, o Paulo tem de acrescentar esses domínios em «Allowed domains» nas definições de
+rede do ambiente (menu do ambiente na barra de título da sessão, «Edit»), com «Allow
+package managers» marcado. Primeiro comando de cada sessão, para confirmar:
+`curl -sS -o /dev/null -w "%{http_code}\n" https://www.youtube.com/` (200 ou 30x; 000 com
+«CONNECT tunnel failed, response 403» significa que continua bloqueado).
+
 ## Situação do catálogo (v3.7, publicada a 2026-10-04)
 
 1192 faixas: dub_techno 123, uk_garage 108, liquid 107, deep_house 97, breakbeat 93,
@@ -24,7 +36,7 @@ Fontes já tratadas:
   (registo em `ops/queue/ishkur-imported-2026-10-04.tsv`); o resto é a tarefa 1.
 - Cânone ska e rocksteady: 32 faixas, apoiadas em listas críticas de referência.
 
-## Tarefa 1: resto do Ishkur
+## Tarefa 1: resto do Ishkur (por fazer; bloqueada pela rede a 2026-10-08)
 
 ```
 pip install -q yt-dlp
@@ -45,7 +57,7 @@ bash ops/tools/build.sh
 ```
 Publicar por lotes como diz o `CLAUDE.md`.
 
-## Tarefa 2: faixas de dentro dos mixes da playlist 2
+## Tarefa 2: faixas de dentro dos mixes da playlist 2 (por fazer; bloqueada pela rede a 2026-10-08)
 
 ```
 python3 ops/tools/yt_playlist.py list "https://www.youtube.com/playlist?list=PLE-1dgVzWDx8Q8F3qhVZXGYPE8QBOwbrO" ops/queue/pl2-all.tsv
@@ -60,10 +72,17 @@ validar e publicar.
 
 ## Tarefa 3: manutenção
 
-- `labs/arcade-data.js` está desatualizado em relação ao catálogo: ver o formato e
-  regenerá-lo a partir de `radio/e03-data.html`, se fizer sentido; senão, registar.
-- Voz do «dawn override»: quando o Paulo enviar a gravação, gravá-la como `sfx/dawn-mc.mp3`;
-  o resto já está ligado.
+- Feito a 2026-10-08 (v3.8): `labs/arcade-data.js` passou a ser gerado por
+  `ops/tools/arcade_data.py` (chamado pelo `build.sh` e verificado pelo `validate.py`) a
+  partir de `radio/e03-data.html`, com o catálogo inteiro e só os campos que o laboratório
+  usa (g, a, t, y, v). Não há nada a fazer à mão: cada montagem atualiza-o.
+- Feito a 2026-10-08: a liquid deixou de mostrar «(undefined)» nas faixas sem ano (531 de
+  1192), no jogo da arcada (`l08-arcade.html`) e no painel estendido do género
+  (transformação 9 do `build-liquid.py`). A sala antiga continua a mostrar «(undefined)» no
+  painel estendido de uk_garage, dub_techno, house, oldskool_hardcore e ska_rocksteady
+  (`radio/e05-engine.html`, congelado): só se corrige se o Paulo autorizar mexer na sala antiga.
+- Por fazer: voz do «dawn override». Quando o Paulo enviar a gravação, gravá-la como
+  `sfx/dawn-mc.mp3`; o resto já está ligado.
 
 ## Armadilhas conhecidas
 

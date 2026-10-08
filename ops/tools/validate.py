@@ -6,7 +6,8 @@ Verifica:
   - ausencia de travessao (U+2014), meia-risca (U+2013) e marcador (U+2022) nos ficheiros publicados;
   - videoIds com 11 caracteres e sem duplicados;
   - todos os generos usados existem em GENRES (e03) e em GBPM (radio/e05-engine.html);
-  - as duas salas montadas contem o catalogo inteiro.
+  - as duas salas montadas contem o catalogo inteiro;
+  - labs/arcade-data.js (gerado pelo build.sh) tem sintaxe valida e o catalogo inteiro.
 Uso: python3 ops/tools/validate.py   (a partir da raiz do repositorio)
 """
 import os
@@ -17,6 +18,7 @@ import tempfile
 from collections import Counter
 
 PAGES = ["index.html", "liquid/index.html"]
+ARCADE = "labs/arcade-data.js"
 E03 = "radio/e03-data.html"
 BANNED = {chr(0x2014): "travessao", chr(0x2013): "meia-risca", chr(0x2022): "marcador"}
 fails = []
@@ -68,7 +70,7 @@ def main():
     gbkeys = set(re.findall(r"([a-z_]+):", gb.group(1))) if gb else set()
     if set(used) - gbkeys:
         fails.append(f"generos sem BPM em GBPM: {sorted(set(used) - gbkeys)}")
-    for page in PAGES + [E03]:
+    for page in PAGES + [E03, ARCADE]:
         txt = open(page, encoding="utf-8").read()
         for ch, name in BANNED.items():
             if ch in txt:
@@ -80,6 +82,11 @@ def main():
         n = len(re.findall(r'\{ g:"[a-z_]+"', html))
         if n < len(vids):
             fails.append(f"{page} tem {n} faixas, o catalogo tem {len(vids)}: montar de novo")
+    arc = open(ARCADE, encoding="utf-8").read()
+    node_check(arc, ARCADE)
+    n = len(re.findall(r'\{ g:"[a-z_]+"', arc))
+    if n != len(vids):
+        fails.append(f"{ARCADE} tem {n} faixas, o catalogo tem {len(vids)}: montar de novo")
     print(f"catalogo: {len(vids)} faixas, {len(used)} generos")
     for g, n in used.most_common():
         print(f"  {g:22s} {n}")

@@ -840,7 +840,7 @@ function setNow(t, push){
     if(gx && !gx.records){
       var ks0=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
       gx={ quote:gx.quote, quote2:gx.quote2, lineage:gx.lineage, note:gx.note, eph:gx.eph,
-        records: ks0.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+        records: ks0.map(function(k){ return { n:k.a+", "+k.t+(k.y?" ("+k.y+")":""),
           r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
           u:"https://www.youtube.com/watch?v="+k.v }; }),
         links: gx.links || [
@@ -854,7 +854,7 @@ function setNow(t, push){
          estante e portas para fora; os dossiers ricos chegam genero a genero */
       var ks=TRACKS.filter(function(x){ return x.g===t.g; }).slice(0,3);
       gx={
-        records: ks.map(function(k){ return { n:k.a+", "+k.t+" ("+k.y+")",
+        records: ks.map(function(k){ return { n:k.a+", "+k.t+(k.y?" ("+k.y+")":""),
           r:(k.bpm? k.bpm+" BPM, " : "")+"in the house crate",
           u:"https://www.youtube.com/watch?v="+k.v }; }),
         links:[

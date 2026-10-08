@@ -248,7 +248,7 @@ function ndAnswer(btn, name){
     b.disabled=true;
   });
   if(name===good){ nd.score++; } else { btn.classList.add("bad"); nd.lives--; }
-  $("arcReveal").textContent="it was "+nd.cur.a+" / "+nd.cur.t+" ("+nd.cur.y+"), "+good+".";
+  $("arcReveal").textContent="it was "+nd.cur.a+" / "+nd.cur.t+(nd.cur.y?" ("+nd.cur.y+")":"")+", "+good+".";
   ndPaint();
   if(nd.lives<=0){ $("arcStart").textContent="Session over. again?"; nd.lives=3; nd.score=0; }
   else { $("arcStart").textContent="Next record"; }
