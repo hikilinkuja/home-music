@@ -1,6 +1,6 @@
 # Home Music: instruções para as sessões Claude Code
 
-Rádio web pessoal do Paulo (Paulo Faria, Barcelos), publicada por GitHub Pages em
+Rádio web pessoal do Paulo, publicada por GitHub Pages em
 https://hikilinkuja.github.io/home-music/ a partir do ramo `main` deste repositório.
 Este ficheiro é a memória do projeto: as sessões na nuvem não têm outra. O trabalho em
 curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.md`.
