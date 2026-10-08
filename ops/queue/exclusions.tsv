@@ -1,11 +1,19 @@
-# artistas a não importar das listas do Ishkur (decisão editorial de 2026-10-04; o Paulo pode reverter)
-artist	reason
-Getter	brostep americano, fora do perfil underground da rádio
-Flux Pavilion	brostep americano
-Apashe	brostep / trap de festival
-Herobust	brostep / trap de festival
-Big Gigantic	livetronica de festival
-Oliver Heldens	EDM de festival
-The Weeknd	crossover pop/R&B
-Gorillaz	crossover pop
-Pretty Lights	electro-soul de festival
+# exclusões: com title vazio exclui o artista inteiro; com title exclui só essa faixa
+# artistas: decisão editorial de 2026-10-04 (o Paulo pode reverter); faixas: pedido do Paulo a 2026-10-08
+artist	title	reason
+Getter		brostep americano, fora do perfil underground da rádio
+Flux Pavilion		brostep americano
+Apashe		brostep / trap de festival
+Herobust		brostep / trap de festival
+Big Gigantic		livetronica de festival
+Oliver Heldens		EDM de festival
+The Weeknd		crossover pop/R&B
+Gorillaz		crossover pop
+Pretty Lights		electro-soul de festival
+Kosheen	Hungry	retirada pelo Paulo a 2026-10-08
+Terminalhead	Mind Of Your Own	retirada pelo Paulo a 2026-10-08
+Kenny Dope Powerhouse 3	Making A Living	retirada pelo Paulo a 2026-10-08
+Silver Bullet	Ruff Karnage	retirada pelo Paulo a 2026-10-08
+Drumattic Twins	Pumped Up Funk	retirada pelo Paulo a 2026-10-08
+Project Bassline	Drop The Pressure	retirada pelo Paulo a 2026-10-08
+Newcleus	Jam On It	retirada pelo Paulo a 2026-10-08

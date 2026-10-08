@@ -4,7 +4,7 @@
 Subcomandos:
   pending ENTRADA.tsv SAIDA.tsv
       tira da lista o que ja esta no catalogo (mesmo artista e titulo normalizados)
-      e o que consta de ops/queue/exclusions.tsv.
+      e o que consta de ops/queue/exclusions.tsv (artista inteiro, ou so a faixa se houver title).
   add RESOLVIDO.tsv --source ishkur|mix|playlist|weronika|canon|manual [--min 3] [--accept-s2]
       acrescenta ao catalogo as linhas aceites de uma saida do yt_resolve.py.
       --min 3 aceita S3, S4 e S5; --accept-s2 acrescenta S2 (rever antes por amostragem).
@@ -77,22 +77,26 @@ def read_tsv(path):
 
 
 def exclusions():
+    """Devolve (artistas excluidos por inteiro, pares (artista, titulo) excluidos)."""
     try:
         _, rows = read_tsv(EXCL)
     except FileNotFoundError:
-        return set()
-    return {norm(r.get("artist", "")) for r in rows if r.get("artist")}
+        return set(), set()
+    whole = {norm(r["artist"]) for r in rows if r.get("artist") and not r.get("title")}
+    tracks = {(norm(r["artist"]), norm(r["title"])) for r in rows if r.get("artist") and r.get("title")}
+    return whole, tracks
 
 
 def cmd_pending(a):
     _, _, vids, keys, _ = load()
-    excl = exclusions()
+    excl, excl_t = exclusions()
     hdr, rows = read_tsv(a.entrada)
     keep, dup, exc = [], 0, 0
     for r in rows:
         k1 = (norm(r.get("artist")), norm(r.get("title")))
         k2 = (norm(first_artist(r.get("artist"))), norm(r.get("title")))
-        if norm(r.get("artist")) in excl or norm(first_artist(r.get("artist"))) in excl:
+        if norm(r.get("artist")) in excl or norm(first_artist(r.get("artist"))) in excl \
+                or k1 in excl_t or k2 in excl_t:
             exc += 1
             continue
         if k1 in keys or k2 in keys:
@@ -118,6 +122,7 @@ BLURB = {
 
 def cmd_add(a):
     src, m, vids, keys, _ = load()
+    excl, excl_t = exclusions()
     _, rows = read_tsv(a.resolvido)
     ok = {"S5", "S4", "S3"} if a.min <= 3 else ({"S5", "S4"} if a.min == 4 else {"S5"})
     if a.accept_s2:
@@ -134,6 +139,10 @@ def cmd_add(a):
             title = re.sub(r"\s*[\(\[](official|audio|video|hd|hq|lyric)[^\)\]]*[\)\]]", "", title, flags=re.I)
         artist = r.get("artist")
         k = (norm(artist), norm(title))
+        if norm(artist) in excl or norm(first_artist(artist)) in excl or k in excl_t \
+                or (norm(r.get("artist")), norm(r.get("title"))) in excl_t:
+            skipped["excluida"] += 1
+            continue
         if v in vids or k in keys:
             skipped["duplicada"] += 1
             continue

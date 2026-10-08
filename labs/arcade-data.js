@@ -29,7 +29,7 @@ const GENRES = {
   house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
 };
-/* 1192 faixas */
+/* 1185 faixas */
 const TRACKS = [
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Environment Control", y:2024, v:"RPblvnQ4b9k" },
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Smothering Dreams", y:2024, v:"WMyqdwZwuaI" },
@@ -532,7 +532,6 @@ const TRACKS = [
   { g:"house", a:"Nightcrawlers", t:"Push The Feeling On (Dub of Doom)", v:"ZBR2sraqEVI" },
   { g:"house", a:"The Bucketheads", t:"The Bomb (These Sounds Fall Into My Mind)", v:"V8iqZMEwDfk" },
   { g:"breakbeat", a:"Newcleus", t:"Space Is The Place", v:"do0oSPmzuXA" },
-  { g:"breakbeat", a:"Newcleus", t:"Jam On It", v:"Q1Qdcl4ja1Y" },
   { g:"hypnotic_techno", a:"Slam", t:"Positive Education (Josh Wink Track Version)", v:"0-rFMx-QSMY" },
   { g:"deep_house", a:"David Alvarado", t:"Dreamer", v:"KqZqqBB0qeY" },
   { g:"house", a:"Josh Wink and Lil Louis", t:"Hows Your Evening So Far", v:"yZHCan2MIGc" },
@@ -811,7 +810,6 @@ const TRACKS = [
   { g:"uk_garage", a:"Mr Spring", t:"Voyager 1.56", y:1998, v:"YXhvHIHMICI" },
   { g:"uk_garage", a:"Natural Born Chillers", t:"Rock The Funky Beat", y:1997, v:"Q5lx-nm-Blc" },
   { g:"uk_garage", a:"Anthill Mob", t:"Burnin (Refix)", y:2001, v:"iHPYkiDF_cQ" },
-  { g:"uk_garage", a:"Project Bassline", t:"Drop The Pressure", y:2008, v:"ESYMmYrFYS8" },
   { g:"uk_garage", a:"DJ Pooch", t:"Let the Bass Roll (Dub Mix)", y:1997, v:"17I_bMg00YM" },
   { g:"uk_garage", a:"Walton", t:"Aggy", y:2011, v:"iP18DOAkNMs" },
   { g:"uk_garage", a:"187 Lockdown", t:"Gunman", y:1997, v:"clnEkzPF_4Y" },
@@ -926,7 +924,6 @@ const TRACKS = [
   { g:"breakbeat", a:"Shimon and Nixon", t:"Whitenoise", y:2008, v:"2JQOclpgtK0" },
   { g:"breakbeat", a:"Baobinga", t:"Nukka", y:2002, v:"mzDAIc4UeKY" },
   { g:"breakbeat", a:"Brothers Bud", t:"Dont Stop", y:2006, v:"JblFE8bALqk" },
-  { g:"breakbeat", a:"Terminalhead", t:"Mind Of Your Own", y:2002, v:"fGwNX1TtZbM" },
   { g:"breakbeat", a:"2 Inda Bush", t:"In Effect (Krafty Kuts Remix)", y:2000, v:"5WVi8drxQh0" },
   { g:"breakbeat", a:"Uberzone", t:"Rhythm Device", y:2001, v:"B8A3dNDxGcc" },
   { g:"breakbeat", a:"Proper Filthy Naughty", t:"Stitch Up", y:1999, v:"C7HayIq2ecQ" },
@@ -951,16 +948,13 @@ const TRACKS = [
   { g:"breakbeat", a:"Themroc", t:"The Boy Cant Take It", y:1999, v:"DtwjQ-03v8E" },
   { g:"breakbeat", a:"Drumattic Twins", t:"Rocksteady", y:2004, v:"cBmRCfNYCHU" },
   { g:"breakbeat", a:"Platinum Mules", t:"The Hammer", y:2006, v:"Octw09Qbrz8" },
-  { g:"breakbeat", a:"Kosheen", t:"Hungry", y:2001, v:"9TgvLOmDrBs" },
   { g:"breakbeat", a:"T-Power feat Blade", t:"Dangerous", y:2002, v:"MqpS304pbBQ" },
   { g:"breakbeat", a:"Drumattic Twins", t:"Dont Be So Drumattic", y:2009, v:"SdCLhiuugX4" },
   { g:"breakbeat", a:"CDee and Dove", t:"Get Funky", y:1995, v:"vg5RD8LQv5U" },
   { g:"breakbeat", a:"Peter Bouncer", t:"Love Is All We Need", y:1992, v:"nIjouEiwgKI" },
   { g:"breakbeat", a:"Meat Beat Manifesto", t:"Original Control (Version 1)", y:1991, v:"48O-YEGAZwY" },
   { g:"breakbeat", a:"Evil Nine", t:"We Have The Energy", y:2004, v:"NmpjGvBMoNg" },
-  { g:"breakbeat", a:"Kenny Dope Powerhouse 3", t:"Making A Living", y:1991, v:"OpVNWraab7Y" },
   { g:"breakbeat", a:"God Within", t:"Raincry (Spiritual Thirst)", y:1993, v:"NvxTdtkcsxE" },
-  { g:"breakbeat", a:"Silver Bullet", t:"Ruff Karnage", y:1991, v:"857tGEJGYtc" },
   { g:"breakbeat", a:"Bomb The Bass", t:"Beat Dis", y:1987, v:"MTNmKqUmV1w" },
   { g:"breakbeat", a:"Nicolette", t:"Wicked Mathematics", y:1992, v:"x55xtiERTMY" },
   { g:"breakbeat", a:"Shades Of Rhythm", t:"Just Feel It", y:1988, v:"CE34e64xrHg" },
@@ -983,7 +977,6 @@ const TRACKS = [
   { g:"breakbeat", a:"The Ultraviolet Catastrophe", t:"Trip Harder", y:1992, v:"LuTD5Z68B4k" },
   { g:"breakbeat", a:"Addis Posse", t:"Let The Warriors Dance", y:1989, v:"OS8_ZXQ0uAc" },
   { g:"breakbeat", a:"The Break Boys", t:"And The Break Goes On", y:1988, v:"4T_NGFORxGo" },
-  { g:"breakbeat", a:"Drumattic Twins", t:"Pumped Up Funk", y:2006, v:"ovbLqn-2fek" },
   { g:"breakbeat", a:"The Wiseguys", t:"Ooh La La", y:1998, v:"Dzhh8IHH4wo" },
   { g:"breakbeat", a:"N-Joi", t:"Anthem", y:1990, v:"mDURChQ7w54" },
   { g:"breakbeat", a:"Geeneus", t:"Congo", y:2004, v:"iaJoMQDNyv8" },
