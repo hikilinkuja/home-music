@@ -29,7 +29,7 @@ const GENRES = {
   house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
 };
-/* 1253 faixas */
+/* 1280 faixas */
 const TRACKS = [
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Environment Control", y:2024, v:"RPblvnQ4b9k" },
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Smothering Dreams", y:2024, v:"WMyqdwZwuaI" },
@@ -1283,7 +1283,34 @@ const TRACKS = [
   { g:"dub", a:"Dubkasm", t:"Higher Judgement - Aba Shanti-I Steppas Cut", y:2012, v:"BcKOS4pDnB8" },
   { g:"dub", a:"Dubkasm, Aba Shanti", t:"Jah Bible - Dubwise", y:2013, v:"yQXcIRo-VZc" },
   { g:"dub", a:"Dubkasm, Luciano", t:"Jah Victory", y:2016, v:"na0nJMW7u74" },
-  { g:"dub", a:"Dubkasm, Buggsy", t:"My Music (feat. Buggsy)", y:2014, v:"A2nmXNVKZgo" }
+  { g:"dub", a:"Dubkasm, Buggsy", t:"My Music (feat. Buggsy)", y:2014, v:"A2nmXNVKZgo" },
+  { g:"atmospheric_jungle", a:"Dillinja", t:"Sovereign Melody VIP", v:"UDVaIRK0zMI" },
+  { g:"atmospheric_jungle", a:"Nectax", t:"Link to the Past", v:"92yUlvZGX0o" },
+  { g:"atmospheric_jungle", a:"Sully", t:"Extant", v:"E8h2J-MH8Mw" },
+  { g:"ragga_jungle", a:"Tee9", t:"Ting", v:"BS8JQ5uHQLU" },
+  { g:"ragga_jungle", a:"NARNA", t:"SHOOTAH", v:"BcxQVhDZoU8" },
+  { g:"ragga_jungle", a:"Bugsy", t:"Pull Up", v:"w-7PrrIMEzk" },
+  { g:"ragga_jungle", a:"Che Mac", t:"We Need Jungle", v:"sEC4a20xhx4" },
+  { g:"ragga_jungle", a:"Janaway", t:"Killa", v:"DSaXnWhCgR0" },
+  { g:"ragga_jungle", a:"Trakker", t:"East Coast Trash Bag", v:"binhEXkR8RE" },
+  { g:"ragga_jungle", a:"OP Breaks", t:"Thats Not Me", v:"O6PZAMdEWnk" },
+  { g:"ragga_jungle", a:"SoundzZz", t:"Pass Tha Dutch Flip", v:"Spa0SNPJpiQ" },
+  { g:"atmospheric_jungle", a:"Nectax", t:"Claremont", v:"BaZrF4b3Xno" },
+  { g:"deep_house", a:"DJ Metatron", t:"Oh Ah", v:"kKuseo9kZCY" },
+  { g:"ragga_jungle", a:"SyRan", t:"Double 99 - Rip Groove (SyRan Bootleg)", v:"eY9U15On5bY" },
+  { g:"ragga_jungle", a:"Napes", t:"Bun Dem", v:"AfVt5nJtQeo" },
+  { g:"ragga_jungle", a:"Napes, Toby Ross & Oram", t:"MILITANT", v:"7RKjzMJvkvo" },
+  { g:"house", a:"Dubard", t:"Piano Move", v:"LfPRKbIEFUg" },
+  { g:"liquid", a:"LSB", t:"Jazz Strings", v:"EuGBgW5G-d8" },
+  { g:"uk_garage", a:"Cap'n. Morgan", t:"Needle On The Record (UKG Bootleg)", v:"5CbngyWuGxY" },
+  { g:"ragga_jungle", a:"Fez The Kid", t:"Palava Reboot", v:"GBoyF1XMS8A" },
+  { g:"deep_house", a:"Derek Carr", t:"Destiny", v:"Tidy2Mq9xuk" },
+  { g:"atmospheric_jungle", a:"Pure Science", t:"Ooaahh", v:"3Uogi-d0Yc0" },
+  { g:"ragga_jungle", a:"Mattik & TG", t:"No Dibby Soundboy", v:"_g4UV3aFLz0" },
+  { g:"ragga_jungle", a:"Rana", t:"Call It Ragga", v:"Is_c7IV4vB4" },
+  { g:"liquid", a:"Modal & Jaise", t:"Expressions", v:"55G9Z4bly98" },
+  { g:"liquid", a:"Redeyes", t:"Rainmaker", v:"UH2eWr5jqDI" },
+  { g:"liquid", a:"Thread & Kin:etic", t:"Disposition", v:"RjcypgJerNk" }
 ];
 const GBPM = { reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
   lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,
