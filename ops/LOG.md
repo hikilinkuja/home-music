@@ -20,7 +20,8 @@
   Rasta Now») e 2 com vídeo apagado e sem «Topic» (Brawther, Harrison BDP).
 - Por decidir pelo Paulo: Intrusion, «Reflection II», só existe em «Topic» como «Unreleased
   Extended Mix» (774 s); o vídeo atual é a «Original Version» (265 s).
-- Só catálogo, sem `ops/tests/run.sh` (não toca no motor nem na interface).
+- Só catálogo, sem `ops/tests/run.sh` (não toca no motor nem na interface). Publicado num commit,
+  depois de um rebase sobre a v4.6 da sala de foco; servido confirmado (as duas salas iguais às montadas).
 
 ## 2026-10-17: v4.6, sala de foco em três tempos (sessão local do Claude Code)
 
