@@ -63,9 +63,10 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
   `https://open.spotify.com/playlist/3RLO0lFcl8D0wYzN32Fhbs`.
 - SoundCloud `on.soundcloud.com/qlz3ssIMuiOLfJq4PN`: não importada; a ligação responde «We can't
   find that playlist» (privada ou apagada). Falta o endereço completo.
-- O Paulo vai rever as 475 faixas do Ishkur e retirar muitas: lista em
-  `ops/queue/ishkur-review-2026-10-17.tsv` (coluna `remove`). Retirar as marcadas com exclusão por
-  faixa e linha em `hold-*.tsv`, como a 2026-10-08.
+- Feito a 2026-10-17: retiradas as 475 faixas do Ishkur por decisão do Paulo (catálogo 1179 para
+  704), com exclusão por faixa e linhas literais em `ops/queue/hold-2026-10-17-ishkur.tsv`.
+  Géneros que ficaram magros e pedem reforço: ambient 4 (abre o amanhecer todos os dias),
+  oldskool_hardcore 4, intelligent_dnb 9, ragga_jungle 9, ambient_techno 14, atmospheric_jungle 15.
 
 ## Próxima ronda (proposta)
 
@@ -90,7 +91,7 @@ Fontes já tratadas:
   (registo em `ops/queue/ishkur-imported-2026-10-04.tsv`); o resto é a tarefa 1.
 - Cânone ska e rocksteady: 32 faixas, apoiadas em listas críticas de referência.
 
-## Tarefa 1: resto do Ishkur (por fazer; bloqueada pela rede a 2026-10-08)
+## Tarefa 1: resto do Ishkur (CANCELADA a 2026-10-17: o Paulo retirou toda a música do Ishkur; não reimportar)
 
 ```
 pip install -q yt-dlp

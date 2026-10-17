@@ -1,5 +1,15 @@
 # Registo das voltas
 
+## 2026-10-17: v4.1, toda a música do Ishkur retirada (sessão Claude Code na nuvem)
+
+- Faixas novas: 0. Retiradas: 475 do Ishkur (breakbeat 69, uk_garage 67, liquid 56, dubstep 46,
+  dub_techno 45, ambient 43, ragga_jungle 43, ambient_techno 37, atmospheric_jungle 22, house 22,
+  intelligent_dnb 13, deep_house 9, oldskool_hardcore 2, reggae 1). Catálogo 1179 para 704.
+- Exclusão por faixa para as 475; linhas literais em `ops/queue/hold-2026-10-17-ishkur.tsv`.
+  Tarefa 1 (resto do Ishkur) cancelada.
+- Não entraram: as duas playlists do Spotify e a do SoundCloud (rede bloqueada; a do SoundCloud
+  responde «We can't find that playlist»). Ficam em fila no `HANDOFF`.
+
 ## 2026-10-08: v4.1-ops, testes e notas no repositório (sessão Claude Code na nuvem)
 
 - Testes automáticos da liquid em `ops/tests/` (`bash ops/tests/run.sh`): galeria e filme no
