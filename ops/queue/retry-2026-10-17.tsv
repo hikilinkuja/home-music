@@ -1,31 +1,31 @@
 # Repetição, a 2026-10-17, das 126 faixas não encontradas na importação do Spotify e do SoundCloud.
-# Entraram 8. A1 e A2 esperam decisão do Paulo (aceitar o corte longo?); 'nada' espera uma pesquisa com acesso aos canais Topic.
+# Entraram 8 e depois 24 versões longas (o Paulo prefere a extended quando é a mesma faixa); 'nada' espera uma pesquisa com acesso aos canais Topic.
 key	genre	artist	title	spotify_secs	grupo	video_id	yt_secs	yt_channel	yt_title	motivo
-sp-elo-054	lofi_house	Frits Wentink	Intentions - Radio Edit	192	A1	FqgcZHOULS4	362	Majestic Casual	Frits Wentink - Intentions	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-067	house	Kolter	Infinite Slammin - Edit	150	A1	wR-LnE-2uIA	417	Kolter	Kolter - Infinite Slammin'	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-092	lofi_house	Dj Steaw	Emerald Coast - Radio Mix	198	A1	fuYwCOcV11g	398	morfeus Opus	DJ Steaw - Emerald Coast	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-107	house	Billy Cobham, Motor City Drum Ensemble	Shining Sun - Motor City Drum Ensemble Winter Sun Remix	206	A1	4ULCEStbVCM	471	DS	Billy Cobham feat. Novecento - Shining Sun (Motor City Drum Ensemble Winter Sun Remix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-122	house	Floorplan	What You Need	225	A1	XQKLy7U89Q8	366	Classic Music Company	Floorplan - What You Need (Extended Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-148	deep_house	Kassian	Midnight District Line	270	A1	3zGmX3KfQgA	566	Bolting Bits	Kassian -Midnight District Line (Original Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-161	deep_house	Chez Damier	I Never Knew Love - Made In Detroit Mix	229	A1	XQ6CXVrO3yk	504	Jonny Roberts	Chez Damier - I Never Knew Love (Made In Detroit Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-199	lofi_house	Katermurr	Stuck In The Loop	184	A1	cBVBBIcsBuM	386	Garage House TV	Katermurr - Stuck In The Loop (Original Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-304	house	Dennis Quin, Tony Sherman	Change Is Gonna Come - Edit	206	A1	UhCOdeNa4lQ	313	Suprematic Sounds	Dennis Quin - Change Is Gonna Come feat. Tony Sherman (Original Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-333	lofi_house	Janeret	Scape - Edit	237	A1	CCMbd05jWCU	400	House Six	Janeret - Scape	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-hm-406	lofi_house	dj gummy bear	2 seater - house edit	148	A1	yrWz7QXatqw	302	runnerbean	2 seater (extended house edit) - dj gummy bear	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-hm-565	lofi_house	Jason Hersco, Saison	Smooth Jazz - Saison Rework	210	A1	TgzPhj1G_lY	361	VeryHouseMusic	Jason Hersco - Smooth Jazz (Saison's Extended Rework)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-hm-614	lofi_house	Arpy Brown	Vesta	263	A1	7cNzw6ulESI	371	Toy Tonics	Arpy Brown (fka Athlete Whippet) - Vesta (Extended Version)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-hm-662	house	Key To Life, Kathleen Murphy, Marc Cotterell	Find Our Way (Breakaway) - Marc Cotterell Plastik Factory Vox	214	A1	FE6d0UCppO8	394	Maslow Unknown	KEY TO LIFE FEAT KATHLEEN MURPHY - FIND OUR WAY (BREAKAWAY) (MARC COTTERELL PLASTIK FACTORY VOX)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-hm-670	lofi_house	Janeret, Miroloja	Runnerblade	221	A1	OVad-MtzSi0	386	Music For The People	Janeret & Miroloja - Runnerblade [JMR001]	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
-sp-elo-154	lofi_house	Cabin Luv Affair	Over Your Face	222	A2	fyM7H4_H-EE	367	Maslow Unknown	Cabin Luv Affair - Over Your Face [Cécille Records]	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-elo-159	lofi_house	DJ Dove	Illusions	190	A2	3o0YT_Mxz6s	373	Slav	DJ Dove - Illusions	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-elo-213	house	Leo Pol	Chantal	278	A2	FAid9ZYlzzU	421	IILE	Leo Pol - Chantal	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-elo-235	deep_house	Berkson & What, Dan Berkson, James What	Ghosts	547	A2	1D4aywpWcls	270	Poker Flat Recordings	Berkson & What - Ghosts	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-elo-251	house	Gusto	Disco's Revenge - Mole Hole Radio Edit	221	A2	XE-SffpE7Bc	381	Club iT Radio Amsterdam	Gusto - Disco's Revenge (Mole Hole Dirty Mix)	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-elo-281	house	Todd Terry	Bounce 2 the Beat	253	A2	oASmgr4IpIk	384	oODJFriendlyOo	Bounce to the Beat - Todd Terry	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-elo-293	lofi_house	Job De Jong	Wonky	189	A2	5NOTu6kDjCU	365	Maslow Unknown	JOB DE JONG - WONKY [PIVLIM 008]	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-hm-480	lofi_house	Rioleval	Teebee03	238	A2	Ipeb_iO7sPY	427	Collected Compositions	Rioleval - Teebee03	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-hm-668	hypnotic_techno	Anja Schneider	Dubmission - 2021 Edit	186	A2	5EljZ3A5Cf8	398	mobilee	Anja Schneider - Dubmission - mobilee130	provável corte mais longo, mas sem marca de edição ou com mistura incerta
-sp-hm-696	lofi_house	Skeptic	All I Wanna Do	184	A2	cY4uUn911Zo	343	PRESSURE	Skeptic - All I Wanna Do	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-054	lofi_house	Frits Wentink	Intentions - Radio Edit	192	A1	FqgcZHOULS4	362	Majestic Casual	Frits Wentink - Intentions	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-067	house	Kolter	Infinite Slammin - Edit	150	A1	wR-LnE-2uIA	417	Kolter	Kolter - Infinite Slammin'	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-092	lofi_house	Dj Steaw	Emerald Coast - Radio Mix	198	A1	fuYwCOcV11g	398	morfeus Opus	DJ Steaw - Emerald Coast	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-107	house	Billy Cobham, Motor City Drum Ensemble	Shining Sun - Motor City Drum Ensemble Winter Sun Remix	206	A1	4ULCEStbVCM	471	DS	Billy Cobham feat. Novecento - Shining Sun (Motor City Drum Ensemble Winter Sun Remix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-122	house	Floorplan	What You Need	225	A1	XQKLy7U89Q8	366	Classic Music Company	Floorplan - What You Need (Extended Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-148	deep_house	Kassian	Midnight District Line	270	A1	3zGmX3KfQgA	566	Bolting Bits	Kassian -Midnight District Line (Original Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-161	deep_house	Chez Damier	I Never Knew Love - Made In Detroit Mix	229	A1	XQ6CXVrO3yk	504	Jonny Roberts	Chez Damier - I Never Knew Love (Made In Detroit Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-199	lofi_house	Katermurr	Stuck In The Loop	184	A1	cBVBBIcsBuM	386	Garage House TV	Katermurr - Stuck In The Loop (Original Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-304	house	Dennis Quin, Tony Sherman	Change Is Gonna Come - Edit	206	A1	UhCOdeNa4lQ	313	Suprematic Sounds	Dennis Quin - Change Is Gonna Come feat. Tony Sherman (Original Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-333	lofi_house	Janeret	Scape - Edit	237	A1	CCMbd05jWCU	400	House Six	Janeret - Scape	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-406	lofi_house	dj gummy bear	2 seater - house edit	148	A1	yrWz7QXatqw	302	runnerbean	2 seater (extended house edit) - dj gummy bear	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-565	lofi_house	Jason Hersco, Saison	Smooth Jazz - Saison Rework	210	A1	TgzPhj1G_lY	361	VeryHouseMusic	Jason Hersco - Smooth Jazz (Saison's Extended Rework)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-614	lofi_house	Arpy Brown	Vesta	263	A1	7cNzw6ulESI	371	Toy Tonics	Arpy Brown (fka Athlete Whippet) - Vesta (Extended Version)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-662	house	Key To Life, Kathleen Murphy, Marc Cotterell	Find Our Way (Breakaway) - Marc Cotterell Plastik Factory Vox	214	A1	FE6d0UCppO8	394	Maslow Unknown	KEY TO LIFE FEAT KATHLEEN MURPHY - FIND OUR WAY (BREAKAWAY) (MARC COTTERELL PLASTIK FACTORY VOX)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-670	lofi_house	Janeret, Miroloja	Runnerblade	221	A1	OVad-MtzSi0	386	Music For The People	Janeret & Miroloja - Runnerblade [JMR001]	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-154	lofi_house	Cabin Luv Affair	Over Your Face	222	A2	fyM7H4_H-EE	367	Maslow Unknown	Cabin Luv Affair - Over Your Face [Cécille Records]	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-159	lofi_house	DJ Dove	Illusions	190	A2	3o0YT_Mxz6s	373	Slav	DJ Dove - Illusions	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-213	house	Leo Pol	Chantal	278	A2	FAid9ZYlzzU	421	IILE	Leo Pol - Chantal	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-235	deep_house	Berkson & What, Dan Berkson, James What	Ghosts	547	A2	2-0tFZxsvMw	548	s0i0k0k0i	Dan Berkson & James What - Ghost (Orginal Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-251	house	Gusto	Disco's Revenge - Mole Hole Radio Edit	221	A2	XE-SffpE7Bc	381	Club iT Radio Amsterdam	Gusto - Disco's Revenge (Mole Hole Dirty Mix)	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-elo-281	house	Todd Terry	Bounce 2 the Beat	253	A2	oASmgr4IpIk	384	oODJFriendlyOo	Bounce to the Beat - Todd Terry	por decidir: há «Bounce 2 the Beat» (God EP) e «Bounce To The Beat» (Sound Design); não se sabe qual é a do Spotify; o vídeo achado não pode ser incorporado
+sp-elo-293	lofi_house	Job De Jong	Wonky	189	A2	5NOTu6kDjCU	365	Maslow Unknown	JOB DE JONG - WONKY [PIVLIM 008]	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-480	lofi_house	Rioleval	Teebee03	238	A2	Ipeb_iO7sPY	427	Collected Compositions	Rioleval - Teebee03	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-668	hypnotic_techno	Anja Schneider	Dubmission - 2021 Edit	186	A2	5EljZ3A5Cf8	398	mobilee	Anja Schneider - Dubmission - mobilee130	entrou a 2026-10-17 na versão longa (preferência do Paulo)
+sp-hm-696	lofi_house	Skeptic	All I Wanna Do	184	A2	cY4uUn911Zo	343	PRESSURE	Skeptic - All I Wanna Do	entrou a 2026-10-17 na versão longa (preferência do Paulo)
 sp-sun-026	reggae	Ibrahim Hesnawi, Suzan	Only World	285	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
 sp-sun-031	dub	S!RENE	Fela Dub	202	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
 sp-elo-060	lofi_house	Djammin	Down Shovel	398	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic

@@ -11,7 +11,12 @@
 - Entraram 8 das 126 (catálogo 1280 para 1288): house 4, deep_house 2, dub 1, dubstep 1; todas S2
   ou S3, duração conferida (salvo a do SoundCloud, sem duração de referência), incorporação
   confirmada por oEmbed. Mall Grab, «Feel You», já estava como «Feel U».
-- Ficam 117 em `ops/queue/retry-2026-10-17.tsv`: 15 A1 e 10 A2 (corte longo, decisão do Paulo),
+- Depois, por decisão do Paulo (prefere a versão extended quando é a mesma faixa), entraram 24
+  versões longas (catálogo 1288 para 1312): lofi_house 13, house 7, deep_house 3,
+  hypnotic_techno 1. Gusto e Anja Schneider confirmados no Discogs, no Beatport e na Bleep
+  (a edição curta é corte da mistura longa); Berkson & What trocado por um upload de 548 s
+  que coincide com o Spotify. Fica Todd Terry, «Bounce 2 the Beat» (identidade incerta).
+- Ficavam 117 em `ops/queue/retry-2026-10-17.tsv`: 15 A1 e 10 A2 (corte longo, decisão do Paulo),
   78 sem upload visível da nuvem, 14 candidatos errados (mixes, ao vivo, outras faixas, álbuns).
 
 ## 2026-10-17: v4.2, importação das playlists do Spotify e do SoundCloud

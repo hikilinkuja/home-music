@@ -30,7 +30,8 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 - Protocolo de importação (regra permanente): canal «Artista - Topic» do YouTube primeiro; se
   não houver, canal oficial do artista ou da editora; se não houver, outro upload que confirme
   artista e faixa no título. «A música tocar é o mais importante», mas nunca aceitar um vídeo
-  que não seja a faixa pedida.
+  que não seja a faixa pedida. Se a mesma faixa (mesma mistura) existir em edição curta e em
+  versão original ou estendida, preferir a longa, até 21 minutos (decidido a 2026-10-17).
 - A fila de importação executa-se por defeito, sem esperar nova ordem.
 - Lo-fi hip hop só na sala de foco. Oldskool hardcore fica parado (sem esforço dedicado).
 - Excluir de qualquer importação: sets e mixes acima de 21 minutos, álbuns inteiros, vídeos

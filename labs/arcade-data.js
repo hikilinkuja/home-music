@@ -29,7 +29,7 @@ const GENRES = {
   house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
 };
-/* 1288 faixas */
+/* 1312 faixas */
 const TRACKS = [
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Environment Control", y:2024, v:"RPblvnQ4b9k" },
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Smothering Dreams", y:2024, v:"WMyqdwZwuaI" },
@@ -1318,7 +1318,31 @@ const TRACKS = [
   { g:"house", a:"Art Department", t:"Jazz Hours - Original Mix", y:2025, v:"y3r3GOdzpBc" },
   { g:"house", a:"Robin Fett", t:"Bare Minimum - Original Mix", v:"KKKCFH2_1N8" },
   { g:"deep_house", a:"Wamdue Kids", t:"Ocean Between Us - Original Mix", y:2021, v:"fyexMXDqFqw" },
-  { g:"dubstep", a:"Kalbaisakhi", t:"One Raga To A Dubstep Beat", v:"KC1gI3zAodE" }
+  { g:"dubstep", a:"Kalbaisakhi", t:"One Raga To A Dubstep Beat", v:"KC1gI3zAodE" },
+  { g:"lofi_house", a:"Frits Wentink", t:"Intentions", y:2023, v:"FqgcZHOULS4" },
+  { g:"house", a:"Kolter", t:"Infinite Slammin", y:2025, v:"wR-LnE-2uIA" },
+  { g:"lofi_house", a:"Dj Steaw", t:"Emerald Coast", y:2024, v:"fuYwCOcV11g" },
+  { g:"house", a:"Billy Cobham, Motor City Drum Ensemble", t:"Shining Sun - Motor City Drum Ensemble Winter Sun Remix", y:2019, v:"4ULCEStbVCM" },
+  { g:"house", a:"Floorplan", t:"What You Need (Extended Mix)", y:2023, v:"XQKLy7U89Q8" },
+  { g:"deep_house", a:"Kassian", t:"Midnight District Line", y:2020, v:"3zGmX3KfQgA" },
+  { g:"deep_house", a:"Chez Damier", t:"I Never Knew Love - Made In Detroit Mix", y:1992, v:"XQ6CXVrO3yk" },
+  { g:"lofi_house", a:"Katermurr", t:"Stuck In The Loop", y:2024, v:"cBVBBIcsBuM" },
+  { g:"house", a:"Dennis Quin, Tony Sherman", t:"Change Is Gonna Come", y:2020, v:"UhCOdeNa4lQ" },
+  { g:"lofi_house", a:"Janeret", t:"Scape", y:2024, v:"CCMbd05jWCU" },
+  { g:"lofi_house", a:"dj gummy bear", t:"2 seater (extended house edit)", y:2023, v:"yrWz7QXatqw" },
+  { g:"lofi_house", a:"Jason Hersco, Saison", t:"Smooth Jazz (Saison's Extended Rework)", y:2025, v:"TgzPhj1G_lY" },
+  { g:"lofi_house", a:"Arpy Brown", t:"Vesta (Extended Version)", y:2021, v:"7cNzw6ulESI" },
+  { g:"house", a:"Key To Life, Kathleen Murphy, Marc Cotterell", t:"Find Our Way (Breakaway) - Marc Cotterell Plastik Factory Vox", v:"FE6d0UCppO8" },
+  { g:"lofi_house", a:"Janeret, Miroloja", t:"Runnerblade", y:2025, v:"OVad-MtzSi0" },
+  { g:"house", a:"Gusto", t:"Disco's Revenge - Mole Hole Dirty Mix", y:1995, v:"XE-SffpE7Bc" },
+  { g:"hypnotic_techno", a:"Anja Schneider", t:"Dubmission", y:2021, v:"5EljZ3A5Cf8" },
+  { g:"lofi_house", a:"Cabin Luv Affair", t:"Over Your Face", v:"fyM7H4_H-EE" },
+  { g:"lofi_house", a:"DJ Dove", t:"Illusions", y:2018, v:"3o0YT_Mxz6s" },
+  { g:"house", a:"Leo Pol", t:"Chantal", y:2018, v:"FAid9ZYlzzU" },
+  { g:"lofi_house", a:"Job De Jong", t:"Wonky", y:2024, v:"5NOTu6kDjCU" },
+  { g:"lofi_house", a:"Rioleval", t:"Teebee03", y:2021, v:"Ipeb_iO7sPY" },
+  { g:"lofi_house", a:"Skeptic", t:"All I Wanna Do", y:2025, v:"cY4uUn911Zo" },
+  { g:"deep_house", a:"Berkson & What, Dan Berkson, James What", t:"Ghosts", y:2015, v:"2-0tFZxsvMw" }
 ];
 const GBPM = { reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
   lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,

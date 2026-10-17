@@ -76,8 +76,9 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
 
 ### Em espera do Paulo (importação)
 
-1. A1 e A2: aceitar o corte longo quando o YouTube só tem a versão original ou estendida da mesma
-   mistura? Se sim, A1 entra com `catalogue.py add` (status S2, `--accept-s2`); A2 linha a linha.
+1. Feito: A1 e A2 entraram na versão longa (24; decisão do Paulo: prefere a extended quando é a
+   mesma faixa, regra a aplicar em importações futuras). Fica Todd Terry, «Bounce 2 the Beat»
+   (duas faixas de nome parecido, não se sabe qual é a do Spotify).
 2. As 78 «nada» e a troca das faixas já importadas por S2/S3 pelas versões «Topic»: precisam de
    uma pesquisa que veja os «Topic». Via recomendada: sessão local do Claude Code no computador
    do Paulo (IP doméstico em Portugal), a correr
