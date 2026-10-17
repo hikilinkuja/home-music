@@ -117,6 +117,8 @@ BLURB = {
     "weronika": "Hand-picked for Home Music by Weronika, the station's guest selector.",
     "canon": "A fixture of the critics' all-time lists for its genre.",
     "manual": "Imported for Home Music.",
+    "spotify": "From the station's Spotify crates: {node}.",
+    "soundcloud": "From the station's SoundCloud crate, played from its YouTube upload.",
 }
 
 
