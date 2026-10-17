@@ -1,5 +1,35 @@
 # Registo das voltas
 
+## 2026-10-17: v4.5, troca de 696 vídeos S2/S3 pelas versões «Topic» (sessão local do Claude Code)
+
+- Sondagem do catálogo inteiro (1385 faixas) pelo YouTube Music a partir do IP doméstico: 398 já
+  eram «Topic»; 987 não (uploads de terceiros, canais oficiais ou de editoras, vídeos apagados).
+  As 987 passaram pelo `yt_resolve.py` em sete lotes de 150, com a duração do vídeo atual como alvo.
+- Trocadas 696, só o videoId (título, ano, blurb e data de entrada ficaram): lofi_house 242,
+  house 145, deep_house 142, reggae 43, hypnotic_techno 25, dub_techno 25, dub 14, liquid 12,
+  uk_garage 7, ambient_techno 6, atmospheric_jungle 6, dubstep 6, ska_rocksteady 6, lofi 5,
+  breakbeat 4, ragga_jungle 4, intelligent_dnb 3, oldskool_hardcore 1. Todas «Topic», todas com
+  incorporação confirmada por oEmbed.
+- Critério: 648 automáticas (S5, título igual sem versão a mais nem a menos, duração a menos de
+  max(15 s, 6%) do vídeo antigo); 48 por revisão manual (mesma mistura com título grafado de outro
+  modo, versão longa da mesma faixa, vídeo antigo apagado ou errado). Pela regra da versão longa:
+  The Chemical Brothers, «Star Guitar» (388 s), Benga & Coki, «Night» (372 s), Stardust, «Music
+  Sounds Better With You» (404 s), JT Donaldson, «Stay Inside» (Sandy Rivera Extended Remix,
+  317 s), e outras 15 mais longas que o upload antigo.
+- Vídeos errados corrigidos de passagem: Barbara Tucker, «Beautiful People (C.J.'s Dub)» (era um
+  documentário da DJ Mag), Charles Pierre, «Euphoria» (excerto de um set de festival), MPH, «Nova»
+  (mashup), Sakro, «Believe it» (era «Beautiful Music»), Demuja, «Move» (era «Move Like That»);
+  apagados substituídos: Mall Grab, «Guap», Basic Channel, «Phylyps Trak», Vales, «Warm The Room».
+- Ficaram 291 como estavam (`ops/queue/topic-swap-2026-10-17-kept.tsv`, com o melhor candidato e o
+  motivo): 141 S4 (há «Topic» do artista mas com outro título), 64 S2 e 20 S3 (sem «Topic»),
+  15 M, e 51 revistas à mão e recusadas (outra mistura, «Topic» mais curto, outra faixa).
+  Continuam apagados, sem «Topic»: Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust».
+  Sam Binga, «Get Down Low (En:vy Remix)», tem um vídeo de outra faixa («Proud», Enei Remix).
+- Registo das trocas, para reposição: `ops/queue/topic-swap-2026-10-17-applied.tsv` (old_vid e
+  new_vid); entrada e saída do resolvedor em `topic-swap-2026-10-17-{in,resolved}.tsv`.
+- Publicado em cinco commits (155, 155, 129, 129, 128); só catálogo, sem `ops/tests/run.sh`
+  (não toca no motor nem na interface). Servido confirmado: as duas salas iguais às montadas.
+
 ## 2026-10-17: v4.4, as 78 «nada» resolvidas de uma ligação doméstica (sessão local do Claude Code)
 
 - `yt_resolve.py` corrido no computador do Paulo (IP doméstico em Portugal): o YouTube Music

@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08. Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-17, v4.5). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -80,14 +80,15 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
    mesma faixa, regra a aplicar em importações futuras). Fica Todd Terry, «Bounce 2 the Beat»
    (duas faixas de nome parecido, não se sabe qual é a do Spotify).
 2. Feito (v4.4, sessão local): das 78 «nada» entraram 73, todas «Topic»; 5 ficaram
-   «errado-local» na fila (outra faixa). Falta a troca das faixas já importadas por S2/S3 pelas
-   versões «Topic»: precisa de uma pesquisa que veja os «Topic». Via recomendada: sessão local
-   do Claude Code no computador do Paulo (IP doméstico em Portugal), a correr
-   `pip install yt-dlp ytmusicapi` e
-   `python3 ops/tools/yt_resolve.py ENTRADA.tsv SAIDA.tsv` (as colunas de entrada
-   estão no próprio TSV da repetição). Alternativa na nuvem: pesquisa externa (motor de pesquisa
-   do modelo) e `--verify`; numa amostra de 3 faixas obscuras não encontrou nenhum «Topic»,
-   rendimento baixo para o custo.
+   «errado-local» na fila (outra faixa). Feito (v4.5, sessão local): troca das faixas S2/S3
+   pelas versões «Topic»; 696 de 987 trocadas (registo em
+   `ops/queue/topic-swap-2026-10-17-applied.tsv`). Ficaram 291 em
+   `ops/queue/topic-swap-2026-10-17-kept.tsv`; as 141 S4 (há «Topic» do artista com outro
+   título) podem ainda esconder a mesma faixa com título diferente e merecem uma passagem manual,
+   sempre de uma ligação doméstica.
+3. Por decidir pelo Paulo: Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust», têm o
+   vídeo apagado e não há «Topic» (retirar ou procurar outro upload); Sam Binga, «Get Down Low
+   (En:vy Remix)», toca outra faixa.
 
 ## Próxima ronda (proposta)
 
