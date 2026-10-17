@@ -55,18 +55,17 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
 - zoom das pinturas no computador: que ideias implementar (`ops/notes/2026-10-08/`, ficheiro 3);
 - uk_garage sem vizinho na tabela ADJ do motor: só entra por sorteio (ficheiro 5 das notas).
 
-## Pedidos de 2026-10-17 (por fazer; rede ainda bloqueada)
+## Pedidos de 2026-10-17
 
-- Duas playlists do Spotify para importar (ler o alinhamento e resolver cada faixa no YouTube pelo
-  protocolo; exige `open.spotify.com` ou outra via de leitura, e o YouTube, permitidos na rede):
-  `https://open.spotify.com/playlist/64QljzOrKONYxANZISTyLo` e
-  `https://open.spotify.com/playlist/3RLO0lFcl8D0wYzN32Fhbs`.
-- SoundCloud `on.soundcloud.com/qlz3ssIMuiOLfJq4PN`: não importada; a ligação responde «We can't
-  find that playlist» (privada ou apagada). Falta o endereço completo.
-- Feito a 2026-10-17: retiradas as 475 faixas do Ishkur por decisão do Paulo (catálogo 1179 para
-  704), com exclusão por faixa e linhas literais em `ops/queue/hold-2026-10-17-ishkur.tsv`.
-  Géneros que ficaram magros e pedem reforço: ambient 4 (abre o amanhecer todos os dias),
-  oldskool_hardcore 4, intelligent_dnb 9, ragga_jungle 9, ambient_techno 14, atmospheric_jungle 15.
+- Feito: retiradas as 475 faixas do Ishkur (hold em `ops/queue/hold-2026-10-17-ishkur.tsv`).
+- Feito: importadas 576 faixas de cinco playlists do Spotify (exportadas pelo Paulo em CSV) e de
+  uma do SoundCloud (alinhamento colado pelo Paulo), em cinco lotes. O que ficou de fora, com o
+  motivo, está em `ops/queue/import-2026-10-17-left-out.tsv` (126 não encontradas no YouTube
+  podem ser tentadas de novo; as restantes foram recusadas por versão ou duração erradas, ou
+  por não terem lugar na grelha).
+- Nota: o resolvedor não encontrou nenhum canal «Topic» nesta volta (zero S5); todas as faixas
+  entraram por canais de artista/editora (S3) ou uploads de terceiros (S2) filtrados por duração
+  e versão. Vale a pena investigar se a página de pesquisa vista da nuvem esconde os Topic.
 
 ## Próxima ronda (proposta)
 

@@ -1,5 +1,19 @@
 # Registo das voltas
 
+## 2026-10-17: v4.2, importação das playlists do Spotify e do SoundCloud
+
+- Entraram 576 faixas (catálogo 704 para 1280): lofi_house 235, house 124, deep_house 124,
+  reggae 38, ragga_jungle 14, hypnotic_techno 11, dub 8, uk_garage 6, atmospheric_jungle 5,
+  lofi 5, liquid 4, dub_techno 1, ambient_techno 1.
+- Ficaram de fora 225 de 801 (as 193 que não estavam já no catálogo, com motivo, em
+  `ops/queue/import-2026-10-17-left-out.tsv`): 126 não encontradas no YouTube, 29 já no
+  catálogo, 27 com remix ou versão diferente da pedida, 17 com duração diferente da do Spotify,
+  9 pop ou crossover, 5 sem género na grelha (baile funk, funk árabe, samba, pop brasileira),
+  4 cortes de mix de DJ, 3 vídeos errados do SoundCloud recusados à mão, 1 excluída, 1 acelerada,
+  1 com duas faixas, 1 repetida entre listas, 1 vídeo duplicado.
+- Revisão: duas amostras de uploads de terceiros (30 e 25 linhas); a primeira mostrou 3 erros
+  de versão, que levaram ao filtro estrito de duração e versão; a segunda, depois do filtro, 0.
+
 ## 2026-10-17: v4.1, toda a música do Ishkur retirada (sessão Claude Code na nuvem)
 
 - Faixas novas: 0. Retiradas: 475 do Ishkur (breakbeat 69, uk_garage 67, liquid 56, dubstep 46,
