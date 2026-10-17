@@ -1,5 +1,27 @@
 # Registo das voltas
 
+## 2026-10-18: v4.7, revisão manual das 141 S4 da troca por «Topic» (sessão local do Claude Code)
+
+- As 141 faixas S4 de `topic-swap-2026-10-17-kept.tsv` (há «Topic» do artista com outro título)
+  passaram por uma pesquisa de canções no YouTube Music a partir do IP doméstico, com o título
+  grafado de vários modos (apóstrofos, sem parênteses, título antes do artista), e revisão à mão
+  dos candidatos com o título do vídeo antigo (oEmbed) e o alinhamento dos álbuns.
+- Trocadas 6, só o videoId, todas com oEmbed 200: house 3 (Armand Van Helden, «Witch Doktor»,
+  versão longa de 392 s; Mr Oizo, «Flat Beat», versão do single de 326 s em vez do vídeo oficial
+  editado; Charanjit Singh, «Raga Madhuvanti», faixa do «Ten Ragas To A Disco Beat»), deep_house 1
+  (34th Floor Experience, «Set Me Free (Original Mix)», mesma duração), dub 1 (Nazamba, Linval
+  Thompson and OBF, «Curfew Drop», «Topic» do O.B.F), ska_rocksteady 1 (The Pyramids, «John
+  Chewy»). Duas vêm do canal genérico «Release - Topic», aceites só porque o artista foi
+  confirmado nos metadados do YouTube Music.
+- Ficaram 135 (`ops/queue/topic-swap-2026-10-18-s4-review.tsv`, motivo por linha): 104 sem a faixa
+  no YouTube Music (só outras faixas do artista), 13 com «Topic» mais curto ou só em edição,
+  9 com outra mistura, versão ou faixa, 3 em que o «Topic» de título parecido é de outro artista,
+  2 só ao vivo, 2 de identidade ou mistura incerta (DJ Dove, «Illusions»; Ras Midas, «Cant Stop
+  Rasta Now») e 2 com vídeo apagado e sem «Topic» (Brawther, Harrison BDP).
+- Por decidir pelo Paulo: Intrusion, «Reflection II», só existe em «Topic» como «Unreleased
+  Extended Mix» (774 s); o vídeo atual é a «Original Version» (265 s).
+- Só catálogo, sem `ops/tests/run.sh` (não toca no motor nem na interface).
+
 ## 2026-10-17: v4.6, sala de foco em três tempos (sessão local do Claude Code)
 
 - Proposta em texto, quatro alternativas e maquetes da C e da D; o Paulo escolheu a D e pediu os

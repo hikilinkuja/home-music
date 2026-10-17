@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-17, v4.5). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v4.7). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -83,12 +83,16 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
    «errado-local» na fila (outra faixa). Feito (v4.5, sessão local): troca das faixas S2/S3
    pelas versões «Topic»; 696 de 987 trocadas (registo em
    `ops/queue/topic-swap-2026-10-17-applied.tsv`). Ficaram 291 em
-   `ops/queue/topic-swap-2026-10-17-kept.tsv`; as 141 S4 (há «Topic» do artista com outro
-   título) podem ainda esconder a mesma faixa com título diferente e merecem uma passagem manual,
-   sempre de uma ligação doméstica.
+   `ops/queue/topic-swap-2026-10-17-kept.tsv`. Feito (v4.7, sessão local): passagem manual das
+   141 S4; trocadas 6 (registadas no fim do mesmo `applied.tsv`), ficaram 135 com motivo em
+   `ops/queue/topic-swap-2026-10-18-s4-review.tsv` (104 sem a faixa no YouTube Music). Restam
+   na kept, sem «Topic», as 64 S2, 20 S3 e 15 M: só um motor de pesquisa externo ou a revisão
+   do Paulo as podem resolver.
 3. Por decidir pelo Paulo: Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust», têm o
    vídeo apagado e não há «Topic» (retirar ou procurar outro upload); Sam Binga, «Get Down Low
-   (En:vy Remix)», toca outra faixa.
+   (En:vy Remix)», toca outra faixa. Intrusion, «Reflection II»: o «Topic» só tem a «Unreleased
+   Extended Mix» (774 s), o vídeo atual é a «Original Version» (265 s); trocar só se o Paulo
+   aceitar a versão estendida como a mesma faixa.
 
 ## Sala de foco v4.6 (publicada a 2026-10-17)
 

@@ -1,0 +1,144 @@
+# Revisao manual das 141 S4 de topic-swap-2026-10-17-kept.tsv (sessao local, 2026-10-18): pesquisa de cancoes no YouTube Music com o titulo grafado de varios modos.
+# decisao: trocado (registado em topic-swap-2026-10-17-applied.tsv) ou ficou; cand_* e o melhor Topic do artista encontrado.
+vid	genre	artist	title	secs	decisao	new_vid	cand_vid	cand_secs	cand_title	motivo
+E4ZYLgXWqjM	ambient_techno	Bvdub	Gone Are The Days	675	ficou		fCpkmw5MVhY	1118	You Said the Future Was Ours	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+UKXHtNdsZIU	ambient_techno	DJ Healer	I Got to Hit The Streets	400	ficou		OX7eEAGwhX0	261	Daylight	Topic «Hit The Streets» é de outro artista (Markus Schatz); do DJ Healer nada
+4w-Yt_sjkQ0	ambient_techno	The Irresistible Force	Space Is The Place (Intergalactic Mix)	528	ficou		A_v_sF5V3qA	340	The Lie-In King	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+92yUlvZGX0o	atmospheric_jungle	Nectax	Link to the Past	326	ficou		mHOoxPoYlRc	319	Labyrinth	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+BaZrF4b3Xno	atmospheric_jungle	Nectax	Claremont	326	ficou		mHOoxPoYlRc	319	Labyrinth	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+3865VN7RGcY	atmospheric_jungle	Peshay	Piano Tune	567	ficou		QsCIti5fnHA	619	Summer Breeze	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+3Uogi-d0Yc0	atmospheric_jungle	Pure Science	Ooaahh	463	ficou		Z-HgIqyYcrE	374	Avatar	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+oyMDxoGrbKQ	breakbeat	DJ Baby Anne	She Said	318	ficou		yiHYKeXHyjk	260	The Bass Queen (DJ Icey Remix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+IGejQLl--sA	breakbeat	Earth Leakage Trip	The Awakening	530	ficou		xjhuX10tL4M	344	Walking In This World	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+BeBowxytGKU	deep_house	34th Floor Experience	Set Me Free - Original Mix	366	trocado	-F8Xd1d2D6A	pz2cBr7RFPY	355	Close To Home	ver applied.tsv
+IO1Z02kZqr0	deep_house	Audio Soul Project	Distractions	509	ficou		xBJ47o_9JaU	381	Intrinsic	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+GL4OSV4q9LI	deep_house	Brawther	Khawuleza (Unreleased Dub)		ficou		_f5H7KceRDo	478	Kitten	video atual apagado (oEmbed 404) e sem Topic da faixa
+RWjvI3ZoSFM	deep_house	Chaos In The CBD	Pressure	351	ficou		peRua_hwH6k	485	A Deeper Life	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+h981U7NEqvw	deep_house	Chaos In The CBD	spheres	380	ficou		peRua_hwH6k	485	A Deeper Life	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+PduMtDjhI0w	deep_house	Chaos In The CBD	Educate The Heart	375	ficou		r-Dwb38RmqQ	397	Drum Therapy	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+_OqQSfdC0Zo	deep_house	DJ Sprinkles	Grand Central, Part I (MCDE Bassline Dub)	422	ficou		ECXjXJnW3-I	384	Glitterbest	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+YWj_ggzan40	deep_house	Delano Smith	Wires	480	ficou		6w995aAeNtk	231	Wires (Mix Cut)	Topic «Wires (Mix Cut)» é um corte de mix (231 s)
+4YrLz7k09jc	deep_house	Delano Smith, Traumer	Essence	423	ficou		jk9PPnGb_YE	324	Queen	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+Tidy2Mq9xuk	deep_house	Derek Carr	Destiny	551	ficou		qSmRNeWXwAY	389	Sidewinder	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+CFCaK7QflQw	deep_house	Franck Roger	Say You Love Me (Dub)	396	ficou		nxTdIPmFCsM	298	You're The One For Me	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+BkB4DWT3BbE	deep_house	Harrison BDP	Dust		ficou		5_sLgLLfZZ4	428	Slugs 	video atual apagado (oEmbed 404) e sem Topic da faixa
+2fk-0N_pbAg	deep_house	Helly Larson	Floating in Space	408	ficou		dBAy1erJGwU	338	Outer Space	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+3RmoOs9xrrM	deep_house	Jeigo	An Ode to Midnight	383	ficou		xwvC2m_c8Ig	431	Pearl Leaf	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+nrUQh4TNs0k	deep_house	Jeigo	Wing Systems	402	ficou		ezlHIFJpruk	180	You Can Be	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+wy1gT_cqvlE	deep_house	Leafar Legov	Our Love Is Strong	492	ficou		ZnWdq50I2DA	538	Cenote	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+ujEkbFICUlk	deep_house	Malin Genie	Sense Of Swing	481	ficou		7R9b33mn9Dg	352	Poses I	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+cpuke_gCGcg	deep_house	Omar-S	Psychotic Photosynthesis	596	ficou		14yqgxni-4A	253	Leave Luck to Heaven	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+8XVjX5CsOnI	deep_house	Pal Joey presents Expression	Ancestoral Groove	284	ficou		UTpBbBnrdGc	180	Ancestral Groove	video antigo e a mistura DJ Duke's Phusion Groove; Topic «Ancestral Groove» (180 s) e outra versao
+rki59_zC6uM	deep_house	Quince	Alfa	335	ficou					sem a faixa no YouTube Music: so outras faixas do artista em Topic
+6GBjIUUKgKQ	deep_house	Ron Trent	City Beat	683	ficou		DQB1Cu1n0d8	403	The Back Gate	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+9h1-jYFwsFE	deep_house	So Inagawa	Elsewhere	570	ficou		PLessn2i0UI	320	Never Know	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+CAjU_6yw2Gs	deep_house	The Mole	Lockdown Party (DJ Sprinkles Crossfaderama)	712	ficou		vxeLVP2vyWY	640	Hardcore party (Evil Drug Lords)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+XIdOAxMcJjk	deep_house	The Persuader	Djurgardsbron	316	ficou		4qSgcvnsQFc	121	Skargard	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+praYGNEhl4o	deep_house	Theo Parrish	Long Walk In Your Sun	652	ficou		44ZxoFzqDqU	537	Sky Walking	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+Okb2lSqqilw	deep_house	Virgo Four	It's a Crime	307	ficou		PnrrwfT5STg	289	In A Vision	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+p9UIsgWYlDw	deep_house	X Nation	Nowhere (Astral Mix)	352	ficou		j9Usl2iy22Q	405	Come Test	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+na0nJMW7u74	dub	Dubkasm, Luciano	Jah Victory	248	ficou		SPzX3OztMak	117	Jah Victory (feat. Luciano)	Topic com 117 s contra 248 s (versao curta)
+-IlCwmNPkNE	dub	Jah Shaka	Commandments Of Dub	265	ficou		aQ9eQdEJM7U	247	Commandment Dub	video antigo e «Glorious Dub» (Commandments Of Dub Pt 4); Topic «Commandment Dub» e outra faixa (capitulo 6)
+KmSvBfBe3zM	dub	King Tubby	Running Over	156	ficou		OWev6FRHGuo	208	Moving Version Dub	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+qu3RXnGFQa8	dub	King Tubby & The Aggrovators	Dub Fi Gwan	239	ficou		LvSlaiXqUuw	271	Dub Ina The Arena	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+k8M1pxyhfE0	dub	Nazamba, Linval Thompson and OBF	Curfew Drop	191	trocado	zgPcIjdkGps	zgPcIjdkGps	183	Curfew Drop	ver applied.tsv
+LN2YJyxOzQ4	dub	Vivian Jones	One Of These Days (Dub Version)	565	ficou		vEZTrQwOvLs	219	One Day (feat. Ras Sherby & Slu Dem)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+uVXlm4He6Mc	dub	Yabby You	Deliver Me From My Enemies	351	ficou		W69_GH1g7Qg	172	Deliver Me From My Enemies	video antigo e a Dub Plate Mix (351 s); Topic so tem a versao vocal (172 s)
+pIeTr-NiQIM	dub_techno	Babe Roots	Rawness	234	ficou		ldk1gLq5fdI	320	Can't See	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+g4sRraPYzhI	dub_techno	DeepChord	Untitled (DC-11 B1)	496	ficou		hj7DWyURMKg	520	Vantage Isle (DC Mix I)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+ad69ia5u0fQ	dub_techno	DeepChord	Untitled (DC-11 A)	1103	ficou		hj7DWyURMKg	520	Vantage Isle (DC Mix I)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+skCcgSzvHs0	dub_techno	DeepChord	dc14 Side B	553	ficou		QWYY5uGrNUE	565	Sub-Marine	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+s2rNUt7ONa4	dub_techno	Deepchord	dc10 B1 Untitled	868	ficou		c4AIGEr756M	623	Burnt Sage	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+KjHk175RWuM	dub_techno	Deepchord	Untitled A1 (dc10)	934	ficou		hj7DWyURMKg	520	Vantage Isle (DC Mix I)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+oXWd2jxs33A	dub_techno	Dublicator	Parallel Singularity	553	ficou		eqhnsOG4BDo	422	Aureolin (Dublicator Remix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+AdDbkLUxI0s	dub_techno	Echo Inspectors	Forgiven	413	ficou		EcauvEzGIXM	397	Parable	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+9R_uQicSaDw	dub_techno	Hallucinator	Frontier	410	ficou		m3RvZyLqq-g	317	Control	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+xzePO7iNb2k	dub_techno	Intrusion	Reflection II	265	ficou		YXslLl6-RiQ	774	Reflection II (Unreleased Extended Mix)	video antigo e a Original Version (265 s); Topic so tem a Unreleased Extended Mix (774 s), outra versao; decisao do Paulo
+XqT_HHKPiXw	dub_techno	Luke Hess and Omar S	Automatic Night	541	ficou		PF4N7tzEn4w	335	Restoration	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+ba9yOVQCcnQ	dub_techno	Mark Ernestus	Dub Dafa Nekh	546	ficou		ShhK2x3SAeA	365	Danna Dubwise (Mark Ernestus Meets Ben Zabo)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+-SazQKBkmg0	dub_techno	Masis	No War Dub	298	ficou		yc9T75bU3Xo	209	Unearthed Dub	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+kYy5d1ZX-Yo	dub_techno	Matt Thibideau	Surface Two	436	ficou		lpQvyBVZjmQ	469	Late Train	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+0bFbx3fIUoc	dub_techno	Merv	Melted Vein	661	ficou		qh6kRNZDnns	431	Meticule	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+0oF5ROU8-Vs	dub_techno	Merv	Dust	600	ficou		ZGd3DOm2QZA	356	Burnt	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+4e_GuDBSsTw	dub_techno	Quantec	Longwinded	469	ficou		UXjsBPlKLZ8	363	Uninflected	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+Wcnk2z0_1LQ	dub_techno	Sven Weisemann	Floating Dub	577	ficou		dDUn4C0K9ps	432	Falling Leaves	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+SSSIVJhg-7Q	dub_techno	Sven Weisemann	Maori Octopus	470	ficou		aNI14n03kxc	407	Slices (Ripperton's Riding High Sremix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+jpSl10eubCI	dub_techno	Theorem	Fallout	525	ficou		fNXdXbYWYzA	216	Breakdown	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+ja-mdhH5lPk	dub_techno	cv313	Dimensional	723	ficou		XHTdIcJEryY	647	Dimensional (Live at Club Air Tokyo Japan)	Topic so em versao ao vivo (Live at Club Air Tokyo)
+Tuy2hFY_IIw	dub_techno	cv313	Subtraktive	944	ficou		jF9aYjCrTWc	545	Spectral Vector	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+zpV7radKuwo	dubstep	Mala	Alicia	335	ficou		SnN-Zgh8dHg	212	Malacara	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+lfPRTroEMTI	house	Armand Van Helden	Witch Doktor	277	trocado	QrhSNgsgOVY	QrhSNgsgOVY	392	Witch Doktor	ver applied.tsv
+unTwaVOdG0g	house	Barbara Tucker	I Get Lifted	269	ficou		b58G0n__eaw	413	I Get Lifted (Go To Church)	Topic so com misturas nomeadas (Go To Church, Underground Network, Louie Vega, Bar Dub); nao se sabe qual e a de 269 s
+4ULCEStbVCM	house	Billy Cobham, Motor City Drum Ensemble	Shining Sun - Motor City Drum Ensemble Winter Sun Remix	471	ficou		fzypQt7oKJg	207	Shining Sun (Motor City Drum Ensemble Winter Sun Remix)	Topic da mesma remistura com 207 s contra 471 s (edicao curta)
+6lcOPbVlt0s	house	Charanjit Singh	Raga Madhuvanti	415	trocado	J1yG7SwTPX4	J1yG7SwTPX4	311	Madhuvanti	ver applied.tsv
+fW8SGId-144	house	DJ Mouse	Night Transmission	380	ficou		sgwHbmbPdq8	114	Transmission	Topic «Transmission» e de DJ Skinny Mouse, outro artista
+MJa5fa1MzL8	house	Felipe Gordon	Moving Results	285	ficou		aABgmpGOTDE	158	Feeling All Over It	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+XQKLy7U89Q8	house	Floorplan	What You Need (Extended Mix)	365	ficou		zVp5DdF22AU	251	What A Friend	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+bXD0Vsqu4FU	house	Hush Hush	How True Is Your Love	307	ficou		9jCf9Ao3Eck	432	Themes of Luv	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+yZHCan2MIGc	house	Josh Wink and Lil Louis	Hows Your Evening So Far	529	ficou		5l2iMKZ6uHA	476	Are You There (Size 9 Remix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+FE6d0UCppO8	house	Key To Life, Kathleen Murphy, Marc Cotterell	Find Our Way (Breakaway) - Marc Cotterell Plastik Factory Vox	394	ficou		XJo-xgGF4to	215	Find Our Way (Breakaway) (Marc Cotterell Plastik Factory Vox) (feat. Kathleen Murphy)	Topic da mesma mistura com 215 s contra 394 s (edicao curta)
+wR-LnE-2uIA	house	Kolter	Infinite Slammin	416	ficou		i2l4ah6JIok	150	Infinite Slammin (Edit)	Topic so em «(Edit)» com 150 s contra 416 s
+TWWKDSSF39o	house	Mijangos	Track Uno	326	ficou		sCl35uTzKyk	319	Miran	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+qmsbP13xu6k	house	Mr Oizo	Flat Beat	187	trocado	8kIcRg9yfg4	aP1PrVeBiIA	317	Flat Beat (Radio Edit)	ver applied.tsv
+cH_JyWHpMrA	house	Shonky	Cluborama	425	ficou		0OWDRURdkuQ	406	La Madone	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+8lpy42yVHI8	house	Steve Bug	Filtadelic	405	ficou		NHfdYNN1Y9A	296	Soft Skills - A Journey Into Northern Lights Pt. 1 (Cherry Blossoms)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+rKCCekFhKJQ	house	Sweely	Erasmus DJ	405	ficou		mVutVkSons4	334	Era (Sweely Remix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+SZNwksj1_D4	house	Tony Carrasco	Transparenza (Suede Mix)	241	ficou		piEgQm9fnc8	411	Seasphere (Undersonic Mix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+semSFqH-Ptg	house	Toolate Groove	Rhythm In My Thoughts	355	ficou		Zx5-EXWvS08	335	Passion Rhythms (feat. Janelle)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+UrECFnOuuI0	hypnotic_techno	Cosmjn	Kapa	442	ficou		UCUnurD4Am0	548	Drops	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+4-yg6MM2E54	hypnotic_techno	Dave Ellesmere	Walking Sideways	367	ficou		uWXhDdYI5L4	458	Always Love	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+83Jj29gSaFY	hypnotic_techno	Paul Mac	Standart Plot	298	ficou		ObIYdOu_KXQ	243	Certain Values	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+1KD24awE4-c	hypnotic_techno	Ricardo Villalobos	Spritzcussion	411	ficou		d09BBR9y4B4	542	Rise	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+UV9pI4vvCv0	hypnotic_techno	Ricardo Villalobos	Frank Mueller Melodram	563	ficou		FGVl9LY01uQ	555	Ricardo Villalobos & Max Loderbauer Meet Shangaan Electro	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+HUUFeXFG1_0	hypnotic_techno	The Aztec Mystic	Aguila	429	ficou		OzLsP-Gd1pc	399	Knights of Jaguar	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+SYuoUQXPaKA	hypnotic_techno	TzBz	Doina de toata ziua	478	ficou		FqIRwUU6rBk	534	Drone	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+8Unh9HbxVu4	hypnotic_techno	tINI	Port	380	ficou		A32bC8IhXL0	122	posta	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+Y4jhRqh9XFg	intelligent_dnb	LTJ Bukem	Horizons	335	ficou		_sgKK2tf8Uk	314	Journey Inwards	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+UBPPO2t1C2Q	intelligent_dnb	Photek	Ni Ten Ichi Ryu	272	ficou		EvsIrkvr6zo	409	The Hidden Camera	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+07xh2lPDa6k	liquid	Nookie	Continental Drift	392	ficou		kTm5vBcEQe8	402	Echoes in the Dark	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+StjbyKOA7TQ	liquid	dBridge, Calibre	Ponderosa	338	ficou		HF1XafPR-5k	324	Wonder Where	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+CD1PZqdS2-Y	lofi	Tuamie	eulb dream	95	ficou		frUWxP7sAAw	49	than a dream	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+3o0YT_Mxz6s	lofi_house	DJ Dove	Illusions	372	ficou		rN8uDol4b2c	517	Illusions (12" Version)	Topic com 191 s e 12" Version com 517 s; o video antigo (372 s) nao corresponde a nenhum; mistura incerta
+C2sLSZQbWIA	lofi_house	DJ Houseplants	Unconditional	276	ficou		tT-HwO14xiI	266	Swimming Pool	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+uAPDZF_bpaU	lofi_house	Dj Cinéma Quartier Latin	At Night	325	ficou		LBAzdaqmEJA	65	Tonight I Won't Be Afraid	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+3zOoh2t_NE0	lofi_house	Dj Cinéma Quartier Latin	Last Time	223	ficou		k44Js0UDqmg	296	I Miss You All The Time	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+8cRowOOXs14	lofi_house	Dj Cinéma Quartier Latin	Need Someone	325	ficou		oCYD9YFOGRE	384	Need Someone (Good Luck Remix)	Topic so tem a Good Luck Remix
+OuUzv2I7X2o	lofi_house	Duke Boara	Komorebi	607	ficou		dLzj2F7AuR0	450	Rain (Extended Mix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+zhKIz7nMCzo	lofi_house	Fango	Admire	303	ficou		Mz8GDnzeoFw	192	Ombre	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+-73nvxBw5k4	lofi_house	Hush Hush	Thinkin Bout You	360	ficou		_EFN53z-LhQ	176	Thinking About You	Topic «Thinking About You» e de Hush Love, outro artista
+YqDyI6YSNnU	lofi_house	Intr0beatz	Fly Like Love	400	ficou		HPSmimiOS5E	355	For the Love	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+ZgaSxc3abX0	lofi_house	Janeret	Dawn	460	ficou		_c-8EzAqumE	465	Mood	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+CCMbd05jWCU	lofi_house	Janeret	Scape	400	ficou		vHCNc-qyfjA	237	Scape (Edit)	Topic so em «(Edit)» com 237 s contra 400 s
+OVad-MtzSi0	lofi_house	Janeret, Miroloja	Runnerblade	386	ficou		P8BiS5ml3VA	222	Runnerblade	Topic com 222 s contra 386 s (versao curta)
+5NOTu6kDjCU	lofi_house	Job De Jong	Wonky	365	ficou		Kw936CQRpS8	190	Wonky	Topic com 190 s contra 365 s (versao curta)
+sv7rYlMJRKY	lofi_house	Lou Karsh	Reacher	373	ficou		GjpChJS6Jo0	289	Seep (Mixed)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+th4zcWLViCE	lofi_house	Palmate	Feeling Blue	248	ficou		9Asqj0GXwMU	284	Limerence	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+fveslA6dM3E	lofi_house	Paluma Sound	Risk	334	ficou		-GvVkIk4bDo	206	nightcrossing	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+3Dpg_kCbFiI	lofi_house	PamplemHouse	Tenderly	358	ficou		TZUXsVcUSZM	315	echoes of tenderness	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+43IVf73h4g4	lofi_house	Paradiso Rhythm	Forever Sade	348	ficou		w05t92GXx9Y	332	Your Luv (Oz Mix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+Ipeb_iO7sPY	lofi_house	Rioleval	Teebee03	427	ficou		1HCPMv6PQO4	239	Teebee03	Topic com 239 s contra 427 s (sampler de album)
+cY4uUn911Zo	lofi_house	Skeptic	All I Wanna Do	342	ficou		COfdQpYOZX8	185	All I Wanna Do	Topic com 185 s contra 342 s (versao curta)
+7IWOAXQt1Ic	lofi_house	X-Coast	Mango Bay	281	ficou		Want2ctwHyI	285	Bomba	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+89N_ip3N_Io	lofi_house	YSE Saint Laurant	Warm Wind Brewing	444	ficou		GqMPJt4Et8Q	287	Warm Wind Brewing	Topic com 287 s contra 444 s (versao curta)
+yrWz7QXatqw	lofi_house	dj gummy bear	2 seater (extended house edit)	302	ficou		jo-8IaopxLg	148	2 seater (house edit)	Topic so tem a «house edit» de 148 s, nao a extended
+w-7PrrIMEzk	ragga_jungle	Bugsy	Pull Up	299	ficou		TZ6rHlPu_A0	242	Wrap It Up	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+GBoyF1XMS8A	ragga_jungle	Fez The Kid	Palava Reboot	303	ficou		N6QZr88ZszU	288	Original Secret	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+DSaXnWhCgR0	ragga_jungle	Janaway	Killa	302	ficou		a7GeJ4BqBXg	246	Hitman	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+AfVt5nJtQeo	ragga_jungle	Napes	Bun Dem	267	ficou		I9nJk4qyeOk	256	Shaolin Sniper	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+7VfWmeBo0vs	ragga_jungle	Shy FX & UK Apachi	Original Nuttah	214	ficou		NSU3JCz1Uns	232	Original Nuttah 25	Topic so tem «Original Nuttah 25» (edicao de aniversario), nao o original
+BS8JQ5uHQLU	ragga_jungle	Tee9	Ting	300	ficou					sem a faixa no YouTube Music: so outras faixas do artista em Topic
+YrMbTnx14BM	reggae	Althea And Donna	If You Don't Love Jah	178	ficou		mlXjXUTX8WU	209	Lying Love	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+IwV14Zdz7qU	reggae	Bro Valentino	Big Apple	440	ficou		GVtsukn8J2k	41	Trinidad is Nice	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+B2gxyrmpUcE	reggae	Bunny General	Me A Don	220	ficou		0fez1CNzZj4	238	Girl a Say One	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+CGpmprG_8kU	reggae	Freddie McGregor feat Soul Syndicate	Love Ballad and Dub	498	ficou		RLI77360OCI	245	Love Ballad	Topic so tem a parte vocal «Love Ballad» (245 s), sem o dub
+dVG8hrVxtaw	reggae	Freddie McKay	Im A Freeman	431	ficou		Ad5cq6m6Hfs	203	I'm A Free Man	Topic «I'm A Free Man» com 203 s e 157 s; o video antigo (431 s) e a versao longa
+ffni26wbToU	reggae	Junior English	Somewhere	155	ficou					sem a faixa no YouTube Music: so outras faixas do artista em Topic
+eCFKpFu2D0c	reggae	Prince David	His Foundation	272	ficou		GkA7-gST7jg	263	Ruler Of Creation (feat. Brizion)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+jNQ-5rLpW1M	reggae	Prince Lincoln Thompson and The Royal Rasses	21st Century	403	ficou		7mhHVZjSHMU	240	Live Up to Your Name	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+88B65bLyvi4	reggae	Ras Midas	Cant Stop Rasta Now	246	ficou		ELWYvpE8Bvk	275	Can't Stop Rastaman Now	Topic «Can't Stop Rastaman Now» (275 s contra 246 s): titulo diferente, identidade nao confirmada
+SsWOb131gxo	reggae	Sonia	Easier To Love	355	ficou		wXlrQOMWWus	215	For Your Love (SOS)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+oAe41z8H9So	reggae	The Invaders	Heaven and Earth	166	ficou		vLq6703PqFc	480	The Flat Earth	sem a faixa no YouTube Music: so outras faixas do artista em Topic
+s6ToQ_kr3D8	reggae	The Viceroys	Love Is A Key	419	ficou		s_QwaavErqM	205	Love Is a Key	Topic com 205 s contra 419 s; «Love Is a Key (2026 Mix)» e outra mistura
+7ZntxQaE7sI	ska_rocksteady	Bob Andy	Ive Got To Go Back Home	189	ficou		pQHpHQ5VFJ8	263	I Have Got to Go Back Home (Live at Razor's Palace)	Topic so em versao ao vivo
+2nmK-5HVYt4	ska_rocksteady	The Pyramids	John Chewey	119	trocado	m___7j6Sydk	m___7j6Sydk	117	John Chewy	ver applied.tsv
+2sIeZB5qRQQ	uk_garage	Dem 2	Desire 99	313	ficou		zz4U1B7enkM	246	Destiny (Dem 2 Radio Mix)	sem a faixa no YouTube Music: so outras faixas do artista em Topic
