@@ -79,11 +79,12 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
 1. Feito: A1 e A2 entraram na versão longa (24; decisão do Paulo: prefere a extended quando é a
    mesma faixa, regra a aplicar em importações futuras). Fica Todd Terry, «Bounce 2 the Beat»
    (duas faixas de nome parecido, não se sabe qual é a do Spotify).
-2. As 78 «nada» e a troca das faixas já importadas por S2/S3 pelas versões «Topic»: precisam de
-   uma pesquisa que veja os «Topic». Via recomendada: sessão local do Claude Code no computador
-   do Paulo (IP doméstico em Portugal), a correr
+2. Feito (v4.4, sessão local): das 78 «nada» entraram 73, todas «Topic»; 5 ficaram
+   «errado-local» na fila (outra faixa). Falta a troca das faixas já importadas por S2/S3 pelas
+   versões «Topic»: precisa de uma pesquisa que veja os «Topic». Via recomendada: sessão local
+   do Claude Code no computador do Paulo (IP doméstico em Portugal), a correr
    `pip install yt-dlp ytmusicapi` e
-   `python3 ops/tools/yt_resolve.py ENTRADA.tsv SAIDA.tsv` com as 78 linhas (as colunas de entrada
+   `python3 ops/tools/yt_resolve.py ENTRADA.tsv SAIDA.tsv` (as colunas de entrada
    estão no próprio TSV da repetição). Alternativa na nuvem: pesquisa externa (motor de pesquisa
    do modelo) e `--verify`; numa amostra de 3 faixas obscuras não encontrou nenhum «Topic»,
    rendimento baixo para o custo.

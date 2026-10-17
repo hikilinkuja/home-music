@@ -1,5 +1,5 @@
 # Repetição, a 2026-10-17, das 126 faixas não encontradas na importação do Spotify e do SoundCloud.
-# Entraram 8 e depois 24 versões longas (o Paulo prefere a extended quando é a mesma faixa); 'nada' espera uma pesquisa com acesso aos canais Topic.
+# Entraram 8, depois 24 versões longas e, de uma ligação doméstica, 73 das 78 'nada' (v4.4); as 5 restantes ficaram 'errado-local'.
 key	genre	artist	title	spotify_secs	grupo	video_id	yt_secs	yt_channel	yt_title	motivo
 sp-elo-054	lofi_house	Frits Wentink	Intentions - Radio Edit	192	A1	FqgcZHOULS4	362	Majestic Casual	Frits Wentink - Intentions	entrou a 2026-10-17 na versão longa (preferência do Paulo)
 sp-elo-067	house	Kolter	Infinite Slammin - Edit	150	A1	wR-LnE-2uIA	417	Kolter	Kolter - Infinite Slammin'	entrou a 2026-10-17 na versão longa (preferência do Paulo)
@@ -26,84 +26,84 @@ sp-elo-293	lofi_house	Job De Jong	Wonky	189	A2	5NOTu6kDjCU	365	Maslow Unknown	JO
 sp-hm-480	lofi_house	Rioleval	Teebee03	238	A2	Ipeb_iO7sPY	427	Collected Compositions	Rioleval - Teebee03	entrou a 2026-10-17 na versão longa (preferência do Paulo)
 sp-hm-668	hypnotic_techno	Anja Schneider	Dubmission - 2021 Edit	186	A2	5EljZ3A5Cf8	398	mobilee	Anja Schneider - Dubmission - mobilee130	entrou a 2026-10-17 na versão longa (preferência do Paulo)
 sp-hm-696	lofi_house	Skeptic	All I Wanna Do	184	A2	cY4uUn911Zo	343	PRESSURE	Skeptic - All I Wanna Do	entrou a 2026-10-17 na versão longa (preferência do Paulo)
-sp-sun-026	reggae	Ibrahim Hesnawi, Suzan	Only World	285	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-sun-031	dub	S!RENE	Fela Dub	202	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-060	lofi_house	Djammin	Down Shovel	398	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-064	house	Stacie Fields	Mi Scusi	236	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-070	house	Isaac Carter, Biyi	Life We Live	330	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-071	house	Roy Davis Jr., Peven Everett	Gabriel - Words To Give By Mix	442	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-081	lofi_house	Tusabe	Cafe	201	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-086	lofi_house	Target Demographic, sunflwr	Pick it Up - Remix	263	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-095	lofi_house	Shikhar Sehgal	I WUD BE	165	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-098	lofi_house	Bellamy	it's a question of values (raw version)	235	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-114	lofi_house	Half Dead Dave	Don't Cry (It's OK to Cry)	298	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-120	lofi_house	Wuido	I Still Think About U	285	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-124	house	Simon Kidzoo	Listen Y'all	375	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-146	lofi_house	Roy Ford, Artist V, Tour-Maubourg	Victoria's Secrets - Tour-Maubourg 'All Night' Mix	427	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-153	lofi_house	Brooklyn Baby	Love Overdose	261	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-170	house	DJ Q	Optiumum Thinking	457	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-203	lofi_house	Sideluv	Seductive Healing	131	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-215	lofi_house	Kareem Ali	Devotion	216	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-219	house	The Housemaster Boyz, The Rude Boy of House	House Nation	492	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-220	house	Sir Nenis, Roby Howler	Don't Stop (Jagerverb Remix)	385	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-222	lofi_house	sensse	if it all goes away	157	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-227	lofi_house	clmbski	Moving Again	238	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-236	lofi_house	fka.m4a, Jay Jackson	Desires & Affirmations	390	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-257	lofi_house	Jadu Jadu	love sensation	248	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-267	lofi_house	DJ Hiro	Celerity Nova	330	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-270	house	Unus Emre	Jack Off	444	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-278	deep_house	Osunlade	ELYODCIRE	258	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-282	house	Aron Volta	Catch This	438	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-284	lofi_house	DEEP K.	Una Noche	236	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-288	house	Todd Terry	Sume Bah	238	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-290	lofi_house	Somersault	Ménage à Trois	346	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-309	house	REda daRE	Orgy Of The Dead	380	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-327	lofi_house	Demuja	Speaking In Tongues	313	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-328	lofi_house	Demuja	Wine And Cigarettes	496	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-345	breakbeat	Eden Burns	Yes You Sexy	321	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-350	deep_house	Jeigo	JTD	429	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-370	lofi_house	Earth Boys	BK Swing	219	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-376	lofi_house	awaitedfate	terminal	156	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-377	lofi_house	awaitedfate	eclipse	128	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-380	lofi_house	Sideluv	Her Name Was	200	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-elo-383	deep_house	Satoshi Tomiie, Tomoki Tamura	Indian Summer - Radio Edit	256	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-415	house	Black Loops	Sex - Bonus Track	386	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-439	lofi_house	geneva	wtf is pimm’s (shortstuff)	147	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-474	lofi_house	LAMANT	hold on	130	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-475	lofi_house	LAMANT	figure u out	148	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-476	lofi_house	LAMANT	hold on speed up	115	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-500	lofi_house	vecher 1998	тоска	103	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-505	house	SHEE	Better Than All MC's	315	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-513	lofi_house	Shaolin Cowboy	I.S.W.A.D.I.B.H.A.F	294	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-522	lofi	vano1337	patra	181	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-523	lofi_house	Your friend daao	Trust	202	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-537	lofi_house	Odysseus	I Can't Be With U	127	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-541	lofi_house	Soulful-Cafe	Between These Speakers	123	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-549	lofi_house	sunflwr	miniature overture	257	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-569	house	BeenWell	Sour Strips - Extended Mix	261	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-573	lofi_house	Shaolin Cowboy	Glitch	389	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-584	lofi_house	Jesse Futerman	Vista	363	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-585	deep_house	Papa Soul, Soul Groove (UK)	Moody Type Love Pt. II - Soul Groove (UK) Radio Edit	283	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-588	lofi_house	Sajmoonn	From The Music Within You	239	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-592	lofi_house	Jason Hersco	Without U	312	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-598	lofi_house	FTRMNK	Be Alright	169	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-621	lofi_house	sunflwr	EO	170	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-632	lofi_house	Target Demographic	Keep Me	328	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-637	lofi_house	noir motif	through the hues	175	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-648	lofi_house	Paluma Sound	On The Record	263	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-682	deep_house	Flaze	Straight Home	364	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-684	house	Dale Howard	U & ME	180	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-695	lofi_house	geods sorèd	Hit Me Off	190	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-697	lofi_house	Jason Hersco	Roses Are Red	299	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-710	lofi_house	Brayden Potts	Dadian	139	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sp-hm-711	lofi_house	Froman, Lushed	IDK (Froman Edit)	306	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-07	ragga_jungle	Arttu	Mic Check		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-14	ragga_jungle	Drez	Back 2 Basics Skepta Remix		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-15	dubstep	Drez	Shook Ones, Pt. 140		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-24	uk_garage	zacattacq, proc	Laser Beams		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-27	uk_garage	Realo	BON MOOD (Yunk Rework)		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-37	uk_garage	Gud Griff	Like		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
-sc-44	dubstep	Tawk	Cali Weed		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-sun-026	reggae	Ibrahim Hesnawi, Suzan	Only World	285	entrou-local	YeVel66bQSE	286	Ibrahim Hesnawi - Topic	Only World (feat. Suzan)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-sun-031	dub	S!RENE	Fela Dub	202	entrou-local	sBdzSGAUB7k	203	S!RENE - Topic	Fela Dub	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-060	lofi_house	Djammin	Down Shovel	398	entrou-local	QJM0kXCaIEA	399	Djammin - Topic	Down Shovel	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-064	house	Stacie Fields	Mi Scusi	236	entrou-local	o0M0Jug_MzM	237	Stacie Fields - Topic	Mi Scusi	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-070	house	Isaac Carter, Biyi	Life We Live	330	entrou-local	07VR1RtzVCY	331	Isaac Carter - Topic	Life We Live	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-071	house	Roy Davis Jr., Peven Everett	Gabriel - Words To Give By Mix	442	entrou-local	4vDXCGgxF60	443	Roy Davis Jr. - Topic	Gabriel (Words To Give By Mix)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-081	lofi_house	Tusabe	Cafe	201	entrou-local	W1t49IW0MD4	202	Tusabe - Topic	Cafe	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-086	lofi_house	Target Demographic, sunflwr	Pick it Up - Remix	263	entrou-local	rtMl3ym5a-E	264	Target Demographic - Topic	Pick it Up (Remix)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-095	lofi_house	Shikhar Sehgal	I WUD BE	165	entrou-local	rJGfwcF-FI4	166	Shikhar Sehgal - Topic	I WUD BE	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-098	lofi_house	Bellamy	it's a question of values (raw version)	235	errado-local	4_FWqgh_b0c	237	Chris Bellamy - Topic	Man of Simple Means	ligação doméstica (2026-10-17): o melhor candidato do YouTube Music é outra faixa
+sp-elo-114	lofi_house	Half Dead Dave	Don't Cry (It's OK to Cry)	298	entrou-local	n9ASjdiRd1o	299	Half Dead Dave - Topic	Don't Cry (It's OK to Cry)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-120	lofi_house	Wuido	I Still Think About U	285	entrou-local	Nbymqg7lplU	286	Wuido - Topic	I Still Think About U	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-124	house	Simon Kidzoo	Listen Y'all	375	entrou-local	4Rbjf7soiio	376	Simon Kidzoo - Topic	Listen Y'all	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-146	lofi_house	Roy Ford, Artist V, Tour-Maubourg	Victoria's Secrets - Tour-Maubourg 'All Night' Mix	427	entrou-local	owwxeaLcLVE	428	Roy Ford - Topic	Victoria's Secrets (Tour-Maubourg 'All Night' Mix) (feat. Artist V)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-153	lofi_house	Brooklyn Baby	Love Overdose	261	entrou-local	VNeBhXef2d0	262	Brooklyn Baby - Topic	Love Overdose	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-170	house	DJ Q	Optiumum Thinking	457	entrou-local	506IydbV7fU	458	DJ Q - Topic	Optiumum Thinking	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-203	lofi_house	Sideluv	Seductive Healing	131	entrou-local	3zf-2Znzhww	132	Sideluv - Topic	Seductive Healing	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-215	lofi_house	Kareem Ali	Devotion	216	entrou-local	1zJLnyOUUJ4	217	Kareem Ali - Topic	Devotion	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-219	house	The Housemaster Boyz, The Rude Boy of House	House Nation	492	entrou-local	clFCMe_g86o	492	The House Master Boyz - Topic	House Nation	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-220	house	Sir Nenis, Roby Howler	Don't Stop (Jagerverb Remix)	385	entrou-local	RGQzOWITxhs	386	Sir Nenis - Topic	Don't Stop (Jagerverb Remix)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-222	lofi_house	sensse	if it all goes away	157	entrou-local	4uwFc8tRkBY	158	sensse - Topic	if it all goes away	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-227	lofi_house	clmbski	Moving Again	238	entrou-local	KjRMSTgYW34	239	clmbski - Topic	Moving Again	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-236	lofi_house	fka.m4a, Jay Jackson	Desires & Affirmations	390	entrou-local	TivToKVEotw	391	fka.m4a - Topic	Desires & Affirmations	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-257	lofi_house	Jadu Jadu	love sensation	248	entrou-local	rnGjYO1PcOA	249	Jadu Jadu - Topic	love sensation	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-267	lofi_house	DJ Hiro	Celerity Nova	330	entrou-local	sHez13TNAtk	331	DJ Hiro - Topic	Celerity Nova	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-270	house	Unus Emre	Jack Off	444	entrou-local	GjYCuInXIMA	445	Unus Emre - Topic	Jack Off	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-278	deep_house	Osunlade	ELYODCIRE	258	entrou-local	kivdiTBz2MM	259	Osunlade - Topic	ELYODCIRE	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-282	house	Aron Volta	Catch This	438	entrou-local	sLbK_s2DIQI	439	Aron Volta - Topic	Catch This	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-284	lofi_house	DEEP K.	Una Noche	236	entrou-local	4dCzyIQy7l4	237	DEEP K. - Topic	Una Noche	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-288	house	Todd Terry	Sume Bah	238	entrou-local	6EsZLRkYmCg	239	Todd Terry - Topic	Sume Bah	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-290	lofi_house	Somersault	Ménage à Trois	346	entrou-local	wZIJRNQQCz4	346	Somersault - Topic	Ménage à Trois	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-309	house	REda daRE	Orgy Of The Dead	380	entrou-local	2iKFAdwlry8	381	REda daRE - Topic	Orgy Of The Dead	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-327	lofi_house	Demuja	Speaking In Tongues	313	entrou-local	aAGmwe_SdM8	314	Demuja - Topic	Speaking In Tongues	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-328	lofi_house	Demuja	Wine And Cigarettes	496	entrou-local	JTDKv5ud9-w	497	Demuja - Topic	Wine And Cigarettes	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-345	breakbeat	Eden Burns	Yes You Sexy	321	entrou-local	oEi4aUkOJLw	322	Eden Burns - Topic	Yes You Sexy	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-350	deep_house	Jeigo	JTD	429	entrou-local	6U3IRDs1yhM	430	Jeigo - Topic	JTD	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-370	lofi_house	Earth Boys	BK Swing	219	entrou-local	0FaMWXsccfQ	220	Earth Boys - Topic	BK Swing	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-376	lofi_house	awaitedfate	terminal	156	entrou-local	yPQIeEPwjxw	157	awaitedfate - Topic	terminal	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-377	lofi_house	awaitedfate	eclipse	128	entrou-local	prBdADAZnjs	129	awaitedfate - Topic	eclipse	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-380	lofi_house	Sideluv	Her Name Was	200	entrou-local	P4f9S-z1av8	201	Sideluv - Topic	Her Name Was	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-elo-383	deep_house	Satoshi Tomiie, Tomoki Tamura	Indian Summer - Radio Edit	256	entrou-local	IZcK97w3ky4	420	Satoshi Tomiie - Topic	Indian Summer (Full Length)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4); trocada pela versão longa (preferência do Paulo)
+sp-hm-415	house	Black Loops	Sex - Bonus Track	386	entrou-local	uBKJyDYSZvs	387	Black Loops - Topic	Sex (Bonus Track)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-439	lofi_house	geneva	wtf is pimm’s (shortstuff)	147	entrou-local	JRXncXzr2wE	148	geneva - Topic	wtf is pimm’s (shortstuff)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-474	lofi_house	LAMANT	hold on	130	entrou-local	cSuGxz1IkP0	131	LAMANT - Topic	hold on	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-475	lofi_house	LAMANT	figure u out	148	entrou-local	6pOsYQnJarM	148	LAMANT - Topic	figure u out	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-476	lofi_house	LAMANT	hold on speed up	115	entrou-local	UlM5muIz0J8	116	LAMANT - Topic	hold on speed up	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-500	lofi_house	vecher 1998	тоска	103	entrou-local	NcMAfFPptCU	104	vecher 1998 - Topic	тоска	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-505	house	SHEE	Better Than All MC's	315	entrou-local	mwJoXppfMEA	316	SHEE - Topic	Better Than All MC's	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-513	lofi_house	Shaolin Cowboy	I.S.W.A.D.I.B.H.A.F	294	entrou-local	tlno1Ohk7dI	295	Shaolin Cowboy - Topic	I.S.W.A.D.I.B.H.A.F	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-522	lofi	vano1337	patra	181	entrou-local	40-zaHb5KhM	182	vano1337 - Topic	patra	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-523	lofi_house	Your friend daao	Trust	202	entrou-local	IbvuCBWlIfc	202	Your friend daao - Topic	Trust	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-537	lofi_house	Odysseus	I Can't Be With U	127	entrou-local	5vtpVSSDUcI	128	Odysseus - Topic	I Can't Be With U	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-541	lofi_house	Soulful-Cafe	Between These Speakers	123	entrou-local	XnX1jRxhS5o	124	Soulful-Cafe - Topic	Between These Speakers	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-549	lofi_house	sunflwr	miniature overture	257	entrou-local	3TFobYUgRIw	258	sunflwr - Topic	miniature overture	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-569	house	BeenWell	Sour Strips - Extended Mix	261	entrou-local	7QTzltV9YLc	262	BeenWell - Topic	Sour Strips (Extended Mix)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-573	lofi_house	Shaolin Cowboy	Glitch	389	entrou-local	mhbeVv7QiAo	390	Shaolin Cowboy - Topic	Glitch	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-584	lofi_house	Jesse Futerman	Vista	363	entrou-local	wYCFIPwqkZ0	364	Jesse Futerman - Topic	Vista	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-585	deep_house	Papa Soul, Soul Groove (UK)	Moody Type Love Pt. II - Soul Groove (UK) Radio Edit	283	entrou-local	Waks3HrxFP8	439	Papa Soul - Topic	Moody Type Love Pt. II (Soul Groove (UK) Remix)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4); trocada pela versão longa (preferência do Paulo)
+sp-hm-588	lofi_house	Sajmoonn	From The Music Within You	239	entrou-local	6OXFi0z2j9s	240	Sajmoonn - Topic	From The Music Within You	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-592	lofi_house	Jason Hersco	Without U	312	entrou-local	5a8PCRREPT4	313	Jason Hersco - Topic	Without U	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-598	lofi_house	FTRMNK	Be Alright	169	entrou-local	DpHdr9Zf5g4	170	FTRMNK - Topic	Be Alright	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-621	lofi_house	sunflwr	EO	170	entrou-local	wOm1iizUo5E	171	sunflwr - Topic	EO	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-632	lofi_house	Target Demographic	Keep Me	328	entrou-local	LAJdC1AeiFg	329	Target Demographic - Topic	Keep Me	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-637	lofi_house	noir motif	through the hues	175	entrou-local	lvWH5bf4Iw0	176	noir motif - Topic	through the hues	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-648	lofi_house	Paluma Sound	On The Record	263	entrou-local	Kf0HY7R4hVc	264	Paluma Sound - Topic	On The Record	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-682	deep_house	Flaze	Straight Home	364	entrou-local	chZez0j7jb8	365	Flaze - Topic	Straight Home	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-684	house	Dale Howard	U & ME	180	entrou-local	-3TAroX-ZMA	180	Dale Howard - Topic	U & ME	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-695	lofi_house	geods sorèd	Hit Me Off	190	entrou-local	ZhIux3__1l8	191	geods sorèd - Topic	Hit Me Off	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-697	lofi_house	Jason Hersco	Roses Are Red	299	entrou-local	D3g2OZKswMs	300	Jason Hersco - Topic	Roses Are Red	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-710	lofi_house	Brayden Potts	Dadian	139	entrou-local	EFzKlqMQGVQ	140	Brayden Potts - Topic	Dadian	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sp-hm-711	lofi_house	Froman, Lushed	IDK (Froman Edit)	306	entrou-local	RmHGGOVK6uw	307	Froman - Topic	IDK (Froman Edit)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sc-07	ragga_jungle	Arttu	Mic Check		errado-local	S2vpfENBtrg	336	Arttu - Topic	Bass Trakk (feat. Roberto Q. Ingram)	ligação doméstica (2026-10-17): o melhor candidato do YouTube Music é outra faixa
+sc-14	ragga_jungle	Drez	Back 2 Basics Skepta Remix		errado-local	5FJgskyPa3w	230	Headie One - Topic	Back to Basics (Floating Points Remix) (feat. Skepta)	ligação doméstica (2026-10-17): o melhor candidato do YouTube Music é outra faixa
+sc-15	dubstep	Drez	Shook Ones, Pt. 140		entrou-local	SernVRFQVBo	196	Drez - Topic	Shook Ones, Pt. 140	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sc-24	uk_garage	zacattacq, proc	Laser Beams		errado-local	qdgll5CJZHE	210	Light Bulb Execs - Topic	Synchronized Panther Eyes	ligação doméstica (2026-10-17): o melhor candidato do YouTube Music é outra faixa
+sc-27	uk_garage	Realo	BON MOOD (Yunk Rework)		entrou-local	SEBPOINrEzw	155	Realo - Topic	BON MOOD	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sc-37	uk_garage	Gud Griff	Like		entrou-local	XjKlEsUGVMc	188	Gud Griff - Topic	Like (feat. KIDSDOSHROOMS)	encontrada no canal Topic numa ligação doméstica (2026-10-17, v4.4)
+sc-44	dubstep	Tawk	Cali Weed		errado-local	bGegdQH1uMU	132	Various Artists - Topic	I'm Independent (Question)	ligação doméstica (2026-10-17): o melhor candidato do YouTube Music é outra faixa
 sp-elo-058	lofi_house	shaw00p, JBA	ok//wassup	174	errado					candidato errado: vídeo de fãs de 51 s
 sp-elo-088	lofi_house	Sweely	House Is Home	355	errado					candidato errado: vídeo mais curto que o Spotify, versão incerta
 sp-elo-108	lofi_house	Luca Olivotto	All Night - Edit	178	errado					candidato errado: mix de 72 min

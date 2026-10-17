@@ -1,5 +1,23 @@
 # Registo das voltas
 
+## 2026-10-17: v4.4, as 78 «nada» resolvidas de uma ligação doméstica (sessão local do Claude Code)
+
+- `yt_resolve.py` corrido no computador do Paulo (IP doméstico em Portugal): o YouTube Music
+  devolve os canais «Topic». Das 78: 72 S5, 2 S4, 4 M, todas com duração conferida pelo resolvedor.
+- Entraram 73 (catálogo 1312 para 1385): lofi_house 46, house 15, deep_house 5, uk_garage 2,
+  reggae 1, lofi 1, dubstep 1, dub 1, breakbeat 1; 70 do Spotify, 3 do SoundCloud. Todas «Topic».
+  vecher 1998, «тоска», era S4 só porque a comparação de títulos falha no cirílico (título igual).
+- Pela preferência pela extended: Satoshi Tomiie, «Indian Summer», entrou em «Full Length» (420 s)
+  em vez da «Radio Edit», e Papa Soul, «Moody Type Love Pt. II», no «Soul Groove (UK) Remix»
+  (439 s) em vez da «Radio Edit» desse remix.
+- Ficaram de fora 5, marcadas «errado-local» em `ops/queue/retry-2026-10-17.tsv`: Arttu,
+  «Mic Check» (S4 com outra faixa, «Bass Trakk»), Bellamy, «it's a question of values (raw
+  version)», Drez, «Back 2 Basics Skepta Remix», zacattacq e proc, «Laser Beams», e Tawk,
+  «Cali Weed» (os quatro M: o melhor candidato é outra faixa).
+- Ficheiros: `ops/queue/nada-2026-10-17-{in,resolved,accept-spotify,accept-soundcloud}.tsv`.
+- O `build.sh` precisa do Node.js; no computador do Paulo não há Node instalado, foi usado um
+  Node 22 oficial descarregado para uma pasta temporária.
+
 ## 2026-10-17: v4.3, canais «Topic» e repetição das não encontradas (sessão Claude Code na nuvem)
 
 - Diagnóstico: vista da nuvem, o YouTube esconde o conteúdo licenciado (zero «Topic» em 290
