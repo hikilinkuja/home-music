@@ -1,5 +1,24 @@
 # Registo das voltas
 
+## 2026-10-17: v4.6, sala de foco em três tempos (sessão local do Claude Code)
+
+- Proposta em texto, quatro alternativas e maquetes da C e da D; o Paulo escolheu a D e pediu os
+  fundos da rádio na sala, mantendo os da sala. Só `liquid/l07-focus.html` mudou; motor, catálogo
+  e sala antiga intactos.
+- Entrada: intenção, cenas (Deep work, Study, Read; «My last» a partir da segunda visita) e Begin,
+  que arranca o tempo e a música. Sessão: tempo num anel (toque pausa e retoma), barra com música,
+  volume próprio e chuva, lareira e vinil por toque. Gaveta: cena, tempo (25, 35, 50; som do fim;
+  End session), géneros, volume, sons, fundo, esconder controlos, respiração à entrada.
+- Fundos: dusk, ink e off da sala, mais os sete campos da rádio (copiados do canvas `#vj`; a lista
+  lê-se pelo `HMFIELD.next` e o campo volta onde estava). Memória em localStorage `hm_focus`.
+- Leitor da sala: sorteio por género aceso e depois por faixa (antes, por faixa: com os oito
+  géneros calmos, cerca de 74% saía de lofi house ou deep house). Pomodoro com três marcas,
+  coerente com a pausa longa de 30 minutos a cada terceiro bloco.
+- Testes (`ops/tests/run.sh`, primeira vez num Mac, com Node e Playwright instalados pelo
+  Homebrew e pelo npm): gate 7/7, rain 5/5, focus 24/24 (novo), devlog 10/10, intro 5/5,
+  ritual 14/14; art saltado (sem ffmpeg neste Mac). `common.js` passa a encontrar o Playwright
+  instalado pelo Homebrew.
+
 ## 2026-10-17: v4.5, troca de 696 vídeos S2/S3 pelas versões «Topic» (sessão local do Claude Code)
 
 - Sondagem do catálogo inteiro (1385 faixas) pelo YouTube Music a partir do IP doméstico: 398 já

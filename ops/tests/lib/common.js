@@ -14,7 +14,8 @@ const ROOT = path.resolve(__dirname, '..', '..', '..');
 
 function playwright() {
   try { return require('playwright'); } catch (e) { /* segue */ }
-  for (const p of ['/opt/node22/lib/node_modules/playwright', '/usr/lib/node_modules/playwright', '/usr/local/lib/node_modules/playwright']) {
+  for (const p of ['/opt/node22/lib/node_modules/playwright', '/usr/lib/node_modules/playwright', '/usr/local/lib/node_modules/playwright',
+    '/opt/homebrew/lib/node_modules/playwright']) {
     try { return require(p); } catch (e) { /* segue */ }
   }
   console.error('Playwright nao encontrado. Na nuvem vem instalado; localmente: npm i -g playwright (sem descarregar browsers se ja houver Chromium).');

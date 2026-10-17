@@ -9,7 +9,7 @@ testes só precisa de ler essas linhas.
 ## Como correr
 
 ```
-bash ops/tests/run.sh                  # monta o site e corre todos (cerca de 6 minutos)
+bash ops/tests/run.sh                  # monta o site e corre todos (cerca de 7 minutos)
 bash ops/tests/run.sh art devlog       # só os indicados
 NOBUILD=1 bash ops/tests/run.sh gate   # sem montar antes
 ```
@@ -27,6 +27,7 @@ Precisa de Node, do Playwright com Chromium (vêm instalados nas sessões na nuv
 | `t-art.js` | filme 1 inteiro e não tapado pela barra nem pela ficha (telemóvel de pé e deitado, computador); botões de regresso com debrum vermelho; pinça amplia a obra e não a página | 40 s |
 | `t-gate.js` | com a sala de foco aberta ou em mute, nenhum efeito da emissão (agulha, crepitar, kits) e master a 0; os efeitos voltam ao fechar | 1,5 min |
 | `t-rain.js` | chuva no máximo: ganho 1,8 com CORS; sem CORS, duas cópias a volume 1,0; fader a 0 cala | 40 s |
+| `t-focus.js` | sala de foco: entrada com cenas e Begin, sessão com anel (pausa ao toque), gaveta (Esc fecha), fundos da sala e da rádio (a rádio fica no mesmo campo), sorteio por género, memória depois de recarregar; nada sobreposto nem fora do ecrã em 1440x900, 1024x768, 390x844 e 844x390 | 1 min |
 | `t-devlog.js` | painel `?dev` escondido antes do arranque; motivos de fim no registo (lift, skip, error); CSV coerente e ano desconhecido vazio; separador Banks com os 7 blocos | 1 min |
 | `t-intro.js` | archive.org lento (5 s): a introdução toca com as linhas; com erro: a emissão arranca e o motivo fica em `hm_intro_log` | 30 s |
 | `t-ritual.js` | cada disco toca até ao fim; levantar, 2,0 s (mais ou menos 0,05), pousar; música 0,25 a 1,0 s depois; kit dub só depois de reggae, dub, ska e ragga jungle (computador em kingston, telemóvel em flight) | 2 min |

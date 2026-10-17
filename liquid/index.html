@@ -6997,71 +6997,218 @@ window.HMDAWN=(function(){
 })();
 </script>
 <style>
-/* ================= focus room, dentro da sala liquida ================= */
-#focus{position:fixed; inset:0; z-index:88; display:none; background:#000}
+/* ================= focus room, dentro da sala liquida =================
+   ritual em tres tempos (v4.6): entrada (intencao, cena, Begin), sessao (anel do tempo e barra
+   de controlos), gaveta de ajustes. O fundo e o campo proprio da sala (dusk, ink, off) ou um dos
+   campos da radio (#vj, l04), copiado para o canvas da sala a cada imagem */
+#focus{position:fixed; inset:0; z-index:88; display:none; background:#000; color:var(--paper); font-family:var(--mono);
+  --fc-ring:min(380px, 70vw, 50vh)}
 #focus.on{display:block}
 #fcCv{position:absolute; inset:0; width:100%; height:100%}
-#fcGate{position:absolute; inset:0; z-index:6; background:#000; display:none; flex-direction:column;
+#fcGate{position:absolute; inset:0; z-index:9; background:#000; display:none; flex-direction:column;
   align-items:center; justify-content:center; gap:30px}
 #fcGate.on{display:flex}
 #fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid rgba(65,217,200,.5);
   box-shadow:0 0 60px rgba(65,217,200,.12) inset, 0 0 40px rgba(65,217,200,.1)}
 #fcWord{font-size:11px; letter-spacing:.5em; text-transform:uppercase; color:var(--dim)}
 #fcWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:#4a4d6a; max-width:420px;
-  text-align:center; line-height:2.1}
+  text-align:center; line-height:2.1; padding:0 16px}
 #fcGateSkip{position:absolute; right:18px; bottom:16px}
+
+/* botoes da sala: alvo de 44 px e letra maior do que a da barra da radio */
+#focus .tbtn{font-size:11px; min-height:44px; padding:0 16px; gap:8px; justify-content:center; white-space:nowrap;
+  transition:color .2s, border-color .2s, background .2s}
+#focus .tbtn.ic{width:44px; padding:0}
+#focus .tbtn.lit{color:var(--amber); border-color:var(--amber)}
+.fc-ico{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round;
+  stroke-linejoin:round; flex:none}
+.fc-sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 .fc-chrome{transition:opacity .8s ease}
 #focus.idle .fc-chrome{opacity:0; pointer-events:none}
 #focus.noidle .fc-chrome{opacity:1 !important; pointer-events:auto !important}
-#fcTop{position:absolute; left:0; right:0; top:0; z-index:4; display:flex; align-items:center; gap:8px;
-  padding:12px 16px; background:linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,0)); flex-wrap:wrap}
-#fcTop .fbrand{font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--paper)}
-#fcTop .fbrand span{color:var(--teal); margin-left:8px}
-#fcTemps{margin-left:auto; display:flex; gap:6px}
-#fcSide{position:absolute; right:14px; top:58px; z-index:4; width:364px; max-height:calc(100% - 76px);
-  overflow-y:auto; background:rgba(5,4,16,.88); border:1px solid var(--line); padding:14px 14px 10px}
-#fcSide h4{margin:15px 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
-#fcSide h4:first-child{margin-top:0}
-#fcTime{font-size:30px; letter-spacing:.14em; color:var(--paper)}
-#fcPhase{font-size:9px; letter-spacing:.3em; color:var(--amber); text-transform:uppercase; margin:2px 0 8px}
-.fc-row{display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; align-items:center}
-.fc-row label{font-size:9px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase}
-.fc-row select{background:#07061a; border:1px solid var(--line); color:var(--paper);
-  font-family:var(--mono); font-size:10px; padding:3px 5px}
-.fc-row input[type=checkbox]{accent-color:var(--amber)}
-#fcCycles{display:flex; gap:4px; margin:4px 0 4px}
-#fcCycles i{width:16px; height:3px; background:var(--line)}
-#fcCycles i.done{background:var(--amber)}
-.fc-fader{margin:0 0 9px}
-.fc-fader label{display:flex; justify-content:space-between; font-size:9px; letter-spacing:.2em;
-  color:var(--dim); text-transform:uppercase; margin-bottom:3px}
-.fc-fader input{width:100%; accent-color:var(--amber)}
-#fcValve{display:flex; flex-wrap:wrap; gap:5px}
-#fcValve .g{font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; padding:4px 7px;
-  border:1px solid var(--line); color:#3d405c; cursor:pointer; user-select:none}
-#fcValve .g.on{color:var(--teal); border-color:var(--teal)}
-#fcValve .g:hover{border-color:var(--amber)}
-.fc-note{font-size:8.5px; color:#4a4d6a; letter-spacing:.1em; line-height:1.9; margin-top:6px}
-#fcIntent{width:100%; background:#07061a; border:1px solid var(--line); color:var(--paper);
-  font-family:var(--mono); font-size:11px; padding:7px 9px; letter-spacing:.06em}
-#fcIntentTag{position:absolute; left:18px; top:16px; z-index:3; font-size:9.5px; letter-spacing:.3em;
-  text-transform:uppercase; color:rgba(244,241,231,.4)}
-#fcClock{position:absolute; right:18px; bottom:14px; z-index:3; font-size:10px; letter-spacing:.26em;
-  color:rgba(244,241,231,.35)}
-#fcFloat{position:absolute; right:18px; bottom:38px; z-index:3; display:none;
-  font-size:13px; letter-spacing:.24em; color:rgba(255,177,43,.55)}
-#fcFloat.show{display:block}
-#fcRings{position:absolute; left:14px; bottom:12px; z-index:3}
-#focus.sealed #fcTop, #focus.sealed #fcSide, #focus.sealed #fcIntentTag{display:none}
+
+#fcTop{position:absolute; left:0; right:0; top:0; z-index:6; display:flex; align-items:center; gap:16px;
+  padding:18px 26px; background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,0))}
+#fcTop .fbrand{font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--paper)}
+#fcClock{font-size:13px; letter-spacing:.18em; color:var(--amber)}
+#fcTop .fc-tr{margin-left:auto; display:flex; gap:10px}
+#focus[data-stage=entry] .fc-sess{display:none}
+
+/* as duas etapas trocam com um esbatido curto */
+.fc-stage{position:absolute; inset:0; z-index:3; opacity:0; visibility:hidden; transform:translateY(12px);
+  transition:opacity .45s ease, transform .45s ease, visibility 0s linear .45s}
+#focus[data-stage=entry] #fcEntry, #focus[data-stage=session] #fcSess{opacity:1; visibility:visible; transform:none;
+  transition:opacity .45s ease, transform .45s ease, visibility 0s}
+.fc-h{font-size:12px; letter-spacing:.32em; text-transform:uppercase; color:var(--teal); margin:0; font-weight:400}
+.fc-cap{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; text-align:center}
+
+/* ---------- entrada ---------- */
+#fcEntry{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  padding:90px 24px 32px; overflow-y:auto}
+#fcIntent{width:min(600px, 100%); height:52px; background:rgba(7,6,26,.85); border:1px solid var(--line);
+  color:var(--paper); font-family:var(--mono); font-size:16px; letter-spacing:.08em; padding:0 16px; text-align:center}
+#fcIntent:focus{border-color:var(--amber); outline:none}
+#fcEntry .fc-gap{margin-top:26px}
+#fcScenes{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); gap:16px; width:min(900px, 100%)}
+.fc-card{display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:18px; min-height:190px;
+  background:rgba(5,4,16,.78); border:1px solid var(--line); color:var(--paper); font-family:var(--mono);
+  text-align:left; cursor:pointer; transition:border-color .2s, box-shadow .2s, background .2s}
+.fc-card:hover{border-color:var(--dim)}
+.fc-card[aria-pressed=true]{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber); background:rgba(20,14,10,.8)}
+.fc-card.last{border-style:dashed}
+.fc-card .nm{font-size:14px; letter-spacing:.24em; text-transform:uppercase}
+.fc-card .mn{font-size:12px; letter-spacing:.2em; color:var(--amber); text-transform:uppercase}
+.fc-card .gs{font-size:11px; line-height:1.7; color:var(--dim)}
+.fc-card .sd{margin-top:auto; display:flex; align-items:center; gap:7px; font-size:10px; letter-spacing:.2em;
+  text-transform:uppercase; color:#c9c6d8}
+#fcBegin{margin-top:28px; width:min(340px, 100%); height:60px; display:inline-flex; align-items:center;
+  justify-content:center; gap:12px; background:var(--amber); border:1px solid var(--amber); color:var(--ink);
+  font-family:var(--mono); font-size:15px; letter-spacing:.34em; text-transform:uppercase; cursor:pointer;
+  transition:transform .15s ease, box-shadow .2s}
+#fcBegin:hover{box-shadow:0 0 0 3px rgba(255,177,43,.25)}
+#fcBegin:active{transform:scale(.98)}
+#fcBegin .fc-ico{fill:var(--ink); stroke:var(--ink)}
+#fcAdjust{background:none; border:0; min-height:44px; color:var(--teal); font-family:var(--mono); font-size:11px;
+  letter-spacing:.2em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
+
+/* ---------- sessao ---------- */
+#fcSess{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  padding:70px 16px 150px}
+#fcTag{font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,236,217,.62);
+  text-align:center; max-width:90vw}
+#fcTag b{font-weight:400; color:var(--dim)}
+#fcDial{position:relative; width:var(--fc-ring); height:var(--fc-ring); background:none; border:0; padding:0;
+  cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%}
+#fcDial svg{position:absolute; inset:0; width:100%; height:100%}
+#fcDial .trk{fill:rgba(5,4,16,.35); stroke:var(--line); stroke-width:2}
+#fcArc{fill:none; stroke:var(--amber); stroke-width:3; stroke-dasharray:1080.7;
+  transition:stroke-dashoffset 1s linear, stroke .6s ease}
+#focus.brk #fcArc{stroke:var(--teal)}
+#fcDial .in{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:12px}
+#fcTime{font-size:calc(var(--fc-ring) * .25); line-height:1; letter-spacing:.04em}
+#fcPhase{font-size:11px; letter-spacing:.3em; color:var(--amber); text-transform:uppercase; transition:color .6s}
+#focus.brk #fcPhase{color:var(--teal)}
+#fcMarks{display:flex; gap:5px}
+#fcMarks i{width:18px; height:3px; background:var(--line); transition:background .6s}
+#fcMarks i.done{background:var(--amber)}
+#fcHint{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3}
+#fcDock{position:absolute; left:50%; bottom:44px; transform:translateX(-50%); z-index:5; display:flex;
+  align-items:center; padding:10px 12px; background:rgba(5,4,16,.86); border:1px solid var(--line);
+  max-width:calc(100% - 32px)}
+.fc-sep{width:1px; align-self:stretch; background:var(--line); margin:0 14px; flex:none}
+#fcNowBox{display:flex; flex-direction:column; gap:4px; min-width:110px; flex:1 1 230px; max-width:260px; margin-right:8px}
+#fcNowG{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal); min-height:12px}
+#fcNow{font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#fcSkipT{margin-left:6px}
+.fc-vol{display:flex; align-items:center; gap:8px; margin-left:12px; color:var(--dim)}
+.fc-vol input{width:84px}
+#focus input[type=range]{accent-color:var(--amber)}
+#focus .fc-snd{flex-direction:column; gap:4px; min-height:52px; padding:6px 12px; margin-left:6px}
+#focus #fcTgRn{margin-left:0}
+.fc-snd .ln{display:flex; align-items:center; gap:7px}
+.fc-snd .lv{display:block; width:44px; height:2px; background:var(--line)}
+.fc-snd .lv i{display:block; height:2px; width:0; background:var(--amber); transition:width .3s ease}
+#focus .fc-snd[aria-pressed=true]{color:var(--amber); border-color:var(--amber)}
+#fcKeys{position:absolute; left:0; right:0; bottom:16px; text-align:center; font-size:9px; letter-spacing:.24em;
+  text-transform:uppercase; color:#7f82a3; z-index:5}
+
+/* ---------- gaveta de ajustes ---------- */
+#fcScrim{position:absolute; inset:0; z-index:7; background:rgba(0,0,0,.38); opacity:0; visibility:hidden;
+  transition:opacity .3s ease, visibility 0s linear .3s}
+#focus.drw #fcScrim{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s}
+#fcDrawer{position:absolute; top:0; right:0; bottom:0; z-index:8; width:min(460px, 100%); box-sizing:border-box;
+  background:rgba(7,6,22,.97); border-left:1px solid var(--line); padding:16px 26px 26px; overflow-y:auto;
+  transform:translateX(102%); visibility:hidden;
+  transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear .32s}
+#focus.drw #fcDrawer{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s}
+.fc-dh{display:flex; align-items:center; padding-bottom:8px}
+.fc-dh .fc-h{color:var(--paper)}
+.fc-dh .tbtn{margin-left:auto}
+.fc-sec{display:flex; flex-direction:column; gap:10px; padding:14px 0; border-top:1px solid var(--line)}
+.fc-hd{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.fc-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); font-style:italic}
+.fc-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.fc-l{font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); min-width:88px}
+#fcDrawer select{flex:1; min-width:0; height:44px; background:#07061a; border:1px solid var(--line); color:var(--paper);
+  font-family:var(--mono); font-size:12px; padding:0 10px}
+#fcDrawer .fc-row input[type=range]{flex:1; min-width:120px}
+.fc-seg{display:flex}
+.fc-seg .tbtn + .tbtn{margin-left:-1px}
+#focus .fc-seg .tbtn[aria-pressed=true]{background:var(--amber); color:var(--ink); border-color:var(--amber)}
+.fc-note{font-size:11px; line-height:1.65; color:var(--dim); margin:0}
+.fc-chips{display:flex; flex-wrap:wrap; gap:6px}
+.fc-chip{min-height:34px; padding:0 9px; font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  border:1px solid var(--line); color:var(--dim); background:transparent; font-family:var(--mono); cursor:pointer;
+  transition:color .2s, border-color .2s}
+.fc-chip:hover{border-color:var(--amber)}
+.fc-chip[aria-pressed=true]{color:var(--teal); border-color:var(--teal)}
+#fcValve .fc-chip.more:not([aria-pressed=true]){display:none}
+#fcValve.all .fc-chip.more{display:inline-block}
+.fc-bgl{font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; width:100%; margin-top:4px}
+.fc-fader label{display:flex; justify-content:space-between; font-size:11px; letter-spacing:.24em; color:var(--dim);
+  text-transform:uppercase; margin-bottom:4px}
+.fc-fader input{width:100%}
+.fc-chk{display:flex; align-items:center; gap:10px; font-size:12px; color:#c9c6d8; min-height:32px; cursor:pointer}
+.fc-chk input{accent-color:var(--amber); width:16px; height:16px; margin:0}
+
+/* ---------- selo (ecra inteiro) ---------- */
+#focus.sealed #fcTop, #focus.sealed .fc-chrome, #focus.sealed #fcHint{display:none}
 #fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
   font-size:9px; letter-spacing:.3em; color:rgba(244,241,231,.22); text-transform:uppercase; display:none}
 #focus.sealed #fcSealHint{display:block}
-.fc-rings-row{display:flex; gap:5px; flex-wrap:wrap; margin:2px 0 6px}
-.fc-rings-row .tbtn{padding:5px 7px; font-size:8.5px}
-#fcExit{position:absolute; left:16px; bottom:40px; z-index:4}
+
+/* barra mais estreita: os sons ficam so com o icone, o volume passa para a gaveta */
+@media (max-width:1100px){
+  #focus .fc-snd{width:52px; padding:0}
+  .fc-snd .nm{display:none}
+  .fc-snd .lv{width:26px}
+}
+@media (max-width:900px){ .fc-vol{display:none} }
+@media (pointer:coarse){ #fcKeys, .fc-kbd{display:none} }
+
+/* telemovel de pe: barra em duas linhas ao alcance do polegar, ajustes numa folha que sobe */
+@media (max-width:760px){
+  #focus{--fc-ring:min(300px, 78vw, 44vh)}
+  #fcTop{padding:12px 14px; gap:10px}
+  #fcTop .w{display:none}
+  #fcSeal{width:44px; padding:0}
+  #fcSeal .nm{display:none}
+  #fcEntry{justify-content:flex-start; padding:76px 20px 28px; gap:10px}
+  #fcEntry .fc-gap{margin-top:14px}
+  #fcIntent{height:48px; font-size:15px}
+  #fcScenes{grid-auto-flow:row; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px}
+  .fc-card{min-height:140px; padding:14px; gap:7px}
+  .fc-card .nm{font-size:12px}
+  .fc-card .gs{font-size:10px; line-height:1.6}
+  #fcBegin{margin-top:14px; width:100%}
+  #fcSess{padding:64px 12px 190px}
+  #fcDock{left:12px; right:12px; bottom:16px; transform:none; max-width:none; display:grid;
+    grid-template-columns:auto 1fr 52px 52px 52px 44px; grid-template-areas:"now now now now play skip" "go . rn fp ck more";
+    gap:10px 6px; padding:12px}
+  .fc-sep, #fcKeys{display:none}
+  #fcNowBox{grid-area:now; max-width:none; min-width:0; margin:0}
+  #fcPlay{grid-area:play; justify-self:end}
+  #fcSkipT{grid-area:skip; margin-left:0}
+  #fcGo{grid-area:go}
+  #fcTgRn{grid-area:rn} #fcTgFp{grid-area:fp} #fcTgCk{grid-area:ck}
+  #focus .fc-snd{margin-left:0}
+  #fcMore{grid-area:more}
+  #fcDrawer{top:auto; left:0; width:auto; max-height:82vh; border-left:0; border-top:1px solid var(--line);
+    padding:10px 18px 24px; transform:translateY(102%)}
+  #fcDrawer::before{content:""; display:block; width:40px; height:4px; background:var(--line); margin:0 auto 8px}
+}
+/* telemovel deitado: anel pequeno, sem linhas de ajuda */
+@media (max-height:520px){
+  #focus{--fc-ring:min(170px, 42vh)}
+  #fcSess{padding:56px 16px 96px; gap:6px}
+  #fcDock{bottom:10px}
+  #fcKeys, #fcHint{display:none}
+  #fcEntry{justify-content:flex-start}
+}
 </style>
 
-<div id="focus">
+<div id="focus" data-stage="entry">
   <canvas id="fcCv"></canvas>
   <div id="fcZen" style="position:absolute; left:-9999px; top:0"></div>
   <div id="fcTune" style="position:absolute; left:-9999px; top:0"></div>
@@ -7069,83 +7216,185 @@ window.HMDAWN=(function(){
     <div id="fcOrb"></div>
     <div id="fcWord">breathe in</div>
     <div id="fcWhy">the gate: three slow breaths before the room opens. the light breathes at six cycles a minute; borrow its pace.</div>
-    <button class="tbtn" id="fcGateSkip" type="button">skip the gate &raquo;</button>
+    <button class="tbtn" id="fcGateSkip" type="button">skip the breathing &raquo;</button>
   </div>
+
   <header id="fcTop" class="fc-chrome">
-    <div class="fbrand">FOCUS ROOM<span>the broadcast narrows</span></div>
-    <button class="tbtn" id="fcSeal" type="button" title="fullscreen, wake lock, everything hidden">Seal the room</button>
-    <nav id="fcTemps">
-      <button class="tbtn fcT on" data-t="dusk" type="button">dusk</button>
-      <button class="tbtn fcT" data-t="ink" type="button">ink</button>
-      <button class="tbtn fcT" data-t="off" type="button">off</button>
-    </nav>
+    <div class="fbrand">Focus<span class="w"> room</span></div>
+    <div id="fcClock">--:--</div>
+    <div class="fc-tr">
+      <button class="tbtn fc-sess" id="fcSeal" type="button" aria-label="Full screen" title="full screen, the screen stays awake and the controls hide; esc to leave"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg><span class="nm">Full screen</span></button>
+      <button class="tbtn back" id="fcExit" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l-6 6 6 6M4 12h16"></path></svg><span><span class="w">Back to the </span>radio</span></button>
+    </div>
   </header>
-  <aside id="fcSide" class="fc-chrome">
-    <h4>Pomodoro of the selector</h4>
-    <div id="fcTime">25:00</div>
-    <div id="fcPhase">ready</div>
-    <div class="fc-row">
-      <button class="tbtn" id="fcGo" type="button">Start</button>
-      <button class="tbtn" id="fcReset" type="button">Reset</button>
-      <select id="fcLen"><option value="25">25 min</option><option value="35">35 min</option><option value="50">50 min</option></select>
+
+  <section id="fcEntry" class="fc-stage" aria-label="Start a focus session">
+    <label class="fc-h" for="fcIntent">What are you working on?</label>
+    <input id="fcIntent" type="text" maxlength="60" placeholder="e.g. chapter 3 draft" autocomplete="off">
+    <span class="fc-cap">optional &middot; shown on screen while you work</span>
+    <h2 class="fc-h fc-gap">Pick a scene</h2>
+    <div id="fcScenes"></div>
+    <span id="fcCustom" class="fc-cap" hidden>your own settings, from the panel</span>
+    <button id="fcBegin" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg>Begin</button>
+    <span class="fc-cap">Begin starts the timer and the music together</span>
+    <button id="fcAdjust" type="button">or adjust the details first</button>
+  </section>
+
+  <section id="fcSess" class="fc-stage" aria-label="Focus session">
+    <div id="fcTag"></div>
+    <button id="fcDial" type="button" aria-label="Pause the timer">
+      <svg viewBox="0 0 380 380" aria-hidden="true">
+        <circle class="trk" cx="190" cy="190" r="172"></circle>
+        <g id="fcDepth"></g>
+        <circle id="fcArc" cx="190" cy="190" r="172" transform="rotate(-90 190 190)"></circle>
+      </svg>
+      <span class="in"><span id="fcTime">25:00</span><span id="fcPhase">ready</span><span id="fcMarks"><i></i><i></i><i></i></span></span>
+    </button>
+    <div id="fcHint">tap the ring to pause</div>
+    <nav id="fcDock" class="fc-chrome" aria-label="Room controls">
+      <button class="tbtn lit" id="fcGo" type="button"></button>
+      <span class="fc-sep"></span>
+      <div id="fcNowBox"><span id="fcNowG"></span><span id="fcNow">press play for music</span></div>
+      <button class="tbtn ic" id="fcPlay" type="button"></button>
+      <button class="tbtn ic" id="fcSkipT" type="button" aria-label="Next track"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5l9 7-9 7z"></path><path d="M18 5v14"></path></svg></button>
+      <label class="fc-vol"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4z"></path><path d="M16 9a4 4 0 0 1 0 6"></path></svg><span class="fc-sr">Music volume</span><input type="range" id="fcVolD" min="0" max="100" value="80"></label>
+      <span class="fc-sep"></span>
+      <button class="tbtn fc-snd" id="fcTgRn" type="button" aria-pressed="false"><span class="ln"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 15a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 17 8.5a3.3 3.3 0 0 1 .4 6.5z"></path><path d="M9 18l-1 2.5M13 18l-1 2.5M17 18l-1 2.5"></path></svg><span class="nm">Rain</span></span><span class="lv"><i></i></span></button>
+      <button class="tbtn fc-snd" id="fcTgFp" type="button" aria-pressed="false"><span class="ln"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 3 5 5.2 5 10a5 5 0 0 1-10 0c0-2.6 1.4-4.2 2.6-5.2.3 2 1.3 3.1 2.4 3.1 0-3-1-5.2 0-7.9z"></path></svg><span class="nm">Fire</span></span><span class="lv"><i></i></span></button>
+      <button class="tbtn fc-snd" id="fcTgCk" type="button" aria-pressed="false"><span class="ln"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="2.5"></circle><path d="M12 6.5a5.5 5.5 0 0 1 5.5 5.5"></path></svg><span class="nm">Vinyl</span></span><span class="lv"><i></i></span></button>
+      <span class="fc-sep"></span>
+      <button class="tbtn ic" id="fcMore" type="button" aria-label="Settings" aria-expanded="false" aria-controls="fcDrawer"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></button>
+    </nav>
+    <div id="fcKeys" class="fc-chrome">space play / pause &middot; n next track &middot; esc leave full screen</div>
+  </section>
+
+  <div id="fcScrim"></div>
+  <aside id="fcDrawer" role="dialog" aria-label="Settings">
+    <div class="fc-dh">
+      <h2 class="fc-h">Settings</h2>
+      <button class="tbtn ic" id="fcDrawerX" type="button" aria-label="Close settings"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
     </div>
-    <div id="fcCycles"><i></i><i></i><i></i><i></i></div>
-    <div class="fc-row"><label><input type="checkbox" id="fcShowCount"> countdown always on screen</label></div>
-    <div class="fc-row"><label for="fcRing">end ring</label>
-      <select id="fcRing">
-        <option value="0">air horn</option><option value="1">dub siren</option>
-        <option value="2">spinback</option><option value="3">cowbell echo</option>
-        <option value="4">tape stop</option>
-      </select></div>
-    <div class="fc-rings-row">
-      <button class="tbtn fcRp" data-r="0" type="button">&#9654; horn</button>
-      <button class="tbtn fcRp" data-r="1" type="button">&#9654; siren</button>
-      <button class="tbtn fcRp" data-r="2" type="button">&#9654; spin</button>
-      <button class="tbtn fcRp" data-r="3" type="button">&#9654; bell</button>
-      <button class="tbtn fcRp" data-r="4" type="button">&#9654; tape</button>
+
+    <div class="fc-sec">
+      <div class="fc-row"><label class="fc-l" for="fcSceneSel">Scene</label><select id="fcSceneSel"></select></div>
     </div>
-    <div class="fc-row"><label><input type="checkbox" id="fcBlack" checked> hide this column</label></div>
 
-    <h4>Room player</h4>
-    <div class="fc-row">
-      <button class="tbtn" id="fcPlay" type="button">Play</button>
-      <button class="tbtn" id="fcSkipT" type="button">Skip</button>
+    <div class="fc-sec">
+      <div class="fc-hd"><h3 class="fc-h">Timer</h3><span class="fc-sub">the selector&#39;s pomodoro</span></div>
+      <div class="fc-row">
+        <div class="fc-seg" id="fcLenSeg">
+          <button class="tbtn" type="button" data-len="25">25</button><button class="tbtn" type="button" data-len="35">35</button><button class="tbtn" type="button" data-len="50">50</button>
+        </div>
+        <span class="fc-l">min</span>
+      </div>
+      <p class="fc-note">Break: 5 min. Long break: 30 min after every 3rd block. A new length applies from the next block.</p>
+      <div class="fc-row">
+        <label class="fc-l" for="fcRing">End sound</label>
+        <select id="fcRing">
+          <option value="0">air horn</option><option value="1">dub siren</option>
+          <option value="2">spinback</option><option value="3">cowbell echo</option>
+          <option value="4">tape stop</option>
+        </select>
+        <button class="tbtn ic" id="fcRingTest" type="button" aria-label="Play the end sound"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg></button>
+      </div>
+      <div class="fc-row"><button class="tbtn" id="fcEnd" type="button">End session</button></div>
     </div>
-    <div id="fcNow" class="fc-note" style="min-height:15px; margin-top:0"></div>
 
-    <h4>House noise desk</h4>
-    <div class="fc-fader"><label><span>vinyl crackle</span><span id="fcVCk">0</span></label>
-      <input type="range" id="fcCk" min="0" max="100" value="0"></div>
-    <div class="fc-fader"><label><span>rain on the window</span><span id="fcVRn">0</span></label>
-      <input type="range" id="fcRn" min="0" max="100" value="0"></div>
-    <div class="fc-fader"><label><span>fireplace</span><span id="fcVFp">0</span></label>
-      <input type="range" id="fcFp" min="0" max="100" value="0"></div>
+    <div class="fc-sec">
+      <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">the programme valve</span></div>
+      <div id="fcValve" class="fc-chips"></div>
+      <div class="fc-row">
+        <button class="tbtn" id="fcMoreG" type="button" aria-expanded="false">more genres</button>
+        <button class="tbtn" id="fcCalm" type="button">Calm set</button>
+      </div>
+      <p class="fc-note">Each lit genre gets an equal share. Changes apply from the next track; Next hurries it. Outside, the broadcast keeps running in silence, exactly where you left it.</p>
+      <div class="fc-row"><label class="fc-l" for="fcVolR">Volume</label><input type="range" id="fcVolR" min="0" max="100" value="80"></div>
+    </div>
 
-    <h4>Programme valve</h4>
-    <div id="fcValve"></div>
-    <div class="fc-note">the valve feeds this room's own player: only lit crates play in here, any hour, any crate. it applies from the next record (Skip hurries it). outside, the broadcast keeps running in silence, exactly where you left it.</div>
+    <div class="fc-sec">
+      <div class="fc-hd"><h3 class="fc-h">Background sounds</h3><span class="fc-sub">the house noise desk</span></div>
+      <div class="fc-fader"><label for="fcRn"><span>rain on the window</span><span id="fcVRn">0</span></label>
+        <input type="range" id="fcRn" min="0" max="100" value="0"></div>
+      <div class="fc-fader"><label for="fcFp"><span>fireplace</span><span id="fcVFp">0</span></label>
+        <input type="range" id="fcFp" min="0" max="100" value="0"></div>
+      <div class="fc-fader"><label for="fcCk"><span>vinyl crackle</span><span id="fcVCk">0</span></label>
+        <input type="range" id="fcCk" min="0" max="100" value="0"></div>
+    </div>
 
-    <h4>One line of intent</h4>
-    <input id="fcIntent" type="text" maxlength="60" placeholder="what are you on?">
+    <div class="fc-sec">
+      <h3 class="fc-h">Screen</h3>
+      <div id="fcBgs" class="fc-chips" role="group" aria-label="Background"></div>
+      <label class="fc-chk"><input type="checkbox" id="fcBlack" checked>Hide controls when idle</label>
+      <label class="fc-chk"><input type="checkbox" id="fcBreathe" checked>Breathe before entering</label>
+      <p class="fc-note fc-kbd">space play / pause &middot; n next track &middot; esc closes this panel or leaves full screen</p>
+    </div>
   </aside>
-  <div id="fcIntentTag"></div>
-  <div id="fcClock">--:--</div>
-  <div id="fcFloat">25:00</div>
-  <svg id="fcRings" width="120" height="120"></svg>
-  <div id="fcSealHint">sealed &middot; esc breaks the seal and returns to the room</div>
-  <button class="tbtn fc-chrome back" id="fcExit" type="button">Back to the full room</button>
+  <div id="fcSealHint">full screen &middot; esc to leave</div>
 </div>
 
 <script>
 "use strict";
 (function(){
 var $=function(id){ return document.getElementById(id); };
-var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null,
-  temp:"dusk", breakLift:0, agitUntil:0, allow:{},
-  pomo:{ run:false, phase:"work", left:25*60, cycles:0, works:0, focusedSec:0 } };
+var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null, stage:"entry", hold:false,
+  bg:"dusk", breakLift:0, agitUntil:0, allow:{}, scene:"deep", pick:"deep", len:25, vol:null,
+  pomo:{ run:false, started:false, phase:"work", long:false, left:25*60, total:25*60, works:0, focusedSec:0 } };
 var DEEP={focus_zen:1, ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
+var DEEPK=Object.keys(DEEP);
+/* cenas prontas da entrada (exemplos; a curadoria e do Paulo) */
+var SCENES=[
+  { id:"deep", name:"Deep work", len:50, g:["dub_techno","hypnotic_techno","ambient_techno"], snd:{ rn:45, fp:0, ck:0 } },
+  { id:"study", name:"Study", len:25, g:["lofi","lofi_house","focus_zen"], snd:{ rn:0, fp:40, ck:0 } },
+  { id:"read", name:"Read", len:25, g:["focus_zen","ambient","ambient_techno"], snd:{ rn:0, fp:0, ck:30 } }
+];
+var LENS=[25,35,50];
+var SNDN={ rn:"rain", fp:"fireplace", ck:"vinyl crackle" };
+var DID={ ck:"fcCk", rn:"fcRn", fp:"fcFp" };
+var TID={ ck:"fcTgCk", rn:"fcTgRn", fp:"fcTgFp" };
+var ICO={
+  play:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg>',
+  pause:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"></path></svg>',
+  rn:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 15a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 17 8.5a3.3 3.3 0 0 1 .4 6.5z"></path><path d="M9 18l-1 2.5M13 18l-1 2.5M17 18l-1 2.5"></path></svg>',
+  fp:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 3 5 5.2 5 10a5 5 0 0 1-10 0c0-2.6 1.4-4.2 2.6-5.2.3 2 1.3 3.1 2.4 3.1 0-3-1-5.2 0-7.9z"></path></svg>',
+  ck:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="2.5"></circle><path d="M12 6.5a5.5 5.5 0 0 1 5.5 5.5"></path></svg>'
+};
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function gname(g){ return ((GENRES[g]||{}).name||g).toLowerCase(); }
+function sceneById(id){ for(var i=0;i<SCENES.length;i++){ if(SCENES[i].id===id) return SCENES[i]; } return null; }
+function sceneName(id){ var s=sceneById(id); return s ? s.name : "Custom"; }
+function lit(){ return Object.keys(FC.allow).filter(function(g){ return FC.allow[g]; }); }
 
-/* ---------- campo proprio, tres temperaturas ---------- */
+/* ---------- memoria da sala (so neste browser; nada sai dele) ---------- */
+var MEMK="hm_focus";
+var MEM=(function(){ try{ var s=localStorage.getItem(MEMK); var m=s ? JSON.parse(s) : null; return (m && m.v===1) ? m : null; }catch(e){ return null; } })();
+var memT=0;
+function memSave(){
+  clearTimeout(memT); memT=0;
+  MEM={ v:1, scene:FC.scene, len:FC.len, allow:lit(),
+    snd:{ rn:+$("fcRn").value||0, fp:+$("fcFp").value||0, ck:+$("fcCk").value||0 },
+    ring:parseInt($("fcRing").value,10)||0, vol:FC.vol, bg:FC.bg,
+    idle:$("fcBlack").checked, breathe:$("fcBreathe").checked, intent:$("fcIntent").value.trim() };
+  try{ localStorage.setItem(MEMK, JSON.stringify(MEM)); }catch(e){}
+}
+function memSoon(){ clearTimeout(memT); memT=setTimeout(memSave, 400); }
+(function memApply(){
+  var m=MEM||{};
+  FC.len=LENS.indexOf(m.len)>=0 ? m.len : 25;
+  FC.allow={};
+  ((m.allow && m.allow.length) ? m.allow : DEEPK).forEach(function(g){ FC.allow[g]=true; });
+  if(m.snd){ $("fcRn").value=m.snd.rn||0; $("fcFp").value=m.snd.fp||0; $("fcCk").value=m.snd.ck||0; }
+  $("fcRing").value=String(m.ring||0);
+  if(typeof m.vol==="number") FC.vol=m.vol;
+  if(typeof m.bg==="string") FC.bg=m.bg;
+  $("fcBlack").checked=(m.idle!==false);
+  $("fcBreathe").checked=(m.breathe!==false);
+  $("fcIntent").value=m.intent||"";
+  FC.scene=m.scene||"deep";
+  FC.pick=MEM ? "last" : "deep";
+  FC.pomo.left=FC.pomo.total=FC.len*60;
+})();
+
+/* ---------- campo proprio, tres temperaturas, ou um campo da radio ---------- */
 var TEMPS={
   dusk:[[4,3,10],[14,10,26],[32,20,38],[58,38,36]],
   ink: [[3,3,8],[12,12,24],[26,26,42],[44,44,60]],
@@ -7154,7 +7403,7 @@ var TEMPS={
 var W=96,H=54, oc=document.createElement("canvas"); oc.width=W; oc.height=H;
 var ox=oc.getContext("2d");
 function pal(v){
-  var st=TEMPS[FC.temp];
+  var st=TEMPS[FC.bg]||TEMPS.dusk;
   var x=Math.max(0,Math.min(.999,v))*3, i=Math.floor(x), f=x-i;
   var a=st[i], b=st[i+1];
   return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
@@ -7163,7 +7412,18 @@ function field(){
   if(!FC.on) return;
   FC.raf=requestAnimationFrame(field);
   var cv=$("fcCv"), cx=cv.getContext("2d");
-  if(cv.width!==innerWidth){ cv.width=innerWidth; cv.height=innerHeight; }
+  if(cv.width!==innerWidth || cv.height!==innerHeight){ cv.width=innerWidth; cv.height=innerHeight; }
+  /* campo da radio: o canvas #vj (l04) continua a ser pintado por baixo da sala; copia-se,
+     com um veu teal leve nas pausas */
+  if(FC.bg.indexOf("radio:")===0){
+    var vj=document.getElementById("vj");
+    if(vj && vj.width){
+      cx.imageSmoothingEnabled=true;
+      cx.drawImage(vj,0,0,cv.width,cv.height);
+      if(FC.breakLift){ cx.fillStyle="rgba(65,217,200,.06)"; cx.fillRect(0,0,cv.width,cv.height); }
+      return;
+    }
+  }
   var agit=performance.now()<FC.agitUntil;
   var t=performance.now()/1000*(agit?.16:.03);
   var img=ox.createImageData(W,H), d=img.data;
@@ -7181,14 +7441,53 @@ function field(){
   cx.imageSmoothingEnabled=true;
   cx.drawImage(oc,0,0,cv.width,cv.height);
 }
-document.querySelectorAll(".fcT").forEach(function(b){
-  b.addEventListener("click", function(){
-    FC.temp=b.getAttribute("data-t");
-    document.querySelectorAll(".fcT").forEach(function(x){ x.classList.toggle("on", x===b); });
-  });
-});
+/* os campos da radio so se conhecem pelo HMFIELD.next(), que avanca um e devolve o nome:
+   le-se a lista com uma volta completa e acaba-se a volta, para o campo ficar onde estava */
+var RF={ names:null };
+function rfNames(){
+  if(RF.names) return RF.names;
+  if(!window.HMFIELD || !HMFIELD.next) return [];
+  var first=HMFIELD.next(), names=[first], n, i;
+  for(i=0;i<16;i++){ n=HMFIELD.next(); if(n===first) break; names.push(n); }
+  for(i=0;i<names.length-1;i++) HMFIELD.next();
+  RF.names=names;
+  return names;
+}
+/* o campo escolhido na sala passa a ser tambem o da radio (e o mesmo canvas) */
+function rfGo(name){
+  if(!window.HMFIELD || rfNames().indexOf(name)<0) return false;
+  for(var i=0;i<16;i++){ if(HMFIELD.next()===name) return true; }
+  return false;
+}
+function bgSet(id){
+  if(id.indexOf("radio:")===0 && !rfGo(id.slice(6))) id="dusk";
+  FC.bg=id;
+  bgPaint();
+  memSoon();
+}
+function bgBuild(){
+  var el=$("fcBgs"); el.innerHTML="";
+  function group(label, items){
+    var l=document.createElement("span"); l.className="fc-bgl"; l.textContent=label; el.appendChild(l);
+    items.forEach(function(it){
+      var b=document.createElement("button");
+      b.type="button"; b.className="fc-chip"; b.setAttribute("data-bg", it[0]); b.textContent=it[1];
+      b.addEventListener("click", function(){ bgSet(it[0]); });
+      el.appendChild(b);
+    });
+  }
+  group("background: this room", [["dusk","dusk"],["ink","ink"],["off","off"]]);
+  /* a volta comeca no campo em que a radio abriu (ao calhas): ordem alfabetica, sempre a mesma */
+  var rn=rfNames().slice().sort();
+  if(rn.length) group("background: the radio", rn.map(function(n){ return ["radio:"+n, n]; }));
+  if(FC.bg.indexOf("radio:")===0 && rn.indexOf(FC.bg.slice(6))<0) FC.bg="dusk";
+  bgPaint();
+}
+function bgPaint(){
+  document.querySelectorAll("#fcBgs .fc-chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-bg")===FC.bg)); });
+}
 
-/* ---------- portao de respiracao (primeira entrada da sessao) ---------- */
+/* ---------- portao de respiracao (primeira entrada da sessao, se ligado) ---------- */
 var gateRaf=0;
 var zen={ yt:null, ready:false, fading:false };
 var ZEN_ID="I3d1mBBLKdU"; /* Buddha's Flute, Dreaminess (escolha do fundador) */
@@ -7246,13 +7545,15 @@ function gateRun(){
 function gateOpen(ms){ $("fcGate").classList.remove("on"); FC.gateDone=true; zenStop(ms||4500); }
 $("fcGateSkip").addEventListener("click", function(){ gateOpen(1200); });
 
-/* ---------- cromo que desvanece ---------- */
+/* ---------- cromo que desvanece (so na sessao, com a gaveta fechada) ---------- */
 var idleT=null;
 function wakeChrome(){
   $("focus").classList.remove("idle");
   clearTimeout(idleT);
-  if($("fcBlack").checked){
-    idleT=setTimeout(function(){ if(FC.on) $("focus").classList.add("idle"); }, 5000);
+  if($("fcBlack").checked && FC.stage==="session" && !$("focus").classList.contains("drw")){
+    idleT=setTimeout(function(){
+      if(FC.on && FC.stage==="session" && !$("focus").classList.contains("drw")) $("focus").classList.add("idle");
+    }, 5000);
   }
 }
 ["pointermove","pointerdown","keydown"].forEach(function(ev){
@@ -7260,8 +7561,9 @@ function wakeChrome(){
 });
 $("fcBlack").addEventListener("change", function(){
   $("focus").classList.toggle("noidle", !this.checked);
-  wakeChrome();
+  wakeChrome(); memSoon();
 });
+$("fcBreathe").addEventListener("change", memSoon);
 
 /* ---------- relogio ---------- */
 setInterval(function(){
@@ -7270,41 +7572,182 @@ setInterval(function(){
   $("fcClock").textContent=(d.getHours()<10?"0":"")+d.getHours()+":"+(d.getMinutes()<10?"0":"")+d.getMinutes();
 }, 1000);
 
-/* ---------- pomodoro ligado a emissao (ducking nos intervalos) ---------- */
-function fcLen(){ return (parseInt($("fcLen").value,10)||25)*60; }
-function fcPaint(){
-  var p=FC.pomo, m=Math.floor(p.left/60), sx=p.left%60;
-  var txt=(m<10?"0":"")+m+":"+(sx<10?"0":"")+sx;
-  $("fcTime").textContent=txt;
-  $("fcFloat").textContent=txt+(p.phase==="break"?" · break":"");
-  $("fcPhase").textContent= p.run ? (p.phase==="work"?"deep in":"surface, breathe") : "ready";
-  var dots=$("fcCycles").children;
-  for(var i=0;i<dots.length;i++){ dots[i].className=i<p.cycles?"done":""; }
+/* ---------- etapas ---------- */
+function setStage(s){
+  FC.stage=s;
+  $("focus").setAttribute("data-stage", s);
+  if(s==="entry"){ entryBuild(); $("focus").classList.remove("idle"); }
+  tagPaint();
+  wakeChrome();
 }
+function tagPaint(){
+  var it=$("fcIntent").value.trim();
+  $("fcTag").innerHTML="<b>"+esc(sceneName(FC.scene).toLowerCase())+"</b>"+(it ? " &middot; "+esc(it) : "");
+}
+$("fcIntent").addEventListener("input", function(){ tagPaint(); memSoon(); });
+
+/* ---------- entrada: cenas e Begin ---------- */
+function topSound(snd){
+  var best=null;
+  ["rn","fp","ck"].forEach(function(k){ if(snd && snd[k]>0 && (!best || snd[k]>snd[best])) best=k; });
+  return best;
+}
+function entryBuild(){
+  var el=$("fcScenes"); el.innerHTML="";
+  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, len:s.len, g:s.g, snd:s.snd }; });
+  if(MEM) list.push({ id:"last", name:"My last", len:MEM.len, g:MEM.allow||[], snd:MEM.snd||{}, last:true });
+  if(FC.pick==="last" && !MEM) FC.pick="deep";
+  list.forEach(function(s){
+    var b=document.createElement("button");
+    b.type="button"; b.className="fc-card"+(s.last?" last":"");
+    b.setAttribute("data-id", s.id);
+    var gs=s.last ? ("as you left it<br>"+s.g.length+" genre"+(s.g.length===1?"":"s")) : s.g.map(function(g){ return esc(gname(g)); }).join("<br>");
+    var k=topSound(s.snd);
+    b.innerHTML='<span class="nm">'+esc(s.name)+'</span><span class="mn">'+s.len+' min</span><span class="gs">'+gs+'</span>'+
+      '<span class="sd">'+(k ? ICO[k]+esc(SNDN[k]) : "no background sound")+'</span>';
+    b.addEventListener("click", function(){ FC.pick=s.id; pickApply(); entryMark(); });
+    el.appendChild(b);
+  });
+  entryMark();
+}
+/* a cena escolhida na entrada aplica-se logo, para a gaveta mostrar o que vai tocar */
+function pickApply(){
+  if(FC.pick==="last" && MEM) applyCfg({ scene:MEM.scene, len:MEM.len, g:MEM.allow, snd:MEM.snd });
+  else if(sceneById(FC.pick)){ var s=sceneById(FC.pick); applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd }); }
+}
+function entryMark(){
+  document.querySelectorAll("#fcScenes .fc-card").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-id")===FC.pick)); });
+  $("fcCustom").hidden=(FC.pick!=="custom");
+}
+/* aplica uma configuracao (cena pronta ou a ultima): generos, duracao e sons */
+function applyCfg(c){
+  FC.scene=c.scene||"custom";
+  if(LENS.indexOf(c.len)>=0) FC.len=c.len;
+  FC.allow={};
+  (c.g||[]).forEach(function(g){ FC.allow[g]=true; });
+  if(c.snd){ $("fcRn").value=c.snd.rn||0; $("fcFp").value=c.snd.fp||0; $("fcCk").value=c.snd.ck||0; }
+  if(!FC.pomo.started){ FC.pomo.left=FC.pomo.total=FC.len*60; }
+  if(snd.els) sndApply();
+  valveBuild(); sndUi(); lenPaint(); sceneSelPaint(); tagPaint(); pomoPaint();
+}
+function anySound(){ return (+$("fcRn").value>0) || (+$("fcFp").value>0) || (+$("fcCk").value>0); }
+function begin(){
+  rctx();
+  pickApply();
+  pomoReset();
+  FC.pomo.started=true; FC.pomo.run=true; FC.hold=false;
+  setStage("session");
+  /* a musica comeca com o tempo; se ja tocava um genero que continua aceso, segue */
+  if(!(fcp.playing && fcp.cur && FC.allow[fcp.cur.g])) fcNext();
+  if(anySound()){ sndInit(); sndApply(); }
+  sndUi(); pomoPaint(); memSave();
+}
+$("fcBegin").addEventListener("click", begin);
+$("fcAdjust").addEventListener("click", function(){ drawer(true); });
+
+/* ---------- pomodoro: blocos de foco, pausa curta, pausa longa a cada terceiro bloco ---------- */
+var CIRC=2*Math.PI*172;
+function pomoReset(){
+  var p=FC.pomo;
+  p.run=false; p.started=false; p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.works=0;
+  FC.breakLift=0; duckBroadcast(false);
+}
+function mmss(s){ var m=Math.floor(s/60), x=s%60; return (m<10?"0":"")+m+":"+(x<10?"0":"")+x; }
+function pomoPaint(){
+  var p=FC.pomo;
+  $("fcTime").textContent=mmss(p.left);
+  $("fcArc").style.strokeDashoffset=(CIRC*(1-(p.total ? p.left/p.total : 1))).toFixed(1);
+  $("focus").classList.toggle("brk", p.phase==="break");
+  $("fcPhase").textContent= !p.started ? "ready" : !p.run ? "paused" :
+    p.phase==="work" ? "focus · "+(p.works%3+1)+" of 3" : (p.long ? "long break" : "break");
+  var done= p.phase==="work" ? p.works%3 : (p.works%3===0 ? 3 : p.works%3);
+  var dots=$("fcMarks").children;
+  for(var i=0;i<dots.length;i++){ dots[i].className=i<done?"done":""; }
+  var m=Math.floor(p.left/60), sx=p.left%60;
+  $("fcDial").setAttribute("aria-label", (p.run?"Pause":"Resume")+" the timer, "+m+" min "+sx+" s left");
+  $("fcHint").textContent=p.run ? "tap the ring to pause" : "tap the ring to resume";
+  $("fcGo").innerHTML=(p.run ? ICO.pause+"<span>Pause</span>" : ICO.play+"<span>Resume</span>");
+}
+function lenPaint(){
+  document.querySelectorAll("#fcLenSeg .tbtn").forEach(function(b){ b.setAttribute("aria-pressed", String(+b.getAttribute("data-len")===FC.len)); });
+}
+setInterval(function(){
+  var p=FC.pomo;
+  if(!FC.on || !p.run) return;
+  p.left--;
+  if(p.phase==="work"){ p.focusedSec++; ringsPaint(); }
+  if(p.left<=0){
+    if(p.phase==="work"){
+      p.works++;
+      ringPlay(parseInt($("fcRing").value,10)||0);
+      FC.agitUntil=performance.now()+6000;
+      p.phase="break"; p.long=(p.works%3===0); p.left=p.total=(p.long?30:5)*60;
+      FC.breakLift=1; duckBroadcast(true);
+    } else {
+      p.phase="work"; p.long=false; p.left=p.total=FC.len*60; FC.breakLift=0; duckBroadcast(false);
+    }
+  }
+  pomoPaint();
+}, 1000);
+/* sair da sala pausa tudo; ao voltar, retomar o tempo devolve tambem a musica e os sons */
+function resumeMedia(){
+  if(!FC.hold) return;
+  FC.hold=false;
+  if(!fcp.playing){ if(fcp.cur) fcToggle(); else fcNext(); }
+  if(anySound()){ rctx(); sndInit(); sndApply(); }
+}
+function timerToggle(){
+  var p=FC.pomo;
+  if(!p.started) return;
+  p.run=!p.run;
+  if(p.run) resumeMedia();
+  pomoPaint();
+}
+$("fcDial").addEventListener("click", timerToggle);
+$("fcGo").addEventListener("click", timerToggle);
+document.querySelectorAll("#fcLenSeg .tbtn").forEach(function(b){
+  b.addEventListener("click", function(){
+    FC.len=+b.getAttribute("data-len");
+    if(!FC.pomo.started){ FC.pomo.left=FC.pomo.total=FC.len*60; }
+    markCustom(); lenPaint(); pomoPaint(); memSoon();
+  });
+});
+$("fcEnd").addEventListener("click", function(){
+  pomoReset(); fcStopTune(); sndStop(); FC.hold=false;
+  /* de volta a entrada, a configuracao que se usava fica escolhida como «My last» */
+  memSave(); FC.pick="last";
+  drawer(false); setStage("entry"); pomoPaint();
+});
+
 /* ---------- o leitor proprio da sala ----------
    a radio la fora nunca e tocada pela valvula: fica a correr em silencio;
-   este leitor escondido toca SO os generos acesos, a qualquer hora do dia */
-var fcp={ yt:null, ready:false, making:false, q:[], playing:false, cur:null, hist:[], duck:1, started:false };
+   este leitor escondido toca SO os generos acesos, a qualquer hora do dia,
+   cada genero aceso com a mesma parte (sorteia-se o genero, depois a faixa) */
+var fcp={ yt:null, ready:false, making:false, q:[], playing:false, cur:null, hist:[], duck:1 };
+var BYG=null;
+function byG(g){
+  if(!BYG){ BYG={}; TRACKS.forEach(function(t){ (BYG[t.g]=BYG[t.g]||[]).push(t); }); }
+  return BYG[g]||[];
+}
 function fcAllowed(){
-  var ks=Object.keys(FC.allow).filter(function(g){ return FC.allow[g]; });
-  if(!ks.length){ ks=Object.keys(DEEP); }
+  var ks=lit();
+  if(!ks.length){ ks=DEEPK; }
   return ks;
 }
 function fcPick(){
-  var ok=fcAllowed();
-  var pool=TRACKS.filter(function(t){ return ok.indexOf(t.g)>=0 && fcp.hist.indexOf(t.v)<0; });
-  if(!pool.length) pool=TRACKS.filter(function(t){ return ok.indexOf(t.g)>=0; });
-  if(!pool.length) return null;
+  var ok=fcAllowed().filter(function(g){ return byG(g).length; });
+  if(!ok.length) return null;
+  var all=byG(ok[Math.floor(Math.random()*ok.length)]);
+  var pool=all.filter(function(t){ return fcp.hist.indexOf(t.v)<0; });
+  if(!pool.length) pool=all.filter(function(t){ return !fcp.cur || t.v!==fcp.cur.v; });
+  if(!pool.length) pool=all;
   return pool[Math.floor(Math.random()*pool.length)];
 }
-function fcVol(){
-  var v=100;
-  try{
-    var el=document.getElementById("vol");
-    if(el && el.offsetParent!==null){ v=parseInt(el.value,10); if(isNaN(v)) v=100; }
-  }catch(e){}
-  return Math.round(v*fcp.duck);
+function mainVol(){
+  var el=document.getElementById("vol"), v=el ? parseInt(el.value,10) : NaN;
+  return isNaN(v) ? 80 : v;
 }
+function fcVol(){ return Math.round((FC.vol==null ? mainVol() : FC.vol)*fcp.duck); }
 function fcPlayer(cb){
   if(fcp.yt && fcp.ready){ if(cb) cb(); return; }
   if(cb) fcp.q.push(cb);
@@ -7328,14 +7771,19 @@ function fcPlayer(cb){
   })();
 }
 function fcShow(t){
-  var el=$("fcNow"); if(!el) return;
-  el.textContent = t ? (t.a+" / "+t.t+" · "+((GENRES[t.g]||{}).name||t.g).toLowerCase()) : "";
+  $("fcNowG").textContent=t ? gname(t.g) : "";
+  $("fcNow").textContent=t ? (t.a+" / "+t.t) : "press play for music";
+  $("fcNow").title=t ? (t.a+" / "+t.t) : "";
+}
+function playPaint(){
+  $("fcPlay").innerHTML=fcp.playing ? ICO.pause : ICO.play;
+  $("fcPlay").setAttribute("aria-label", fcp.playing ? "Pause the music" : "Play the music");
 }
 function fcLoad(t){
   fcp.cur=t;
   fcp.hist.push(t.v); if(fcp.hist.length>6) fcp.hist.shift();
   fcShow(t);
-  fcp.playing=true; $("fcPlay").textContent="Pause";
+  fcp.playing=true; playPaint();
   fcPlayer(function(){
     try{ fcp.yt.setVolume(fcVol()); fcp.yt.loadVideoById(t.v); fcp.yt.playVideo(); }catch(e){}
   });
@@ -7345,15 +7793,16 @@ function fcToggle(){
   if(!fcp.cur){ fcNext(); return; }
   if(fcp.playing){
     try{ if(fcp.yt&&fcp.ready) fcp.yt.pauseVideo(); }catch(e){}
-    fcp.playing=false; $("fcPlay").textContent="Play";
+    fcp.playing=false;
   } else {
     try{ if(fcp.yt&&fcp.ready){ fcp.yt.setVolume(fcVol()); fcp.yt.playVideo(); } }catch(e){}
-    fcp.playing=true; $("fcPlay").textContent="Pause";
+    fcp.playing=true;
   }
+  playPaint();
 }
 function fcStopTune(){
   try{ if(fcp.yt&&fcp.ready) fcp.yt.pauseVideo(); }catch(e){}
-  fcp.playing=false; $("fcPlay").textContent="Play";
+  fcp.playing=false; playPaint();
 }
 function fcDuck(on){
   fcp.duck = on ? 0.35 : 1;
@@ -7361,12 +7810,15 @@ function fcDuck(on){
 }
 $("fcPlay").addEventListener("click", fcToggle);
 $("fcSkipT").addEventListener("click", fcNext);
-(function(){
-  var vol=document.getElementById("vol");
-  if(vol) vol.addEventListener("input", function(){
+function volPaint(){ $("fcVolD").value=$("fcVolR").value=String(FC.vol==null ? mainVol() : FC.vol); }
+["fcVolD","fcVolR"].forEach(function(id){
+  $(id).addEventListener("input", function(){
+    FC.vol=parseInt(this.value,10)||0;
+    volPaint();
     try{ if(fcp.yt&&fcp.ready) fcp.yt.setVolume(fcVol()); }catch(e){}
+    memSoon();
   });
-})();
+});
 document.addEventListener("keydown", function(ev){
   if(!FC.on) return;
   if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="SELECT"||ev.target.tagName==="TEXTAREA")) return;
@@ -7374,63 +7826,72 @@ document.addEventListener("keydown", function(ev){
   else if(ev.key==="n"){ ev.stopImmediatePropagation(); fcNext(); }
 }, true);
 function duckBroadcast(on){ fcDuck(on); }
-setInterval(function(){
-  var p=FC.pomo;
-  if(!FC.on || !p.run) return;
-  p.left--;
-  if(p.phase==="work"){ p.focusedSec++; ringsPaint(); }
-  if(p.left<=0){
-    if(p.phase==="work"){
-      p.works++; p.cycles=Math.min(4,p.cycles+1);
-      ringPlay(parseInt($("fcRing").value,10)||0);
-      FC.agitUntil=performance.now()+6000;
-      p.phase="break"; p.left=(p.works%3===0?30:5)*60;
-      FC.breakLift=1; duckBroadcast(true);
-    } else {
-      p.phase="work"; p.left=fcLen(); FC.breakLift=0; duckBroadcast(false);
-    }
-  }
-  fcPaint();
-}, 1000);
-$("fcGo").addEventListener("click", function(){
-  FC.pomo.run=!FC.pomo.run;
-  this.textContent=FC.pomo.run?"Pause":"Start";
-  /* o primeiro Start poe o leitor da sala a rodar (a radio la fora continua em silencio) */
-  if(FC.pomo.run && !fcp.started){
-    fcp.started=true;
-    if(!fcp.playing) fcNext();
-  }
-  fcPaint();
-});
-$("fcReset").addEventListener("click", function(){
-  var p=FC.pomo;
-  p.run=false; p.phase="work"; p.left=fcLen(); p.cycles=0; p.works=0;
-  FC.breakLift=0; duckBroadcast(false);
-  $("fcGo").textContent="Start"; fcPaint();
-});
-$("fcLen").addEventListener("change", function(){
-  if(!FC.pomo.run && FC.pomo.phase==="work"){ FC.pomo.left=fcLen(); fcPaint(); }
-});
-$("fcShowCount").addEventListener("change", function(){
-  $("fcFloat").classList.toggle("show", this.checked);
-});
-fcPaint();
 
-/* ---------- aneis de profundidade ---------- */
+/* ---------- aneis de profundidade: um por cada 20 minutos de foco, dentro do anel do tempo ---------- */
 function ringsPaint(){
-  var n=Math.floor(FC.pomo.focusedSec/1200);
-  var svg=$("fcRings");
-  if(svg.childElementCount===Math.min(n,6)) return;
-  svg.innerHTML="";
-  for(var i=0;i<Math.min(n,6);i++){
+  var n=Math.min(6, Math.floor(FC.pomo.focusedSec/1200));
+  var g=$("fcDepth");
+  if(g.childElementCount===n) return;
+  g.innerHTML="";
+  for(var i=0;i<n;i++){
     var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx",60); c.setAttribute("cy",60); c.setAttribute("r", 8+i*9);
+    c.setAttribute("cx",190); c.setAttribute("cy",190); c.setAttribute("r", 154-i*9);
     c.setAttribute("fill","none");
-    c.setAttribute("stroke","rgba(65,217,200,"+(0.28-0.03*i)+")");
+    c.setAttribute("stroke","rgba(65,217,200,"+(0.24-0.03*i)+")");
     c.setAttribute("stroke-width","1");
-    svg.appendChild(c);
+    g.appendChild(c);
   }
 }
+
+/* ---------- valvula: generos acesos neste leitor ---------- */
+function valveBuild(){
+  var el=$("fcValve"); el.innerHTML="";
+  var keys=DEEPK.concat(Object.keys(GENRES).filter(function(g){ return !DEEP[g]; }));
+  var extra=0;
+  keys.forEach(function(g){
+    if(!GENRES[g]) return;
+    var b=document.createElement("button");
+    b.type="button"; b.className="fc-chip"+(DEEP[g] ? "" : " more");
+    if(!DEEP[g]) extra++;
+    b.textContent=gname(g);
+    b.setAttribute("aria-pressed", String(!!FC.allow[g]));
+    b.addEventListener("click", function(){
+      FC.allow[g]=!FC.allow[g];
+      b.setAttribute("aria-pressed", String(!!FC.allow[g]));
+      markCustom(); memSoon();
+    });
+    el.appendChild(b);
+  });
+  var all=el.classList.contains("all");
+  $("fcMoreG").textContent=all ? "fewer genres" : "+ "+extra+" more genres";
+  $("fcMoreG").setAttribute("aria-expanded", String(all));
+}
+$("fcMoreG").addEventListener("click", function(){ $("fcValve").classList.toggle("all"); valveBuild(); });
+$("fcCalm").addEventListener("click", function(){
+  FC.allow={}; DEEPK.forEach(function(g){ FC.allow[g]=true; });
+  valveBuild(); markCustom(); memSoon();
+});
+/* mexer nos generos ou na duracao faz da configuracao uma cena propria */
+function markCustom(){
+  FC.scene="custom";
+  if(FC.stage==="entry"){ FC.pick="custom"; entryMark(); }
+  sceneSelPaint(); tagPaint();
+}
+function sceneSelPaint(){
+  var sel=$("fcSceneSel"), h="";
+  SCENES.forEach(function(s){ h+='<option value="'+s.id+'">'+esc(s.name)+'</option>'; });
+  if(FC.scene==="custom") h+='<option value="custom">Custom</option>';
+  sel.innerHTML=h;
+  sel.value=FC.scene;
+}
+$("fcSceneSel").addEventListener("change", function(){
+  var s=sceneById(this.value); if(!s) return;
+  applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd });
+  if(FC.stage==="entry"){ FC.pick=s.id; entryMark(); }
+  if(fcp.playing && fcp.cur && !FC.allow[fcp.cur.g]) fcNext();
+  rctx(); if(anySound() || snd.els){ sndInit(); sndApply(); }
+  memSoon();
+});
 
 /* ---------- mesa de ruido (discos CC0 escolhidos) ----------
    caminho principal: cada disco carrega em modo CORS anonimo e passa pelo WebAudio
@@ -7445,7 +7906,6 @@ var SMP={
   rn:"https://cdn.freesound.org/previews/869/869851_19205925-hq.mp3",
   fp:"https://cdn.freesound.org/previews/484/484338_5902878-hq.mp3"
 };
-var DID={ ck:"fcCk", rn:"fcRn", fp:"fcFp" };
 /* nivel em amplitude sobre o ficheiro, x de 0 a 1. crepitar e lareira: 0,9*x, como sempre.
    chuva: 0,9*x*(1+x*x), curva lisa quase igual a antiga em baixo (0,24 a um quarto) que dobra
    no topo: 0,56 a meio, 1,05 a tres quartos, 1,8 no maximo (+6 dB, cerca de 50% mais alto ao ouvido) */
@@ -7562,13 +8022,32 @@ function sndApply(){
       sndTo("rn2", u);
     } else sndTo(k, Math.min(1, lv));
   });
+  sndUi();
+}
+/* botoes da barra e numeros da gaveta seguem os faders */
+function sndUi(){
+  Object.keys(DID).forEach(function(k){
+    var v=parseInt($(DID[k]).value,10)||0, b=$(TID[k]);
+    b.setAttribute("aria-pressed", String(v>0));
+    b.setAttribute("aria-label", SNDN[k]+(v>0 ? ", on, level "+v : ", off"));
+    b.querySelector(".lv i").style.width=v+"%";
+  });
   $("fcVCk").textContent=$("fcCk").value;
   $("fcVRn").textContent=$("fcRn").value;
   $("fcVFp").textContent=$("fcFp").value;
 }
 ["fcCk","fcRn","fcFp"].forEach(function(id){
   /* o gesto no fader acorda o contexto de audio (suspenso pelo autoplay ou interrompido no iOS) */
-  $(id).addEventListener("input", function(){ rctx(); sndInit(); sndApply(); });
+  $(id).addEventListener("input", function(){ rctx(); sndInit(); sndApply(); sndUi(); memSoon(); });
+});
+/* um toque liga ou desliga; volta ao ultimo nivel usado */
+var SLAST={ rn:50, fp:40, ck:30 };
+Object.keys(TID).forEach(function(k){
+  $(TID[k]).addEventListener("click", function(){
+    var f=$(DID[k]), v=parseInt(f.value,10)||0;
+    if(v>0){ SLAST[k]=v; f.value=0; } else { f.value=SLAST[k]; }
+    rctx(); sndInit(); sndApply(); sndUi(); memSoon();
+  });
 });
 function sndStop(){
   if(!snd.els) return;
@@ -7655,29 +8134,21 @@ function ringPlay(which){
     o5.start(t); o5.stop(t+1.2);
   }
 }
-document.querySelectorAll(".fcRp").forEach(function(b){
-  b.addEventListener("click", function(){ ringPlay(parseInt(b.getAttribute("data-r"),10)); });
-});
+$("fcRingTest").addEventListener("click", function(){ ringPlay(parseInt($("fcRing").value,10)||0); });
+$("fcRing").addEventListener("change", memSoon);
 
-/* ---------- valvula real sobre a grelha ---------- */
-function valveBuild(){
-  var el=$("fcValve"); el.innerHTML="";
-  Object.keys(GENRES).forEach(function(g){
-    var d=document.createElement("span");
-    d.className="g"+(FC.allow[g]?" on":"");
-    d.textContent=(GENRES[g].name||g).toLowerCase();
-    d.addEventListener("click", function(){
-      FC.allow[g]=!FC.allow[g];
-      d.classList.toggle("on", !!FC.allow[g]);
-    });
-    el.appendChild(d);
-  });
+/* ---------- gaveta de ajustes ---------- */
+function drawer(on){
+  $("focus").classList.toggle("drw", on);
+  $("fcMore").setAttribute("aria-expanded", String(on));
+  if(on){ $("focus").classList.remove("idle"); clearTimeout(idleT); setTimeout(function(){ try{ $("fcDrawerX").focus(); }catch(e){} }, 60); }
+  else wakeChrome();
 }
+$("fcMore").addEventListener("click", function(){ drawer(!$("focus").classList.contains("drw")); });
+$("fcDrawerX").addEventListener("click", function(){ drawer(false); });
+$("fcScrim").addEventListener("click", function(){ drawer(false); });
 
-/* ---------- intencao ---------- */
-$("fcIntent").addEventListener("change", function(){ $("fcIntentTag").textContent=this.value.trim(); });
-
-/* ---------- selo ---------- */
+/* ---------- selo (ecra inteiro, ecra acordado, controlos escondidos) ---------- */
 function seal(on){
   FC.sealed=on;
   $("focus").classList.toggle("sealed", on);
@@ -7690,14 +8161,15 @@ function seal(on){
     $("focus").classList.remove("idle");
   }
 }
-$("fcSeal").addEventListener("click", function(){ seal(true); });
+$("fcSeal").addEventListener("click", function(){ drawer(false); seal(true); });
 document.addEventListener("fullscreenchange", function(){
   if(!document.fullscreenElement && FC.sealed) seal(false);
 });
 document.addEventListener("keydown", function(ev){
   if(!FC.on) return;
   if(ev.key==="Escape"){
-    if(FC.sealed){ seal(false); ev.stopImmediatePropagation(); }
+    if($("focus").classList.contains("drw")){ drawer(false); ev.stopImmediatePropagation(); }
+    else if(FC.sealed){ seal(false); ev.stopImmediatePropagation(); }
   }
 }, true);
 
@@ -7708,19 +8180,24 @@ function focusOpen(){
   /* a radio continua a correr la fora, apenas em silencio (fade lento);
      a valvula nunca lhe toca: alimenta so o leitor proprio da sala */
   if(window.HM && HM.sideKey) HM.sideKey("focus", true, 2600);
-  if(!Object.keys(FC.allow).length){
-    Object.keys(DEEP).forEach(function(g){ FC.allow[g]=true; });
-  }
-  valveBuild();
+  bgBuild();
+  if(FC.bg.indexOf("radio:")===0) bgSet(FC.bg);
+  if(!FC.pomo.started) pickApply();
+  valveBuild(); sceneSelPaint(); lenPaint(); volPaint(); sndUi(); playPaint();
+  if(FC.pomo.started && FC.pomo.phase==="break") fcDuck(true);
+  setStage(FC.pomo.started ? "session" : "entry");
   $("focus").classList.add("on");
   $("focus").classList.toggle("noidle", !$("fcBlack").checked);
-  if(!FC.gateDone) gateRun();
+  if(!FC.gateDone && $("fcBreathe").checked) gateRun();
   wakeChrome();
+  pomoPaint();
   field();
 }
 function focusClose(){
   if(!FC.on) return;
   FC.on=false;
+  if(FC.pomo.run || fcp.playing || snd.els) FC.hold=true;
+  FC.pomo.run=false;
   fcStopTune();
   /* a emissao regressa exatamente onde ia: a fila principal nunca foi tocada */
   if(window.HM && HM.sideKey) HM.sideKey("focus", false);
@@ -7729,6 +8206,8 @@ function focusClose(){
   cancelAnimationFrame(FC.raf);
   if(FC.sealed) seal(false);
   sndStop();
+  drawer(false);
+  memSave();
   $("focus").classList.remove("on");
 }
 document.getElementById("focusBtn").addEventListener("click", focusOpen);

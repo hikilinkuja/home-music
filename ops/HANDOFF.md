@@ -90,6 +90,14 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
    vídeo apagado e não há «Topic» (retirar ou procurar outro upload); Sam Binga, «Get Down Low
    (En:vy Remix)», toca outra faixa.
 
+## Sala de foco v4.6 (publicada a 2026-10-17)
+
+Alternativa D escolhida pelo Paulo (entrada com cenas, sessão com anel e barra, gaveta), com os
+fundos da rádio integrados e os três da sala mantidos; teste `ops/tests/t-focus.js`. Por decidir
+pelo Paulo: as três cenas (Deep work, Study, Read) são exemplos; «Read» tem pouca música (zen
+focus 27, ambient 4, ambient techno 15). Por verificar num iPhone real: barra em duas linhas,
+folha de ajustes, sons de fundo.
+
 ## Próxima ronda (proposta)
 
 Sessão nova, a partir deste ficheiro. Ordem sugerida, uma ronda de cada vez, conforme as decisões
