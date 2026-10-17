@@ -29,7 +29,7 @@ const GENRES = {
   house: { name: "House", w: "https://en.wikipedia.org/wiki/House_music", note: "Chicago, a warehouse, a drum machine and a congregation. Frankie Knuckles called it church for people who have fallen from grace; the four-on-the-floor kick is the sermon everyone can follow. Everything the night plays descends from this room. Jack your body, politely." },
   ska_rocksteady: { name: "Ska & Rocksteady", w: "https://en.wikipedia.org/wiki/Rocksteady", note: "Kingston before the bass slowed the world down. Ska walks fast on the offbeat, horns gleaming, Studio One in its sunday best; then the hot summer of 1966 cools the tempo and rocksteady arrives, basslines suddenly singing, rude boys suddenly sentimental. Two or three golden years that every reggae record since has been quoting. The original good mood." }
 };
-/* 1280 faixas */
+/* 1288 faixas */
 const TRACKS = [
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Environment Control", y:2024, v:"RPblvnQ4b9k" },
   { g:"hypnotic_techno", a:"Polar Inertia", t:"Smothering Dreams", y:2024, v:"WMyqdwZwuaI" },
@@ -1310,7 +1310,15 @@ const TRACKS = [
   { g:"ragga_jungle", a:"Rana", t:"Call It Ragga", v:"Is_c7IV4vB4" },
   { g:"liquid", a:"Modal & Jaise", t:"Expressions", v:"55G9Z4bly98" },
   { g:"liquid", a:"Redeyes", t:"Rainmaker", v:"UH2eWr5jqDI" },
-  { g:"liquid", a:"Thread & Kin:etic", t:"Disposition", v:"RjcypgJerNk" }
+  { g:"liquid", a:"Thread & Kin:etic", t:"Disposition", v:"RjcypgJerNk" },
+  { g:"dub", a:"BuffBaff", t:"Indica Riddim", y:2023, v:"WRAE9pxxtho" },
+  { g:"house", a:"Toolate Groove, Janelle", t:"Passion Rhythms", y:2022, v:"QnajG71zH_g" },
+  { g:"house", a:"Playin' 4 The City", t:"Backfire - Original Mix", y:2015, v:"IRACRrMvJPA" },
+  { g:"deep_house", a:"Seven Grand Housing Authority", t:"Spreading Love - Vocal Mix", y:2019, v:"_mRGVE_rwfc" },
+  { g:"house", a:"Art Department", t:"Jazz Hours - Original Mix", y:2025, v:"y3r3GOdzpBc" },
+  { g:"house", a:"Robin Fett", t:"Bare Minimum - Original Mix", v:"KKKCFH2_1N8" },
+  { g:"deep_house", a:"Wamdue Kids", t:"Ocean Between Us - Original Mix", y:2021, v:"fyexMXDqFqw" },
+  { g:"dubstep", a:"Kalbaisakhi", t:"One Raga To A Dubstep Beat", v:"KC1gI3zAodE" }
 ];
 const GBPM = { reggae:76, dub:72, lofi:80, ambient:64, ambient_techno:112,
   lofi_house:118, liquid:174, intelligent_dnb:168, atmospheric_jungle:158,

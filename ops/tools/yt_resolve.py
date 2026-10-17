@@ -232,7 +232,7 @@ def score(c, artist, title, target):
     if norm(c["channel"]) in GENERIC_TOPIC:
         return 0.0
     nch, nti = norm(c["channel"]), norm(c["title"])
-    want_t = norm(strip_paren(title))
+    want_t = norm(simple_title(title))
     words_req = set(norm(title).split()) | set(norm(artist).split())
     for w in nti.split():
         if w in BAD_WORDS and w not in words_req:

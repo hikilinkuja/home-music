@@ -63,9 +63,29 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
   motivo, está em `ops/queue/import-2026-10-17-left-out.tsv` (126 não encontradas no YouTube
   podem ser tentadas de novo; as restantes foram recusadas por versão ou duração erradas, ou
   por não terem lugar na grelha).
-- Nota: o resolvedor não encontrou nenhum canal «Topic» nesta volta (zero S5); todas as faixas
-  entraram por canais de artista/editora (S3) ou uploads de terceiros (S2) filtrados por duração
-  e versão. Vale a pena investigar se a página de pesquisa vista da nuvem esconde os Topic.
+- Causa do zero S5 (investigada a 2026-10-17, v4.3): da nuvem, o YouTube esconde todo o conteúdo
+  licenciado (pesquisa normal sem «Topic», YouTube Music com zero canções, canais «Topic» vazios).
+  Não é defeito do script. O `yt_resolve.py` passou a tentar primeiro o YouTube Music (funciona
+  numa ligação doméstica), a avisar quando não vê nenhum «Topic» e a ter `--verify` (oEmbed) para
+  confirmar videoIds achados por fora. Pormenores no `CLAUDE.md` (secção da rede).
+- Repetição das 126 não encontradas: entraram 8; o resto está em `ops/queue/retry-2026-10-17.tsv`
+  por grupos: A1 (15, corte mais longo da mesma faixa ou mistura: o Spotify tem a edição curta,
+  o YouTube a original ou estendida), A2 (10, provável corte longo mas incerto), nada (78, sem
+  upload visível da nuvem, quase todas lofi_house e house de editoras pequenas, provavelmente só
+  em «Topic»), errado (14), duplicada (1).
+
+### Em espera do Paulo (importação)
+
+1. A1 e A2: aceitar o corte longo quando o YouTube só tem a versão original ou estendida da mesma
+   mistura? Se sim, A1 entra com `catalogue.py add` (status S2, `--accept-s2`); A2 linha a linha.
+2. As 78 «nada» e a troca das faixas já importadas por S2/S3 pelas versões «Topic»: precisam de
+   uma pesquisa que veja os «Topic». Via recomendada: sessão local do Claude Code no computador
+   do Paulo (IP doméstico em Portugal), a correr
+   `pip install yt-dlp ytmusicapi` e
+   `python3 ops/tools/yt_resolve.py ENTRADA.tsv SAIDA.tsv` com as 78 linhas (as colunas de entrada
+   estão no próprio TSV da repetição). Alternativa na nuvem: pesquisa externa (motor de pesquisa
+   do modelo) e `--verify`; numa amostra de 3 faixas obscuras não encontrou nenhum «Topic»,
+   rendimento baixo para o custo.
 
 ## Próxima ronda (proposta)
 

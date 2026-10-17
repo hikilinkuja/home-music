@@ -1,5 +1,19 @@
 # Registo das voltas
 
+## 2026-10-17: v4.3, canais «Topic» e repetição das não encontradas (sessão Claude Code na nuvem)
+
+- Diagnóstico: vista da nuvem, o YouTube esconde o conteúdo licenciado (zero «Topic» em 290
+  pesquisas; YouTube Music com zero canções até para «Bob Marley One Love»; páginas dos canais
+  «Topic» vazias; o vídeo «Topic» de Wailing Souls, «Kingdom Rise Kingdom Fall», existe e o oEmbed
+  confirma-o). `yt_resolve.py`: YouTube Music como primeiro nível, aviso de IP sem catálogo,
+  `--verify` por oEmbed, consultas com títulos simplificados e comparação de títulos sem os
+  sufixos do Spotify («- Original Mix», «- Radio Edit»).
+- Entraram 8 das 126 (catálogo 1280 para 1288): house 4, deep_house 2, dub 1, dubstep 1; todas S2
+  ou S3, duração conferida (salvo a do SoundCloud, sem duração de referência), incorporação
+  confirmada por oEmbed. Mall Grab, «Feel You», já estava como «Feel U».
+- Ficam 117 em `ops/queue/retry-2026-10-17.tsv`: 15 A1 e 10 A2 (corte longo, decisão do Paulo),
+  78 sem upload visível da nuvem, 14 candidatos errados (mixes, ao vivo, outras faixas, álbuns).
+
 ## 2026-10-17: v4.2, importação das playlists do Spotify e do SoundCloud
 
 - Entraram 576 faixas (catálogo 704 para 1280): lofi_house 235, house 124, deep_house 124,

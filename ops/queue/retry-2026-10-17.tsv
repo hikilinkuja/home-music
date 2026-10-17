@@ -1,0 +1,121 @@
+# Repetição, a 2026-10-17, das 126 faixas não encontradas na importação do Spotify e do SoundCloud.
+# Entraram 8. A1 e A2 esperam decisão do Paulo (aceitar o corte longo?); 'nada' espera uma pesquisa com acesso aos canais Topic.
+key	genre	artist	title	spotify_secs	grupo	video_id	yt_secs	yt_channel	yt_title	motivo
+sp-elo-054	lofi_house	Frits Wentink	Intentions - Radio Edit	192	A1	FqgcZHOULS4	362	Majestic Casual	Frits Wentink - Intentions	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-067	house	Kolter	Infinite Slammin - Edit	150	A1	wR-LnE-2uIA	417	Kolter	Kolter - Infinite Slammin'	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-092	lofi_house	Dj Steaw	Emerald Coast - Radio Mix	198	A1	fuYwCOcV11g	398	morfeus Opus	DJ Steaw - Emerald Coast	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-107	house	Billy Cobham, Motor City Drum Ensemble	Shining Sun - Motor City Drum Ensemble Winter Sun Remix	206	A1	4ULCEStbVCM	471	DS	Billy Cobham feat. Novecento - Shining Sun (Motor City Drum Ensemble Winter Sun Remix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-122	house	Floorplan	What You Need	225	A1	XQKLy7U89Q8	366	Classic Music Company	Floorplan - What You Need (Extended Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-148	deep_house	Kassian	Midnight District Line	270	A1	3zGmX3KfQgA	566	Bolting Bits	Kassian -Midnight District Line (Original Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-161	deep_house	Chez Damier	I Never Knew Love - Made In Detroit Mix	229	A1	XQ6CXVrO3yk	504	Jonny Roberts	Chez Damier - I Never Knew Love (Made In Detroit Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-199	lofi_house	Katermurr	Stuck In The Loop	184	A1	cBVBBIcsBuM	386	Garage House TV	Katermurr - Stuck In The Loop (Original Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-304	house	Dennis Quin, Tony Sherman	Change Is Gonna Come - Edit	206	A1	UhCOdeNa4lQ	313	Suprematic Sounds	Dennis Quin - Change Is Gonna Come feat. Tony Sherman (Original Mix)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-333	lofi_house	Janeret	Scape - Edit	237	A1	CCMbd05jWCU	400	House Six	Janeret - Scape	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-hm-406	lofi_house	dj gummy bear	2 seater - house edit	148	A1	yrWz7QXatqw	302	runnerbean	2 seater (extended house edit) - dj gummy bear	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-hm-565	lofi_house	Jason Hersco, Saison	Smooth Jazz - Saison Rework	210	A1	TgzPhj1G_lY	361	VeryHouseMusic	Jason Hersco - Smooth Jazz (Saison's Extended Rework)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-hm-614	lofi_house	Arpy Brown	Vesta	263	A1	7cNzw6ulESI	371	Toy Tonics	Arpy Brown (fka Athlete Whippet) - Vesta (Extended Version)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-hm-662	house	Key To Life, Kathleen Murphy, Marc Cotterell	Find Our Way (Breakaway) - Marc Cotterell Plastik Factory Vox	214	A1	FE6d0UCppO8	394	Maslow Unknown	KEY TO LIFE FEAT KATHLEEN MURPHY - FIND OUR WAY (BREAKAWAY) (MARC COTTERELL PLASTIK FACTORY VOX)	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-hm-670	lofi_house	Janeret, Miroloja	Runnerblade	221	A1	OVad-MtzSi0	386	Music For The People	Janeret & Miroloja - Runnerblade [JMR001]	corte mais longo da mesma faixa ou da mesma mistura (o Spotify tem a edição curta)
+sp-elo-154	lofi_house	Cabin Luv Affair	Over Your Face	222	A2	fyM7H4_H-EE	367	Maslow Unknown	Cabin Luv Affair - Over Your Face [Cécille Records]	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-159	lofi_house	DJ Dove	Illusions	190	A2	3o0YT_Mxz6s	373	Slav	DJ Dove - Illusions	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-213	house	Leo Pol	Chantal	278	A2	FAid9ZYlzzU	421	IILE	Leo Pol - Chantal	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-235	deep_house	Berkson & What, Dan Berkson, James What	Ghosts	547	A2	1D4aywpWcls	270	Poker Flat Recordings	Berkson & What - Ghosts	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-251	house	Gusto	Disco's Revenge - Mole Hole Radio Edit	221	A2	XE-SffpE7Bc	381	Club iT Radio Amsterdam	Gusto - Disco's Revenge (Mole Hole Dirty Mix)	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-281	house	Todd Terry	Bounce 2 the Beat	253	A2	oASmgr4IpIk	384	oODJFriendlyOo	Bounce to the Beat - Todd Terry	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-elo-293	lofi_house	Job De Jong	Wonky	189	A2	5NOTu6kDjCU	365	Maslow Unknown	JOB DE JONG - WONKY [PIVLIM 008]	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-hm-480	lofi_house	Rioleval	Teebee03	238	A2	Ipeb_iO7sPY	427	Collected Compositions	Rioleval - Teebee03	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-hm-668	hypnotic_techno	Anja Schneider	Dubmission - 2021 Edit	186	A2	5EljZ3A5Cf8	398	mobilee	Anja Schneider - Dubmission - mobilee130	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-hm-696	lofi_house	Skeptic	All I Wanna Do	184	A2	cY4uUn911Zo	343	PRESSURE	Skeptic - All I Wanna Do	provável corte mais longo, mas sem marca de edição ou com mistura incerta
+sp-sun-026	reggae	Ibrahim Hesnawi, Suzan	Only World	285	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-sun-031	dub	S!RENE	Fela Dub	202	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-060	lofi_house	Djammin	Down Shovel	398	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-064	house	Stacie Fields	Mi Scusi	236	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-070	house	Isaac Carter, Biyi	Life We Live	330	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-071	house	Roy Davis Jr., Peven Everett	Gabriel - Words To Give By Mix	442	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-081	lofi_house	Tusabe	Cafe	201	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-086	lofi_house	Target Demographic, sunflwr	Pick it Up - Remix	263	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-095	lofi_house	Shikhar Sehgal	I WUD BE	165	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-098	lofi_house	Bellamy	it's a question of values (raw version)	235	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-114	lofi_house	Half Dead Dave	Don't Cry (It's OK to Cry)	298	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-120	lofi_house	Wuido	I Still Think About U	285	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-124	house	Simon Kidzoo	Listen Y'all	375	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-146	lofi_house	Roy Ford, Artist V, Tour-Maubourg	Victoria's Secrets - Tour-Maubourg 'All Night' Mix	427	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-153	lofi_house	Brooklyn Baby	Love Overdose	261	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-170	house	DJ Q	Optiumum Thinking	457	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-203	lofi_house	Sideluv	Seductive Healing	131	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-215	lofi_house	Kareem Ali	Devotion	216	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-219	house	The Housemaster Boyz, The Rude Boy of House	House Nation	492	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-220	house	Sir Nenis, Roby Howler	Don't Stop (Jagerverb Remix)	385	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-222	lofi_house	sensse	if it all goes away	157	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-227	lofi_house	clmbski	Moving Again	238	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-236	lofi_house	fka.m4a, Jay Jackson	Desires & Affirmations	390	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-257	lofi_house	Jadu Jadu	love sensation	248	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-267	lofi_house	DJ Hiro	Celerity Nova	330	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-270	house	Unus Emre	Jack Off	444	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-278	deep_house	Osunlade	ELYODCIRE	258	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-282	house	Aron Volta	Catch This	438	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-284	lofi_house	DEEP K.	Una Noche	236	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-288	house	Todd Terry	Sume Bah	238	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-290	lofi_house	Somersault	Ménage à Trois	346	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-309	house	REda daRE	Orgy Of The Dead	380	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-327	lofi_house	Demuja	Speaking In Tongues	313	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-328	lofi_house	Demuja	Wine And Cigarettes	496	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-345	breakbeat	Eden Burns	Yes You Sexy	321	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-350	deep_house	Jeigo	JTD	429	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-370	lofi_house	Earth Boys	BK Swing	219	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-376	lofi_house	awaitedfate	terminal	156	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-377	lofi_house	awaitedfate	eclipse	128	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-380	lofi_house	Sideluv	Her Name Was	200	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-383	deep_house	Satoshi Tomiie, Tomoki Tamura	Indian Summer - Radio Edit	256	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-415	house	Black Loops	Sex - Bonus Track	386	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-439	lofi_house	geneva	wtf is pimm’s (shortstuff)	147	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-474	lofi_house	LAMANT	hold on	130	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-475	lofi_house	LAMANT	figure u out	148	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-476	lofi_house	LAMANT	hold on speed up	115	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-500	lofi_house	vecher 1998	тоска	103	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-505	house	SHEE	Better Than All MC's	315	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-513	lofi_house	Shaolin Cowboy	I.S.W.A.D.I.B.H.A.F	294	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-522	lofi	vano1337	patra	181	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-523	lofi_house	Your friend daao	Trust	202	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-537	lofi_house	Odysseus	I Can't Be With U	127	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-541	lofi_house	Soulful-Cafe	Between These Speakers	123	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-549	lofi_house	sunflwr	miniature overture	257	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-569	house	BeenWell	Sour Strips - Extended Mix	261	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-573	lofi_house	Shaolin Cowboy	Glitch	389	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-584	lofi_house	Jesse Futerman	Vista	363	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-585	deep_house	Papa Soul, Soul Groove (UK)	Moody Type Love Pt. II - Soul Groove (UK) Radio Edit	283	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-588	lofi_house	Sajmoonn	From The Music Within You	239	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-592	lofi_house	Jason Hersco	Without U	312	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-598	lofi_house	FTRMNK	Be Alright	169	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-621	lofi_house	sunflwr	EO	170	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-632	lofi_house	Target Demographic	Keep Me	328	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-637	lofi_house	noir motif	through the hues	175	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-648	lofi_house	Paluma Sound	On The Record	263	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-682	deep_house	Flaze	Straight Home	364	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-684	house	Dale Howard	U & ME	180	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-695	lofi_house	geods sorèd	Hit Me Off	190	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-697	lofi_house	Jason Hersco	Roses Are Red	299	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-710	lofi_house	Brayden Potts	Dadian	139	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-hm-711	lofi_house	Froman, Lushed	IDK (Froman Edit)	306	nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-07	ragga_jungle	Arttu	Mic Check		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-14	ragga_jungle	Drez	Back 2 Basics Skepta Remix		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-15	dubstep	Drez	Shook Ones, Pt. 140		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-24	uk_garage	zacattacq, proc	Laser Beams		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-27	uk_garage	Realo	BON MOOD (Yunk Rework)		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-37	uk_garage	Gud Griff	Like		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sc-44	dubstep	Tawk	Cali Weed		nada					nenhum upload aceitável visível da nuvem; provavelmente só existe no canal Topic
+sp-elo-058	lofi_house	shaw00p, JBA	ok//wassup	174	errado					candidato errado: vídeo de fãs de 51 s
+sp-elo-088	lofi_house	Sweely	House Is Home	355	errado					candidato errado: vídeo mais curto que o Spotify, versão incerta
+sp-elo-108	lofi_house	Luca Olivotto	All Night - Edit	178	errado					candidato errado: mix de 72 min
+sp-elo-142	house	Mark Davis, George Morel	You're Special - Suburban Radio	247	errado					candidato errado: outra mistura (Morel's Groove Mix)
+sp-elo-152	house	Felipe Gordon	Strings of the Afterlife - Single Edit	224	errado					candidato errado: versão ao vivo
+sp-elo-277	house	Etzu Mahkayah, Anas M	Pass It - Anas M Remix Radio Version	195	errado					candidato errado: outra faixa (Hay)
+sp-elo-287	deep_house	Soundstream	Love Jam	490	errado					candidato errado: remix de Maceo Plex
+sp-elo-364	deep_house	Rick Wade	Deep -N- Dirty	359	errado					candidato errado: outra faixa (Deep Subliminal)
+sp-elo-368	lofi_house	upper class	SUNNY HOLIDAY	222	errado					candidato errado: EP inteiro
+sp-hm-453	lofi_house	sunflwr	are you feeling sad?	168	errado					candidato errado: outra versão (VIP Anniversary Edit)
+sp-hm-498	lofi_house	Loverground	Life is Only a Dream	211	errado					candidato errado: mix de 1 h
+sp-hm-545	lofi_house	Horatio Luna	Support Your Local	210	errado					candidato errado: episódio de vídeo, não a faixa
+sp-hm-629	lofi_house	Caramel Smooth Heaven	The Shallows	397	errado					candidato errado: álbum inteiro
+sp-jah-718	dub	Dubkasm, Aba Shanti	Jah Bible - Raw Mix	252	errado					candidato errado: outra faixa (Jah Victory)
+sp-hm-531	lofi_house	Mall Grab, Jordon Alexander	Feel You	390	duplicada					já no catálogo como «Feel U» (mesmo vídeo)
