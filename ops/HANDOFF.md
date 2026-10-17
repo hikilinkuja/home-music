@@ -55,6 +55,18 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
 - zoom das pinturas no computador: que ideias implementar (`ops/notes/2026-10-08/`, ficheiro 3);
 - uk_garage sem vizinho na tabela ADJ do motor: só entra por sorteio (ficheiro 5 das notas).
 
+## Pedidos de 2026-10-17 (por fazer; rede ainda bloqueada)
+
+- Duas playlists do Spotify para importar (ler o alinhamento e resolver cada faixa no YouTube pelo
+  protocolo; exige `open.spotify.com` ou outra via de leitura, e o YouTube, permitidos na rede):
+  `https://open.spotify.com/playlist/64QljzOrKONYxANZISTyLo` e
+  `https://open.spotify.com/playlist/3RLO0lFcl8D0wYzN32Fhbs`.
+- SoundCloud `on.soundcloud.com/qlz3ssIMuiOLfJq4PN`: não importada; a ligação responde «We can't
+  find that playlist» (privada ou apagada). Falta o endereço completo.
+- O Paulo vai rever as 475 faixas do Ishkur e retirar muitas: lista em
+  `ops/queue/ishkur-review-2026-10-17.tsv` (coluna `remove`). Retirar as marcadas com exclusão por
+  faixa e linha em `hold-*.tsv`, como a 2026-10-08.
+
 ## Próxima ronda (proposta)
 
 Sessão nova, a partir deste ficheiro. Ordem sugerida, uma ronda de cada vez, conforme as decisões
