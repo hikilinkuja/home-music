@@ -26,9 +26,24 @@ status:
   E   erro de rede ou bloqueio do YouTube
 Com target_secs, a duracao do video tem de ficar a menos de max(25 s, 18%) do alvo.
 
-Pesquisa: pagina de resultados do YouTube (ytInitialData); se falhar, yt-dlp
+Pesquisa, por esta ordem: YouTube Music, filtro de canções (pip install ytmusicapi; e a
+unica via que devolve os videos «Topic», as faixas oficiais com «Provided to YouTube»);
+depois a pagina de resultados do YouTube (ytInitialData); se falhar, yt-dlp
 (pip install yt-dlp). Cinco erros seguidos param o processo: provavel bloqueio,
 reportar ao Paulo em vez de insistir.
+
+Limite conhecido (2026-10-17): a partir dos servidores da nuvem (IP de centro de dados) o
+YouTube esconde todo o conteudo licenciado: a pesquisa do YouTube Music devolve zero cancoes,
+a pesquisa normal nao mostra videos «Topic» e as paginas desses canais vem vazias. O script
+avisa no fim quando nao viu nenhum «Topic». Duas saidas:
+  1. correr o script a partir de uma ligacao domestica (computador do Paulo, ou uma sessao
+     local do Claude Code), onde o YouTube Music funciona e a regiao e a de Portugal;
+  2. encontrar os videos «Topic» num motor de pesquisa externo e confirma-los com
+       python3 ops/tools/yt_resolve.py --verify ENTRADA.tsv SAIDA.tsv
+     onde ENTRADA.tsv tem as colunas de entrada mais video_id. A confirmacao usa o oEmbed do
+     YouTube (funciona da nuvem): devolve o canal e o titulo e falha (401) quando o video nao
+     pode ser incorporado. Nao da a duracao: a coluna secs fica vazia e a duracao nao e
+     verificada, o que o relatorio da volta tem de declarar.
 """
 import argparse
 import json
@@ -39,6 +54,7 @@ import re
 import sys
 import time
 import unicodedata
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -136,7 +152,52 @@ def search_ytdlp(query):
     return vids
 
 
+_YTM = []
+
+
+def search_ytmusic(query):
+    """Cancoes do YouTube Music. As faixas oficiais (videoType ATV) sao os videos «Topic»."""
+    from ytmusicapi import YTMusic  # pip install ytmusicapi
+    if not _YTM:
+        _YTM.append(YTMusic())
+    vids = []
+    for e in _YTM[0].search(query, filter="songs", limit=10) or []:
+        if not e.get("videoId"):
+            continue
+        names = [x.get("name", "") for x in e.get("artists") or [] if x.get("name")]
+        atv = e.get("videoType") == "MUSIC_VIDEO_TYPE_ATV"
+        channel = (names[0] + " - Topic") if (atv and names) else ", ".join(names)
+        vids.append({"vid": e["videoId"], "channel": channel,
+                     "title": e.get("title") or "", "secs": int(e.get("duration_seconds") or 0),
+                     "verified": False})
+    return vids
+
+
+SEEN = {"queries": 0, "topic": 0, "ytmusic": 0}
+
+
 def search(query):
+    SEEN["queries"] += 1
+    vids = []
+    if not (SEEN["queries"] > 15 and SEEN["ytmusic"] == 0):   # 15 vazias: IP sem catalogo
+        try:
+            vids = search_ytmusic(query)
+        except Exception:
+            vids = []
+    SEEN["ytmusic"] += len(vids)
+    try:
+        web = search_web(query)
+    except Exception:
+        if not vids:
+            raise
+        web = []
+    have = {v["vid"] for v in vids}
+    vids += [v for v in web if v["vid"] not in have]
+    SEEN["topic"] += sum(1 for v in vids if v["channel"].strip().endswith(" - Topic"))
+    return vids
+
+
+def search_web(query):
     try:
         return search_page(query)
     except Exception as first:
@@ -221,12 +282,28 @@ def score(c, artist, title, target):
     return s
 
 
+RX_TAIL = re.compile(r"\s+-\s+(?:\d{4}\s+)?(?:radio|single|original|extended|club|album|vocal|main)?"
+                     r"\s*(?:edit|mix|version|remaster(?:ed)?(?:\s+\d{4})?)\s*$", re.I)
+
+
+def simple_title(title):
+    """Titulo sem os sufixos de versao que o Spotify acrescenta («- Radio Edit», «- Original Mix»)
+    nem «feat.»; serve so para a consulta, a pontuacao continua a usar o titulo pedido."""
+    t = strip_paren(title)
+    t = RX_TAIL.sub("", t)
+    t = re.split(r"\s+(?:feat\.?|ft\.?)\s+", t, flags=re.I)[0]
+    return " ".join(t.split())
+
+
 def queries_for(row):
     artist, title, genre = row["artist"], strip_paren(row["title"]), row.get("genre", "")
     main = first_artist(artist)
     qs = [f"{artist} {title}"]
     if main != artist:
         qs.append(f"{main} {title}")
+    short = simple_title(title)
+    if short and short.lower() != title.lower():
+        qs.append(f"{main} {short}")
     hint = GENRE_HINT.get(genre)
     if hint:
         qs.append(f"{main} {title} {hint}")
@@ -287,7 +364,11 @@ def main():
     ap.add_argument("saida")
     ap.add_argument("--limit", type=int, default=0, help="maximo de faixas nesta chamada")
     ap.add_argument("--sleep", type=float, default=1.4, help="pausa entre pesquisas (s)")
+    ap.add_argument("--verify", action="store_true",
+                    help="confirmar por oEmbed os video_id da ENTRADA em vez de pesquisar")
     a = ap.parse_args()
+    if a.verify:
+        return verify_main(a)
 
     rows = read_tsv(a.entrada)
     done = set()
@@ -327,7 +408,52 @@ def main():
                 break
             time.sleep(a.sleep + random.random() * 0.6)
     print("resumo:", json.dumps(counts, ensure_ascii=False), flush=True)
+    if SEEN["queries"] >= 20 and SEEN["topic"] == 0:
+        print(f"AVISO: {SEEN['queries']} pesquisas sem nenhum video «Topic» (YouTube Music: "
+              f"{SEEN['ytmusic']} cancoes). Este IP nao ve o conteudo licenciado; ver o limite "
+              "conhecido no inicio do script.", flush=True)
     return 2 if errors >= 5 else 0
+
+
+def oembed(vid):
+    """(codigo HTTP, canal, titulo) do oEmbed; 401 = incorporacao proibida, 404 = nao existe."""
+    url = "https://www.youtube.com/oembed?" + urllib.parse.urlencode(
+        {"url": "https://www.youtube.com/watch?v=" + vid, "format": "json"})
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=20) as r:
+            d = json.loads(r.read().decode("utf-8", "replace"))
+        return 200, d.get("author_name", ""), d.get("title", "")
+    except urllib.error.HTTPError as e:
+        return e.code, "", ""
+
+
+def verify_main(a):
+    rows = [r for r in read_tsv(a.entrada) if r.get("video_id")]
+    if a.limit:
+        rows = rows[:a.limit]
+    counts = {}
+    with open(a.saida, "w", encoding="utf-8") as out:
+        out.write("\t".join(OUT_COLS) + "\n")
+        for row in rows:
+            vid = row["video_id"].strip()
+            code, ch, ti = oembed(vid)
+            target = int(float(row.get("target_secs") or 0) or 0)
+            if code != 200:
+                status = "M"
+                ch = {401: "oEmbed 401: incorporacao proibida", 404: "oEmbed 404: nao existe"}.get(
+                    code, f"oEmbed {code}")
+            else:
+                c = {"vid": vid, "channel": ch, "title": ti, "secs": target or 200, "verified": False}
+                s = score(c, row["artist"], row["title"], 0)
+                status = "S" + str(int(s)) if s >= 2 else "M"
+            counts[status] = counts.get(status, 0) + 1
+            vals = [row.get("key"), row.get("genre"), row.get("artist"), row.get("title"),
+                    row.get("year"), status, vid, ch, "", ti, row.get("node"), "oembed"]
+            out.write("\t".join(clean(v) for v in vals) + "\n")
+            print(f"{status} {row.get('artist')} :: {row.get('title')} -> {vid} [{ch}] {ti}", flush=True)
+            time.sleep(0.3)
+    print("resumo:", json.dumps(counts, ensure_ascii=False), flush=True)
+    return 0
 
 
 if __name__ == "__main__":

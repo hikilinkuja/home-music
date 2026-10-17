@@ -123,5 +123,13 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 
 O ambiente da nuvem tem de permitir: `www.youtube.com`, `youtube.com`, `i.ytimg.com`,
 `music.ishkur.com`, `hikilinkuja.github.io`, além da lista por omissão (PyPI, GitHub).
-Ferramentas Python: `pip install -q yt-dlp` no início da sessão. Se o YouTube bloquear os
-pedidos vindos da nuvem, parar e reportar ao Paulo; nunca inventar videoIds.
+Ferramentas Python: `pip install -q yt-dlp ytmusicapi` no início da sessão. Se o YouTube
+bloquear os pedidos vindos da nuvem, parar e reportar ao Paulo; nunca inventar videoIds.
+
+Limite verificado a 2026-10-17: vista da nuvem (IP de centro de dados), o YouTube esconde todo o
+conteúdo licenciado. A pesquisa não mostra vídeos «Topic», o YouTube Music devolve zero canções
+(também em `music.youtube.com`) e as páginas dos canais «Topic» vêm vazias. Por isso, da nuvem,
+o resolvedor só encontra S3 e S2. Para obter «Topic»: correr `ops/tools/yt_resolve.py` numa
+ligação doméstica (sessão local do Claude Code no computador do Paulo, ou o próprio Paulo), ou
+confirmar com `yt_resolve.py --verify` videoIds achados num motor de pesquisa externo (o oEmbed
+funciona da nuvem e recusa vídeos que não se podem incorporar).
