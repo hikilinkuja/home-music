@@ -1,0 +1,448 @@
+{
+  "reviewed": "2026-10-18",
+  "note": "Evidence base for the focus room and for its future 'why?' panel. Text in English (site language). Each entry: what the room does or should do, what research found, how strong the evidence is, sources, what is still unknown, and how the listener can override it. status: 'in room' (live in v4.9), 'proposed' (not built). Paraphrases only; no quotations.",
+  "levels": {
+    "strong": "several meta-analyses or many consistent experiments",
+    "moderate": "a meta-analysis with caveats, or several experiments that agree",
+    "weak": "one study, small samples, or mixed results",
+    "design": "our own choice or an inference, not tested directly",
+    "contested": "studies disagree or a key result failed to replicate"
+  },
+  "entries": [
+    {
+      "id": "blocks-and-breaks",
+      "status": "in room",
+      "decision": "Work in timed blocks with planned breaks.",
+      "finding": "Three trials with students compared fixed Pomodoro-style breaks with breaks taken at will. Output was the same in all three. Mood went both ways: one trial favoured fixed breaks (less fatigue, more focus), two favoured breaks taken at will.",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Biwer, Wiradhany, oude Egbrink & de Bruin (2023), British Journal of Educational Psychology", "doi": "10.1111/bjep.12593" },
+        { "cite": "Smits, Wenzel & de Bruin (2025), Behavioral Sciences", "doi": "10.3390/bs15070861" },
+        { "cite": "Goksu, Wiradhany & de Bruin (2026), Behavioral Sciences", "url": "https://www.mdpi.com/2076-328X/16/7/1158" }
+      ],
+      "unknown": "No trial has tested 50-minute blocks, or the long break after the 3rd versus the 4th block.",
+      "yourCall": "Change the block length in Settings; use +5 min when you are in the middle of something."
+    },
+    {
+      "id": "break-length",
+      "status": "in room",
+      "decision": "Breaks last a fifth of the block (5 min after 25, 10 after 50).",
+      "finding": "A meta-analysis of 22 studies found that short breaks raise energy and lower fatigue. Longer breaks brought larger gains in performance, and demanding tasks may need breaks longer than 10 minutes.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Albulescu et al. (2022), PLOS ONE", "doi": "10.1371/journal.pone.0272460" }
+      ],
+      "unknown": "The one-fifth rule itself is our choice, borrowed from the 'Flowtime' idea; it has not been tested against fixed 5-minute breaks.",
+      "yourCall": "Use +5 min of work or the breathing break; a longer block gives a longer break."
+    },
+    {
+      "id": "guided-break",
+      "status": "in room",
+      "decision": "During breaks the music stops, water sounds come in, and the room invites you to leave the screen.",
+      "finding": "Looking at greenery for 40 seconds reduced attention errors. In a 2024 experiment, a nature break restored energy fully, while a social-media break restored less than doing nothing. Nature sounds improved attention compared with city sounds, and staying in office noise during a break lowered motivation.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Lee et al. (2015), Journal of Environmental Psychology", "doi": "10.1016/j.jenvp.2015.04.003" },
+        { "cite": "Social media during microbreaks (2024), 308 workers", "pmid": "39284901" },
+        { "cite": "Van Hedger et al. (2019), Psychonomic Bulletin & Review", "doi": "10.3758/s13423-018-1539-1" },
+        { "cite": "Jahncke et al. (2011), Journal of Environmental Psychology", "url": "https://www.sciencedirect.com/science/article/pii/S0272494411000429" }
+      ],
+      "unknown": "Birdsong may restore more than rain; the room only has rain for now.",
+      "yourCall": "Play music during the break if you want; the play button always works."
+    },
+    {
+      "id": "plus-five",
+      "status": "in room",
+      "decision": "A soft end: the music fades in the last minute and +5 min is offered instead of a hard stop.",
+      "finding": "A rigid timer can cut into a good stretch of work. Breaks taken at will were not worse for output in the trials above. People also tend to go back to tasks left unfinished (about two thirds of the time across 21 publications).",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Smits, Wenzel & de Bruin (2025)", "doi": "10.3390/bs15070861" },
+        { "cite": "Ghibellini & Meier (2025), Humanities and Social Sciences Communications", "doi": "10.1057/s41599-025-05000-w" }
+      ],
+      "unknown": "How often +5 min helps rather than delays a needed rest.",
+      "yourCall": "Ignore it and the break starts on its own."
+    },
+    {
+      "id": "where-you-stopped",
+      "status": "in room",
+      "decision": "At each break, write where you stopped and what comes next; the room shows it when you return.",
+      "finding": "When people switch tasks, part of their attention stays behind. Writing a quick plan for returning reduced that leftover attention and improved the next task in four studies. Making a concrete plan for an unfinished goal also stopped it from intruding on reading.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Leroy (2009), Organizational Behavior and Human Decision Processes", "doi": "10.1016/j.obhdp.2009.04.002" },
+        { "cite": "Leroy & Glomb (2018), Organization Science", "doi": "10.1287/orsc.2017.1184" },
+        { "cite": "Masicampo & Baumeister (2011), Journal of Personality and Social Psychology", "doi": "10.1037/a0024192" }
+      ],
+      "unknown": "The studies measured the next task, not the return to the interrupted one.",
+      "yourCall": "Leave it empty if you prefer."
+    },
+    {
+      "id": "intention",
+      "status": "in room",
+      "decision": "Name what you are working on before you begin.",
+      "finding": "Plans that say when, where and how to act ('if X, then I will Y') helped people reach goals in a meta-analysis of 94 tests. Later meta-analyses found smaller but still positive effects.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Gollwitzer & Sheeran (2006), Advances in Experimental Social Psychology", "doi": "10.1016/S0065-2601(06)38002-1" }
+      ],
+      "unknown": "A one-line intention is weaker than a full if-then plan; the if-then form is proposed for a later round.",
+      "yourCall": "Optional."
+    },
+    {
+      "id": "no-lyrics-for-words",
+      "status": "in room",
+      "decision": "For reading, studying and writing, no sung words.",
+      "finding": "Background music on average neither helps nor harms, but it disturbs reading and slightly harms memory. A reading meta-analysis found a small cost, larger with lyrics. In a Porto study, songs with lyrics hurt verbal memory, visual memory and reading. Liked songs with lyrics hurt as much as disliked ones.",
+      "strength": "strong",
+      "sources": [
+        { "cite": "Kämpfe, Sedlmeier & Renkewitz (2011), Psychology of Music", "doi": "10.1177/0305735610376261" },
+        { "cite": "Souza & Barbosa (2023), Journal of Cognition", "doi": "10.5334/joc.273" },
+        { "cite": "Perham & Currie (2014), Applied Cognitive Psychology", "doi": "10.1002/acp.2994" },
+        { "cite": "Perham & Vizard (2011), Applied Cognitive Psychology", "doi": "10.1002/acp.1731" }
+      ],
+      "unknown": "Genres are a rough proxy: some tracks in instrumental genres have voices. Tagging tracks with vocals is proposed.",
+      "yourCall": "Switch the music on in Settings; the choice is yours."
+    },
+    {
+      "id": "your-own-instrumental",
+      "status": "proposed",
+      "decision": "Your own preferred instrumental music is fine, even for reading.",
+      "finding": "Lo-fi instrumental neither helped nor hurt in the Porto study. Students reading with the music they normally study to did as well as in silence, and only music they did not like lowered comprehension. Self-chosen music increased time on task and reduced mind-wandering in attention tasks. In a five-week field study of software developers, mood and work quality were lowest without music.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Souza & Barbosa (2023)", "doi": "10.5334/joc.273" },
+        { "cite": "Johansson et al. (2012), Psychology of Music", "doi": "10.1177/0305735610387777" },
+        { "cite": "Kiss & Linnell (2021), Psychological Research", "doi": "10.1007/s00426-020-01400-6" },
+        { "cite": "Kiss & Linnell (2023), Psychological Research", "doi": "10.1007/s00426-023-01836-6" },
+        { "cite": "Lesiuk (2005), Psychology of Music", "doi": "10.1177/0305735605050650" }
+      ],
+      "unknown": "Most studies use short lab sessions; silence is never beaten on accuracy.",
+      "yourCall": "Pick your sound profile per scene; the room remembers it."
+    },
+    {
+      "id": "energy-matches-task",
+      "status": "proposed",
+      "decision": "Energetic music for simple or routine work; calm, soft music for complex work.",
+      "finding": "Music lifts arousal and mood, which can help performance. Fast and loud music hurt reading comprehension, and salient music helped a simple task but hurt a complex one. Introverts were more disturbed than extraverts in several studies.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Thompson, Schellenberg & Husain (2001), Psychological Science", "doi": "10.1111/1467-9280.00345" },
+        { "cite": "Husain, Thompson & Schellenberg (2002), Music Perception", "doi": "10.1525/mp.2002.20.2.151" },
+        { "cite": "Thompson, Schellenberg & Letnic (2012), Psychology of Music", "doi": "10.1177/0305735611400173" },
+        { "cite": "Gonzalez & Aiello (2019), Journal of Experimental Psychology: Applied" },
+        { "cite": "Furnham & Bradley (1997), Applied Cognitive Psychology", "doi": "10.1002/(SICI)1099-0720(199710)11:5<445::AID-ACP472>3.0.CO;2-R" }
+      ],
+      "unknown": "Where liquid drum and bass or minimal psytrance sit on this scale has not been studied.",
+      "yourCall": "Choose the profile; the experiment mode can test it on you."
+    },
+    {
+      "id": "steady-over-changing",
+      "status": "proposed",
+      "decision": "Prefer steady, repetitive music to busy, changing music.",
+      "finding": "Sounds that change from moment to moment disturb working memory more than steady ones. The disturbance shrank markedly after people heard the same material several times. Tempo changes inside music added harm.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Röer, Bell & Buchner (2014), Memory & Cognition", "doi": "10.3758/s13421-013-0381-y" },
+        { "cite": "Bell, Röer, Dentale & Buchner (2012), Journal of Experimental Psychology: Learning, Memory, and Cognition", "doi": "10.1037/a0028459" },
+        { "cite": "Irrelevant music, tempo and mode (2020)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7381464" }
+      ],
+      "unknown": "Applying this to whole genres (minimal versus breakbeat) is our inference.",
+      "yourCall": "Any profile can be chosen."
+    },
+    {
+      "id": "no-coloured-noise",
+      "status": "in room",
+      "decision": "No white, pink or brown noise by default.",
+      "finding": "In a meta-analysis, white or pink noise gave a small benefit to people with ADHD (attention-deficit/hyperactivity disorder) and a small cost to everyone else. No studies of brown noise were found.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Nigg et al. (2024), Journal of the American Academy of Child & Adolescent Psychiatry", "doi": "10.1016/j.jaac.2023.12.014" }
+      ],
+      "unknown": "Whether rain behaves like white noise for these effects.",
+      "yourCall": "Rain is available at any level."
+    },
+    {
+      "id": "water-sounds",
+      "status": "in room",
+      "decision": "Rain as an optional cover for room noise, and in breaks.",
+      "finding": "A steady water sound masked office speech better than music or noise, for both performance and satisfaction. Across studies, natural sounds lowered stress, with water sounds showing the largest benefit to mood and health.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Haapakangas et al. (2011), Acta Acustica united with Acustica" },
+        { "cite": "Buxton et al. (2021), PNAS", "doi": "10.1073/pnas.2013097118" }
+      ],
+      "unknown": "Reading with nature sounds has not been tested directly.",
+      "yourCall": "Turn rain up, down or off."
+    },
+    {
+      "id": "moderate-noise-creative",
+      "status": "in room",
+      "decision": "The Create scene uses moderate ambient sound.",
+      "finding": "Moderate ambient noise (about 70 dB) improved creative tasks compared with quiet (50 dB); loud noise (85 dB) hurt.",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Mehta, Zhu & Cheema (2012), Journal of Consumer Research", "doi": "10.1086/665048" }
+      ],
+      "unknown": "One paper (five experiments); the room cannot measure your actual volume.",
+      "yourCall": "Lower the rain if it bothers you."
+    },
+    {
+      "id": "phone-away",
+      "status": "in room",
+      "decision": "Phone on silent and out of sight before you begin.",
+      "finding": "A notification alone, even unanswered, disrupted an attention task about as much as using the phone. Whether the mere presence of a phone drains attention is contested: a direct replication failed, one meta-analysis found an effect and another found it only for working memory.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Stothart, Mitchum & Yehnert (2015), Journal of Experimental Psychology: Human Perception and Performance", "doi": "10.1037/xhp0000100" },
+        { "cite": "Ruiz Pardo & Minda (2022), Acta Psychologica", "doi": "10.1016/j.actpsy.2022.103717" },
+        { "cite": "Böttger, Poschik & Zierer (2023), Behavioral Sciences", "doi": "10.3390/bs13090751" },
+        { "cite": "Parry (2023), Media Psychology", "doi": "10.1080/15213269.2023.2286647" }
+      ],
+      "unknown": "Running this room on the phone keeps the phone in sight; a computer is better.",
+      "yourCall": "Your phone, your rules."
+    },
+    {
+      "id": "blockers",
+      "status": "proposed",
+      "decision": "Suggest blocking distracting sites during a session.",
+      "finding": "In a field study of 32 office workers, blocking sites raised self-rated focus and productivity, most for those prone to social media. Some then worked longer without physical breaks and felt more stressed.",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Mark, Czerwinski & Iqbal (2018), CHI", "doi": "10.1145/3173574.3173666" }
+      ],
+      "unknown": "Effects on output were self-reported.",
+      "yourCall": "A tip, not a rule; the guided break covers the stress risk."
+    },
+    {
+      "id": "minutes-only",
+      "status": "in room",
+      "decision": "Show minutes, not seconds, while you focus.",
+      "finding": "New motion or sudden change on a screen draws the eye, while steady motion does not. Felt time pressure lowered creative thinking in a large diary study, even though people felt more creative.",
+      "strength": "design",
+      "sources": [
+        { "cite": "Abrams & Christ (2003), Psychological Science", "doi": "10.1111/1467-9280.01458" },
+        { "cite": "Amabile, Hadley & Kramer (2002), Harvard Business Review", "pmid": "12195920" }
+      ],
+      "unknown": "No study has tested a seconds counter in a focus timer.",
+      "yourCall": "Hover over the ring to see the seconds."
+    },
+    {
+      "id": "slow-background",
+      "status": "in room",
+      "decision": "A slow, continuous background, with no sudden events during a block.",
+      "finding": "The start of a motion captures attention; ongoing motion does not.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Abrams & Christ (2003)", "doi": "10.1111/1467-9280.01458" }
+      ],
+      "unknown": "The radio's backgrounds pulse with the hidden broadcast; their effect is untested.",
+      "yourCall": "Choose 'off' for a near-black screen."
+    },
+    {
+      "id": "read-in-light-mode",
+      "status": "proposed",
+      "decision": "The room is dark, but read your own material as dark text on a light background.",
+      "finding": "Proofreading and legibility were better with dark text on light backgrounds, for younger and older adults, in any room lighting, and more so with small text.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Buchner & Baumgartner (2007), Ergonomics", "doi": "10.1080/00140130701306413" },
+        { "cite": "Piepenbrock, Mayr, Mund & Buchner (2013), Ergonomics", "doi": "10.1080/00140139.2013.790485" },
+        { "cite": "Piepenbrock, Mayr & Buchner (2014), Human Factors", "doi": "10.1177/0018720813515509" }
+      ],
+      "unknown": "The room itself holds little text, so its dark design is a mood choice.",
+      "yourCall": "A tip."
+    },
+    {
+      "id": "breathing",
+      "status": "in room",
+      "decision": "Optional slow breathing, 1 or 3 minutes, at the door or in a break.",
+      "finding": "Slow breathing (about six breaths a minute) raised the calming branch of heart-rate variability during and right after a single session, across 223 studies. Five minutes a day improved mood more than mindfulness meditation in one trial.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Laborde et al. (2022), Neuroscience & Biobehavioral Reviews", "doi": "10.1016/j.neubiorev.2022.104711" },
+        { "cite": "Balban et al. (2023), Cell Reports Medicine", "pmid": "36630953" }
+      ],
+      "unknown": "No evidence that a minute of breathing improves the focus that follows.",
+      "yourCall": "Off by default; turn it on in Settings."
+    },
+    {
+      "id": "same-door",
+      "status": "proposed",
+      "decision": "The same short start sequence every time, so opening the room becomes a habit.",
+      "finding": "Repeating a behaviour in the same context makes it automatic. The median was 66 days (range 18 to 254), and missing a single day did not derail it. A 2024 review puts typical habit formation at two to five months, not 21 days.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Lally et al. (2010), European Journal of Social Psychology", "doi": "10.1002/ejsp.674" },
+        { "cite": "Singh et al. (2024), Healthcare", "doi": "10.3390/healthcare12232488" }
+      ],
+      "unknown": "Habit studies used health behaviours, not focused work.",
+      "yourCall": "Skip any step you do not want."
+    },
+    {
+      "id": "music-as-reward",
+      "status": "in room",
+      "decision": "Some music plays only in the focus room (lo-fi), tying something you enjoy to the work.",
+      "finding": "Keeping a pleasure (gripping audiobooks) only for the gym raised gym visits by about half at first, fading over weeks. A follow-up with 6,792 people found a lasting 10 to 14% increase.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Milkman, Minson & Volpp (2014), Management Science", "doi": "10.1287/mnsc.2013.1784" },
+        { "cite": "Kirgios et al. (2020), Organizational Behavior and Human Decision Processes", "url": "https://www.sciencedirect.com/science/article/pii/S074959782030385X" }
+      ],
+      "unknown": "Tested for exercise, not for desk work.",
+      "yourCall": "None needed."
+    },
+    {
+      "id": "fresh-start",
+      "status": "proposed",
+      "decision": "Mark new beginnings (a new week, a new month) at the door.",
+      "finding": "Goal-related behaviour rises after time landmarks such as a new week, month or birthday, in field data and in experiments; framing a future date as a fresh start raised later savings in a field experiment.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Dai, Milkman & Riis (2014), Management Science", "doi": "10.1287/mnsc.2014.1901" },
+        { "cite": "Dai, Milkman & Riis (2015), Psychological Science", "pmcid": "PMC4839284" }
+      ],
+      "unknown": "Effects for daily focus sessions are untested.",
+      "yourCall": "A quiet line, nothing more."
+    },
+    {
+      "id": "progress-log",
+      "status": "proposed",
+      "decision": "Keep a record of the blocks you complete.",
+      "finding": "Across 138 experiments, monitoring progress helped people reach goals, more so when progress was physically recorded.",
+      "strength": "strong",
+      "sources": [
+        { "cite": "Harkin et al. (2016), Psychological Bulletin", "doi": "10.1037/bul0000025" }
+      ],
+      "unknown": "Whether counting blocks is a good measure of progress for every kind of work.",
+      "yourCall": "The log stays in your browser."
+    },
+    {
+      "id": "no-punishing-streaks",
+      "status": "proposed",
+      "decision": "Show totals, not fragile streaks; allow a missed day to be repaired.",
+      "finding": "Seeing an intact streak increased engagement; seeing a broken one reduced it, and the drop was smaller when the streak could be repaired.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Silverman & Barasch (2023), Journal of Consumer Research", "doi": "10.1093/jcr/ucac029" }
+      ],
+      "unknown": "Long-term effects of streak displays on wellbeing.",
+      "yourCall": "Hide the counts if you prefer."
+    },
+    {
+      "id": "explain-the-why",
+      "status": "proposed",
+      "decision": "Explain every choice, with sources.",
+      "finding": "Giving a meaningful reason increased engagement, perceived autonomy, task value and performance (small to moderate effects across 23 experiments), most for uninteresting tasks. Reasons, acknowledged feelings and real choice helped people take on rules as their own.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Steingut, Patall & Trimble (2017), Motivation Science", "doi": "10.1037/mot0000039" },
+        { "cite": "Deci, Eghrari, Patrick & Leone (1994), Journal of Personality", "doi": "10.1111/j.1467-6494.1994.tb00797.x" }
+      ],
+      "unknown": "The same meta-analysis found a slight drop in perceived competence; tone matters.",
+      "yourCall": "Read as much or as little as you like."
+    },
+    {
+      "id": "few-choices",
+      "status": "in room",
+      "decision": "Few visible choices at the door; the rest in Settings.",
+      "finding": "Choice raised intrinsic motivation, with diminishing returns beyond about five options. Whether more options overwhelm depends on how complex and difficult the choice is.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Patall, Cooper & Robinson (2008), Psychological Bulletin" },
+        { "cite": "Chernev, Böckenholt & Goodman (2015), Journal of Consumer Psychology", "doi": "10.1016/j.jcps.2014.08.002" }
+      ],
+      "unknown": "Six scenes plus 'My last' is already at the edge.",
+      "yourCall": "None needed."
+    },
+    {
+      "id": "light-gamification",
+      "status": "proposed",
+      "decision": "Light touches of progress, no points or leaderboards.",
+      "finding": "Gamification had small positive effects on learning; effects on motivation and behaviour were less stable in rigorous studies.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Sailer & Homner (2020), Educational Psychology Review", "doi": "10.1007/s10648-019-09498-w" }
+      ],
+      "unknown": "Effects outside education.",
+      "yourCall": "None needed."
+    },
+    {
+      "id": "best-hours",
+      "status": "proposed",
+      "decision": "Suggest doing hard work at your own best time of day.",
+      "finding": "A 2025 review found better performance at a person's preferred time of day in about 45% of studies with young adults and 83% with older adults, mostly for attention, inhibition and memory.",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Chauhan et al. (2025), Chronobiology International", "doi": "10.1080/07420528.2025.2490495" }
+      ],
+      "unknown": "Effect sizes vary; your own log is a better guide.",
+      "yourCall": "A tip."
+    },
+    {
+      "id": "daily-cap",
+      "status": "proposed",
+      "decision": "A gentle note after about four hours of focused blocks in a day.",
+      "finding": "Older training studies cited in the deliberate-practice literature found no extra benefit beyond about four hours a day and smaller gains beyond two.",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Ericsson, Krampe & Tesch-Römer (1993), Psychological Review", "doi": "10.1037/0033-295X.100.3.363" }
+      ],
+      "unknown": "Not tested for modern knowledge work.",
+      "yourCall": "Dismiss it."
+    },
+    {
+      "id": "easy-start",
+      "status": "proposed",
+      "decision": "Make starting easy: one tap to continue where you stopped, and a smallest-next-step prompt.",
+      "finding": "Across 691 correlations, procrastination is most strongly linked to how unpleasant a task feels, low confidence and impulsiveness; reducing aversiveness and setting goals helps. Interventions do reduce procrastination, cognitive-behavioural ones most.",
+      "strength": "strong",
+      "sources": [
+        { "cite": "Steel (2007), Psychological Bulletin", "doi": "10.1037/0033-2909.133.1.65" },
+        { "cite": "van Eerde & Klingsieck (2018), Educational Research Review", "doi": "10.1016/j.edurev.2018.09.002" }
+      ],
+      "unknown": "A room cannot do therapy; it can only lower the cost of starting.",
+      "yourCall": "Skip the prompt."
+    },
+    {
+      "id": "personal-experiment",
+      "status": "proposed",
+      "decision": "Let each listener test sound profiles on themselves.",
+      "finding": "Single-person trials alternate conditions in a planned or random order over several periods (at least four, often six to eight) and compare outcomes within the same person. Randomising or counterbalancing the order protects against trends over time.",
+      "strength": "moderate",
+      "sources": [
+        { "cite": "Kravitz & Duan, eds. (2014), Design and Implementation of N-of-1 Trials: A User's Guide, AHRQ", "url": "https://effectivehealthcare.ahrq.gov/products/n-1-trials/research-2014-5" },
+        { "cite": "Duan, Kravitz & Schmid (2013), Journal of Clinical Epidemiology", "url": "https://www.sciencedirect.com/science/article/pii/S089543561300156X" }
+      ],
+      "unknown": "Without blinding, expectations count; self-rated focus can differ from real performance.",
+      "yourCall": "Opt in or out at any time."
+    },
+    {
+      "id": "co-presence",
+      "status": "not planned",
+      "decision": "No 'others are focusing now' counter for now.",
+      "finding": "The presence of others has small effects: simple tasks speed up, complex ones can suffer. Claims for virtual co-working come mostly from company surveys, not trials.",
+      "strength": "weak",
+      "sources": [
+        { "cite": "Bond & Titus (1983), Psychological Bulletin", "pmid": "6356198" }
+      ],
+      "unknown": "Would need a server; the site is static.",
+      "yourCall": "None."
+    }
+  ],
+  "myths": [
+    { "claim": "Work in 90-minute cycles because the brain runs on them.", "verdict": "Not supported for waking performance when analysed conservatively.", "sources": [{ "cite": "Neubauer & Freudenthaler (1995), Biological Psychology", "doi": "10.1016/0301-0511(95)05121-P" }] },
+    { "claim": "Lo-fi boosts studying.", "verdict": "Lo-fi instrumental neither helped nor hurt on average; it is fine if you like it.", "sources": [{ "cite": "Souza & Barbosa (2023)", "doi": "10.5334/joc.273" }] },
+    { "claim": "Brown noise helps everyone focus.", "verdict": "No studies of brown noise; white and pink noise helped people with ADHD a little and slightly hurt others.", "sources": [{ "cite": "Nigg et al. (2024)", "doi": "10.1016/j.jaac.2023.12.014" }] },
+    { "claim": "A habit takes 21 days.", "verdict": "Typical estimates are two to five months, with wide variation.", "sources": [{ "cite": "Singh et al. (2024)", "doi": "10.3390/healthcare12232488" }] },
+    { "claim": "Pomodoro makes you more productive.", "verdict": "No difference in output in the trials so far; it may help some people's mood.", "sources": [{ "cite": "Biwer et al. (2023); Smits et al. (2025); Goksu et al. (2026)" }] },
+    { "claim": "Music you love cannot distract you.", "verdict": "Liked and disliked songs disrupted memory and reading alike when they had words.", "sources": [{ "cite": "Perham & Vizard (2011); Perham & Currie (2014)" }] },
+    { "claim": "Unfinished tasks stick in memory (the Zeigarnik effect).", "verdict": "The memory advantage did not hold up in a meta-analysis; the urge to resume unfinished tasks did.", "sources": [{ "cite": "Ghibellini & Meier (2025)", "doi": "10.1057/s41599-025-05000-w" }] },
+    { "claim": "Binaural beats sharpen focus while you work.", "verdict": "Two meta-analyses report medium effects, but results conflict, and effects were stronger when listening before a task than during it.", "sources": [{ "cite": "Garcia-Argibay, Santed & Reales (2019), Psychological Research", "doi": "10.1007/s00426-018-1066-8" }, { "cite": "Basu & Banerjee (2023), Psychological Research", "doi": "10.1007/s00426-022-01706-7" }] },
+    { "claim": "There is an exact best room temperature for work (about 22 °C).", "verdict": "An older analysis found a peak near 22 °C; a 2021 meta-analysis of 35 studies found no clear relationship between 20 and 30 °C. Be comfortable.", "sources": [{ "cite": "Seppänen, Fisk & Lei (2006), LBNL", "url": "https://indoor.lbl.gov/publications/effect-temperature-task-performance" }, { "cite": "Meta-analysis of 35 studies (2021), Building and Environment", "url": "https://www.sciencedirect.com/science/article/pii/S036013232100439X" }] }
+  ],
+  "retracted": [
+    { "cite": "Brooks et al. (2016), 'Rituals improve performance by decreasing anxiety', OBHDP", "doi": "10.1016/j.obhdp.2016.07.004", "status": "retracted in 2024 after a data audit", "consequence": "We do not claim that rituals improve performance; the start sequence is justified by habit research instead." },
+    { "cite": "Tian et al. (2018), 'Enacting rituals to improve self-control', JPSP", "doi": "10.1037/pspa0000113", "status": "retracted in 2024", "consequence": "Not used." }
+  ]
+}
