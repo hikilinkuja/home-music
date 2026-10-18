@@ -13,7 +13,8 @@
 - Correção minha: o «Kill the bass» aceso não falhava o contraste (a regra verde perdia por especificidade e
   o botão saía dourado); a regra passou a ganhar e o botão sai verde, com texto creme.
 - Teste `t-ui.js` alargado (43 verificações); confirmado que falha 7 contra a versão anterior.
-- Testes: RESULTADO
+- Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
+  ads 71, ui 43); `build.sh` com validação OK.
 
 ## 2026-10-18: auditoria de UI, ronda 2 (cores), proposta (sessão Claude Code na nuvem)
 
