@@ -20,7 +20,8 @@
 - Correção minha: na proposta escrevi que nenhum texto citava o AllMusic; oito textos antigos do catálogo
   citam-no. Os créditos dizem por isso «draw mainly on» e não «come from».
 - Teste `ops/tests/t-ui.js` alargado (34 verificações).
-- Testes: RESULTADO
+- Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
+  ads 71, ui 34); `build.sh` com validação OK.
 
 ## 2026-10-18: v5.3, auditoria de UI, correções da ronda 0 e proposta da ronda 1 (sessão Claude Code na nuvem)
 
