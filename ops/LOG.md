@@ -1,5 +1,18 @@
 # Registo das voltas
 
+## 2026-10-18: v4.5, textos específicos e com fonte para as faixas (sessão Claude Code na nuvem)
+
+- Regra nova no `CLAUDE.md`: texto `b` específico de cada faixa, só com factos de fonte
+  verificável, fonte registada em `ops/queue/blurb-sources.tsv`; obrigatória nas importações.
+- Reescritos 724 dos 1236 textos genéricos (opção 1 do Paulo: história quando documentada, factos
+  da edição nos outros casos). Fontes: Discogs (edição confirmada pelo alinhamento) em 685, mais
+  39 artigos da Wikipédia. Os 149 textos que já eram específicos ficaram como estavam.
+- Ficam genéricos 512 (lofi_house 229, deep_house 59, house 58, reggae 31, dub 23 e outros):
+  sem edição no Discogs, correspondência errada (afastada à mão) ou só digitais sem informação.
+- Revisão de cada lote contra a regra: corrigidos cerca de 60 textos que tinham inferências
+  («first release» deduzido do catálogo, «his own label», nomes verdadeiros de memória).
+- Ferramentas em `ops/tools/blurbs/` (README com o procedimento).
+
 ## 2026-10-18: ensaio dos anúncios, leitor escondido contra visível (sessão local do Claude Code, sem publicação)
 
 - Pedido do Paulo: antes de corrigir o motor, medir se o disco seguinte, pré-carregado mudo num leitor

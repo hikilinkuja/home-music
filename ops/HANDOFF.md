@@ -134,6 +134,13 @@ leitor parado no zero):
 Depois de publicar, confirmar numa ligação doméstica com `ops/tools/yt_ads_probe.py` (adaptado à
 sala) ou pelo registo `?dev` do Paulo.
 
+## Textos das faixas (2026-10-18)
+
+- Feito: 724 textos com fonte (v4.5). Ficam 512 genéricos, sobretudo lofi_house das playlists do
+  Spotify, por falta de fonte; uma volta futura pode tentar o Bandcamp ou o Resident Advisor
+  (este último recusa pedidos da nuvem, código 403).
+- Cada importação passa a escrever os textos das faixas novas: `ops/tools/blurbs/README.md`.
+
 ## Próxima ronda (proposta)
 
 Sessão nova, a partir deste ficheiro. Ordem sugerida, uma ronda de cada vez, conforme as decisões
