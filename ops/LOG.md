@@ -15,7 +15,8 @@
   do `CLAUDE.md` sobre a cópia antiga saiu.
 - Ronda 1: proposta em `ops/notes/2026-10-18/ui-terms.md` (15 termos com alternativas e comprimentos,
   correções factuais do painel The Sound, texto do «Suggest a tune»). Nada implementado até à escolha.
-- Testes: ver a linha de resultado no fim desta entrada.
+- Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
+  ads 71, ui 16); `build.sh` com validação OK.
 
 ## 2026-10-18: auditoria de UI e UX da liquid, ronda 0 (sessão Claude Code na nuvem)
 
