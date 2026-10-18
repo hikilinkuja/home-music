@@ -28,6 +28,8 @@
   e a porta compacta-se em ecrãs até 1100 de altura (Begin e ajustes lado a lado).
 - Testes: `t-focus` com 121 verificações (eram 63). Bateria completa a passar: gate 7, rain 5,
   focus 121, devlog 10, intro 5, ritual 14, ads 71; art saltado (falta o ffmpeg neste Mac).
+- Publicado num commit (`0c432e7`); servido confirmado (a liquid servida é igual à montada e o ficheiro
+  de provas servido tem as 35 entradas).
 
 ## 2026-10-18: v5.1, anúncios calados e espera por progresso no motor da liquid (sessão Claude Code na nuvem)
 
