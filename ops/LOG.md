@@ -10,11 +10,15 @@
   música, «Topic» ou não, tocam aos 18 a 39 s. Amostra de 8 pares da troca da v4.5: demoraram 6 dos
   8 uploads antigos e 7 dos 8 «Topic»; a troca não é a causa (amostra pequena).
 - O motor agrava: o disco seguinte arma-se mudo no leitor B, invisível (opacidade 0), e a sala de
-  foco usa um leitor de 1 por 1 píxel; num leitor invisível o anúncio às vezes nunca avança (2 de 4
-  ensaios sem música em 70 s). Com `REC_TIMEOUT` de 25 s, o disco armado cai por tempo e a rádio corta
+  foco usa um leitor de 1 por 1 píxel; em 5 ensaios com leitor invisível, 3 ficaram sem música em
+  70 s (a carregar, sem anúncio a correr); com leitor visível, 1 em 5 (amostra pequena). Com `REC_TIMEOUT` de 25 s, o disco armado cai por tempo e a rádio corta
   para outro, que também traz anúncio. O registo de emissão do browser embutido (17/10) tem 5 de 5
   discos do leitor B em «timeout» e silêncios de 26 a 69 s entre discos. No telemóvel há um só
   leitor, visível, e o Brave tira os anúncios.
+- Ensaios para o desenho da correção (leitor visível de 320 por 200, perfil novo do Chrome): durante
+  o anúncio a API dá o estado -1 com o tempo a avançar, e o `mute()` do leitor cala também o anúncio
+  (o elemento de vídeo do anúncio vem `muted`); passado o anúncio, a música chega a PLAYING, o leitor
+  para no zero, e 15 s depois arranca em menos de 1 s, sem anúncio novo.
 - Nada mudado no motor; opções em `ops/HANDOFF.md`, à espera da escolha do Paulo.
 
 ## 2026-10-18: v4.8, três vídeos corrigidos por decisão do Paulo (sessão local do Claude Code)
