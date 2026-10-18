@@ -78,6 +78,17 @@ button{font-family:var(--mono)}
 .yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
 .yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
+/* o prato a espera (o disco seguinte a carregar, mudo, com o anuncio do YouTube a passar calado) fica
+   fora do ecra, de 1 por 1 pixel, como o leitor da sala de foco, e nunca transparente dentro do monitor:
+   no ensaio de 2026-10-18 o leitor escondido por opacidade 0 tocou 11 de 20 videos em 90 s, o de fora
+   do ecra 19 de 20. Entra no monitor quando vai para o ar (.live). So por CSS: mudar o iframe de sitio
+   no DOM recarrega-o. No telemovel ha um so leitor (pointer:coarse, como o SIMPLE do motor) e fica
+   como estava */
+@media not all and (pointer:coarse){
+  .yt-slot:not(.live){inset:auto; left:-9999px; top:0; width:1px; height:1px; opacity:1}
+  .yt-slot.live{animation:slotIn .5s ease-out}
+}
+@keyframes slotIn{from{opacity:0} to{opacity:1}}
 /* crop: engole as barras pretas dos rips (conteudo 4:3 dentro de video 16:9) */
 .vp-screen.fill .yt-slot iframe{position:absolute; width:136%; height:136%; left:50%; top:50%;
   transform:translate(-50%,-50%)}
@@ -3732,9 +3743,10 @@ const MC_LINES = [
    Uma linha por disco: quando foi escolhido, armado, posto no ar e retirado; bloco e sub-bloco;
    genero, artista, titulo, videoId; BPM mostrado e se e exato; porque foi escolhido (run, adj,
    adj2, bpm, weighted, force; ponte, abridor, estreia, ultima vez no ar); como acabou (lift, skip,
-   dev, error, stalled, timeout, block-override, unload; lost para a sessao que morreu sem o
-   pagehide, ver o merged); segundos ouvidos contra a duracao;
-   segundos com a radio de lado ou em mute. Mais um anel de eventos (blocos, radio de lado, mute,
+   dev, error, stalled, stall (armado parado duas vezes), failed, block-override, unload; timeout so
+   ate a v4.9; lost para a sessao que morreu sem o pagehide, ver o merged); segundos ouvidos contra
+   a duracao; segundos com a radio de lado ou em mute. Mais um anel de eventos (blocos, radio de lado,
+   mute, recargas e trocas de leitor parado (reload, stall), saltos a espera (cue), anuncio a meio (ad),
    videos mortos ou bloqueados, arranque).
    Montado ANTES do l05: o motor chama window.HMPLOG.* (pelo plog da secao 11 do build-liquid.py)
    desde o primeiro setNow. Sem DOM. Corre sempre, com ou sem ?dev; o painel (l09) so le.
@@ -4161,8 +4173,12 @@ var SIMPLE = window.matchMedia("(pointer:coarse)").matches; /* touch devices: si
    contado no relogio do AudioContext, agulha dentro, e a musica entra depois do sulco */
 var GAP_S = 2.0;           /* s, do levantar ao pousar da agulha */
 var DROP_TO_MUSIC_S = 0.4; /* s, sulco de entrada antes da primeira nota */
-var PRE_LEAD = 40;         /* s antes do fim: o disco seguinte espera no prato livre (computador) */
-var REC_TIMEOUT = 25000;   /* ms sem o disco novo pronto: troca seca para outro */
+var PRE_LEAD = 120;        /* s antes do fim: o disco seguinte carrega no prato livre (computador), e o
+                              anuncio do YouTube (20 a 60 s) passa ai, calado; discos de 2 min ou menos
+                              armam logo no inicio */
+var KICK_S = 5;            /* s sem progresso num leitor a carregar: um playVideo de empurrao */
+var STALL_S = 15;          /* s sem progresso (getCurrentTime parado): recarrega uma vez; na segunda
+                              paragem, outro disco. Com progresso (anuncio ou musica) nunca se corta */
 var LIFT_LEAD = 0.025;     /* s: o relogio do audio anda aos saltos de ~10 ms; o levantar agenda-se
                               um pouco a frente para os 2,0 s contarem do seu inicio real */
 var PRE_COOL = 15000;      /* ms de descanso da antecipacao depois de cinco erros seguidos no prato livre */
@@ -4915,7 +4931,8 @@ window.onYouTubeIframeAPIReady = function(){
 function ensureLoaded(p, vid){
   if(!p || !p.ready || !p.yt || !vid) return false;
   if(p.loadedId === vid) return true;
-  try{ p.yt.loadVideoById(vid); p.loadedId = vid; return true; }catch(e){ return false; }
+  /* cada carga comeca muda (o portao do som abre no estado 1) e com a vigia do carregamento */
+  try{ p.yt.mute(); p.yt.loadVideoById(vid); p.loadedId = vid; ldStart(p, vid); return true; }catch(e){ return false; }
 }
 function makePlayer(k){
   var p = P[k];
@@ -4976,11 +4993,17 @@ function beginRadio(){
     if(!started){ try{ p.yt.mute(); }catch(e){} if(ensureLoaded(p, pendingFirst.v)) started=true; }
     if(!started){ setTimeout(go, 500); return; }
     try{
-      p.yt.unMute(); muted=false; FX.setVol(masterVol/100);
+      muted=false; FX.setVol(masterVol/100);
       fadeVol(p, 0);
-      p.yt.seekTo(0, true);
+      /* portao do som: o leitor so sai do mudo com a musica em PLAYING. A musica que ja rodava muda
+         (desde a abertura), parada ou acabada volta ao zero; com o anuncio a passar (calado) ou ainda
+         a carregar, o som abre no estado 1, e a rampa da entrada espera por ele */
+      var st0=-9; try{ st0=p.yt.getPlayerState(); }catch(e){}
+      if(st0===1 || st0===2 || st0===0) p.yt.seekTo(0, true);
+      else if(!p.ld) ldStart(p, p.loadedId || current.v);
       p.yt.playVideo();
     }catch(e){}
+    gate(activeKey);
     if(!firstLogged && current){
       firstLogged = true; pushHistory(current); plog("air", current);
       firstRampPending = true;
@@ -4988,21 +5011,29 @@ function beginRadio(){
       if(RIG.setNext) RIG.setNext(metaFor(current));
       RIG.first(deckOfPlayer(activeKey));
       /* rede de seguranca: se o gancho da agulha nao disparar, a rampa entra na mesma */
-      setTimeout(function(){ if(firstRampPending && window.HMFX){ window.HMFX.needle(); } }, 9500);
+      /* (a rampa que so espera pelo portao nao precisa dela, e a agulha nao se repete) */
+      setTimeout(function(){ if(firstRampPending && !firstRampWait && window.HMFX){ window.HMFX.needle(); } }, 9500);
     }
     setTimeout(checkAudible, 6000);
     audioGuard();
   }
   go();
 }
-var needleTries = 0;
+var needleTries = 0, needleCt = null;
 function checkAudible(){
   var p = P[activeKey];
   if(!p.ready){ setTimeout(checkAudible, 800); return; }
-  var st=-9, mu=false;
-  try{ st = p.yt.getPlayerState(); mu = p.yt.isMuted(); }catch(e){}
+  var st=-9, mu=false, ct=null;
+  try{ st = p.yt.getPlayerState(); mu = p.yt.isMuted(); ct = p.yt.getCurrentTime(); }catch(e){}
   if(st === 1 && !mu){ needleTries = 0; return; }
+  /* o rito ja trata do disco seguinte; em mute, o leitor calado e o que se pediu */
+  if(REC.on || muted) return;
   if(!started && pendingFirst){ ensureLoaded(p, pendingFirst.v) && (started=true); }
+  /* anuncio a passar (o tempo avanca, calado) ou a vigia do carregamento ainda na primeira tentativa:
+     espera-se sem contar; a ajuda do monitor so quando nada avanca, nem depois de recarregar */
+  var moving = (ct!=null && needleCt!=null && Math.abs(ct-needleCt)>0.01);
+  needleCt = ct;
+  if(st !== 1 && (moving || (p.ld && !p.ld.rl))){ setTimeout(checkAudible, 1200); return; }
   if((st === 3 || st === -1) && needleTries++ < 5){ setTimeout(checkAudible, 1200); return; }
   /* mostrar o proprio leitor para o arranque manual, venha o bloqueio de onde vier */
   $("slot"+activeKey).classList.add("live");
@@ -5012,13 +5043,18 @@ function checkAudible(){
 }
 $("needle") && $("needle").addEventListener("click", function(){
   var p = P[activeKey];
-  try{ p.yt.unMute(); muted=false; FX.setVol(masterVol/100); fadeVol(p,1); p.yt.playVideo(); }catch(e){}
+  /* o toque so abre o som com a musica em PLAYING (portao do som); a anuncio, abre no estado 1 */
+  try{ muted=false; FX.setVol(masterVol/100); fadeVol(p,1); if(onAir(activeKey)) p.yt.playVideo(); }catch(e){}
+  gate(activeKey);
   FX.resume();
   $("needle").classList.remove("on");
 });
 
 function onState(k, st){
   plog("state", k, st, P[k].pendingTrack || (k===activeKey ? current : null), k===activeKey);
+  /* portao do som: cada mudanca de estado abre ou fecha o som deste prato; primeiro, para o aviso
+     da agulha abaixo ja ver o leitor como ficou */
+  gate(k);
   if(st === 1){
     if(k === activeKey){
       $("standby").classList.add("off");
@@ -5029,17 +5065,23 @@ function onState(k, st){
     }
     retryCount = 0;
   }
+  if(st === 1){ ldStop(P[k]); }
   if(st === 1 && PRE.t && k === PRE.k && !PRE.ready){ markReady(); }
   if(st === 0 && k === activeKey && !REC.on){ endOfRecord(); }
 }
 function onYtError(k, code){
   var p = P[k];
+  /* um erro acaba a vigia do carregamento deste prato; o disco seguinte arma-a outra vez */
+  ldStop(p);
   if(code === 153 || code === 2){
     plog("event", "blocked", { v:(p.loadedId || ""), code:code, deck:k, armed:!!(PRE.t && k === PRE.k) });
     if(PRE.t && k === PRE.k && k !== activeKey){
-      /* o prato livre esta bloqueado: os proximos discos armam-se no prato do ar */
+      /* o prato livre esta bloqueado: os proximos discos armam-se no prato do ar; um salto que
+         esperava por ele faz-se como no telemovel */
+      var cw = CUT && CUT.why;
       p.noPre = true; plog("end", PRE.t, "blocked"); dropPre(true);
       if(REC.on){ var t2 = pullTrack(); if(t2){ armDeck(activeKey, t2, 0); } else { recFail(); } }
+      else if(cw){ hardNext(cw); }
       return;
     }
     $("slot"+k).classList.add("live");
@@ -5057,9 +5099,10 @@ function onYtError(k, code){
     if(nt){ armDeck(k, nt, tries); }
     else {
       /* cinco erros seguidos no prato livre: a antecipacao descansa PRE_COOL ms, senao cada volta
-         do vigia (600 ms) matava mais cinco discos e uma janela de 40 s esvaziava o bloco inteiro */
+         do vigia (600 ms) matava mais cinco discos e uma janela de 120 s esvaziava o bloco inteiro;
+         um salto que esperava fica sem efeito (o disco no ar continua) */
       if(tries > 4) preCool = Date.now() + PRE_COOL;
-      dropPre(false); if(REC.on) recFail();
+      dropPre(false); if(REC.on) recFail("error");
     }
   } else if(k === activeKey && !REC.on){
     if(retryCount++ < 5){ hardNext("error"); }
@@ -5077,7 +5120,8 @@ function onYtError(k, code){
    generos ficam so com a agulha. Kits: dub, backspin, spinback, tapestop, riser, siren, airhorn,
    echothrow (ensaio: HMFX.kit("airhorn"); render: HMFX.render("ritual-dub")) */
 var GAPKIT={ reggae:"dub", dub:"dub", ska_rocksteady:"dub", ragga_jungle:"dub" };
-var PRE={}, REC={ on:false }, recSeq=0, preCool=0;
+/* CUT: salto a espera do disco seguinte (computador); primed: ja houve o gesto de entrada */
+var PRE={}, REC={ on:false }, recSeq=0, preCool=0, CUT=null, primed=false;
 /* a foley da emissao so com a radio audivel: nem em mute, nem de lado (foco, arcada, tapes).
    O mute verifica-se aqui a parte: o portao do FX abre-se em mute para a agulha de uma tape */
 function radioFxOk(){
@@ -5102,7 +5146,84 @@ function recAt(el, fn){
   FX.after(d, go);
   setTimeout(go, d*1000);
 }
-/* o disco seguinte no prato k: carregado, mudo e a volume zero */
+/* ---- anuncios e leitores parados (2026-10-18) ----
+   O YouTube poe anuncios (20 a 60 s) antes dos videos de musica no leitor embutido, e ha leitores que
+   ficam parados no zero, sem anuncio nem progresso. O anuncio passa sempre calado (portao do som), o
+   disco seguinte carrega PRE_LEAD s antes do fim no prato livre, fora do ecra (l01), e a espera conta
+   o progresso, sem prazo fixo (vigia do carregamento).
+   Portao do som: um leitor so sai do mudo com a sua musica em PLAYING (estado 1). Durante um anuncio
+   a API da o estado -1 com o tempo a avancar e nunca o 1 (ensaio de 2026-10-18, cerca de 730
+   amostras), e o mute do leitor cala tambem o anuncio. No ar: o prato ativo, fora do rito e sem disco
+   armado nele (no telemovel o seguinte arma no proprio prato do ar). p.entry: a rampa de entrada (ms)
+   que corre quando o portao abrir; a do primeiro disco e a rampInFirst */
+function onAir(k){ return radioOn && k===activeKey && !REC.on && !(PRE.t && PRE.k===k); }
+function gate(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return;
+  var st=-9, mu=true;
+  try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){ return; }
+  if(st===1 && !muted && onAir(k)){
+    if(!mu) return;
+    if(p.entry) fadeVol(p, 0);
+    try{ p.yt.unMute(); }catch(e){}
+    if(firstRampWait){ rampInFirst(); }
+    else if(p.entry){
+      var ms=p.entry; p.entry=0;
+      animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
+    }
+  } else if(st===-1 && !mu){
+    /* estado -1 num leitor com som: no ar e fora da carga, um anuncio a meio do disco; calado ate a
+       musica voltar ao estado 1 */
+    try{ p.yt.mute(); }catch(e){}
+    if(onAir(k) && !p.ld) plog("event", "ad", { v:(p.loadedId || ""), deck:k });
+  }
+}
+/* vigia do carregamento: progresso e o getCurrentTime() a mudar (anuncio ou musica). Enquanto houver
+   progresso nunca se corta; KICK_S s parado leva um playVideo; STALL_S s parado recarrega o disco uma
+   vez (no ensaio salvou cerca de metade dos leitores parados no zero); a segunda paragem troca de
+   disco. Acaba quando a musica chega ao estado 1. Antes do gesto de entrada o relogio nao corre (o
+   primeiro disco carrega mudo no ecra de entrada, sem pressa) */
+function ldStart(p, v){ p.ld={ v:v, last:performance.now(), ct:null, rl:0, kick:0 }; }
+function ldStop(p){ if(p) p.ld=null; }
+function ldCheck(p){
+  var L=p.ld; if(!L || !p.ready || !p.yt) return;
+  var n=performance.now(), st=-9, ct=null;
+  if(!radioOn && !primed){ L.last=n; return; }
+  try{ st=p.yt.getPlayerState(); ct=p.yt.getCurrentTime(); }catch(e){ return; }
+  if(st===1){ p.ld=null; return; }
+  if(typeof ct==="number" && isFinite(ct)){
+    if(L.ct!=null && Math.abs(ct-L.ct)>0.01) L.last=n;
+    L.ct=ct;
+  }
+  var idle=(n-L.last)/1000, armed=!!(PRE.t && PRE.k===p.k);
+  if(idle>=KICK_S && !L.kick){ L.kick=1; try{ p.yt.playVideo(); }catch(e){} }
+  if(idle<STALL_S) return;
+  if(!L.rl){
+    plog("event", "reload", { v:L.v, deck:p.k, st:st, armed:armed });
+    L.rl=1; L.last=n; L.kick=0; L.ct=null;
+    try{ p.yt.mute(); p.yt.loadVideoById(L.v); }catch(e){}
+    return;
+  }
+  p.ld=null;
+  plog("event", "stall", { v:L.v, deck:p.k, st:st, armed:armed });
+  ldGiveUp(p);
+}
+setInterval(function(){ ldCheck(P.A); ldCheck(P.B); }, 500);
+/* duas paragens: outro disco. O armado troca no mesmo prato (um salto que espera continua a esperar);
+   o do ar (o primeiro, ou o que retomava depois do pousar) sai como um disco encravado */
+function ldGiveUp(p){
+  var k=p.k;
+  if(PRE.t && PRE.k===k){
+    var tr=(PRE.tries||0)+1, cut=CUT;
+    plog("end", PRE.t, "stall");
+    dropPre(false);
+    var nt=pullTrack();
+    if(nt){ CUT=cut; armDeck(k, nt, tr); }
+    else if(REC.on){ recFail("stall"); }
+    return;
+  }
+  if(k===activeKey) hardNext("stalled");
+}
+/* o disco seguinte no prato k: carregado, mudo e a volume zero (o ensureLoaded arma a vigia) */
 function armDeck(k, t, tries){
   var p=P[k];
   plog("arm", t, whyOf(t), plogCtx(t, k));
@@ -5113,22 +5234,26 @@ function armDeck(k, t, tries){
   p.loadedId=null;
   ensureLoaded(p, t.v);
 }
-/* larga o disco armado; back=true devolve-o a frente da caixa do seu genero */
+/* larga o disco armado; back=true devolve-o a frente da caixa do seu genero. Um salto que esperava
+   por ele fica sem efeito */
 function dropPre(back){
   if(!PRE.t) return;
   var p=P[PRE.k], t=PRE.t;
   if(PRE.k!==activeKey){ try{ p.yt.stopVideo(); }catch(e){} p.loadedId=null; }
+  ldStop(p);
   p.pendingTrack=null;
   if(back && pools[t.g] && pools[t.g].length) pools[t.g].unshift(t);
-  PRE={};
+  PRE={}; CUT=null;
 }
 function markReady(){
   if(!PRE.t || PRE.ready) return;
   PRE.ready=true;
+  ldStop(P[PRE.k]);
   /* no prato livre espera parado no inicio; no prato do ar (telemovel) continua a rodar mudo,
      porque pausar no iOS e arriscado, e volta ao zero no pousar */
   if(PRE.k!==activeKey){ try{ P[PRE.k].yt.pauseVideo(); P[PRE.k].yt.seekTo(0, true); }catch(e){} }
   if(REC.on) recDrop(REC.gap);
+  else if(CUT) cutNow();
 }
 function preloadNext(){
   if(SIMPLE || PRE.t || REC.on || !radioOn || Date.now() < preCool) return;
@@ -5141,6 +5266,7 @@ function preloadNext(){
 function endOfRecord(why){
   if(REC.on || !radioOn) return;
   plogEnd(why || "lift");
+  CUT=null;
   /* o seguinte resolve-se antes de qualquer som: sem disco vivo no bloco (todos mortos) fica
      parado e calado, como a troca antiga; o vigia volta aqui a cada 600 ms (o pullTrack e mudo
      e barato) e retoma logo que haja disco, no mais tardar na mudanca de bloco */
@@ -5148,7 +5274,7 @@ function endOfRecord(why){
   if(!PRE.t && !nt){ try{ fadeVol(P[activeKey], 0); }catch(e){} return; }
   var was=current, a=acTime();
   /* o relogio do rito comeca no inicio agendado do levantar */
-  REC={ on:true, id:++recSeq, p0:performance.now()+LIFT_LEAD*1000, a0:(a==null ? null : a+LIFT_LEAD), dropEl:null, gap:GAP_S, kicked:0 };
+  REC={ on:true, id:++recSeq, p0:performance.now()+LIFT_LEAD*1000, a0:(a==null ? null : a+LIFT_LEAD), dropEl:null, gap:GAP_S };
   transitioning=true;
   try{ fadeVol(P[activeKey], 0); }catch(e){}
   if(radioFxOk()){
@@ -5157,19 +5283,21 @@ function endOfRecord(why){
     if(kit && FX.kit(kit, LIFT_LEAD+0.42)) FX.duckEcho(LIFT_LEAD+1.5, LIFT_LEAD+2.6);
   }
   if(RIG.lift) RIG.lift(LIFT_LEAD*1000);
-  if(nt){
-    var ik=other(activeKey), idle=P[ik];
-    armDeck((!SIMPLE && idle.ready && !idle.noPre) ? ik : activeKey, nt, 0);
-  }
+  if(nt) armDeck(recDeck(), nt, 0);
   if(PRE.ready) recDrop(GAP_S);
   recWatch();
 }
-/* salto, erro ou disco encravado com o seguinte ja pronto no prato livre: corta o que toca,
-   a agulha pousa logo e a musica entra depois do sulco */
+/* o prato do disco seguinte no rito: o livre no computador; o do ar no telemovel ou com o livre bloqueado */
+function recDeck(){
+  var ik=other(activeKey), idle=P[ik];
+  return (!SIMPLE && idle.ready && !idle.noPre) ? ik : activeKey;
+}
+/* salto no computador com o seguinte ja pronto no prato livre: corta o que toca, a agulha pousa
+   logo e a musica entra depois do sulco */
 function quickDrop(){
   var out=P[activeKey];
   try{ fadeVol(out, 0); out.yt.pauseVideo(); }catch(e){}
-  REC={ on:true, id:++recSeq, p0:performance.now(), a0:acTime(), dropEl:null, gap:0, kicked:0 };
+  REC={ on:true, id:++recSeq, p0:performance.now(), a0:acTime(), dropEl:null, gap:0 };
   transitioning=true;
   recDrop(0);
   recWatch();
@@ -5186,84 +5314,106 @@ function recDrop(want){
   if(RIG.drop) RIG.drop(Math.round(d*1000));
   recAt(el+DROP_TO_MUSIC_S, recMusic);
 }
+/* o rito espera pelo disco armado sem prazo fixo: quem decide e a vigia do carregamento (ldCheck),
+   que deixa correr o anuncio que avanca e recarrega ou troca o disco parado. Sem disco armado (erros
+   seguidos no prato), outro quando o descanso acabar; sem disco vivo no bloco, silencio, e o vigia
+   do fim volta ao rito a cada 600 ms */
 function recWatch(){
   var id=REC.id;
   var h=setInterval(function(){
     if(!REC.on || REC.id!==id){ clearInterval(h); return; }
     if(REC.dropEl!=null) return;
-    var ms=performance.now()-REC.p0, p=PRE.t ? P[PRE.k] : null, st=-9;
+    var p=PRE.t ? P[PRE.k] : null, st=-9;
     if(p){ try{ st=p.yt.getPlayerState(); }catch(e){} }
     if(p && !PRE.ready && st===1) markReady();
     if(PRE.ready){ recDrop(REC.gap); return; }
-    /* um leitor parado sem razao leva um empurrao; sem disco em REC_TIMEOUT, troca seca */
-    if(p && ms>5000 && !REC.kicked){ REC.kicked=1; try{ p.yt.playVideo(); }catch(e){} }
-    if(ms>REC_TIMEOUT){ clearInterval(h); recFail(); }
+    if(!PRE.t && Date.now()>=preCool){
+      var nt=pullTrack();
+      if(nt) armDeck(recDeck(), nt, 0);
+      else { clearInterval(h); REC={ on:false }; transitioning=false; }
+    }
   }, 100);
 }
-/* a musica entra: o disco armado volta ao zero, abre o som em 250 ms (sem estalido digital)
-   e passa a ser o disco no ar. Com o separador escondido os temporizadores andam a 1 Hz e a
-   rampa prenderia a musica muda um segundo: ai entra logo inteira */
+/* a musica entra: o disco armado volta ao zero, toca e passa a ser o disco no ar. O som abre no
+   portao, com a musica no estado 1 (no prato livre, parado no zero, a retoma levou menos de 2 s no
+   ensaio, sem anuncio), e a rampa de 250 ms (sem estalido digital) corre a partir dai; a retoma
+   tambem e vigiada. Com o separador escondido os temporizadores andam a 1 Hz e a rampa prenderia a
+   musica muda um segundo: ai entra logo inteira */
 function recMusic(){
   var k=PRE.k, t=PRE.t, outK=activeKey, soft=!document.hidden;
   if(!t){ recFail(); return; }
+  /* o armado mudou entre o pousar e a musica (erro no prato): o novo pousa quando estiver pronto */
+  if(!PRE.ready){ REC.dropEl=null; return; }
   var p=P[k];
   try{
-    /* primeiro ao zero, so depois abre: no telemovel o disco rodou mudo durante o intervalo */
+    /* primeiro ao zero, so depois toca: no telemovel o disco rodou mudo durante o intervalo */
     p.yt.seekTo(0, true);
     fadeVol(p, soft ? 0 : 1);
-    if(!muted) p.yt.unMute();
     p.yt.playVideo();
   }catch(e){}
   if(k!==outK){
     var out=P[outK];
-    try{ out.yt.stopVideo(); }catch(e){}
-    out.loadedId=null; out.pendingTrack=null;
+    try{ out.yt.stopVideo(); out.yt.mute(); }catch(e){}
+    out.loadedId=null; out.pendingTrack=null; ldStop(out);
     $("slot"+k).classList.add("live");
     $("slot"+outK).classList.remove("live");
     activeKey=k; rigDeck=k;
   }
   p.pendingTrack=null;
-  PRE={};
+  PRE={}; CUT=null;
+  /* a rampa do primeiro disco, se ainda esperava, ja nao vem: entra a do rito */
+  firstRampPending=false; firstRampWait=false;
   if(RIG.setNext) RIG.setNext(metaFor(t));
   setNow(t, true);
   REC={ on:false }; transitioning=false;
   lastT=0; lastStamp=Date.now();
-  if(soft) animClock(250, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
+  p.entry=soft ? 250 : 0;
+  ldStart(p, t.v);
+  gate(k);
 }
-function recFail(){
-  /* o disco novo nao chegou a tempo: troca seca para outro, como num erro */
-  if(PRE.t) plog("end", PRE.t, "timeout");
-  dropPre(false);
+/* o disco armado falhou de vez durante o rito (erros seguidos, prato livre bloqueado, troca sem
+   disco): outro no prato do ar; sem disco vivo no bloco, silencio, e o vigia do fim volta a cada 600 ms */
+function recFail(why){
+  if(PRE.t){ plog("end", PRE.t, why || "failed"); dropPre(false); }
+  var nt=pullTrack();
+  if(nt){ armDeck(activeKey, nt, 0); return; }
   REC={ on:false }; transitioning=false;
-  hardNext("timeout");
 }
 
-/* hard cut (errors, manual skip): the rig does a fast same-deck swap */
-function hardNextAudio(t, quiet){
-  var p = P[activeKey];
-  p.pendingTrack = t;
-  setNow(t, true);
-  p.loadedId = null;
-  ensureLoaded(p, t.v);
-  try{ if(!muted) p.yt.unMute(); fadeVol(p, quiet?0:1); }catch(e){}
-}
+/* saltos, erros e discos encravados. Antes do arranque troca-se o primeiro disco, mudo. Com um so
+   prato (telemovel, ou o livre bloqueado), ou com o disco no ar morto (erro, leitor parado), e o rito
+   do fim ja: o seguinte carrega mudo e pousa quando estiver pronto. Salto no computador: o disco no
+   ar continua ate o seguinte estar pronto no prato livre, e so entao corta */
 var swapPending=false;
 function hardNext(reason){
   if(swapPending || REC.on) return;
   if(reason === "ended"){ endOfRecord(); return; }
-  plogEnd(reason || "skip");
-  if(PRE.t && PRE.k !== activeKey){
-    /* o seguinte ja esta no prato livre: pronto, pousa logo; ainda a carregar, vai para o prato do ar */
-    if(PRE.ready){ quickDrop(); return; }
-    var tp=PRE.t; dropPre(false); cutTo(tp); return;
-  }
-  var t = pullTrack(); if(!t) return;
-  cutTo(t);
+  var why=reason || "skip";
+  if(!radioOn){ firstSwap(why); return; }
+  var ik=other(activeKey), two=!SIMPLE && P[ik].ready && !P[ik].noPre;
+  if(!two || why==="error" || why==="stalled"){ endOfRecord(why); return; }
+  if(PRE.t && PRE.ready){ CUT={ why:why }; cutNow(); return; }
+  if(CUT) return;
+  if(!PRE.t){ var t=pullTrack(); if(!t) return; armDeck(ik, t, 0); }
+  CUT={ why:why };
+  plog("event", "cue", { why:why, v:(PRE.t ? PRE.t.v : null) });
+  toast("NEXT RECORD ON ITS WAY");
 }
-function cutTo(t){
-  if(RIG.setNext) RIG.setNext(metaFor(t));
-  hardNextAudio(t);
-  RIG.quick(deckOfPlayer(activeKey));
+/* o salto que esperava: o seguinte esta pronto no prato livre, corta ja */
+function cutNow(){
+  var why=(CUT && CUT.why) || "skip";
+  CUT=null;
+  plogEnd(why);
+  quickDrop();
+}
+/* antes do arranque (abertura a correr): o primeiro disco morreu ou nao arrancou; outro, mudo */
+function firstSwap(why){
+  var p=P[activeKey], t=pullTrack(); if(!t) return;
+  plogEnd(why);
+  pendingFirst=t;
+  setNow(t, false);
+  p.loadedId=null;
+  if(ensureLoaded(p, t.v)) started=true;
 }
 /* sem crossfade na sala liquida: startTransition (HMENG) levanta ja a agulha, o mesmo rito do fim */
 function startTransition(){
@@ -5454,8 +5604,9 @@ FX.setVol(masterVol/100);
 function toggleMute(){
   muted = !muted;
   plog("event", "mute", { on:muted });
-  /* o disco armado (a espera no prato, ou a rodar mudo durante o rito) so abre no pousar */
-  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ if(muted) p.yt.mute(); else if(!(PRE.t && PRE.k===k)) p.yt.unMute(); }catch(e){} } });
+  /* portao do som: o mute cala os dois pratos ja; ao tira-lo so abre o prato no ar, e so com a
+     musica em PLAYING (o armado, a espera no prato ou a rodar mudo durante o rito, abre no pousar) */
+  ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ if(muted) p.yt.mute(); else gate(k); }catch(e){} } });
   try{ FX.setVol(masterVol/100, 0.08); }catch(e){}
   if(introAudio){ try{ introAudio.muted = muted; }catch(e){} }
   $("muteBtn").classList.toggle("on", muted);
@@ -5876,8 +6027,10 @@ function firstGesture(){
   setTimeout(function(){
     if(FX._pendingNeedle){ FX._pendingNeedle=false; if(window.HMFX) HMFX.needle(); }
     if(radioOn && !muted){
+      /* so o prato no ar, e o som so abre com a musica em PLAYING (portao do som) */
       var p=P[activeKey];
-      try{ p.yt.unMute(); p.yt.playVideo(); }catch(e){}
+      try{ if(onAir(activeKey)) p.yt.playVideo(); }catch(e){}
+      gate(activeKey);
     }
   }, 120);
 }
@@ -5907,9 +6060,11 @@ window.HM={
   /* abre a sessao de media no proprio gesto: o leitor roda mudo durante a
      introducao, para o unMute do fim ser aceite tambem nos telemoveis */
   prime: function(){
+    /* a vigia do carregamento do primeiro disco conta a partir deste gesto */
+    primed=true;
     (function g(){
       var p=P[activeKey];
-      if(p && p.ready && started){ try{ p.yt.mute(); p.yt.playVideo(); }catch(e){} }
+      if(p && p.ready && started){ try{ p.yt.mute(); p.yt.playVideo(); }catch(e){} if(p.ld) p.ld.last=performance.now(); }
       else if(!radioOn){ setTimeout(g, 350); }
     })();
   }
@@ -5950,7 +6105,7 @@ function audioGuard(){
     }
     stable=0; tries++;
     try{
-      p.yt.unMute();
+      gate(p.k);
       if(f<=0.03 && !firstRampPending && !transitioning){ fadeVol(p, 1); }
       applyVol(p.k);
     }catch(e){}
@@ -5958,7 +6113,7 @@ function audioGuard(){
       nd.textContent="tap for sound";
       nd.style.display="block"; nd.classList.add("on"); nd.dataset.guard="1";
       nd.onclick=function(){
-        try{ p.yt.unMute(); p.yt.playVideo(); applyVol(p.k); }catch(e){}
+        try{ p.yt.playVideo(); gate(p.k); applyVol(p.k); }catch(e){}
         nd.classList.remove("on"); nd.style.display="none"; nd.dataset.guard="0";
       };
     }
@@ -5998,12 +6153,16 @@ window.HMDEV={
   blockAt: function(h){ return blockKeyFor(h); }
 };
 
-var firstRampPending=false, rampDur=2000;
+var firstRampPending=false, firstRampWait=false, rampDur=2000;
 function rampInFirst(){
   if(!firstRampPending) return;
-  firstRampPending=false;
+  /* portao do som: com o anuncio a passar (calado), a rampa espera que o portao abra (gate) */
+  var p=P[activeKey], st=-9, mu=true;
+  try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){}
+  if(st!==1 || mu){ firstRampWait=true; return; }
+  firstRampPending=false; firstRampWait=false;
   /* lenta e constante, em linha reta */
-  var p=P[activeKey], DURR=rampDur;
+  var DURR=rampDur;
   rampDur=4500;
   animClock(DURR, function(x){ fadeVol(p, x); }, function(){ FX.crackle(false); });
 }
@@ -6058,7 +6217,8 @@ window.HMFX = {
 
 window.HMENG = { startTransition:startTransition, hardNext:hardNext, state:function(){
   return { active:activeKey, rigDeck:rigDeck, transitioning:transitioning, radioOn:radioOn, simple:SIMPLE,
-    rec:!!REC.on, pre:(PRE.t ? PRE.t.v : null), preK:(PRE.k || null), preReady:!!PRE.ready };
+    rec:!!REC.on, pre:(PRE.t ? PRE.t.v : null), preK:(PRE.k || null), preReady:!!PRE.ready,
+    cut:!!CUT, ldA:(P.A.ld ? P.A.ld.rl+1 : 0), ldB:(P.B.ld ? P.B.ld.rl+1 : 0) };
 }};
 
 })();
@@ -7723,8 +7883,14 @@ function zenStart(){
       playerVars:{ autoplay:0, controls:0, playsinline:1 },
       events:{ onReady:function(e){
         zen.yt=e.target; zen.ready=true;
-        try{ zen.yt.setVolume(0); zen.yt.loadVideoById(ZEN_ID); zen.yt.playVideo(); }catch(err){}
-        zenRise();
+        /* portao do som, como no leitor da sala: mudo ate a musica estar em PLAYING, e a rampa da
+           flauta comeca ai (depois de um anuncio, nao de uma vez); acabada a respiracao, fica parada */
+        try{ zen.yt.mute(); zen.yt.setVolume(0); zen.yt.loadVideoById(ZEN_ID); zen.yt.playVideo(); }catch(err){}
+      }, onStateChange:function(e){
+        try{
+          if(e.data===1 && zen.yt.isMuted()){ if(zen.fading) zen.yt.pauseVideo(); else { zen.yt.unMute(); zenRise(); } }
+          else if(e.data===-1) zen.yt.mute();
+        }catch(err){}
       } } });
   }
   mk();
@@ -8161,6 +8327,8 @@ function fcPlayer(cb){
           q.forEach(function(f){ try{ f(); }catch(err){} });
         },
         onStateChange:function(e){
+          /* portao do som: so com a musica em PLAYING; o estado -1 (anuncio a meio) volta a calar */
+          try{ if(e.data===1) fcp.yt.unMute(); else if(e.data===-1) fcp.yt.mute(); }catch(err){}
           if(e.data===0 && FC.on && fcp.playing) fcNext();
         },
         onError:function(){ if(FC.on && fcp.playing) setTimeout(fcNext, 900); }
@@ -8182,7 +8350,8 @@ function fcLoad(t){
   fcShow(t);
   fcp.playing=true; playPaint();
   fcPlayer(function(){
-    try{ fcp.yt.setVolume(fcVol()); fcp.yt.loadVideoById(t.v); fcp.yt.playVideo(); }catch(e){}
+    /* carrega mudo: o anuncio do YouTube passa calado e o som abre no estado 1 (onStateChange) */
+    try{ fcp.yt.mute(); fcp.yt.setVolume(fcVol()); fcp.yt.loadVideoById(t.v); fcp.yt.playVideo(); }catch(e){}
   });
 }
 function fcNext(){ var t=fcPick(); if(t) fcLoad(t); }

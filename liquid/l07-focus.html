@@ -725,8 +725,14 @@ function zenStart(){
       playerVars:{ autoplay:0, controls:0, playsinline:1 },
       events:{ onReady:function(e){
         zen.yt=e.target; zen.ready=true;
-        try{ zen.yt.setVolume(0); zen.yt.loadVideoById(ZEN_ID); zen.yt.playVideo(); }catch(err){}
-        zenRise();
+        /* portao do som, como no leitor da sala: mudo ate a musica estar em PLAYING, e a rampa da
+           flauta comeca ai (depois de um anuncio, nao de uma vez); acabada a respiracao, fica parada */
+        try{ zen.yt.mute(); zen.yt.setVolume(0); zen.yt.loadVideoById(ZEN_ID); zen.yt.playVideo(); }catch(err){}
+      }, onStateChange:function(e){
+        try{
+          if(e.data===1 && zen.yt.isMuted()){ if(zen.fading) zen.yt.pauseVideo(); else { zen.yt.unMute(); zenRise(); } }
+          else if(e.data===-1) zen.yt.mute();
+        }catch(err){}
       } } });
   }
   mk();
@@ -1163,6 +1169,8 @@ function fcPlayer(cb){
           q.forEach(function(f){ try{ f(); }catch(err){} });
         },
         onStateChange:function(e){
+          /* portao do som: so com a musica em PLAYING; o estado -1 (anuncio a meio) volta a calar */
+          try{ if(e.data===1) fcp.yt.unMute(); else if(e.data===-1) fcp.yt.mute(); }catch(err){}
           if(e.data===0 && FC.on && fcp.playing) fcNext();
         },
         onError:function(){ if(FC.on && fcp.playing) setTimeout(fcNext, 900); }
@@ -1184,7 +1192,8 @@ function fcLoad(t){
   fcShow(t);
   fcp.playing=true; playPaint();
   fcPlayer(function(){
-    try{ fcp.yt.setVolume(fcVol()); fcp.yt.loadVideoById(t.v); fcp.yt.playVideo(); }catch(e){}
+    /* carrega mudo: o anuncio do YouTube passa calado e o som abre no estado 1 (onStateChange) */
+    try{ fcp.yt.mute(); fcp.yt.setVolume(fcVol()); fcp.yt.loadVideoById(t.v); fcp.yt.playVideo(); }catch(e){}
   });
 }
 function fcNext(){ var t=fcPick(); if(t) fcLoad(t); }

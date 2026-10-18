@@ -9,7 +9,7 @@ testes só precisa de ler essas linhas.
 ## Como correr
 
 ```
-bash ops/tests/run.sh                  # monta o site e corre todos (cerca de 7 minutos)
+bash ops/tests/run.sh                  # monta o site e corre todos (cerca de 8 minutos)
 bash ops/tests/run.sh art devlog       # só os indicados
 NOBUILD=1 bash ops/tests/run.sh gate   # sem montar antes
 ```
@@ -31,6 +31,7 @@ Precisa de Node, do Playwright com Chromium (vêm instalados nas sessões na nuv
 | `t-devlog.js` | painel `?dev` escondido antes do arranque; motivos de fim no registo (lift, skip, error); CSV coerente e ano desconhecido vazio; separador Banks com os 7 blocos | 1 min |
 | `t-intro.js` | archive.org lento (5 s): a introdução toca com as linhas; com erro: a emissão arranca e o motivo fica em `hm_intro_log` | 30 s |
 | `t-ritual.js` | cada disco toca até ao fim; levantar, 2,0 s (mais ou menos 0,05), pousar; música 0,25 a 1,0 s depois; kit dub só depois de reggae, dub, ska e ragga jungle (computador em kingston, telemóvel em flight) | 2 min |
+| `t-ads.js` | anúncios e leitores parados (o YouTube simulado ganha `window.__ytRule`: anúncio em estado -1 com o tempo a avançar, leitor parado no zero, anúncio a meio do disco): nenhum leitor sai do mudo antes do estado 1 (rádio no computador e no telemóvel, sala de foco, respiração), também com mute a meio do anúncio; anúncio a meio do disco calado logo; o prato à espera fora do ecrã (1 por 1) e o do ar no monitor; o disco pré-carregado entra sem espera; o rito espera um anúncio de 50 s sem trocar de disco; o salto espera pelo disco seguinte e faz-se no prato do ar se o livre ficar bloqueado; leitor parado (também o primeiro disco) recarregado uma vez ~15 s depois e trocado na segunda paragem. Oito cenários ao mesmo tempo | 1,5 min |
 
 ## Limites (o que estes testes não apanham)
 

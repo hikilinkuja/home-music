@@ -1,5 +1,31 @@
 # Registo das voltas
 
+## 2026-10-18: v5.1, anúncios calados e espera por progresso no motor da liquid (sessão Claude Code na nuvem)
+
+- Ronda do motor (nível max) com o desenho em 6 pontos aceite pelo Paulo (`ops/HANDOFF.md`). Mudaram
+  `liquid/build-liquid.py` (secções 10 e 12; o `l05` gerado), o CSS dos pratos no `l01`, os leitores da
+  sala de foco no `l07` (só o mudo até ao estado 1) e um comentário do `l03`; catálogo, sala antiga e
+  `l04` intactos.
+- Portão do som: um leitor só sai do mudo com a sua música em PLAYING; o único `unMute` do motor está
+  na função `gate`, verificado pelo build. Antes abriam cedo o arranque (o primeiro disco abria durante
+  o anúncio), o corte no mesmo prato, o botão de som, o primeiro gesto e a guarda de som; a sala de foco
+  nunca calava o leitor. Um estado -1 no disco no ar volta a calar (anúncio a meio, não medido no ensaio).
+- Prato à espera fora do ecrã, 1 por 1 píxel, no computador (antes: transparente no monitor); entra no
+  monitor ao ir para o ar, com meio segundo de entrada. `PRE_LEAD` de 40 para 120 s.
+- Vigia do carregamento em vez do `REC_TIMEOUT` de 25 s: 5 s parado, um `playVideo`; 15 s, recarrega;
+  segunda paragem, outro disco; com progresso (anúncio ou música) nunca corta. Saltos no computador
+  esperam pelo disco seguinte; erros e discos encravados no ar passam pelo rito do fim. Telemóvel: o
+  salto é o rito do fim, com o seguinte a carregar mudo no mesmo leitor.
+- Registo: eventos novos `reload`, `stall`, `cue`, `ad` e fim `stall` (o fim `timeout` acabou).
+- Testes: `ops/tests/t-ads.js` (novo; YouTube simulado com anúncio em estado -1 e tempo a avançar,
+  leitor parado no zero e anúncio a meio): 71/71; no motor antigo passavam 33 (falhavam as aberturas
+  durante o anúncio, o prato transparente, o corte aos 25 s, o salto imediato, a falta de recarga e a
+  sala de foco com anúncio audível). Bateria completa, depois de juntar a v5.0 da sala de foco (outra
+  sessão), a passar: art 40, gate 7, rain 5, focus 63, devlog 10, intro 5, ritual 14, ads 71 (7,5 min).
+- Limites: o YouTube simulado não é o real (da nuvem não há anúncios nem conteúdo licenciado); a
+  confirmação com anúncios reais fica para uma ligação doméstica (`ops/HANDOFF.md`). O tamanho de
+  1 por 1 segue o leitor OFF do ensaio, que não separou o tamanho da posição.
+
 ## 2026-10-18: v5.0, sala de foco, ronda 2a (sessão local do Claude Code)
 
 - Pedido do Paulo: perfis de som por cena com a pergunta da primeira visita, zona «why?» na forma C a

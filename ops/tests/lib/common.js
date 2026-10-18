@@ -77,43 +77,85 @@ function media() {
 }
 
 /* ---------- leitor do YouTube simulado ---------- */
-// dur: duracao fixa de cada video em segundos (0 = 150 a 449 s, conforme o id); load: ms ate tocar
+// dur: duracao fixa de cada video em segundos (0 = 150 a 449 s, conforme o id); load: ms ate tocar.
+// Anuncios e leitores parados (t-ads.js): se a pagina definir window.__ytRule, cada loadVideoById
+// pergunta-lhe { el, vid, n (cargas no total), nv (cargas deste video neste leitor), ne (cargas neste
+// leitor) } e recebe { ad: segundos de anuncio, stuck: parado no zero, dur: duracao }. Anuncio como no
+// ensaio de 2026-10-18: estado -1 com o tempo a avancar, nunca o 1; depois 3 e a musica do zero.
+// Parado: estado -1 no zero, sem progresso, ate outra carga. Sem __ytRule, o leitor e o de sempre.
 function ytStub(dur, load) {
   return `
 (function(){
   function L(o){ o.t=performance.now(); (window.__log=window.__log||[]).push(o); }
   function durFor(id){ if(${dur | 0}) return ${dur | 0}; var h=0; for(var i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))>>>0; } return 150 + (h % 300); }
-  var LOAD=${load | 0};
+  var LOAD=${load | 0}, NL=0, NLV={}, NLE={};
   window.__players={};
   function Player(el, opts){
     var self=this; this.el=el; this.opts=opts; this.st=-1; this.vid=null; this.t0=0; this.p0=0; this.vol=100; this.mu=false; this.endT=null; this.dur=0;
+    this.inAd=false; this.adT0=0; this.stuck=false;
     window.__players[el]=this;
     setTimeout(function(){ opts.events && opts.events.onReady && opts.events.onReady({target:self}); }, 50);
   }
-  Player.prototype._set=function(st){ this.st=st; L({ev:'state', el:this.el, st:st, vid:this.vid, cur:+this.getCurrentTime().toFixed(3), dur:this.dur, mu:this.mu, vol:this.vol}); var e=this.opts.events; if(e && e.onStateChange) e.onStateChange({data:st, target:this}); };
-  Player.prototype._err=function(code){ L({ev:'err', el:this.el, vid:this.vid, code:code}); clearTimeout(this.endT); this._loadTok=(this._loadTok||0)+1; var e=this.opts.events; if(e && e.onError) e.onError({data:code, target:this}); };
+  Player.prototype._set=function(st){ this.st=st; L({ev:'state', el:this.el, st:st, vid:this.vid, cur:+this.getCurrentTime().toFixed(3), dur:this.dur, mu:this.mu, vol:this.vol, ad:this.inAd}); var e=this.opts.events; if(e && e.onStateChange) e.onStateChange({data:st, target:this}); };
+  Player.prototype._err=function(code){ L({ev:'err', el:this.el, vid:this.vid, code:code}); clearTimeout(this.endT); this._loadTok=(this._loadTok||0)+1; this.inAd=false; this.stuck=false; var e=this.opts.events; if(e && e.onError) e.onError({data:code, target:this}); };
   Player.prototype._play=function(){ var self=this; clearTimeout(this.endT); this.p0=performance.now(); this._set(1); var left=(this.dur-this.t0)*1000; this.endT=setTimeout(function(){ self.t0=self.dur; self._set(0); }, Math.max(0,left)); };
-  Player.prototype._freeze=function(){ this.t0=this.getCurrentTime(); clearTimeout(this.endT); };
+  Player.prototype._freeze=function(){ if(this.inAd){ this.t0=0; } else { this.t0=this.getCurrentTime(); } clearTimeout(this.endT); };
+  Player.prototype._cancel=function(){ if(this.inAd) L({ev:'adCut', el:this.el, vid:this.vid}); this.inAd=false; this.stuck=false; };
   Player.prototype.loadVideoById=function(a){
     var id=(typeof a==='string')?a:a.videoId, start=(typeof a==='object' && a.startSeconds)||0;
-    var self=this; this._freeze(); this.vid=id; this.dur=durFor(id); this.t0=start; this._loadTok=(this._loadTok||0)+1; var tok=this._loadTok;
-    L({ev:'load', el:this.el, vid:id, dur:this.dur, mu:this.mu, vol:this.vol});
+    var self=this; this._freeze(); this._cancel(); this.vid=id; this.t0=start; this._loadTok=(this._loadTok||0)+1; var tok=this._loadTok;
+    var kv=this.el+'|'+id; NL++; NLV[kv]=(NLV[kv]||0)+1; NLE[this.el]=(NLE[this.el]||0)+1;
+    var r=(window.__ytRule && window.__ytRule({ el:this.el, vid:id, n:NL, nv:NLV[kv], ne:NLE[this.el] })) || {};
+    this.dur=r.dur || durFor(id);
+    L({ev:'load', el:this.el, vid:id, dur:this.dur, mu:this.mu, vol:this.vol, n:NL, nv:NLV[kv], ne:NLE[this.el], ad:r.ad||0, stuck:!!r.stuck});
     this._set(-1);
+    if(r.stuck){ this.stuck=true; return; }
+    if(r.ad>0){
+      setTimeout(function(){
+        if(tok!==self._loadTok) return;
+        self.inAd=true; self.adT0=performance.now();
+        L({ev:'adStart', el:self.el, vid:id, mu:self.mu, vol:self.vol, secs:r.ad});
+        setTimeout(function(){
+          if(tok!==self._loadTok) return;
+          self.inAd=false; self.t0=start;
+          L({ev:'adEnd', el:self.el, vid:id, mu:self.mu});
+          self._set(3);
+          setTimeout(function(){ if(tok!==self._loadTok) return; self._play(); }, Math.round(LOAD*0.7));
+        }, r.ad*1000);
+      }, Math.round(LOAD*0.3));
+      return;
+    }
     setTimeout(function(){ if(tok!==self._loadTok) return; self._set(3); }, Math.round(LOAD*0.3));
     setTimeout(function(){ if(tok!==self._loadTok) return; self._play(); }, LOAD);
   };
-  Player.prototype.cueVideoById=function(id){ this._freeze(); this.vid=id; this.dur=durFor(id); this.t0=0; this._set(5); };
+  Player.prototype.cueVideoById=function(id){ this._freeze(); this._cancel(); this._loadTok=(this._loadTok||0)+1; this.vid=id; this.dur=durFor(id); this.t0=0; this._set(5); };
+  /* anuncio a meio de um disco que ja toca (so para os testes): -1 com o tempo do anuncio a avancar,
+     e depois a musica retoma onde ia */
+  Player.prototype._midroll=function(secs){
+    if(this.st!==1) return false;
+    var self=this, tok=this._loadTok; this._freeze();
+    this.inAd=true; this.adT0=performance.now();
+    L({ev:'adStart', el:this.el, vid:this.vid, mu:this.mu, vol:this.vol, secs:secs, mid:true});
+    this._set(-1);
+    setTimeout(function(){
+      if(tok!==self._loadTok) return;
+      self.inAd=false; L({ev:'adEnd', el:self.el, vid:self.vid, mu:self.mu, mid:true});
+      self._set(3);
+      setTimeout(function(){ if(tok!==self._loadTok) return; self._play(); }, 300);
+    }, secs*1000);
+    return true;
+  };
   Player.prototype.playVideo=function(){ if(this.vid && this.st!==1 && this.st!==-1 && this.st!==3) this._play(); };
   Player.prototype.pauseVideo=function(){ if(this.st===1){ this._freeze(); this._set(2); } };
-  Player.prototype.stopVideo=function(){ this._freeze(); this._loadTok=(this._loadTok||0)+1; this._set(5); };
-  Player.prototype.seekTo=function(s){ var was=this.st; this._freeze(); this.t0=s; if(was===1) this._play(); };
+  Player.prototype.stopVideo=function(){ this._freeze(); this._cancel(); this._loadTok=(this._loadTok||0)+1; this._set(5); };
+  Player.prototype.seekTo=function(s){ if(this.inAd || this.stuck){ L({ev:'seekIgnored', el:this.el, vid:this.vid, ad:this.inAd}); return; } var was=this.st; this._freeze(); this.t0=s; if(was===1) this._play(); };
   Player.prototype.getPlayerState=function(){ return this.st; };
-  Player.prototype.getCurrentTime=function(){ if(this.st!==1) return this.t0; return Math.min(this.dur, this.t0+(performance.now()-this.p0)/1000); };
+  Player.prototype.getCurrentTime=function(){ if(this.inAd) return (performance.now()-this.adT0)/1000; if(this.st!==1) return this.t0; return Math.min(this.dur, this.t0+(performance.now()-this.p0)/1000); };
   Player.prototype.getDuration=function(){ return this.dur; };
   Player.prototype.setVolume=function(v){ if(v!==this.vol){ this.vol=v; L({ev:'vol', el:this.el, v:v, vid:this.vid, cur:+this.getCurrentTime().toFixed(3), dur:this.dur, st:this.st, mu:this.mu}); } };
   Player.prototype.getVolume=function(){ return this.vol; };
-  Player.prototype.mute=function(){ if(!this.mu) L({ev:'mute', el:this.el, vid:this.vid}); this.mu=true; };
-  Player.prototype.unMute=function(){ if(this.mu) L({ev:'unmute', el:this.el, vid:this.vid, st:this.st}); this.mu=false; };
+  Player.prototype.mute=function(){ if(!this.mu) L({ev:'mute', el:this.el, vid:this.vid, st:this.st, ad:this.inAd}); this.mu=true; };
+  Player.prototype.unMute=function(){ if(this.mu) L({ev:'unmute', el:this.el, vid:this.vid, st:this.st, ad:this.inAd}); this.mu=false; };
   Player.prototype.isMuted=function(){ return this.mu; };
   Player.prototype.getVideoData=function(){ return {}; };
   Player.prototype.getIframe=function(){ return document.getElementById(this.el); };

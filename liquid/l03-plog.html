@@ -5,9 +5,10 @@
    Uma linha por disco: quando foi escolhido, armado, posto no ar e retirado; bloco e sub-bloco;
    genero, artista, titulo, videoId; BPM mostrado e se e exato; porque foi escolhido (run, adj,
    adj2, bpm, weighted, force; ponte, abridor, estreia, ultima vez no ar); como acabou (lift, skip,
-   dev, error, stalled, timeout, block-override, unload; lost para a sessao que morreu sem o
-   pagehide, ver o merged); segundos ouvidos contra a duracao;
-   segundos com a radio de lado ou em mute. Mais um anel de eventos (blocos, radio de lado, mute,
+   dev, error, stalled, stall (armado parado duas vezes), failed, block-override, unload; timeout so
+   ate a v4.9; lost para a sessao que morreu sem o pagehide, ver o merged); segundos ouvidos contra
+   a duracao; segundos com a radio de lado ou em mute. Mais um anel de eventos (blocos, radio de lado,
+   mute, recargas e trocas de leitor parado (reload, stall), saltos a espera (cue), anuncio a meio (ad),
    videos mortos ou bloqueados, arranque).
    Montado ANTES do l05: o motor chama window.HMPLOG.* (pelo plog da secao 11 do build-liquid.py)
    desde o primeiro setNow. Sem DOM. Corre sempre, com ou sem ?dev; o painel (l09) so le.

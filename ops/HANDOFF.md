@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v4.7). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v5.1). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -119,27 +119,41 @@ Em fila, propostas e por decidir pelo Paulo:
 - por verificar num iPhone real: barra em duas linhas, folhas de ajustes e de provas, sons de fundo
   e o intervalo a ligar a chuva sem toque.
 
-### Demora a carregar no computador (diagnóstico e ensaio de 2026-10-18; motor por fazer)
+### Demora a carregar no computador (v5.1, publicada a 2026-10-18; falta a confirmação numa ligação doméstica)
 
-Causa: anúncios do YouTube antes dos vídeos de música (20 a 60 s) e leitores que ficam parados no
-zero sem anúncio; o motor agrava com o leitor B escondido por opacidade 0 (o pior no ensaio),
-`REC_TIMEOUT` de 25 s e corte para outro disco, que traz outro anúncio. Medições em `ops/LOG.md` e
-`ops/notes/2026-10-18/ads-probe.txt`. Decidido pelo Paulo: anúncios sempre sem som; o disco
-seguinte carrega antes de o atual acabar; sem janela visível (o ensaio não a justifica).
-Ronda do motor (nível max, com `ops/tests/t-ads.js`: YouTube simulado com fase de anúncio e com
-leitor parado no zero):
-1. portão do som: cada leitor só sai do mudo quando a sua música está em PLAYING (estado 1); cobre o
-   primeiro disco, cortes e saltos, o botão de som e o leitor da sala de foco;
-2. o prato à espera deixa de se esconder por opacidade 0 e fica fora do ecrã, como o leitor da sala
-   de foco (só por CSS: mudar o iframe de sítio no DOM recarrega-o), e entra no monitor quando vai
-   para o ar;
-3. pré-carga cerca de 120 s antes do fim (logo no início nos discos curtos);
-4. espera que conhece o anúncio: progresso é `getCurrentTime()` a mudar; 15 s sem progresso,
-   recarregar uma vez; segunda paragem, outro disco; nunca cortar enquanto houver progresso;
-5. saltos manuais: o disco atual continua até o seguinte estar pronto;
-6. telemóvel (um só leitor): o anúncio passa calado no intervalo, com os pontos 1 e 4.
-Depois de publicar, confirmar numa ligação doméstica com `ops/tools/yt_ads_probe.py` (adaptado à
-sala) ou pelo registo `?dev` do Paulo.
+Causa (diagnóstico e ensaio de 2026-10-18, `ops/LOG.md` e `ops/notes/2026-10-18/ads-probe.txt`):
+anúncios do YouTube antes dos vídeos de música (20 a 60 s) e leitores parados no zero sem anúncio;
+o motor agravava com o leitor B escondido por opacidade 0, `REC_TIMEOUT` de 25 s e corte para outro
+disco, que trazia outro anúncio. Decidido pelo Paulo: anúncios sempre sem som; o disco seguinte
+carrega antes de o atual acabar; sem janela visível.
+Feito na v5.1 (secções 10 e 12 do `build-liquid.py`, CSS no `l01`, leitores da sala de foco no `l07`;
+teste `ops/tests/t-ads.js`, 71 verificações, das quais 38 falham no motor antigo):
+1. portão do som: cada leitor só sai do mudo com a sua música em PLAYING (estado 1); o único `unMute`
+   do motor está na função `gate` (o build falha se aparecer outro); cobre o primeiro disco, o rito,
+   os saltos, o botão de som, a agulha, o primeiro gesto e a guarda de som; um estado -1 no disco no
+   ar (anúncio a meio) volta a calar; na sala de foco, o leitor da sala e o da respiração;
+2. o prato à espera fica fora do ecrã, 1 por 1 píxel, como o leitor da sala de foco (só no
+   computador; no telemóvel o leitor único fica como estava), e entra no monitor ao ir para o ar;
+3. `PRE_LEAD` de 120 s; discos de 2 min ou menos armam logo no início;
+4. vigia do carregamento: progresso é `getCurrentTime()` a mudar; 5 s parado, um `playVideo`; 15 s,
+   recarrega uma vez; segunda paragem, outro disco (o armado troca no mesmo prato; o do ar sai como
+   disco encravado); sem prazo fixo, nunca corta enquanto houver progresso;
+5. salto no computador: o disco atual continua até o seguinte estar pronto no prato livre e só então
+   corta, com o aviso «NEXT RECORD ON ITS WAY»;
+6. telemóvel: pontos 1 e 4 (o salto é o rito do fim, com o seguinte a carregar mudo no mesmo leitor).
+Escolhas minhas, a confirmar pelo Paulo: o prato à espera em 1 por 1 (o ensaio não separou o tamanho da
+posição; a alternativa é fora do ecrã com o tamanho do monitor); erros e discos encravados no ar passam
+pelo rito (levantar, 2 s, pousar) em vez do corte rápido; o aviso do salto; o anúncio a meio do disco
+calado pelo estado -1 (não medido no ensaio, que só viu anúncios antes do vídeo).
+Por fazer:
+- confirmação com anúncios reais, só numa ligação doméstica (sessão local do Claude Code ou o Paulo):
+  `ops/tools/yt_ads_probe.py` adaptado à sala, ou a liquid com `?dev` a correr 30 a 60 minutos e o
+  registo exportado (eventos `reload`, `stall`, `cue`, `ad`; fins `stall`). Medir: trocas sem espera
+  (levantar-pousar 2,0 s), esperas do rito, recargas e trocas, anúncio ouvido (deve ser nenhum), e a
+  retoma do disco parado no zero até cerca de 100 s (o ensaio só mediu 20 s);
+- por decidir pelo Paulo: o mesmo portão na arcada (`l08`, jogo «drop the needle») e nas mixtapes
+  (leitor visível, com controlos); a sala antiga (congelada) continua com o comportamento antigo;
+- possível: vigia do carregamento na sala de foco (hoje um leitor parado fica parado até se saltar).
 
 ## Textos das faixas (2026-10-18)
 

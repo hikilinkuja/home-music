@@ -78,6 +78,17 @@ button{font-family:var(--mono)}
 .yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
 .yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
+/* o prato a espera (o disco seguinte a carregar, mudo, com o anuncio do YouTube a passar calado) fica
+   fora do ecra, de 1 por 1 pixel, como o leitor da sala de foco, e nunca transparente dentro do monitor:
+   no ensaio de 2026-10-18 o leitor escondido por opacidade 0 tocou 11 de 20 videos em 90 s, o de fora
+   do ecra 19 de 20. Entra no monitor quando vai para o ar (.live). So por CSS: mudar o iframe de sitio
+   no DOM recarrega-o. No telemovel ha um so leitor (pointer:coarse, como o SIMPLE do motor) e fica
+   como estava */
+@media not all and (pointer:coarse){
+  .yt-slot:not(.live){inset:auto; left:-9999px; top:0; width:1px; height:1px; opacity:1}
+  .yt-slot.live{animation:slotIn .5s ease-out}
+}
+@keyframes slotIn{from{opacity:0} to{opacity:1}}
 /* crop: engole as barras pretas dos rips (conteudo 4:3 dentro de video 16:9) */
 .vp-screen.fill .yt-slot iframe{position:absolute; width:136%; height:136%; left:50%; top:50%;
   transform:translate(-50%,-50%)}
