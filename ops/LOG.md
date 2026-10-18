@@ -1,5 +1,34 @@
 # Registo das voltas
 
+## 2026-10-18: v5.2, sala de foco, ronda 2b (sessão local do Claude Code)
+
+- Pedido: registo de totais, experiência pessoal, campo para despejar distrações e intenção «se...
+  então», com as quatro escolhas do Paulo (período de um bloco, ordem ABBA com a primeira letra
+  sorteada, nota só na experiência, só blocos completos nos totais). Mudaram `liquid/l07-focus.html`,
+  `liquid/focus-evidence.json` e `ops/tests/t-focus.js`; motor, catálogo e sala antiga intactos. A
+  versão é a v5.2 porque a v5.1 já tinha saído (anúncios do YouTube).
+- Registo `hm_focus_log` (versão 1, até 2000 blocos, só no browser): cada bloco que chega ao intervalo;
+  o «+5 min of work» do intervalo soma ao mesmo bloco. Totais de hoje e da semana no topo da porta, a
+  semana em barras na gaveta, sem sequências; esconder, exportar (CSV e JSON) e apagar na gaveta.
+  Aviso suave no intervalo passadas 4 horas num dia, dispensável por um dia.
+- Plano «se... então» opcional na linha do passo mais pequeno, mostrado por cima do anel; «Park a
+  thought» durante o trabalho (tecla t), com a lista no intervalo.
+- Experiência pessoal na gaveta: uma cena, dois perfis; o perfil de cada bloco vem da ordem AB BA;
+  «I got distracted» no bloco e nota de 1 a 5 no intervalo; bloco com o som mudado fora da contagem
+  (a letra repete-se); resultado só com quatro blocos contados de cada som: médias, diferença por par
+  com intervalo de 95% pela t de Student, veredicto e limites (sem ocultação, nota subjetiva, tarefas
+  que variam); blocos deixados a meio contam como inacabados.
+- Provas: 5 entradas passaram a «in room» (`progress-log`, `no-punishing-streaks`,
+  `light-gamification`, `daily-cap`, `personal-experiment`); 2 novas (`if-then-plan`, moderada;
+  `park-a-thought`, desenho nosso), com fontes confirmadas pelo DOI; ficam 31 na sala, 1 proposta
+  (`best-hours`), 2 conselhos e 1 fora de plano.
+- Defeito antigo apanhado nas medições e corrigido: quando a porta ou o intervalo não cabiam, o
+  navegador espremia os campos (a intenção de 52 para 20 píxeis) e o anel (os números saíam do
+  círculo, visto numa captura do telemóvel). Agora só o anel encolhe, o tempo segue o seu tamanho real,
+  e a porta compacta-se em ecrãs até 1100 de altura (Begin e ajustes lado a lado).
+- Testes: `t-focus` com 121 verificações (eram 63). Bateria completa a passar: gate 7, rain 5,
+  focus 121, devlog 10, intro 5, ritual 14, ads 71; art saltado (falta o ffmpeg neste Mac).
+
 ## 2026-10-18: v5.1, anúncios calados e espera por progresso no motor da liquid (sessão Claude Code na nuvem)
 
 - Ronda do motor (nível max) com o desenho em 6 pontos aceite pelo Paulo (`ops/HANDOFF.md`). Mudaram

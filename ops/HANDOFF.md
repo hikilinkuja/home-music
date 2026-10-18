@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v5.1). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v5.2). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -95,7 +95,7 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
    Extended Mix» (774 s), o vídeo atual é a «Original Version» (265 s); trocar só se o Paulo
    aceitar a versão estendida como a mesma faixa.
 
-## Sala de foco v4.6, ronda 1 (v4.9) e ronda 2a (v5.0), 2026-10-18
+## Sala de foco v4.6, ronda 1 (v4.9), ronda 2a (v5.0) e ronda 2b (v5.2), 2026-10-18
 
 Alternativa D escolhida pelo Paulo (entrada com cenas, sessão com anel e barra, gaveta), com os
 fundos da rádio integrados e os três da sala mantidos; teste `ops/tests/t-focus.js`. Ronda 1 da
@@ -104,12 +104,41 @@ avaliação à luz da literatura (seis cenas por tarefa, intervalo proporcional 
 `ops/notes/2026-10-18/1-pesquisa-sala-de-foco.md`; as provas vivem em `liquid/focus-evidence.json`.
 Ronda 2a (v5.0): perfis de som por cena com a pergunta da primeira visita, zona «why?» (forma C) e
 porta com «continuar onde parei», passo mais pequeno e recomeço.
+Ronda 2b (v5.2), com as quatro escolhas do Paulo (período de um bloco; ordem ABBA com a primeira letra
+sorteada; nota só nos blocos da experiência; só blocos completos nos totais):
+- registo `hm_focus_log` (versão 1, tampa de 2000 blocos, só no browser): cada bloco que chega ao
+  intervalo, com dia, cena, perfil e minutos; o «+5 min of work» pedido no intervalo soma ao mesmo
+  bloco; totais de hoje e da semana no topo da porta (no telemóvel, no lugar do relógio; um toque abre
+  a gaveta neles) e, na gaveta, a semana de segunda a domingo em barras, o resumo e a semana anterior;
+  sem sequências; os totais podem esconder-se; exportação CSV e JSON e apagar (segundo toque);
+- aviso suave no intervalo passadas 4 horas num dia, dispensável por um dia (memória `capDay`);
+- plano «se... então» opcional: ligação na linha do passo mais pequeno, dois campos, mostrado por cima
+  do anel e lembrado entre visitas (memória `ift`);
+- «Park a thought» durante o trabalho (botão discreto ou tecla t, Enter guarda): a lista aparece no
+  intervalo, cada pensamento sai com um toque ou todos com «clear all» (memória `park`, até 30);
+- experiência pessoal na gaveta: uma cena e dois perfis; na cena da experiência o perfil de cada bloco
+  vem da ordem (sem mudar o perfil lembrado para a cena), a porta diz «set by your experiment»;
+  «I got distracted» durante o bloco; nota de 1 a 5 no intervalo; um bloco com o som mudado a meio não
+  conta e a letra repete-se; a posição na ordem vem sempre da contagem no registo; resultado só com
+  quatro blocos contados de cada som: médias, distrações por bloco, diferença B menos A por par com
+  intervalo de 95% (t de Student), veredicto e limites; blocos deixados a meio (pelo menos 1 min)
+  contam como inacabados; parar guarda a experiência e o resultado em `xp` (até 20);
+- provas: `progress-log`, `no-punishing-streaks`, `light-gamification`, `daily-cap` e
+  `personal-experiment` passaram a «in room»; novas `if-then-plan` (moderada) e `park-a-thought`
+  (desenho nosso, com Masicampo e Baumeister 2011, Scullin e colegas 2018, Risko e Gilbert 2016);
+- defeito antigo corrigido: quando a porta ou o intervalo não cabiam, o navegador espremia os campos
+  (a intenção descia de 52 para 20 píxeis) e o anel (os números saíam do círculo); agora nada encolhe
+  além do anel, cujo tempo segue o tamanho real, e a porta desliza se for preciso; em ecrãs de
+  computador até 1100 de altura a porta compacta-se (Begin e ajustes lado a lado, sem as legendas).
+Escolhas minhas, a confirmar pelo Paulo: os textos ingleses (pergunta da nota, aviso das quatro horas);
+o plano aberto na porta sempre que existe; os pensamentos só no intervalo (não na porta); «I got
+distracted» só nos blocos da experiência; mexer na duração ou nos géneros a meio torna a cena «custom»
+e a experiência só volta a aplicar-se quando a cena for escolhida de novo.
 
 Em fila, propostas e por decidir pelo Paulo:
-- ronda 2b (sala): registo de totais por dia e semana sem sequências que castiguem, experiência
-  pessoal (perfis da mesma cena em blocos AB BA, pelo menos quatro períodos por condição, dados só no
-  browser), campo para despejar distrações, intenção do bloco em «se... então», aviso ao passar
-  cerca de 4 horas;
+- possível: tempo entre abrir a sala e o Begin como medida da experiência (nota de pesquisa, 3.D),
+  pensamentos estacionados à vista na porta depois de «End session», e uma vista por hora do dia a
+  partir do registo (que já guarda a hora de cada bloco), para a prova `best-hours` (ainda «proposed»);
 - ronda 3 (catálogo): marcar as faixas com voz (`vx:1`) para os perfis filtrarem por faixa e não por
   género (o liquid e o deep house têm faixas cantadas); psytrance minimal ou progressivo como género
   novo, se o Paulo o abrir (entraria como perfil de som);
@@ -117,7 +146,8 @@ Em fila, propostas e por decidir pelo Paulo:
   «sim» (Read e Study em lo-fi) e «não» (nenhuma cena com música);
 - som de pássaros CC0 para os intervalos (hoje é a chuva);
 - por verificar num iPhone real: barra em duas linhas, folhas de ajustes e de provas, sons de fundo
-  e o intervalo a ligar a chuva sem toque.
+  e o intervalo a ligar a chuva sem toque; na v5.2, os totais no topo, a nota de 1 a 5 numa linha e o
+  campo de estacionar com o teclado aberto.
 
 ### Demora a carregar no computador (v5.1, publicada a 2026-10-18; falta a confirmação numa ligação doméstica)
 

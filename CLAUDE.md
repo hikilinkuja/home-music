@@ -125,8 +125,17 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   como contrariar; mitos; estudos retirados). Cada decisão nova da sala leva entrada nesse ficheiro;
   o `validate.py` falha se um `data-why` ou `why:` não tiver prova. Porta: «Continue where you
   stopped» (um toque, com a nota), passo mais pequeno (mostrado no primeiro bloco) e linha de
-  recomeço à segunda-feira e no dia 1. `window.HMFR` expõe o estado aos testes; não confundir com
-  `HMFOCUS`, do motor.
+  recomeço à segunda-feira e no dia 1. Ronda 2b (v5.2): registo dos blocos completos em localStorage
+  `hm_focus_log` (versão 1, tampa de 2000 blocos; o «+5 min» do intervalo soma ao mesmo bloco; só
+  blocos completos contam), totais de hoje e da semana no topo da porta e a semana em barras na
+  gaveta, sem sequências; aviso suave passadas 4 horas num dia (dispensável por um dia); plano
+  «se... então» opcional na linha do passo mais pequeno; «Park a thought» durante o trabalho (tecla t,
+  lista no intervalo, guardada em `hm_focus`); experiência pessoal na gaveta (uma cena, dois perfis,
+  um período por bloco, ordem ABBA com a primeira letra sorteada, nota de 1 a 5 só nos blocos da
+  experiência, «I got distracted», bloco com o som mudado fora da contagem, resultado só com quatro
+  de cada: médias, diferença por par e intervalo de 95% pela t de Student, com os limites ditos;
+  exportação CSV e JSON, apagar). Os dados nunca saem do browser. `window.HMFR` expõe o estado aos
+  testes; não confundir com `HMFOCUS`, do motor.
 - Fontes da liquid, pela ordem de montagem em `ops/tools/build.sh`: `liquid/l01-head.html`,
   `l02-body.html`, o catálogo `radio/e03-data.html`, `l03-plog.html` (tem de ficar antes do
   l05, que o chama), `l04-vj.html`, `l05-engine.html`, `l06-art.html`, `l07-focus.html`,
@@ -149,9 +158,9 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 3. `bash ops/tools/build.sh` monta as duas salas e corre `ops/tools/validate.py`
    (sintaxe JavaScript, caracteres proibidos, videoIds, géneros). Não publicar com falhas.
    Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
-   corre os testes no Chromium com o YouTube simulado, cerca de 8 minutos; ver
+   corre os testes no Chromium com o YouTube simulado, cerca de 9 minutos; ver
    `ops/tests/README.md`). Com `FAIL`, não publicar.
-4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.2), e
+4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.3), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a
    `https://hikilinkuja.github.io/home-music/liquid/index.html?cb=<tempo>`.

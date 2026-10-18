@@ -143,6 +143,29 @@
       "yourCall": "Leave it empty if you prefer."
     },
     {
+      "id": "park-a-thought",
+      "status": "in room",
+      "decision": "While you work, park a stray thought in one line and deal with it in the break: a note, not a to-do system.",
+      "finding": "Unfinished goals keep intruding on attention, and making a concrete plan for them stopped the intrusions in experiments. Writing a list of upcoming tasks at bedtime helped people fall asleep faster than listing what they had already done. Holding information in the world rather than in memory lowers the mental demand of a task.",
+      "strength": "design",
+      "sources": [
+        {
+          "cite": "Masicampo & Baumeister (2011), Journal of Personality and Social Psychology",
+          "doi": "10.1037/a0024192"
+        },
+        {
+          "cite": "Scullin et al. (2018), Journal of Experimental Psychology: General",
+          "doi": "10.1037/xge0000374"
+        },
+        {
+          "cite": "Risko & Gilbert (2016), Trends in Cognitive Sciences",
+          "doi": "10.1016/j.tics.2016.07.002"
+        }
+      ],
+      "unknown": "No study tested a one-line note during focused work; the step from these findings to the room is our inference.",
+      "yourCall": "Ignore it, or clear the list in the break."
+    },
+    {
       "id": "intention",
       "status": "in room",
       "decision": "Name what you are working on before you begin.",
@@ -154,8 +177,31 @@
           "doi": "10.1016/S0065-2601(06)38002-1"
         }
       ],
-      "unknown": "A one-line intention is weaker than a full if-then plan; the if-then form is proposed for a later round.",
+      "unknown": "A one-line intention is weaker than a full if-then plan, which the room offers as an option next to the first step.",
       "yourCall": "Optional."
+    },
+    {
+      "id": "if-then-plan",
+      "status": "in room",
+      "decision": "An optional if-then plan for the session, such as: if a thought pulls me away, then I park it and carry on.",
+      "finding": "Plans in the form 'if situation X arises, then I will do Y' had a medium-to-large effect on reaching goals across 94 tests, including keeping ongoing work safe from unwanted influences. Experiments also used such plans to shield work from unwanted thoughts and feelings, and a later review of 642 tests mapped which cues and responses the plans use.",
+      "strength": "moderate",
+      "sources": [
+        {
+          "cite": "Gollwitzer & Sheeran (2006), Advances in Experimental Social Psychology",
+          "doi": "10.1016/S0065-2601(06)38002-1"
+        },
+        {
+          "cite": "Achtziger, Gollwitzer & Sheeran (2008), Personality and Social Psychology Bulletin",
+          "doi": "10.1177/0146167207311201"
+        },
+        {
+          "cite": "Sheeran, Listrom & Gollwitzer (2025), European Review of Social Psychology",
+          "doi": "10.1080/10463283.2024.2334563"
+        }
+      ],
+      "unknown": "How much a plan typed in a few seconds at the door helps has not been tested; the studies used other tasks and set-ups.",
+      "yourCall": "Optional; the plan is shown above the ring while you work."
     },
     {
       "id": "no-lyrics-for-words",
@@ -497,8 +543,8 @@
     },
     {
       "id": "progress-log",
-      "status": "proposed",
-      "decision": "Keep a record of the blocks you complete.",
+      "status": "in room",
+      "decision": "Keep a record of the blocks you complete: today and this week at the door, the week day by day in Settings.",
       "finding": "Across 138 experiments, monitoring progress helped people reach goals, more so when progress was physically recorded.",
       "strength": "strong",
       "sources": [
@@ -508,12 +554,12 @@
         }
       ],
       "unknown": "Whether counting blocks is a good measure of progress for every kind of work.",
-      "yourCall": "The log stays in your browser."
+      "yourCall": "Hide the totals, export the log or delete it in Settings; it never leaves your browser."
     },
     {
       "id": "no-punishing-streaks",
-      "status": "proposed",
-      "decision": "Show totals, not fragile streaks; allow a missed day to be repaired.",
+      "status": "in room",
+      "decision": "Totals, not streaks: a day off breaks nothing, so there is nothing to repair.",
       "finding": "Seeing an intact streak increased engagement; seeing a broken one reduced it, and the drop was smaller when the streak could be repaired.",
       "strength": "moderate",
       "sources": [
@@ -523,7 +569,7 @@
         }
       ],
       "unknown": "Long-term effects of streak displays on wellbeing.",
-      "yourCall": "Hide the counts if you prefer."
+      "yourCall": "Hide the totals if you prefer."
     },
     {
       "id": "explain-the-why",
@@ -564,8 +610,8 @@
     },
     {
       "id": "light-gamification",
-      "status": "proposed",
-      "decision": "Light touches of progress, no points or leaderboards.",
+      "status": "in room",
+      "decision": "Light touches of progress (a faint ring for each 20 minutes of focus, weekly totals); no points, badges or leaderboards.",
       "finding": "Gamification had small positive effects on learning; effects on motivation and behaviour were less stable in rigorous studies.",
       "strength": "moderate",
       "sources": [
@@ -594,7 +640,7 @@
     },
     {
       "id": "daily-cap",
-      "status": "proposed",
+      "status": "in room",
       "decision": "A gentle note after about four hours of focused blocks in a day.",
       "finding": "Older training studies cited in the deliberate-practice literature found no extra benefit beyond about four hours a day and smaller gains beyond two.",
       "strength": "weak",
@@ -605,7 +651,7 @@
         }
       ],
       "unknown": "Not tested for modern knowledge work.",
-      "yourCall": "Dismiss it."
+      "yourCall": "Dismiss it for the day; it never stops the timer."
     },
     {
       "id": "easy-start",
@@ -628,8 +674,8 @@
     },
     {
       "id": "personal-experiment",
-      "status": "proposed",
-      "decision": "Let each listener test sound profiles on themselves.",
+      "status": "in room",
+      "decision": "Test two sounds for one kind of work on yourself: the room alternates them block by block (A B, then B A), asks for a one-tap focus rating after each block, and shows a result only after four rated blocks of each.",
       "finding": "Single-person trials alternate conditions in a planned or random order over several periods (at least four, often six to eight) and compare outcomes within the same person. Randomising or counterbalancing the order protects against trends over time.",
       "strength": "moderate",
       "sources": [
@@ -642,8 +688,8 @@
           "url": "https://www.sciencedirect.com/science/article/pii/S089543561300156X"
         }
       ],
-      "unknown": "Without blinding, expectations count; self-rated focus can differ from real performance.",
-      "yourCall": "Opt in or out at any time."
+      "unknown": "Without blinding, expectations count; self-rated focus can differ from real performance; and four pairs give a wide interval, which more blocks narrow.",
+      "yourCall": "Opt in or out at any time, and export or delete the data in Settings. A block in which you change the sound does not count."
     },
     {
       "id": "co-presence",

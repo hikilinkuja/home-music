@@ -47,8 +47,10 @@
 .fc-cap{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; text-align:center}
 
 /* ---------- entrada ---------- */
-#fcEntry{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+#fcEntry{display:flex; flex-direction:column; align-items:center; justify-content:center; justify-content:safe center; gap:14px;
   padding:90px 24px 32px; overflow-y:auto}
+/* nada se espreme a porta: se nao couber, desliza (e o topo fica sempre ao alcance) */
+#fcEntry > *{flex-shrink:0}
 #fcIntent{width:min(600px, 100%); height:52px; background:rgba(7,6,26,.85); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:16px; letter-spacing:.08em; padding:0 16px; text-align:center}
 #fcIntent:focus{border-color:var(--amber); outline:none}
@@ -75,6 +77,7 @@
 #fcBegin:hover{box-shadow:0 0 0 3px rgba(255,177,43,.25)}
 #fcBegin:active{transform:scale(.98)}
 #fcBegin .fc-ico{fill:var(--ink); stroke:var(--ink)}
+#fcGoRow{display:flex; flex-direction:column; align-items:center; gap:14px; width:100%}
 #fcAdjust{background:none; border:0; min-height:44px; color:var(--teal); font-family:var(--mono); font-size:11px;
   letter-spacing:.2em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
 /* porta (v5.0): recomeco a segunda e no dia 1, continuar onde parei, passo mais pequeno, habito
@@ -110,6 +113,10 @@
 /* ---------- sessao ---------- */
 #fcSess{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
   padding:70px 16px 150px}
+/* com muito conteudo no intervalo so o anel encolhe; o tempo segue o tamanho real do anel (unidades
+   do contentor), para nunca sair do circulo */
+#fcSess > *{flex-shrink:0}
+#fcSess > #fcDial{flex-shrink:1; min-height:96px; container-type:size}
 #fcTag{font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,236,217,.62);
   text-align:center; max-width:90vw}
 #fcTag b{font-weight:400; color:var(--dim)}
@@ -125,7 +132,7 @@
 #fcDial{transition:width .6s ease, height .6s ease}
 /* durante o foco so os minutos (os segundos a mudar no centro do ecra puxam o olhar); os
    segundos voltam ao passar o rato, em pausa e nos intervalos */
-#fcTime{font-size:calc(var(--fc-ring) * .25); line-height:1; letter-spacing:.04em; display:flex; align-items:baseline;
+#fcTime{font-size:calc(var(--fc-ring) * .25); font-size:25cqmin; line-height:1; letter-spacing:.04em; display:flex; align-items:baseline;
   gap:.15em; transition:font-size .6s ease}
 #fcTU{font-size:.2em; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
 #fcTU:empty{display:none}
@@ -246,6 +253,61 @@
 .fc-src a:hover{color:var(--amber)}
 .fc-foot{margin-top:24px; padding-top:14px; border-top:1px solid var(--line)}
 
+/* ---------- ronda 2b (v5.2): totais, plano «se... entao», pensamentos estacionados, nota de foco
+   e experiencia pessoal (tudo so neste browser) ---------- */
+#fcTot{display:flex; align-items:center; gap:2px 14px; min-height:44px; padding:0 4px; background:none; border:0;
+  color:#7f82a3; font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
+  text-align:left; white-space:nowrap}
+#fcTot:hover{color:var(--paper)}
+#focus[data-stage=session] #fcTot{display:none}
+#fcTot span:empty{display:none}
+#fcNext b.th{margin-left:8px}
+/* com o plano aberto, as duas legendas de ajuda da porta saem para tudo caber */
+#focus.ifon #fcEntry .opt{display:none}
+#fcStepRow, #fcIfRow{display:flex; align-items:center; gap:8px; width:min(600px, 100%)}
+#fcStepRow #fcStep{flex:1; width:auto; min-width:0}
+#fcIfRow .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal); flex:none}
+#fcIfRow input{flex:1; min-width:0; height:40px; box-sizing:border-box; background:rgba(7,6,26,.7); border:1px solid var(--line);
+  color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.04em; padding:0 10px}
+#fcIfRow input:focus{border-color:var(--teal); outline:none}
+#fcIfLnk{flex:none; white-space:nowrap}
+#fcActs{align-items:center}
+.fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:#7f82a3; font-family:var(--mono);
+  font-size:10px; letter-spacing:.22em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s}
+.fc-quiet:hover{color:var(--paper); border-color:var(--line)}
+#fcParkBox{display:flex; align-items:center; gap:6px; width:min(440px, 86vw)}
+#fcPark{flex:1; min-width:0; height:44px; box-sizing:border-box; background:rgba(7,6,26,.85); border:1px solid var(--teal);
+  color:var(--paper); font-family:var(--mono); font-size:13px; padding:0 12px}
+#fcPark:focus{outline:none}
+#fcRate{display:flex; align-items:center; justify-content:center; gap:6px 10px; flex-wrap:wrap}
+#fcRate .q{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
+#fcRate .tbtn{width:44px; padding:0}
+#fcParked{width:100%; display:flex; flex-direction:column; gap:2px}
+#fcParked .fc-qh{justify-content:space-between}
+#fcParked .lb{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
+#fcParkL{list-style:none; margin:0; padding:0; max-height:64px; overflow-y:auto; font-size:12px; line-height:1.4; color:var(--paper)}
+#fcParkL li{display:flex; align-items:center; justify-content:space-between; gap:8px}
+#fcParkL li span{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#fcParkL .fc-x{flex:none; width:30px; height:30px; padding:0; background:none; border:0; color:var(--dim); cursor:pointer}
+#fcParkL .fc-x:hover{color:var(--amber)}
+#fcParkL .fc-ico{width:14px; height:14px}
+#fcDayN, #fcXNote{margin:0}
+#fcCapN{margin:0; font-size:11px; line-height:1.6; letter-spacing:.04em; color:var(--amber); text-align:center}
+/* com nota, pensamentos ou aviso no intervalo, o anel encolhe para tudo caber */
+#focus.brk.more{--fc-ring:min(240px, 50vw, 28vh)}
+.fc-week{display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:6px; align-items:end}
+.fc-week .dy{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:9px; letter-spacing:.12em;
+  text-transform:uppercase; color:#7f82a3}
+.fc-week .bar{position:relative; width:100%; max-width:34px; height:56px; border-bottom:1px solid var(--line)}
+.fc-week .bar i{position:absolute; left:0; right:0; bottom:0; background:var(--teal); opacity:.75}
+.fc-week .td{color:var(--amber)}
+.fc-week .td .bar i{background:var(--amber)}
+.fc-week .mm{min-height:11px; color:var(--dim); letter-spacing:.04em; text-transform:none}
+.fc-xres{display:flex; flex-direction:column; gap:6px; font-size:11px; line-height:1.65; color:#c9c6d8}
+.fc-xres p{margin:0}
+.fc-xres b{font-weight:400; color:var(--paper)}
+.fc-xres .vd{color:var(--teal)}
+
 /* ---------- selo (ecra inteiro) ---------- */
 #focus.sealed #fcTop, #focus.sealed .fc-chrome, #focus.sealed #fcHint{display:none}
 #fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
@@ -279,6 +341,7 @@
   .fc-card .sd{margin-top:2px}
   #fcPhone{margin-top:10px}
   #fcBegin{margin-top:8px; width:100%}
+  #fcGoRow{gap:9px}
   #focus.brk{--fc-ring:min(220px, 60vw, 30vh)}
   #fcSess{padding:64px 12px 190px}
   #fcDock{left:12px; right:12px; bottom:16px; transform:none; max-width:none; display:grid;
@@ -311,6 +374,17 @@
   #fcSound{gap:2px 8px}
   #fcSound .k{display:none}
   #fcStep{font-size:12px; letter-spacing:.02em; padding:0 8px}
+  #fcTot{flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; font-size:9px; letter-spacing:.1em; padding:0}
+  #focus.hastot[data-stage=entry] #fcClock{display:none}
+  #fcIfRow{gap:6px}
+  #fcIfRow input{font-size:12px; padding:0 6px; letter-spacing:0}
+  #focus.brk.more{--fc-ring:min(170px, 46vw, 22vh)}
+  #fcBrk label{letter-spacing:.1em}
+  #fcBrk .tip{line-height:1.45}
+  #fcRate{flex-wrap:nowrap; gap:6px}
+  #fcRate .q{letter-spacing:.08em; white-space:nowrap}
+  #fcRate .tbtn{width:40px}
+  #focus.more #fcDayN{display:none}
 }
 /* telemovel deitado: anel pequeno, sem linhas de ajuda */
 @media (max-height:520px){
@@ -318,14 +392,32 @@
   #fcSess{padding:56px 16px 96px; gap:6px}
   #fcDock{bottom:10px}
   #fcKeys, #fcHint, #fcTag, #fcNext, #fcBrk .tip, #fcBrk .fc-qh{display:none}
+  #fcParked, #fcDayN, #fcCapN, #fcXNote, #fcRate .q{display:none}
   #focus.brk{--fc-ring:min(120px, 30vh)}
+  #focus.brk.more{--fc-ring:min(100px, 26vh)}
   #fcEntry{justify-content:flex-start}
+}
+/* ecra de computador ate 1100 de altura (ronda 2b): as legendas de ajuda saem, as cartas encolhem e o
+   Begin e a ligacao dos ajustes ficam lado a lado, para caber o plano «se... entao», o «continuar» e a
+   linha de recomeco sem espremer nada */
+@media (min-width:761px) and (max-height:1100px){
+  #fcEntry .opt{display:none}
+  #fcEntry{padding-top:84px; gap:10px}
+  #fcEntry .fc-gap{margin-top:10px}
+  #fcPhone{margin-top:6px}
+  .fc-card{min-height:120px; padding:13px 16px; gap:6px}
+  #fcCont{min-height:50px}
+  #fcGoRow{flex-direction:row; justify-content:center; gap:20px; margin-top:6px}
+  #fcGoRow #fcBegin{margin-top:0}
 }
 /* ecra de computador baixo: as sete cartas e o Begin cabem sem deslizar */
 @media (min-width:761px) and (max-height:860px){
   .fc-card .for, #fcEntry .opt{display:none}
-  .fc-card{min-height:108px; gap:6px}
-  #fcEntry{padding-top:72px; gap:9px}
+  .fc-card{min-height:98px; gap:6px; padding:12px 14px}
+  #fcEntry{padding-top:72px; padding-bottom:16px; gap:7px}
+  #fcCont{min-height:46px}
+  #fcIntent{height:44px}
+  #fcStep, #fcIfRow input{height:36px}
   #fcEntry .fc-gap{margin-top:8px}
   #fcPhone{margin-top:4px}
   #fcBegin{margin-top:4px; height:54px}
@@ -346,6 +438,7 @@
   <header id="fcTop" class="fc-chrome">
     <div class="fbrand">Focus<span class="w"> room</span></div>
     <div id="fcClock">--:--</div>
+    <button id="fcTot" type="button" title="your time, in Settings" hidden><span id="fcTotD"></span><span id="fcTotW"></span></button>
     <div class="fc-tr">
       <button class="tbtn" id="fcWhyBtn" type="button" aria-label="Why the room works this way" aria-controls="fcLab" aria-expanded="false"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.5M12 17h.01"></path></svg><span class="w">Why?</span></button>
       <button class="tbtn fc-sess" id="fcSeal" type="button" aria-label="Full screen" title="full screen, the screen stays awake and the controls hide; esc to leave"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg><span class="nm">Full screen</span></button>
@@ -358,7 +451,8 @@
     <button id="fcCont" type="button" hidden><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg><span class="tx"><b>Continue where you stopped</b><span id="fcContN"></span></span></button>
     <div class="fc-qh"><label class="fc-h" for="fcIntent">What are you working on?</label><button class="fc-why" type="button" data-why="intention">why?</button></div>
     <input id="fcIntent" type="text" maxlength="60" placeholder="e.g. chapter 3 draft" autocomplete="off">
-    <input id="fcStep" type="text" maxlength="60" placeholder="smallest first step, e.g. open the file" aria-label="Smallest first step (optional)" autocomplete="off" hidden>
+    <div id="fcStepRow" hidden><input id="fcStep" type="text" maxlength="60" placeholder="smallest first step, e.g. open the file" aria-label="Smallest first step (optional)" autocomplete="off"><button class="fc-link" id="fcIfLnk" type="button" aria-expanded="false" aria-controls="fcIfRow">if-then plan</button></div>
+    <div id="fcIfRow" hidden><span class="k">if</span><input id="fcIf" type="text" maxlength="60" placeholder="a thought pulls me away" aria-label="If (the moment to plan for)" autocomplete="off"><span class="k">then</span><input id="fcThen" type="text" maxlength="60" placeholder="I park it and carry on" aria-label="Then I will" autocomplete="off"><button class="fc-why" type="button" data-why="if-then-plan">why?</button></div>
     <span class="fc-cap opt">optional &middot; shown on screen while you work</span>
     <div id="fcHabit" hidden><div class="fc-qh"><span class="q">Do you usually work with music on?</span><button class="fc-why" type="button" data-why="your-own-instrumental">why?</button></div><button class="tbtn" type="button" data-habit="music">Yes, usually</button><button class="tbtn" type="button" data-habit="quiet">No, I like it quiet</button></div>
     <div class="fc-qh fc-gap"><h2 class="fc-h">What kind of work?</h2><button class="fc-why" type="button" data-why="scenes-by-task">why?</button></div>
@@ -367,9 +461,11 @@
     <div id="fcProfPick" class="fc-chips" role="group" aria-label="Sound for this kind of work" hidden></div>
     <span id="fcCustom" class="fc-cap" hidden>your own settings, from the panel</span>
     <p id="fcPhone" class="fc-cap"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1.5"></rect><path d="M11 18h2"></path></svg>first: phone on silent, out of sight<button class="fc-why" type="button" data-why="phone-away">why?</button></p>
-    <button id="fcBegin" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg>Begin</button>
-    <span class="fc-cap opt">Begin starts the timer, and the music if the scene has it</span>
-    <button id="fcAdjust" type="button">or adjust the details first</button>
+    <div id="fcGoRow">
+      <button id="fcBegin" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg>Begin</button>
+      <span class="fc-cap opt">Begin starts the timer, and the music if the scene has it</span>
+      <button id="fcAdjust" type="button">or adjust the details first</button>
+    </div>
   </section>
 
   <section id="fcSess" class="fc-stage" aria-label="Focus session">
@@ -388,8 +484,16 @@
       <p class="tip">Stand up, look out of a window, drink some water. The phone can wait. <button class="fc-why" type="button" data-why="guided-break">why?</button></p>
       <div class="fc-qh"><label for="fcNote">Where did you stop, and what comes next?</label><button class="fc-why" type="button" data-why="where-you-stopped">why?</button></div>
       <input id="fcNote" type="text" maxlength="90" placeholder="e.g. halfway through section 2; next: the figures" autocomplete="off">
+      <p id="fcXNote" class="fc-cap" hidden></p>
+      <div id="fcParked" hidden><div class="fc-qh"><span class="lb">Parked while you worked</span><button class="fc-link" id="fcParkClr" type="button">clear all</button></div><ul id="fcParkL"></ul></div>
+      <p id="fcDayN" class="fc-cap" hidden></p>
+      <p id="fcCapN" hidden><span>That is four hours of focus today. Older studies of practice found no extra benefit beyond about four hours a day; a real rest may serve you better now.</span> <button class="fc-link" id="fcCapX" type="button">dismiss</button><button class="fc-why" type="button" data-why="daily-cap">why?</button></p>
     </div>
     <div id="fcActs">
+      <div id="fcRate" role="group" aria-labelledby="fcRateQ" hidden><span class="q" id="fcRateQ">How focused were you?</span><span class="fc-seg"><button class="tbtn" type="button" data-rate="1" aria-label="1, scattered">1</button><button class="tbtn" type="button" data-rate="2">2</button><button class="tbtn" type="button" data-rate="3">3</button><button class="tbtn" type="button" data-rate="4">4</button><button class="tbtn" type="button" data-rate="5" aria-label="5, deep focus">5</button></span></div>
+      <button class="fc-quiet fc-chrome" id="fcParkBtn" type="button" hidden>Park a thought</button>
+      <span id="fcParkBox" hidden><input id="fcPark" type="text" maxlength="90" placeholder="a thought for later; Enter parks it" aria-label="Park a thought for the break" autocomplete="off"><button class="fc-why" type="button" data-why="park-a-thought">why?</button></span>
+      <button class="fc-quiet fc-chrome" id="fcDis" type="button" hidden>I got distracted</button>
       <button class="tbtn" id="fcPlus" type="button" hidden>+5 min of work</button>
       <button class="tbtn" id="fcBreatheNow" type="button" hidden>Breathe 1 min</button>
     </div>
@@ -407,7 +511,7 @@
       <span class="fc-sep"></span>
       <button class="tbtn ic" id="fcMore" type="button" aria-label="Settings" aria-expanded="false" aria-controls="fcDrawer"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></button>
     </nav>
-    <div id="fcKeys" class="fc-chrome">space play / pause &middot; n next track &middot; esc leave full screen</div>
+    <div id="fcKeys" class="fc-chrome">space play / pause &middot; n next track &middot; t park a thought &middot; esc leave full screen</div>
   </section>
 
   <div id="fcScrim"></div>
@@ -444,11 +548,38 @@
       <div class="fc-row"><button class="tbtn" id="fcEnd" type="button">End session</button></div>
     </div>
 
+    <div class="fc-sec" id="fcLogSec">
+      <div class="fc-hd"><h3 class="fc-h">Your time</h3><span class="fc-sub">completed blocks, in this browser only</span><button class="fc-why" type="button" data-why="progress-log">why?</button></div>
+      <div id="fcWeek" class="fc-week"></div>
+      <p class="fc-note" id="fcLogSum"></p>
+      <p class="fc-note">Totals, not streaks: a day off breaks nothing. <button class="fc-why" type="button" data-why="no-punishing-streaks">why?</button> No points or badges either; the faint rings inside the timer mark each 20 minutes of focus. <button class="fc-why" type="button" data-why="light-gamification">why?</button></p>
+      <label class="fc-chk"><input type="checkbox" id="fcTotOn" checked>Show my totals at the door and in breaks</label>
+      <div class="fc-row"><button class="tbtn" id="fcExpCsv" type="button">Export CSV</button><button class="tbtn" id="fcExpJson" type="button">JSON</button><button class="tbtn" id="fcLogDel" type="button">Delete my log</button></div>
+      <p class="fc-note">The log and your experiments never leave this browser; export them to keep a copy.</p>
+    </div>
+
     <div class="fc-sec">
       <div class="fc-hd"><h3 class="fc-h">Sound</h3><span class="fc-sub">for this kind of work</span></div>
       <div id="fcProfs" class="fc-chips" role="group" aria-label="Sound for this scene"></div>
       <p class="fc-note" id="fcProfNote"></p>
       <div class="fc-row"><label class="fc-chk"><input type="checkbox" id="fcHabitChk">I usually work with music</label><button class="fc-why" type="button" data-why="your-own-instrumental">why?</button></div>
+    </div>
+
+    <div class="fc-sec" id="fcXSec">
+      <div class="fc-hd"><h3 class="fc-h">Your experiment</h3><span class="fc-sub">which sound works for you?</span><button class="fc-why" type="button" data-why="personal-experiment">why?</button></div>
+      <div id="fcXSetup">
+        <p class="fc-note">Compare two sounds for one kind of work. The room alternates them block by block (A B, then B A), and after each block you rate your focus with one tap. The result waits for 4 rated blocks of each.</p>
+        <div class="fc-row"><label class="fc-l" for="fcXScene">Work</label><select id="fcXScene"></select></div>
+        <div class="fc-row"><label class="fc-l" for="fcXA">Sound A</label><select id="fcXA"></select></div>
+        <div class="fc-row"><label class="fc-l" for="fcXB">Sound B</label><select id="fcXB"></select></div>
+        <div class="fc-row"><button class="tbtn" id="fcXGo" type="button">Start the experiment</button></div>
+      </div>
+      <div id="fcXRun" hidden>
+        <p class="fc-note" id="fcXState"></p>
+        <div id="fcXRes" class="fc-xres"></div>
+        <p class="fc-note">Limits: you know which sound is on (no blinding), so expectations count; the rating is your own impression, not a measure of output; and tasks vary from block to block. The result is about you, under these conditions.</p>
+        <div class="fc-row"><button class="tbtn" id="fcXStop" type="button">Stop the experiment</button></div>
+      </div>
     </div>
 
     <div class="fc-sec">
@@ -482,7 +613,7 @@
         <label class="fc-chk"><input type="checkbox" id="fcBreathe">Breathe before starting</label>
         <select id="fcBreLen" aria-label="Breathing length" style="flex:0 0 auto; width:auto"><option value="1">1 min</option><option value="3">3 min</option></select><button class="fc-why" type="button" data-why="breathing">why?</button>
       </div>
-      <p class="fc-note fc-kbd">space play / pause &middot; n next track &middot; esc closes this panel or leaves full screen</p>
+      <p class="fc-note fc-kbd">space play / pause &middot; n next track &middot; t park a thought &middot; esc closes this panel or leaves full screen</p>
     </div>
   </aside>
   <aside id="fcLab" role="dialog" aria-labelledby="fcLabH">
@@ -503,7 +634,8 @@ var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null, stage:"entry
   bg:"dusk", breakLift:0, agitUntil:0, allow:{}, scene:"read", pick:"read", len:25, vol:null,
   music:false, note:"", sndOv:null, exact:false, brkMusic:false,
   prof:{}, habit:null, curProf:"custom", step:"", stepOn:false,
-  pomo:{ run:false, started:false, phase:"work", long:false, left:25*60, total:25*60, works:0, focusedSec:0, brkT:0 } };
+  park:[], ift:{ i:"", t:"" }, ifOpen:false, totOn:true, capDay:"", xb:null, rateFor:null, lastRec:null,
+  pomo:{ run:false, started:false, phase:"work", long:false, left:25*60, total:25*60, works:0, focusedSec:0, brkT:0, ext:false } };
 var DEEP={focus_zen:1, ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
 var DEEPK=Object.keys(DEEP);
 /* perfis de som (ronda 2a, v5.0): o que soa durante o trabalho. A musica instrumental de que se
@@ -569,7 +701,7 @@ function sceneName(id){ var s=sceneById(id); return s ? s.name : "Custom"; }
 function lit(){ return Object.keys(FC.allow).filter(function(g){ return FC.allow[g]; }); }
 
 /* ---------- memoria da sala (so neste browser; nada sai dele) ---------- */
-var MEMK="hm_focus";
+var MEMK="hm_focus", PARKCAP=30;
 var MEM=(function(){
   try{
     var s=localStorage.getItem(MEMK), m=s ? JSON.parse(s) : null;
@@ -587,7 +719,8 @@ function memSave(){
     snd:{ rn:+$("fcRn").value||0, fp:+$("fcFp").value||0, ck:+$("fcCk").value||0 },
     ring:parseInt($("fcRing").value,10)||0, vol:FC.vol, bg:FC.bg,
     idle:$("fcBlack").checked, breathe:$("fcBreathe").checked, breLen:parseInt($("fcBreLen").value,10)||1,
-    intent:$("fcIntent").value.trim(), prof:FC.prof, habit:FC.habit, curProf:FC.curProf };
+    intent:$("fcIntent").value.trim(), prof:FC.prof, habit:FC.habit, curProf:FC.curProf,
+    park:FC.park, ift:FC.ift, tot:FC.totOn, capDay:FC.capDay };
   try{ localStorage.setItem(MEMK, JSON.stringify(MEM)); }catch(e){}
 }
 function memSoon(){ clearTimeout(memT); memT=setTimeout(memSave, 400); }
@@ -601,6 +734,13 @@ var LAST=MEM;
   if(m.prof && typeof m.prof==="object") Object.keys(m.prof).forEach(function(k){ if(sceneById(k) && profById(m.prof[k])) FC.prof[k]=m.prof[k]; });
   FC.habit=(m.habit==="music" || m.habit==="quiet") ? m.habit : null;
   FC.curProf=profById(m.curProf) ? m.curProf : "custom";
+  /* campos da ronda 2b (v5.2), tambem opcionais: pensamentos estacionados, plano «se... entao»,
+     totais a vista e o dia em que o aviso das quatro horas foi dispensado */
+  FC.park=Array.isArray(m.park) ? m.park.filter(function(x){ return x && typeof x.t==="string" && x.t; }).slice(-PARKCAP) : [];
+  FC.ift={ i:(m.ift && typeof m.ift.i==="string") ? m.ift.i : "", t:(m.ift && typeof m.ift.t==="string") ? m.ift.t : "" };
+  FC.ifOpen=!!(FC.ift.i || FC.ift.t);
+  FC.totOn=(m.tot!==false);
+  FC.capDay=typeof m.capDay==="string" ? m.capDay : "";
   FC.len=LENS.indexOf(m.len)>=0 ? m.len : 25;
   FC.allow={};
   ((m.allow && m.allow.length) ? m.allow : DEEPK).forEach(function(g){ FC.allow[g]=true; });
@@ -612,12 +752,105 @@ var LAST=MEM;
   $("fcBreathe").checked=(m.breathe===true);
   $("fcBreLen").value=String(m.breLen===3 ? 3 : 1);
   $("fcIntent").value=m.intent||"";
+  $("fcIf").value=FC.ift.i; $("fcThen").value=FC.ift.t; $("fcTotOn").checked=FC.totOn;
   FC.music=MEM ? (m.music!==false) : false;
   FC.note=m.note||"";
   FC.scene=m.scene||"read";
   FC.pick=MEM ? "last" : "read";
   FC.pomo.left=FC.pomo.total=FC.len*60;
 })();
+
+/* ---------- registo dos blocos (ronda 2b, v5.2): cada bloco de foco completo fica neste browser,
+   e so nele, com tampa; totais do dia e da semana, sem sequencias de dias; a experiencia pessoal
+   guarda aqui a ordem dos perfis e as notas ---------- */
+var LOGK="hm_focus_log", LOGCAP=2000, XPCAP=20, CAPMIN=240, XMIN=4;
+function pad2(n){ return (n<10?"0":"")+n; }
+function dayKey(d){ return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); }
+/* os sete dias da semana de d, de segunda a domingo; back=1 e a semana anterior */
+function weekDays(d, back){
+  var m=new Date(d.getFullYear(), d.getMonth(), d.getDate()-((d.getDay()+6)%7)-7*(back||0)), out=[];
+  for(var i=0;i<7;i++) out.push(dayKey(new Date(m.getFullYear(), m.getMonth(), m.getDate()+i)));
+  return out;
+}
+function hm(m){ var h=Math.floor(m/60), r=m%60; return h ? h+" h"+(r ? " "+pad2(r) : "") : r+" min"; }
+function hmShort(m){ var h=Math.floor(m/60), r=m%60; return h ? h+"h"+(r ? pad2(r) : "") : r+"m"; }
+function logNew(){ return { v:1, b:[], x:null, xp:[] }; }
+function xValid(x){ return !!(x && typeof x.id==="string" && sceneById(x.s) && profById(x.A) && profById(x.B) && x.A!==x.B && (x.f==="A" || x.f==="B")); }
+/* b: blocos { t fim em ms, d dia local, s cena, p perfil, m minutos, e experiencia, c condicao, r nota
+   (0 por dar), k toques «I got distracted», ch som mudado a meio }; x: experiencia em curso; xp: as acabadas */
+var FL=(function(){
+  try{
+    var s=localStorage.getItem(LOGK), l=s ? JSON.parse(s) : null;
+    if(l && l.v===1 && Array.isArray(l.b)){
+      l.b=l.b.filter(function(b){ return b && typeof b.d==="string" && typeof b.m==="number"; });
+      if(!xValid(l.x)) l.x=null;
+      if(l.x && !l.x.un) l.x.un={ A:0, B:0 };
+      if(!Array.isArray(l.xp)) l.xp=[];
+      return l;
+    }
+  }catch(e){}
+  return logNew();
+})();
+function logSave(){
+  if(FL.b.length>LOGCAP) FL.b.splice(0, FL.b.length-LOGCAP);
+  if(FL.xp.length>XPCAP) FL.xp.splice(0, FL.xp.length-XPCAP);
+  try{ localStorage.setItem(LOGK, JSON.stringify(FL)); }catch(e){}
+}
+function minsIn(days){
+  var set={}, o={ m:0, n:0 };
+  days.forEach(function(k){ set[k]=1; });
+  FL.b.forEach(function(b){ if(set[b.d]){ o.m+=b.m; o.n++; } });
+  return o;
+}
+/* experiencia pessoal: dois perfis da mesma cena, bloco a bloco, na ordem AB BA AB BA (ou BA AB BA
+   AB, sorteada ao comecar). So conta o bloco completo, avaliado e sem mudanca de som a meio, e a
+   ordem so avanca com ele; a posicao vem sempre da contagem no registo, para nunca se desalinhar */
+function xCounted(x){ return FL.b.filter(function(b){ return b.e===x.id && b.r>0 && !b.ch; }); }
+function xCond(i){ var x=FL.x, o=(x.f==="A") ? "B" : "A", k=i%4; return (k===0 || k===3) ? x.f : o; }
+function xNext(){ return FL.x ? xCond(xCounted(FL.x).length) : null; }
+function xOn(sid){ return !!(FL.x && FL.x.s===sid); }
+/* t de Student a 95% (bilateral) para 1 a 30 graus de liberdade */
+var TQ=[12.706,4.303,3.182,2.776,2.571,2.447,2.365,2.306,2.262,2.228,2.201,2.179,2.160,2.145,2.131,2.120,2.110,2.101,2.093,2.086,
+  2.080,2.074,2.069,2.064,2.060,2.056,2.052,2.048,2.045,2.042];
+function tq(df){ return df<=30 ? TQ[df-1] : df<=60 ? 2.0 : df<=120 ? 1.98 : 1.96; }
+/* medias por condicao e diferenca B menos A em cada par (1.o e 2.o contados, 3.o e 4.o...), com
+   intervalo de 95%; o resultado so aparece com XMIN blocos contados de cada som */
+function xStats(x){
+  var L=xCounted(x), S={ A:{ n:0, sum:0, k:0 }, B:{ n:0, sum:0, k:0 }, d:[], ready:false };
+  L.forEach(function(b){ var c=S[b.c]; if(c){ c.n++; c.sum+=b.r; c.k+=(b.k||0); } });
+  for(var i=0;i+1<L.length;i+=2){
+    var a=L[i], b=L[i+1];
+    if(a.c===b.c) continue;
+    S.d.push((a.c==="B" ? a.r : b.r)-(a.c==="A" ? a.r : b.r));
+  }
+  var n=S.d.length;
+  if(n) S.mean=S.d.reduce(function(t, v){ return t+v; }, 0)/n;
+  if(n>=2){
+    S.sd=Math.sqrt(S.d.reduce(function(t, v){ return t+(v-S.mean)*(v-S.mean); }, 0)/(n-1));
+    var h=tq(n-1)*S.sd/Math.sqrt(n);
+    S.lo=S.mean-h; S.hi=S.mean+h;
+  }
+  S.ready=(S.A.n>=XMIN && S.B.n>=XMIN && n>=2);
+  return S;
+}
+/* um bloco que chega ao intervalo entra no registo; o «+5 min of work» pedido no intervalo
+   prolonga o mesmo bloco, nao conta como outro */
+function logBlock(){
+  var p=FC.pomo, m=Math.max(1, Math.round(p.total/60)), b=FC.lastRec;
+  if(p.ext && b){
+    p.ext=false; b.m+=m;
+    if(FC.xb && b.e){ b.k=FC.xb.k; if(FC.xb.ch) b.ch=1; }
+    logSave();
+    return b;
+  }
+  p.ext=false;
+  var now=new Date();
+  b={ t:now.getTime(), d:dayKey(now), s:FC.scene, p:FC.curProf, m:m };
+  if(FC.xb && FL.x){ b.e=FL.x.id; b.c=FC.xb.c; b.r=0; b.k=FC.xb.k; if(FC.xb.ch) b.ch=1; }
+  FL.b.push(b); FC.lastRec=b;
+  logSave();
+  return b;
+}
 
 /* ---------- campo proprio, tres temperaturas, ou um campo da radio ---------- */
 var TEMPS={
@@ -820,16 +1053,35 @@ function tagPaint(){
   if($("fcTag").innerHTML!==h) $("fcTag").innerHTML=h;
   /* durante o trabalho: o primeiro passo (so no primeiro bloco) e onde se parou (plano de retoma) */
   var nx=$("fcNext"), work=(FC.stage==="session" && FC.pomo.phase==="work"), ln=[];
+  /* e, na ronda 2b, o bloco da experiencia (com o aviso se o som mudou) e o plano «se... entao» */
+  if(work && FC.xb){ var XP=profById(FC.xb.p); ln.push("<b>experiment</b>sound "+FC.xb.c+", "+esc(XP ? XP.name : FC.xb.p)+(FC.xb.ch ? "; the sound changed, so this block will not count" : "")); }
   if(work && FC.stepOn && FC.step) ln.push("<b>first step</b>"+esc(FC.step));
+  if(work && FC.ift.i && FC.ift.t) ln.push("<b>if</b>"+esc(FC.ift.i)+'<b class="th">then</b>'+esc(FC.ift.t));
   if(work && FC.note) ln.push("<b>you stopped at</b>"+esc(FC.note));
   nx.hidden=!ln.length;
   var hn=ln.join("<br>");
   if(nx.innerHTML!==hn) nx.innerHTML=hn;
 }
-/* o passo mais pequeno aparece quando ha intencao (ou ja tem texto) */
-function stepPaint(){ $("fcStep").hidden=!($("fcIntent").value.trim() || $("fcStep").value.trim()); }
+/* o passo mais pequeno aparece quando ha intencao (ou ja tem texto); na mesma linha, a ligacao para o
+   plano «se... entao» (ronda 2b), que abre os dois campos por baixo e fica a vista enquanto houver plano */
+function stepPaint(){
+  var on=!!($("fcIntent").value.trim() || $("fcStep").value.trim() || FC.ift.i || FC.ift.t);
+  $("fcStepRow").hidden=!on;
+  $("fcIfRow").hidden=!(on && FC.ifOpen);
+  $("focus").classList.toggle("ifon", on && FC.ifOpen);
+  var L=$("fcIfLnk");
+  L.setAttribute("aria-expanded", String(FC.ifOpen));
+  L.textContent=FC.ifOpen ? "done" : (FC.ift.i && FC.ift.t) ? "if-then plan: on" : "if-then plan";
+}
 $("fcIntent").addEventListener("input", function(){ stepPaint(); tagPaint(); memSoon(); });
 $("fcStep").addEventListener("input", function(){ FC.step=this.value.trim(); });
+$("fcIfLnk").addEventListener("click", function(){
+  FC.ifOpen=!FC.ifOpen; stepPaint();
+  if(FC.ifOpen){ try{ $("fcIf").focus(); }catch(e){} }
+});
+["fcIf","fcThen"].forEach(function(id){
+  $(id).addEventListener("input", function(){ FC.ift={ i:$("fcIf").value.trim(), t:$("fcThen").value.trim() }; tagPaint(); memSoon(); });
+});
 
 /* ---------- entrada: recomeco, continuar, cenas, som e Begin ---------- */
 var ICOP={
@@ -851,7 +1103,8 @@ function topSound(snd){
 function entryBuild(){
   var el=$("fcScenes"); el.innerHTML="";
   if(FC.pick==="last" && !LAST) FC.pick="read";
-  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, use:s.use, len:s.len, P:profById(profFor(s.id)) }; });
+  /* a cena da experiencia mostra o som que o proximo bloco vai ter */
+  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, use:s.use, len:s.len, P:profById(xOn(s.id) ? FL.x[xNext()] : profFor(s.id)) }; });
   if(LAST) list.push({ id:"last", name:"My last", use:"as you left it", len:LAST.len, P:profById(LAST.curProf), last:true,
     mix:mixNote(LAST.music!==false, (LAST.allow||[]).length, LAST.snd) });
   list.forEach(function(s){
@@ -872,13 +1125,13 @@ function entryBuild(){
   $("fcFresh").hidden=!fr;
   $("fcFreshT").textContent=fr;
   $("fcHabit").hidden=(FC.habit!==null);
-  stepPaint();
+  stepPaint(); totPaint();
   entryMark(); profPaint();
 }
 /* a cena escolhida na entrada aplica-se logo, para a gaveta mostrar o que vai tocar */
 function pickApply(){
   if(FC.pick==="last" && LAST) applyCfg({ scene:LAST.scene, len:LAST.len, g:LAST.allow, snd:LAST.snd, music:LAST.music!==false, vol:LAST.vol, prof:LAST.curProf });
-  else if(sceneById(FC.pick)) applyCfg(profCfg(FC.pick, profFor(FC.pick)));
+  else if(sceneById(FC.pick)) applyCfg(profCfg(FC.pick, xOn(FC.pick) ? FL.x[xNext()] : profFor(FC.pick)));
 }
 function entryMark(){
   document.querySelectorAll("#fcScenes .fc-card").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-id")===FC.pick)); });
@@ -907,6 +1160,8 @@ function begin(){
   pomoReset();
   FC.pomo.started=true; FC.pomo.run=true; FC.hold=false;
   FC.step=$("fcStep").value.trim(); FC.stepOn=!!FC.step;
+  FC.rateFor=null; FC.lastRec=null;
+  xBlockStart();
   setStage("session");
   /* a musica comeca com o tempo, se a cena a tiver; se ja tocava um genero que continua aceso, segue */
   if(FC.music){ if(!(fcp.playing && fcp.cur && FC.allow[fcp.cur.g])) fcNext(); }
@@ -914,7 +1169,7 @@ function begin(){
   /* os tres discos da mesa arrancam ja, dentro do gesto, mesmo a zero: o intervalo guiado
      precisa de lhes subir o nivel sem novo toque (no iOS o som so arranca dentro de um gesto) */
   sndInit(); sndApply();
-  sndUi(); pomoPaint(); memSave();
+  sndUi(); pomoPaint(); brkPaint(); memSave();
 }
 $("fcBegin").addEventListener("click", begin);
 $("fcCont").addEventListener("click", function(){ FC.pick="last"; begin(); });
@@ -939,26 +1194,51 @@ function profPaint(){
   $("fcSoundT").textContent=P ? P.note : mixNote(FC.music, lit().length, { rn:+$("fcRn").value, fp:+$("fcFp").value, ck:+$("fcCk").value });
   $("fcSoundWhy").setAttribute("data-why", P ? P.why : "your-own-instrumental");
   document.querySelectorAll("#fcProfPick .fc-chip, #fcProfs .fc-chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-prof")===FC.curProf)); });
-  var s=sceneById(FC.scene);
-  $("fcProfNote").textContent=s ? "Remembered for "+s.name+". Lit genres and volume can still be changed below." :
+  var s=sceneById(FC.scene), xe=xOn(FC.scene), door=(FC.stage==="entry" && !FC.pomo.started);
+  $("fcProfNote").textContent=(FC.xb && FC.pomo.phase==="work") ? "Your experiment chose this sound (sound "+FC.xb.c+"). Changing it means this block will not count." :
+    xe ? "Your experiment chooses the sound for "+s.name+", block by block." :
+    s ? "Remembered for "+s.name+". Lit genres and volume can still be changed below." :
     "Your own mix. Pick a sound to start from one of the room's.";
+  /* a porta da cena da experiencia diz que o som vem da experiencia e nao oferece outro */
+  if(xe && door) $("fcSoundT").textContent="set by your experiment, sound "+xNext();
+  $("fcSoundCh").hidden=(xe && door);
+  if(xe && door && !$("fcProfPick").hidden){ $("fcProfPick").hidden=true; $("fcSoundCh").setAttribute("aria-expanded", "false"); $("fcSoundCh").textContent="change"; }
   $("fcHabitChk").checked=(FC.habit==="music");
 }
 /* aplicar um perfil: generos, musica sim ou nao e sons de fundo; a duracao e o volume ficam */
-function profChoose(pid){
+function profSet(pid){
   var P=profById(pid); if(!P) return;
   var s=sceneById(FC.scene);
-  if(s) FC.prof[s.id]=pid;
   FC.curProf=pid;
   FC.allow={}; P.g.forEach(function(g){ FC.allow[g]=true; });
   FC.music=P.g.length>0;
   $("fcRn").value=P.rain ? ((s && s.rn) || P.rain) : 0; $("fcFp").value=0; $("fcCk").value=0;
+  valveBuild(); sndUi(); musicPaint();
+}
+/* a escolha da pessoa fica lembrada para a cena */
+function profChoose(pid){
+  var P=profById(pid); if(!P) return;
+  var s=sceneById(FC.scene);
+  if(s) FC.prof[s.id]=pid;
+  if(pid!==FC.curProf) xTouch();
+  profSet(pid);
   /* a porta deixa de estar em «My last»: o Begin reaplica a escolha e apagaria este som */
   if(FC.stage==="entry" && !FC.pomo.started) FC.pick=s ? s.id : "custom";
-  valveBuild(); sndUi(); musicPaint();
   if(FC.stage==="entry") entryBuild(); else profPaint();
   musicSync(); memSoon();
 }
+/* bloco da experiencia (ronda 2b): na cena da experiencia, o perfil do bloco vem da ordem AB BA e
+   nao muda o perfil lembrado para a cena; mudar o som a meio tira o bloco da contagem */
+function xBlockStart(){
+  FC.xb=null;
+  if(!xOn(FC.scene)) return false;
+  var c=xNext(), pid=FL.x[c];
+  profSet(pid);
+  FC.xb={ c:c, p:pid, k:0, ch:false };
+  profPaint();
+  return true;
+}
+function xTouch(){ if(FC.xb && FC.pomo.started && FC.pomo.phase==="work"){ FC.xb.ch=true; tagPaint(); } }
 /* depois de mudar cena ou perfil: a musica segue o que ficou aceso (so na sessao; a porta fica calada) */
 function musicSync(){
   if(snd.els) sndApply();
@@ -967,7 +1247,7 @@ function musicSync(){
   if(FC.stage==="session" && anySound()){ rctx(); sndInit(); sndApply(); }
 }
 /* mexer nos generos ou ligar e desligar a musica a mao faz do som uma mistura propria */
-function soundCustom(){ FC.curProf="custom"; profPaint(); }
+function soundCustom(){ xTouch(); FC.curProf="custom"; profPaint(); }
 $("fcSoundCh").addEventListener("click", function(){
   var pk=$("fcProfPick"), on=pk.hidden;
   pk.hidden=!on;
@@ -990,7 +1270,7 @@ $("fcAdjust").addEventListener("click", function(){ drawer(true); });
 var CIRC=2*Math.PI*172;
 function pomoReset(){
   var p=FC.pomo;
-  p.run=false; p.started=false; p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.works=0; p.brkT=0;
+  p.run=false; p.started=false; p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.works=0; p.brkT=0; p.ext=false;
   FC.breakLift=0; FC.sndOv=null; fadeTo(1, 0);
 }
 function mmss(s){ var m=Math.floor(s/60), x=s%60; return (m<10?"0":"")+m+":"+(x<10?"0":"")+x; }
@@ -1019,7 +1299,7 @@ function pomoPaint(){
   $("fcDial").setAttribute("aria-label", (p.run?"Pause":"Resume")+" the timer, "+m+" min "+sx+" s left");
   $("fcHint").textContent=p.run ? "tap the ring to pause" : "tap the ring to resume";
   $("fcGo").innerHTML=(p.run ? ICO.pause+"<span>Pause</span>" : ICO.play+"<span>Resume</span>");
-  tagPaint();
+  actsPaint(); tagPaint();
 }
 function lenPaint(){
   document.querySelectorAll("#fcLenSeg .tbtn").forEach(function(b){ b.setAttribute("aria-pressed", String(+b.getAttribute("data-len")===FC.len)); });
@@ -1044,16 +1324,27 @@ function breakStart(){
   p.works++;
   ringPlay(parseInt($("fcRing").value,10)||0);
   FC.agitUntil=performance.now()+6000;
+  /* o bloco completo entra no registo (antes de o tempo passar a ser o do intervalo); se for da
+     experiencia e o som nao mudou, o intervalo pede a nota */
+  var rec=logBlock();
+  FC.rateFor=(rec.e && !rec.ch && FL.x && rec.e===FL.x.id) ? rec : null;
   p.phase="break"; p.long=(p.works%3===0); p.left=p.total=(p.long ? 30 : brkFor(FC.len))*60; p.brkT=Date.now();
   FC.breakLift=1;
   FC.stepOn=false; FC.step=""; $("fcStep").value="";
   $("fcNote").value="";
+  parkHide();
   breakAudio(true);
+  brkPaint();
 }
 function breakEnd(){
   var p=FC.pomo;
   p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.brkT=0; FC.breakLift=0;
+  FC.rateFor=null; FC.lastRec=null; p.ext=false;
+  /* bloco novo: na cena da experiencia, o perfil seguinte da ordem */
+  var xb=xBlockStart();
   breakAudio(false);
+  if(xb) musicSync();
+  brkPaint();
   ringPlay(6);
 }
 function breakAudio(on){
@@ -1079,8 +1370,10 @@ function plusFive(){
   var p=FC.pomo;
   if(p.phase==="work"){ p.left+=300; p.total+=300; fadeTo(1, 3000); }
   else if(plusBack()){
-    p.works--; p.phase="work"; p.long=false; p.left=p.total=300; p.brkT=0; FC.breakLift=0;
+    /* o mesmo bloco continua: no fim soma ao registo do bloco, nao conta como outro */
+    p.works--; p.phase="work"; p.long=false; p.left=p.total=300; p.brkT=0; FC.breakLift=0; p.ext=true;
     breakAudio(false);
+    brkPaint();
   }
   pomoPaint();
 }
@@ -1117,11 +1410,16 @@ document.querySelectorAll("#fcLenSeg .tbtn").forEach(function(b){
   });
 });
 $("fcEnd").addEventListener("click", function(){
+  /* um bloco da experiencia deixado a meio (com pelo menos um minuto) conta como inacabado */
+  var p=FC.pomo;
+  if(FC.xb && FL.x && p.started && p.phase==="work" && !p.ext && (p.total-p.left)>=60){ FL.x.un[FC.xb.c]=(FL.x.un[FC.xb.c]||0)+1; logSave(); }
+  FC.xb=null; FC.rateFor=null; FC.lastRec=null;
+  parkHide();
   pomoReset(); fcStopTune(); sndStop(); FC.hold=false;
   /* de volta a entrada, a configuracao que se usava fica escolhida como «My last» */
   FC.stepOn=false;
   memSave(); LAST=MEM; FC.pick="last";
-  drawer(false); setStage("entry"); pomoPaint();
+  drawer(false); setStage("entry"); pomoPaint(); brkPaint();
 });
 
 /* ---------- o leitor proprio da sala ----------
@@ -1256,6 +1554,7 @@ document.addEventListener("keydown", function(ev){
   if(ev.target && ev.target.closest && ev.target.closest("#fcDrawer, #fcLab")) return;
   if(ev.key===" "){ ev.preventDefault(); ev.stopImmediatePropagation(); playToggle(); }
   else if(ev.key==="n"){ ev.stopImmediatePropagation(); skipTrack(); }
+  else if((ev.key==="t" || ev.key==="T") && FC.stage==="session" && FC.pomo.started && FC.pomo.phase==="work"){ ev.preventDefault(); ev.stopImmediatePropagation(); parkOpen(); }
 }, true);
 
 /* ---------- aneis de profundidade: um por cada 20 minutos de foco, dentro do anel do tempo ---------- */
@@ -1317,6 +1616,7 @@ function sceneSelPaint(){
 }
 $("fcSceneSel").addEventListener("change", function(){
   var s=sceneById(this.value); if(!s) return;
+  xTouch();
   applyCfg(profCfg(s.id, profFor(s.id)));
   if(FC.stage==="entry"){ FC.pick=s.id; entryBuild(); }
   musicSync();
@@ -1471,7 +1771,7 @@ function sndUi(){
 }
 ["fcCk","fcRn","fcFp"].forEach(function(id){
   /* o gesto no fader acorda o contexto de audio (suspenso pelo autoplay ou interrompido no iOS) */
-  $(id).addEventListener("input", function(){ FC.sndOv=null; rctx(); sndInit(); sndApply(); sndUi(); memSoon(); });
+  $(id).addEventListener("input", function(){ FC.sndOv=null; xTouch(); rctx(); sndInit(); sndApply(); sndUi(); memSoon(); });
 });
 /* um toque liga ou desliga; volta ao ultimo nivel usado */
 var SLAST={ rn:50, fp:40, ck:30 };
@@ -1479,7 +1779,7 @@ Object.keys(TID).forEach(function(k){
   $(TID[k]).addEventListener("click", function(){
     var f=$(DID[k]), v=sndLevel(k);
     if(v>0){ SLAST[k]=v; f.value=0; } else { f.value=SLAST[k]; }
-    FC.sndOv=null; rctx(); sndInit(); sndApply(); sndUi(); memSoon();
+    FC.sndOv=null; xTouch(); rctx(); sndInit(); sndApply(); sndUi(); memSoon();
   });
 });
 function sndStop(){
@@ -1582,12 +1882,232 @@ function ringPlay(which){
 $("fcRingTest").addEventListener("click", function(){ ringPlay(parseInt($("fcRing").value,10)||0); });
 $("fcRing").addEventListener("change", memSoon);
 
+/* ---------- ronda 2b (v5.2): pensamentos estacionados, nota de foco, totais, aviso das quatro
+   horas e experiencia pessoal ---------- */
+var ICOX='<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>';
+/* durante o trabalho: estacionar um pensamento (uma linha, Enter guarda) e, nos blocos da experiencia,
+   o toque «I got distracted»; os dois somem com o resto dos controlos quando o rato para */
+function actsPaint(){
+  var p=FC.pomo, work=p.started && p.phase==="work", box=!$("fcParkBox").hidden;
+  if(box && !work){ $("fcParkBox").hidden=true; $("fcPark").value=""; box=false; }
+  $("fcParkBtn").hidden=!work || box;
+  var dis=work && !!FC.xb, t="I got distracted"+((dis && FC.xb.k) ? " \u00b7 "+FC.xb.k : "");
+  $("fcDis").hidden=!dis;
+  if($("fcDis").textContent!==t) $("fcDis").textContent=t;
+}
+var parkT=0;
+function parkOpen(){
+  if(!(FC.pomo.started && FC.pomo.phase==="work")) return;
+  $("fcParkBox").hidden=false; actsPaint();
+  try{ $("fcPark").focus(); }catch(e){}
+}
+function parkHide(){ $("fcParkBox").hidden=true; $("fcPark").value=""; actsPaint(); }
+function parkAdd(){
+  var v=$("fcPark").value.trim();
+  if(v){ FC.park.push({ t:v, at:Date.now() }); if(FC.park.length>PARKCAP) FC.park.shift(); memSoon(); }
+  parkHide();
+  if(v){
+    var b=$("fcParkBtn"); b.textContent="Thought parked";
+    clearTimeout(parkT); parkT=setTimeout(function(){ b.textContent="Park a thought"; }, 1800);
+  }
+}
+$("fcParkBtn").addEventListener("click", parkOpen);
+$("fcPark").addEventListener("keydown", function(ev){ if(ev.key==="Enter"){ ev.preventDefault(); parkAdd(); } });
+$("fcDis").addEventListener("click", function(){ if(FC.xb && FC.pomo.phase==="work"){ FC.xb.k++; actsPaint(); } });
+/* no intervalo: a nota de 1 a 5 (so nos blocos da experiencia), os pensamentos estacionados, o total
+   do dia e, passadas as quatro horas, o aviso, uma vez por dia */
+function parkList(){
+  var ul=$("fcParkL"); ul.innerHTML="";
+  FC.park.forEach(function(x, i){
+    var li=document.createElement("li"), sp=document.createElement("span"), b=document.createElement("button");
+    sp.textContent=x.t; sp.title=x.t;
+    b.type="button"; b.className="fc-x"; b.setAttribute("aria-label", "Remove: "+x.t); b.innerHTML=ICOX;
+    b.addEventListener("click", function(){ FC.park.splice(i, 1); memSoon(); brkPaint(); });
+    li.appendChild(sp); li.appendChild(b); ul.appendChild(li);
+  });
+}
+function brkPaint(){
+  var p=FC.pomo, brk=p.started && p.phase==="break", r=brk ? FC.rateFor : null, b=FC.lastRec;
+  $("fcRate").hidden=!r;
+  if(r){
+    $("fcRateQ").textContent=r.r ? "Focus noted" : "How focused were you?";
+    document.querySelectorAll("#fcRate [data-rate]").forEach(function(x){ x.setAttribute("aria-pressed", String(+x.getAttribute("data-rate")===r.r)); });
+  }
+  var xn="";
+  if(brk && b && b.e){
+    if(b.ch) xn="This block does not count for your experiment: the sound changed during it.";
+    else if(r && r.r && FL.x){
+      var S=xStats(FL.x);
+      xn=S.ready ? "Your experiment has a result, in Settings." : "Rated so far: A "+S.A.n+", B "+S.B.n+"; the result needs "+XMIN+" of each.";
+    }
+  }
+  $("fcXNote").textContent=xn; $("fcXNote").hidden=!xn;
+  var pk=brk && FC.park.length>0;
+  $("fcParked").hidden=!pk;
+  if(pk) parkList();
+  var tk=dayKey(new Date()), t=minsIn([tk]);
+  var cap=brk && t.m>=CAPMIN && FC.capDay!==tk;
+  $("fcCapN").hidden=!cap;
+  var dn=brk && !cap && FC.totOn && t.m>0;
+  $("fcDayN").hidden=!dn;
+  if(dn) $("fcDayN").textContent="today so far: "+hm(t.m)+" of focus";
+  $("focus").classList.toggle("more", !!(r || pk || cap || xn));
+}
+function rate(v){
+  var r=FC.rateFor;
+  if(!r || FC.pomo.phase!=="break") return;
+  r.r=v; logSave(); brkPaint(); xPaint();
+}
+document.querySelectorAll("#fcRate [data-rate]").forEach(function(b){
+  b.addEventListener("click", function(){ rate(+b.getAttribute("data-rate")); });
+});
+$("fcParkClr").addEventListener("click", function(){ FC.park=[]; memSoon(); brkPaint(); });
+$("fcCapX").addEventListener("click", function(){ FC.capDay=dayKey(new Date()); memSoon(); brkPaint(); });
+/* totais: no topo da porta (um toque abre a gaveta neles) e, na gaveta, a semana de segunda a domingo */
+function totPaint(){
+  var now=new Date(), t=minsIn([dayKey(now)]), w=minsIn(weekDays(now)), on=FC.totOn && w.m>0;
+  $("fcTot").hidden=!on;
+  $("focus").classList.toggle("hastot", on);
+  $("fcTotD").textContent=t.m ? "today "+hm(t.m) : "";
+  $("fcTotW").textContent="this week "+hm(w.m);
+}
+function logPaint(){
+  var now=new Date(), days=weekDays(now), tk=dayKey(now), per={}, mx=CAPMIN, h="", L="MTWTFSS";
+  FL.b.forEach(function(b){ per[b.d]=(per[b.d]||0)+b.m; });
+  days.forEach(function(k){ if((per[k]||0)>mx) mx=per[k]; });
+  days.forEach(function(k, i){
+    var m=per[k]||0;
+    h+='<div class="dy'+(k===tk ? " td" : "")+'" title="'+k+(m ? ", "+hm(m) : "")+'"><span class="bar"><i style="height:'+Math.round(100*m/mx)+
+      '%"></i></span><span>'+L[i]+'</span><span class="mm">'+(m ? hmShort(m) : "")+"</span></div>";
+  });
+  $("fcWeek").innerHTML=h;
+  var t=minsIn([tk]), w=minsIn(days), lw=minsIn(weekDays(now, 1));
+  function n(o){ return o.m ? hm(o.m)+", "+o.n+" block"+(o.n===1 ? "" : "s") : "nothing yet"; }
+  $("fcLogSum").textContent=FL.b.length ? "Today: "+n(t)+". This week: "+n(w)+"."+(lw.m ? " Last week: "+hm(lw.m)+"." : "") :
+    "No completed blocks yet. Each block that reaches its break is added here.";
+}
+$("fcTot").addEventListener("click", function(){
+  drawer(true);
+  setTimeout(function(){ try{ $("fcLogSec").scrollIntoView({ block:"start" }); }catch(e){} }, 80);
+});
+$("fcTotOn").addEventListener("change", function(){ FC.totOn=this.checked; totPaint(); brkPaint(); memSoon(); });
+/* experiencia pessoal, na gaveta: escolher a cena e os dois sons, acompanhar e ver o resultado */
+function xSelFill(){
+  if($("fcXScene").options.length) return;
+  $("fcXScene").innerHTML=SCENES.map(function(s){ return '<option value="'+s.id+'">'+esc(s.name)+"</option>"; }).join("");
+  var po=PROFS.map(function(P){ return '<option value="'+P.id+'">'+esc(P.name)+", "+esc(P.note)+"</option>"; }).join("");
+  $("fcXA").innerHTML=po; $("fcXB").innerHTML=po;
+}
+function xOther(pid){ return pid==="silence" ? "nature" : "silence"; }
+function xDefaults(sid){
+  xSelFill();
+  var A=profFor(sid) || "silence";
+  $("fcXScene").value=sid; $("fcXA").value=A; $("fcXB").value=xOther(A);
+  xPrev();
+}
+function f1(v){ return (v>0 ? "+" : "")+v.toFixed(1); }
+function xResHtml(x, S){
+  var A=profById(x.A).name, B=profById(x.B).name;
+  if(!S.ready) return "<p>No result yet: it waits for "+XMIN+" rated blocks of each sound, so one good or bad day cannot decide it. Rated so far: A "+
+    S.A.n+", B "+S.B.n+".</p>";
+  function row(c, nm){
+    var o=S[c];
+    return "<p><b>"+c+", "+esc(nm)+"</b>: focus "+(o.sum/o.n).toFixed(1)+" on average over "+o.n+" blocks; "+(o.k/o.n).toFixed(1)+" distractions a block.</p>";
+  }
+  var h=row("A", A)+row("B", B);
+  h+="<p>Difference, B minus A, pair by pair: <b>"+f1(S.mean)+"</b> "+(S.sd>0 ? "(95% interval "+f1(S.lo)+" to "+f1(S.hi)+", " : "(every pair gave the same, ")+
+    S.d.length+" pairs).</p>";
+  var v=S.lo>0 ? "So far "+B+" went better for you on this measure." : S.hi<0 ? "So far "+A+" went better for you on this measure." :
+    "No clear difference yet: the interval includes zero. More blocks narrow it, and no difference is a useful answer too.";
+  h+='<p class="vd">'+esc(v)+"</p>";
+  if(x.un && (x.un.A || x.un.B)) h+="<p>Blocks left unfinished: A "+x.un.A+", B "+x.un.B+".</p>";
+  return h;
+}
+function xPaint(){
+  xSelFill();
+  var x=FL.x;
+  $("fcXSetup").hidden=!!x; $("fcXRun").hidden=!x;
+  if(!x) return;
+  var S=xStats(x), nx=xNext(), sn=sceneName(x.s);
+  $("fcXState").textContent=sn+": "+profById(x.A).name+" (A) against "+profById(x.B).name+" (B). Next "+sn+" block: "+nx+", "+profById(x[nx]).name+".";
+  $("fcXRes").innerHTML=xResHtml(x, S);
+}
+$("fcXScene").addEventListener("change", function(){ xDefaults(this.value); });
+/* escolher num lado o som que esta no outro troca-os: os dois nunca ficam iguais */
+function xPrev(){ $("fcXA").setAttribute("data-prev", $("fcXA").value); $("fcXB").setAttribute("data-prev", $("fcXB").value); }
+[["fcXA","fcXB"],["fcXB","fcXA"]].forEach(function(pr){
+  $(pr[0]).addEventListener("change", function(){
+    var o=$(pr[1]);
+    if(o.value===this.value) o.value=this.getAttribute("data-prev") || xOther(this.value);
+    if(o.value===this.value) o.value=xOther(this.value);
+    xPrev();
+  });
+});
+$("fcXGo").addEventListener("click", function(){
+  var sid=$("fcXScene").value, A=$("fcXA").value, B=$("fcXB").value;
+  if(!sceneById(sid) || !profById(A) || !profById(B) || A===B) return;
+  FL.x={ id:"x"+Date.now().toString(36), s:sid, A:A, B:B, f:Math.random()<.5 ? "A" : "B", t0:Date.now(), un:{ A:0, B:0 } };
+  logSave(); xPaint();
+  /* a porta passa para a cena da experiencia; numa sessao, comeca no bloco seguinte dessa cena */
+  if(FC.stage==="entry" && !FC.pomo.started){ FC.pick=sid; pickApply(); entryBuild(); }
+  else profPaint();
+});
+$("fcXStop").addEventListener("click", function(){
+  var x=FL.x; if(!x) return;
+  var S=xStats(x);
+  x.end=Date.now(); x.res={ A:S.A, B:S.B, pairs:S.d, mean:S.mean, lo:S.lo, hi:S.hi };
+  FL.xp.push(x); FL.x=null; FC.xb=null; FC.rateFor=null;
+  logSave(); xPaint(); brkPaint(); pomoPaint();
+  if(FC.stage==="entry" && !FC.pomo.started){ pickApply(); entryBuild(); } else profPaint();
+});
+/* exportar (CSV para folhas de calculo, JSON com tudo) e apagar, com segundo toque */
+function stamp(){ var d=new Date(); return dayKey(d).replace(/-/g, "")+"-"+pad2(d.getHours())+pad2(d.getMinutes()); }
+function download(name, text, type){
+  try{
+    var u=URL.createObjectURL(new Blob([text], { type:type }));
+    var a=document.createElement("a"); a.href=u; a.download=name; a.style.display="none";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 2000);
+  }catch(e){}
+}
+function logCsv(){
+  var rows=["date,time,scene,sound,minutes,experiment,condition,rating,distracted,counted"];
+  FL.b.forEach(function(b){
+    var d=new Date(b.t);
+    rows.push([b.d, pad2(d.getHours())+":"+pad2(d.getMinutes()), b.s, b.p, b.m, b.e||"", b.c||"", b.r||"",
+      b.e ? (b.k||0) : "", b.e ? ((b.r>0 && !b.ch) ? 1 : 0) : ""].join(","));
+  });
+  return rows.join("\n")+"\n";
+}
+function logJson(){
+  return JSON.stringify({ app:"Home Music focus room", exported:new Date().toISOString(),
+    note:"Completed focus blocks and personal experiments, kept only in this browser until exported.", log:FL }, null, 1);
+}
+$("fcExpCsv").addEventListener("click", function(){ download("home-music-focus-log-"+stamp()+".csv", logCsv(), "text/csv;charset=utf-8"); });
+$("fcExpJson").addEventListener("click", function(){ download("home-music-focus-log-"+stamp()+".json", logJson(), "application/json"); });
+var delT=0;
+$("fcLogDel").addEventListener("click", function(){
+  var b=this;
+  if(!delT){
+    b.textContent="Tap again to delete";
+    delT=setTimeout(function(){ delT=0; b.textContent="Delete my log"; }, 4000);
+    return;
+  }
+  clearTimeout(delT); delT=0; b.textContent="Delete my log";
+  FL=logNew(); FC.xb=null; FC.rateFor=null; FC.lastRec=null;
+  try{ localStorage.removeItem(LOGK); }catch(e){}
+  logPaint(); xPaint(); brkPaint(); totPaint(); pomoPaint(); profPaint();
+});
+
 /* ---------- gaveta de ajustes ---------- */
 function drawer(on){
   if(on) lab(false);
   $("focus").classList.toggle("drw", on);
   $("fcMore").setAttribute("aria-expanded", String(on));
-  if(on){ $("focus").classList.remove("idle"); clearTimeout(idleT); setTimeout(function(){ try{ $("fcDrawerX").focus(); }catch(e){} }, 60); }
+  if(on){
+    logPaint(); if(!FL.x) xDefaults(sceneById(FC.scene) ? FC.scene : "write"); xPaint();
+    $("focus").classList.remove("idle"); clearTimeout(idleT); setTimeout(function(){ try{ $("fcDrawerX").focus(); }catch(e){} }, 60);
+  }
   else wakeChrome();
 }
 $("fcMore").addEventListener("click", function(){ drawer(!$("focus").classList.contains("drw")); });
@@ -1730,6 +2250,7 @@ document.addEventListener("keydown", function(ev){
   if(ev.key==="Escape"){
     if($("focus").classList.contains("lab")){ lab(false); ev.stopImmediatePropagation(); }
     else if($("focus").classList.contains("drw")){ drawer(false); ev.stopImmediatePropagation(); }
+    else if(!$("fcParkBox").hidden){ parkHide(); ev.stopImmediatePropagation(); }
     else if(FC.sealed){ seal(false); ev.stopImmediatePropagation(); }
   }
 }, true);
@@ -1774,6 +2295,7 @@ document.getElementById("focusBtn").addEventListener("click", focusOpen);
 $("fcExit").addEventListener("click", focusClose);
 profBuild();
 /* estado da sala para os testes (ops/tests/t-focus.js); o motor usa outro nome, HMFOCUS */
-window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor };
+window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor, log:function(){ return FL; }, xStats:function(){ return FL.x ? xStats(FL.x) : null; },
+  xNext:xNext, dayKey:dayKey, csv:logCsv };
 })();
 </script>

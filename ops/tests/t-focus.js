@@ -5,7 +5,11 @@
 // migracao da memoria da v4.6). Nada sobreposto nem fora do ecra em 1440x900, 1024x768, 390x844 e
 // 844x390, no trabalho e no intervalo. Ronda 2a: perfis de som por cena e pergunta da primeira visita,
 // zona «why?» (painel e ligacoes, todas com prova no focus-evidence.json), «continuar onde parei»,
-// passo mais pequeno e linha de recomeco. O relogio da sala acelera-se pelo window.HMFR. Cerca de 2 min.
+// passo mais pequeno e linha de recomeco. Ronda 2b (v5.2): registo dos blocos completos (totais do dia e da
+// semana, «+5 min» no mesmo bloco, tampa de 2000), aviso das quatro horas, plano «se... entao», pensamentos
+// estacionados, experiencia pessoal AB BA (ordem, nota de 1 a 5, «I got distracted», bloco mudado fora da
+// contagem, resultado com intervalo so com quatro de cada, inacabados, exportacao CSV e JSON, parar, apagar).
+// O relogio da sala acelera-se pelo window.HMFR. Cerca de 3 min.
 'use strict';
 const T = require('./lib/common');
 
@@ -34,10 +38,10 @@ const layout = (page, sels) => page.evaluate((sels) => {
   }
   return { n: items.length, bad: out };
 }, sels);
-const ENTRY = ['#fcTop .fbrand', '#fcWhyBtn', '#fcExit', '#fcFresh', '#fcCont', '#fcIntent', '#fcStep', '#fcHabit', '#fcScenes .fc-card',
-  '#fcSound', '#fcPhone', '#fcBegin', '#fcAdjust'];
-const SESS = ['#fcTop .fbrand', '#fcWhyBtn', '#fcSeal', '#fcExit', '#fcTag', '#fcNext', '#fcDial', '#fcHint', '#fcBrk', '#fcPlus', '#fcBreatheNow',
-  '#fcGo', '#fcNowBox', '#fcPlay', '#fcSkipT', '.fc-vol', '#fcTgRn', '#fcTgFp', '#fcTgCk', '#fcMore', '#fcKeys'];
+const ENTRY = ['#fcTop .fbrand', '#fcClock', '#fcTot', '#fcWhyBtn', '#fcExit', '#fcFresh', '#fcCont', '#fcIntent', '#fcStep', '#fcIfLnk', '#fcIfRow',
+  '#fcHabit', '#fcScenes .fc-card', '#fcSound', '#fcPhone', '#fcBegin', '#fcAdjust'];
+const SESS = ['#fcTop .fbrand', '#fcWhyBtn', '#fcSeal', '#fcExit', '#fcTag', '#fcNext', '#fcDial', '#fcHint', '#fcBrk', '#fcRate', '#fcParkBtn',
+  '#fcParkBox', '#fcDis', '#fcPlus', '#fcBreatheNow', '#fcGo', '#fcNowBox', '#fcPlay', '#fcSkipT', '.fc-vol', '#fcTgRn', '#fcTgFp', '#fcTgCk', '#fcMore', '#fcKeys'];
 
 const st = (page) => page.evaluate(() => {
   const d = (id) => document.getElementById(id);
@@ -53,8 +57,20 @@ const st = (page) => page.evaluate(() => {
     next: d('fcNext').hidden ? '' : d('fcNext').textContent,
     sd: [...document.querySelectorAll('#fcScenes .fc-card .sd')].map(e => e.textContent.trim()).join(','),
     habit: !d('fcHabit').hidden, sound: d('fcSoundN').textContent,
+    tot: d('fcTot').hidden ? '' : d('fcTot').textContent, rate: !d('fcRate').hidden, xnote: d('fcXNote').hidden ? '' : d('fcXNote').textContent,
+    parked: d('fcParked').hidden ? '' : d('fcParkL').textContent, day: d('fcDayN').hidden ? '' : d('fcDayN').textContent,
+    cap: !d('fcCapN').hidden, park: !d('fcParkBtn').hidden, dis: d('fcDis').hidden ? '' : d('fcDis').textContent,
   };
 });
+/* registo dos blocos (hm_focus_log) e experiencia, lidos pelo window.HMFR */
+const flog = (page) => page.evaluate(() => JSON.parse(JSON.stringify({ log: HMFR.log(), xb: HMFR.fc.xb, cur: HMFR.fc.curProf, next: HMFR.xNext(), today: HMFR.dayKey(new Date()) })));
+/* acaba o bloco ou o intervalo em curso (o relogio da sala conta um segundo de cada vez) */
+const finish = async (page) => { await page.evaluate(() => { HMFR.fc.pomo.left = 1; }); await page.waitForTimeout(1600); };
+/* descarrega uma exportacao e devolve o texto */
+const grab = async (page, sel) => {
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click(sel)]);
+  const fs = require('fs'); const f = await dl.path(); return { name: dl.suggestedFilename(), text: fs.readFileSync(f, 'utf8') };
+};
 /* painel «why?»: aberto, quantas provas, qual a destacada e se esta dentro do ecra */
 const labSt = (page) => page.evaluate(() => {
   const hl = document.querySelector('#fcLab .fc-ev.hl');
@@ -125,9 +141,18 @@ const tune = (page) => page.evaluate(() => {
   s = await st(r.page);
   t.check('habito «Yes, usually»: a pergunta sai e Read e Study passam a lo-fi', !s.habit && s.sd === 'Lo-fi,Lo-fi,Minimal,Minimal,Nature,Energy' && s.sound === 'Lo-fi', JSON.stringify(s));
 
+  t.check('registo: sem blocos, a porta nao mostra totais', s.tot === '' && (await flog(r.page)).log.b.length === 0, JSON.stringify(s.tot));
   await r.page.fill('#fcIntent', 'chapter 3 draft');
   t.check('passo mais pequeno: aparece quando ha intencao', await r.page.isVisible('#fcStep'));
   await r.page.fill('#fcStep', 'open the outline');
+  t.check('se... entao: a ligacao esta na linha do passo e os campos fechados', await r.page.isVisible('#fcIfLnk') && !(await r.page.isVisible('#fcIfRow')));
+  await r.page.click('#fcIfLnk'); await r.page.waitForTimeout(200);
+  await r.page.fill('#fcIf', 'I want to check my phone'); await r.page.fill('#fcThen', 'I park the thought and carry on');
+  L = await layout(r.page, ENTRY);
+  t.check('entrada com o plano «se... entao» aberto 1440x900: tudo no ecra, nada sobreposto', (await r.page.isVisible('#fcIfRow')) && !L.bad.length, L.bad.join(' | '));
+  await r.page.click('#fcIfLnk'); await r.page.waitForTimeout(200);
+  t.check('se... entao: «done» fecha os campos e a ligacao diz que o plano esta ligado', !(await r.page.isVisible('#fcIfRow')) &&
+    (await r.page.textContent('#fcIfLnk')) === 'if-then plan: on', await r.page.textContent('#fcIfLnk'));
   await r.page.click('#fcScenes .fc-card[data-id="write"]');
   await r.page.click('#fcSoundCh'); await r.page.waitForTimeout(200);
   await r.page.click('#fcProfPick .fc-chip[data-prof="liquid"]'); await r.page.waitForTimeout(300);
@@ -142,6 +167,14 @@ const tune = (page) => page.evaluate(() => {
   let m = await tune(r.page);
   t.check('Begin: a musica arranca no perfil escolhido (liquid)', m.loads.length >= 1 && m.loads[0] === 'liquid', m.loads.join(','));
   t.check('primeiro passo: a vista no primeiro bloco', /first step/.test(s.next) && /open the outline/.test(s.next), s.next);
+  t.check('se... entao: o plano fica por cima do anel durante o trabalho', /if\s*I want to check my phone\s*then\s*I park the thought/.test(s.next), s.next);
+  t.check('fora da experiencia: sem nota nem «I got distracted»; «Park a thought» a vista', !s.rate && s.dis === '' && s.park, JSON.stringify(s));
+  await r.page.keyboard.press('t'); await r.page.waitForTimeout(200);
+  t.check('estacionar: a tecla t abre o campo com o cursor nele', await r.page.evaluate(() => document.activeElement && document.activeElement.id === 'fcPark'));
+  await r.page.keyboard.type('reply to Ana about Friday'); await r.page.keyboard.press('Enter'); await r.page.waitForTimeout(200);
+  const pk = await r.page.evaluate(() => HMFR.fc.park.map(x => x.t));
+  t.check('estacionar: Enter guarda o pensamento e fecha o campo', pk.length === 1 && pk[0] === 'reply to Ana about Friday' && !(await r.page.isVisible('#fcParkBox')) &&
+    /parked/i.test(await r.page.textContent('#fcParkBtn')), JSON.stringify(pk));
   const tag = await r.page.textContent('#fcTag');
   t.check('sessao: cena e intencao por cima do anel', /write/.test(tag) && /chapter 3 draft/.test(tag), tag);
   L = await layout(r.page, SESS);
@@ -169,6 +202,11 @@ const tune = (page) => page.evaluate(() => {
   const ov = await r.page.evaluate(() => HMFR.fc.sndOv);
   t.check('intervalo: chuva baixa no lugar dos sons de trabalho', ov && ov.rn === 35, JSON.stringify(ov));
   t.check('intervalo: convite, «onde paraste», «+5 min» e respiracao', s.brk && s.plus && s.breathe, JSON.stringify(s));
+  let F = await flog(r.page);
+  t.check('registo: o bloco completo entra com o dia, a cena, o perfil e 50 min', F.log.b.length === 1 && F.log.b[0].m === 50 && F.log.b[0].s === 'write' &&
+    F.log.b[0].p === 'liquid' && F.log.b[0].d === F.today && !('e' in F.log.b[0]), JSON.stringify(F.log.b));
+  t.check('intervalo: os pensamentos estacionados e o total do dia; sem nota fora da experiencia', /reply to Ana about Friday/.test(s.parked) &&
+    s.day === 'today so far: 50 min of focus' && !s.rate && !s.cap, JSON.stringify(s));
   L = await layout(r.page, SESS);
   t.check('intervalo 1440x900: tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));
   await r.page.fill('#fcNote', 'halfway through section 2');
@@ -177,6 +215,8 @@ const tune = (page) => page.evaluate(() => {
   t.check('«+5 min» no intervalo: volta ao trabalho por 5 min com a musica', /focus/.test(s.phase) && s.left > 290 && s.left <= 300 && m.state === 1, JSON.stringify(s) + ' estado ' + m.state);
   t.check('onde paraste: lembrado no bloco seguinte; o primeiro passo ja nao', /halfway through section 2/.test(s.next) && !/first step/.test(s.next), s.next);
   await setLeft(r.page, 2); await r.page.waitForTimeout(3000);
+  F = await flog(r.page);
+  t.check('registo: o «+5 min of work» do intervalo soma ao mesmo bloco (55 min, um so bloco)', F.log.b.length === 1 && F.log.b[0].m === 55, JSON.stringify(F.log.b));
   await setLeft(r.page, 2); await r.page.waitForTimeout(3000);
   s = await st(r.page); m = await tune(r.page);
   t.check('fim do intervalo: bloco novo de 50 min com a musica de volta', s.phase === 'focus · 2 of 3' && s.left > 2990 && m.state === 1, JSON.stringify(s) + ' estado ' + m.state);
@@ -241,6 +281,11 @@ const tune = (page) => page.evaluate(() => {
     mem.allow.length === 2 && mem.note === 'halfway through section 2', JSON.stringify(mem));
   t.check('memoria: guarda o habito e o perfil escolhido por cena', mem.habit === 'music' && mem.prof && mem.prof.write === 'minimal' && mem.curProf === 'custom' &&
     !s.habit && s.sd === 'Lo-fi,Lo-fi,Minimal,Minimal,Nature,Energy,your mix', JSON.stringify({ habit: mem.habit, prof: mem.prof, cur: mem.curProf, sd: s.sd }));
+  t.check('memoria: guarda o plano «se... entao» e os pensamentos estacionados', mem.ift && mem.ift.i === 'I want to check my phone' &&
+    mem.ift.t === 'I park the thought and carry on' && mem.park.length === 1, JSON.stringify({ ift: mem.ift, park: mem.park }));
+  t.check('totais: depois de recarregar, a porta mostra hoje e esta semana (o bloco por acabar nao conta)', s.tot === 'today 55 minthis week 55 min', s.tot);
+  t.check('se... entao: com plano guardado, a porta mostra os dois campos preenchidos', (await r.page.isVisible('#fcIfRow')) &&
+    (await r.page.inputValue('#fcIf')) === 'I want to check my phone');
   const ln = await r.page.evaluate(() => document.getElementById('fcCont').hidden ? '' : document.getElementById('fcContN').textContent);
   t.check('continuar onde parei: a porta mostra o botao com a nota', /halfway through section 2/.test(ln), ln);
 
@@ -275,9 +320,185 @@ const tune = (page) => page.evaluate(() => {
   t.check('migracao: sem erros de JavaScript', r.errors.length === 0, r.errors.join(' | '));
   await r.close();
 
-  /* 3) telemovel de pe e deitado: «Read» sem musica, trabalho e intervalo sem sobreposicoes */
-  r = await T.openLiquid(browser, { mode: 'mobile' });
+  /* 2b) experiencia pessoal: Write, Minimal (A) contra Silence (B), ordem AB BA a partir da letra sorteada;
+     notas 3 para A e 4 ou 5 para B; um bloco com o som mudado fica fora da contagem */
+  r = await T.openLiquid(browser, { mode: 'desktop', init: `if(!sessionStorage.getItem('xl')){ sessionStorage.setItem('xl','1'); localStorage.setItem('hm_focus_log', '{bad json'); }` });
   await enter(r);
+  F = await flog(r.page);
+  t.check('registo ilegivel: comeca vazio, sem erros', F.log.v === 1 && F.log.b.length === 0 && !F.log.x && r.errors.length === 0, JSON.stringify(F.log) + r.errors.join('|'));
+  await r.page.click('#fcAdjust'); await r.page.waitForTimeout(400);
+  await r.page.selectOption('#fcXScene', 'write');
+  await r.page.selectOption('#fcXA', 'minimal');
+  await r.page.selectOption('#fcXB', 'minimal');
+  const xab = await r.page.evaluate(() => [document.getElementById('fcXA').value, document.getElementById('fcXB').value]);
+  t.check('experiencia: escolher o mesmo som nos dois troca-os, nunca ficam iguais', xab[0] !== xab[1] && xab[1] === 'minimal', xab.join(','));
+  await r.page.selectOption('#fcXA', 'minimal'); await r.page.selectOption('#fcXB', 'silence');
+  await r.page.click('#fcXGo'); await r.page.waitForTimeout(300);
+  F = await flog(r.page);
+  const X = F.log.x;
+  t.check('experiencia: comeca com a cena, os dois sons e a primeira letra sorteada', X && X.s === 'write' && X.A === 'minimal' && X.B === 'silence' && /^[AB]$/.test(X.f), JSON.stringify(X));
+  const o = X.f === 'A' ? 'B' : 'A', SEQ = [X.f, o, o, X.f, X.f, o, o, X.f];
+  t.check('experiencia: o primeiro bloco e a primeira letra', F.next === X.f, F.next + ' ' + X.f);
+  await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+  s = await st(r.page);
+  const snd = await r.page.textContent('#fcSoundT');
+  t.check('porta: a cena da experiencia vem escolhida e o som diz que vem da experiencia, sem «change»', /write\*/.test(s.cards) &&
+    s.sound === (X[X.f] === 'minimal' ? 'Minimal' : 'Silence') && /set by your experiment, sound [AB]/.test(snd) && !(await r.page.isVisible('#fcSoundCh')), s.cards + ' ' + s.sound + ' ' + snd);
+  await r.page.click('#fcBegin'); await r.page.waitForTimeout(2200);
+  const RATE = { A: [3, 3, 3, 3], B: [4, 5, 4, 5] }, used = { A: 0, B: 0 };
+  let okSeq = true, okProf = true, okMusic = true, seqLog = [];
+  for (let j = 0; j < 8; j++) {
+    F = await flog(r.page); s = await st(r.page); m = await tune(r.page);
+    const c = SEQ[j];
+    if (X[c] !== 'silence') for (let w = 0; w < 15 && (await tune(r.page)).state !== 1; w++) await r.page.waitForTimeout(200);
+    m = await tune(r.page);
+    seqLog.push((F.xb ? F.xb.c : '-') + ':' + F.cur);
+    if (!F.xb || F.xb.c !== c) okSeq = false;
+    if (F.cur !== X[c]) okProf = false;
+    if ((X[c] === 'minimal') !== (m.state === 1)) okMusic = false;
+    if (j === 0) {
+      t.check('bloco da experiencia: linha «experiment» por cima do anel e «I got distracted» a vista', /experiment\s*sound [AB]/.test(s.next) && s.dis === 'I got distracted', JSON.stringify(s));
+      await r.page.click('#fcDis'); await r.page.click('#fcDis'); await r.page.waitForTimeout(200);
+      t.check('«I got distracted»: cada toque conta e o botao mostra a contagem', (await flog(r.page)).xb.k === 2 && /· 2$/.test(await r.page.textContent('#fcDis')));
+      L = await layout(r.page, SESS);
+      t.check('sessao da experiencia 1440x900: tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));
+    }
+    if (j === 3) {
+      /* o som mudado a meio tira o bloco da contagem: sem nota, aviso, e o bloco seguinte repete a letra */
+      await r.page.click('#fcMore'); await r.page.waitForTimeout(400);
+      await r.page.click('#fcProfs .fc-chip[data-prof="liquid"]'); await r.page.waitForTimeout(300);
+      await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+      t.check('som mudado a meio: a linha da experiencia avisa que o bloco nao conta', /will not count/.test(await r.page.textContent('#fcNext')));
+      await finish(r.page);
+      s = await st(r.page); F = await flog(r.page);
+      t.check('som mudado a meio: o intervalo nao pede nota e diz porque; a ordem nao avanca', !s.rate && /does not count/.test(s.xnote) && F.next === c &&
+        F.log.b[F.log.b.length - 1].ch === 1, JSON.stringify(s) + ' next=' + F.next);
+      await finish(r.page);
+      F = await flog(r.page);
+      t.check('som mudado a meio: o bloco seguinte repete o mesmo som', F.xb && F.xb.c === c && F.cur === X[c], JSON.stringify(F.xb) + ' ' + F.cur);
+    }
+    await finish(r.page);
+    s = await st(r.page);
+    if (j === 0) {
+      t.check('fim do bloco da experiencia: o intervalo pede a nota de 1 a 5', s.rate && (await r.page.textContent('#fcRateQ')) === 'How focused were you?', JSON.stringify(s));
+      L = await layout(r.page, SESS);
+      t.check('intervalo com a nota e os pensamentos 1440x900: tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));
+    }
+    const v = RATE[c][used[c]++];
+    await r.page.click(`#fcRate [data-rate="${v}"]`); await r.page.waitForTimeout(150);
+    if (j === 0) {
+      s = await st(r.page); F = await flog(r.page);
+      t.check('nota: um toque guarda-a, a pergunta passa a «Focus noted» e a ordem avanca', F.log.b[0].r === v && F.log.b[0].k === 2 && F.next === SEQ[1] &&
+        (await r.page.textContent('#fcRateQ')) === 'Focus noted' && /Rated so far: A [01], B [01]/.test(s.xnote), JSON.stringify(F.log.b[0]) + ' ' + s.xnote);
+    }
+    if (j === 6) {
+      await r.page.click('#fcMore'); await r.page.waitForTimeout(400);
+      const pre = await r.page.textContent('#fcXRes');
+      t.check('antes de quatro de cada: sem resultado, com as contagens', /No result yet/.test(pre) && /Rated so far: A [34], B [34]/.test(pre), pre);
+      await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+    }
+    await finish(r.page);
+  }
+  t.check('experiencia: a ordem dos blocos contados e AB BA AB BA a partir da letra sorteada', okSeq, SEQ.join('') + ' <- ' + seqLog.join(' '));
+  t.check('experiencia: cada bloco toca o som da sua letra (e o Silence cala a musica)', okProf && okMusic, seqLog.join(' ') + ' music=' + okMusic);
+  const XS = await r.page.evaluate(() => HMFR.xStats());
+  t.check('resultado: quatro de cada, quatro pares, diferenca media +1,5 e intervalo de 95% pela t de Student', XS.ready && XS.A.n === 4 && XS.B.n === 4 &&
+    XS.d.join() === '1,2,1,2' && Math.abs(XS.mean - 1.5) < 1e-9 && Math.abs(XS.lo - (1.5 - 3.182 * Math.sqrt(1 / 3) / 2)) < 1e-6, JSON.stringify(XS));
+  await r.page.click('#fcMore'); await r.page.waitForTimeout(400);
+  let res = await r.page.textContent('#fcXRes');
+  t.check('resultado na gaveta: medias, diferenca com intervalo e veredicto com o nome do som', /A, Minimal: focus 3\.0 on average over 4 blocks/.test(res) &&
+    /B, Silence: focus 4\.5 on average over 4 blocks/.test(res) && /\+1\.5 \(95% interval \+0\.6 to \+2\.4, 4 pairs\)/.test(res) && /So far Silence went better/.test(res), res);
+  t.check('resultado: os limites ficam ditos (sem ocultacao, nota subjetiva, tarefas que variam)', /no blinding/.test(await r.page.textContent('#fcXRun')) &&
+    /own impression/.test(await r.page.textContent('#fcXRun')) && /tasks vary/.test(await r.page.textContent('#fcXRun')));
+  L = await layout(r.page, ['#fcDrawer']);
+  t.check('gaveta com o resultado: dentro do ecra', !L.bad.length, L.bad.join(' | '));
+  const csv = await grab(r.page, '#fcExpCsv');
+  const rows = csv.text.trim().split('\n');
+  t.check('exportar CSV: cabecalho e uma linha por bloco, com a experiencia, a nota e se conta', /^home-music-focus-log-\d{8}-\d{4}\.csv$/.test(csv.name) &&
+    rows[0] === 'date,time,scene,sound,minutes,experiment,condition,rating,distracted,counted' && rows.length === 10 &&
+    rows.filter(l => /,1$/.test(l)).length === 8 && rows.filter(l => /,0$/.test(l)).length === 1, csv.name + ' ' + rows.length + ' ' + rows.slice(0, 3).join(' / '));
+  const js = await grab(r.page, '#fcExpJson');
+  let jo = null; try { jo = JSON.parse(js.text); } catch (e) { /* segue */ }
+  t.check('exportar JSON: o registo inteiro, com a experiencia em curso', jo && jo.log && jo.log.v === 1 && jo.log.b.length === 9 && jo.log.x && jo.log.x.id === X.id, js.text.slice(0, 200));
+  await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+  /* um bloco deixado a meio com «End session» conta como inacabado para a sua letra */
+  const c9 = (await flog(r.page)).xb.c;
+  await r.page.evaluate(() => { HMFR.fc.pomo.left = HMFR.fc.pomo.total - 120; });
+  await r.page.click('#fcMore'); await r.page.waitForTimeout(400);
+  await r.page.click('#fcEnd'); await r.page.waitForTimeout(500);
+  F = await flog(r.page);
+  t.check('«End session» a meio de um bloco da experiencia: conta como inacabado, nao entra nos totais', F.log.x.un[c9] === 1 && F.log.b.length === 9, JSON.stringify(F.log.x.un));
+  await r.page.click('#fcAdjust'); await r.page.waitForTimeout(400);
+  res = await r.page.textContent('#fcXRes');
+  t.check('resultado: mostra os blocos inacabados por letra', new RegExp('unfinished: A ' + (c9 === 'A' ? 1 : 0) + ', B ' + (c9 === 'B' ? 1 : 0)).test(res), res);
+  await r.page.click('#fcXStop'); await r.page.waitForTimeout(300);
+  F = await flog(r.page);
+  t.check('parar: a experiencia passa para as acabadas com o resultado; a gaveta volta a oferecer uma nova', !F.log.x && F.log.xp.length === 1 &&
+    F.log.xp[0].res.mean === 1.5 && await r.page.isVisible('#fcXGo'), JSON.stringify(F.log.xp[0] && F.log.xp[0].res));
+  await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+  t.check('parar: a porta volta a oferecer «change» no som', await r.page.isVisible('#fcSoundCh'));
+  await r.page.click('#fcAdjust'); await r.page.waitForTimeout(400);
+  await r.page.click('#fcLogDel'); await r.page.waitForTimeout(200);
+  const del1 = (await flog(r.page)).log.b.length;
+  await r.page.click('#fcLogDel'); await r.page.waitForTimeout(300);
+  F = await flog(r.page);
+  const raw = await r.page.evaluate(() => localStorage.getItem('hm_focus_log'));
+  t.check('apagar: o primeiro toque so pede confirmacao, o segundo apaga tudo do browser', del1 === 9 && F.log.b.length === 0 && F.log.xp.length === 0 && raw === null,
+    del1 + ' ' + F.log.b.length + ' ' + raw);
+  await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+  t.check('apagar: a porta deixa de mostrar totais', (await st(r.page)).tot === '');
+  t.check('experiencia: sem erros de JavaScript', r.errors.length === 0, r.errors.join(' | '));
+  await r.close();
+
+  /* 2c) aviso das quatro horas e tampa do registo: 1996 blocos antigos e 230 min hoje */
+  r = await T.openLiquid(browser, { mode: 'desktop', init: `if(!sessionStorage.getItem('cap')){ sessionStorage.setItem('cap','1');
+    var d=new Date(), p=function(n){ return (n<10?'0':'')+n; }, k=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()), b=[];
+    for(var i=0;i<1996;i++) b.push({ t:1700000000000+i, d:'2025-01-0'+(1+i%9), s:'read', p:'nature', m:25 });
+    [50,50,50,80].forEach(function(m, i){ b.push({ t:d.getTime()-3600000*(4-i), d:k, s:'write', p:'minimal', m:m }); });
+    localStorage.setItem('hm_focus_log', JSON.stringify({ v:1, b:b, x:null, xp:[] })); }` });
+  await enter(r);
+  s = await st(r.page);
+  t.check('porta: os totais de hoje e da semana no topo', /^today 3 h 50this week \d+ h \d{2}$|^today 3 h 50this week \d+ h$/.test(s.tot), s.tot);
+  await r.page.click('#fcTot'); await r.page.waitForTimeout(500);
+  const wk = await r.page.evaluate(() => ({ n: document.querySelectorAll('#fcWeek .dy').length, td: document.querySelector('#fcWeek .dy.td .mm').textContent,
+    sum: document.getElementById('fcLogSum').textContent, drw: document.getElementById('focus').classList.contains('drw') }));
+  t.check('totais: um toque abre a gaveta na semana de segunda a domingo, com hoje marcado', wk.drw && wk.n === 7 && wk.td === '3h50' && /Today: 3 h 50, 4 blocks/.test(wk.sum), JSON.stringify(wk));
+  await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(300);
+  await r.page.click('#fcBegin'); await r.page.waitForTimeout(1200);
+  await finish(r.page);
+  s = await st(r.page); F = await flog(r.page);
+  t.check('quatro horas: o intervalo mostra o aviso suave, sem o total do dia', s.cap && s.day === '', JSON.stringify(s));
+  t.check('tampa: o registo fica nos 2000 blocos, sai o mais antigo', F.log.b.length === 2000 && F.log.b[0].t === 1700000000001 && F.log.b[1999].m === 25, F.log.b.length + ' ' + F.log.b[0].t);
+  L = await layout(r.page, SESS);
+  t.check('intervalo com o aviso 1440x900: tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));
+  await r.page.click('#fcCapX'); await r.page.waitForTimeout(700);
+  s = await st(r.page);
+  const capMem = await r.page.evaluate(() => JSON.parse(localStorage.getItem('hm_focus') || '{}').capDay);
+  t.check('quatro horas: «dismiss» tira o aviso por hoje e fica lembrado', !s.cap && s.day === 'today so far: 4 h 15 of focus' && capMem === (await flog(r.page)).today,
+    JSON.stringify(s) + ' ' + capMem);
+  await finish(r.page); await finish(r.page);
+  s = await st(r.page);
+  t.check('quatro horas: dispensado, nao volta no intervalo seguinte', !s.cap && s.day === 'today so far: 4 h 40 of focus', JSON.stringify(s));
+  await r.page.click('#fcMore'); await r.page.waitForTimeout(400);
+  await r.page.click('#fcTotOn'); await r.page.waitForTimeout(200);
+  s = await st(r.page);
+  t.check('esconder os totais: o intervalo deixa de mostrar o total do dia', s.day === '', JSON.stringify(s));
+  await r.page.click('#fcEnd'); await r.page.waitForTimeout(500);
+  s = await st(r.page);
+  t.check('esconder os totais: a porta tambem deixa de os mostrar', s.stage === 'entry' && s.tot === '', JSON.stringify(s));
+  t.check('quatro horas: sem erros de JavaScript', r.errors.length === 0, r.errors.join(' | '));
+  await r.close();
+
+  /* 3) telemovel de pe e deitado: «Read» sem musica, trabalho e intervalo sem sobreposicoes; com dois blocos
+     de hoje no registo e uma experiencia em Read (Nature contra Silence), para a porta ter totais e o
+     intervalo a nota e os pensamentos estacionados */
+  r = await T.openLiquid(browser, { mode: 'mobile', init: `if(!sessionStorage.getItem('mb')){ sessionStorage.setItem('mb','1');
+    var d=new Date(), p=function(n){ return (n<10?'0':'')+n; }, k=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+    localStorage.setItem('hm_focus_log', JSON.stringify({ v:1, b:[{ t:d.getTime()-7200000, d:k, s:'write', p:'minimal', m:50 }, { t:d.getTime()-3600000, d:k, s:'write', p:'minimal', m:50 }],
+      x:{ id:'xmob', s:'read', A:'nature', B:'silence', f:'A', t0:d.getTime(), un:{ A:0, B:0 } }, xp:[] })); }` });
+  await enter(r);
+  s = await st(r.page);
+  t.check('telemovel: os totais no topo da porta, no lugar do relogio', s.tot === 'today 1 h 40this week 1 h 40' && !(await r.page.isVisible('#fcClock')), s.tot);
   L = await layout(r.page, ENTRY);
   t.check('entrada 390x844: tudo no ecra, nada sobreposto', L.n >= 9 && !L.bad.length, L.bad.join(' | '));
   await r.page.tap('#fcBegin'); await r.page.waitForTimeout(1500);
@@ -285,11 +506,21 @@ const tune = (page) => page.evaluate(() => {
   t.check('«Read»: comeca sem musica', m.loads.length === 0, m.loads.join(','));
   L = await layout(r.page, SESS);
   t.check('sessao 390x844: tudo no ecra, nada sobreposto', L.n >= 11 && !L.bad.length, L.bad.join(' | '));
+  await r.page.tap('#fcParkBtn'); await r.page.waitForTimeout(300);
+  L = await layout(r.page, SESS);
+  t.check('sessao 390x844 com o campo de estacionar aberto: tudo no ecra, nada sobreposto', (await r.page.isVisible('#fcPark')) && !L.bad.length, L.bad.join(' | '));
+  await r.page.keyboard.type('book the dentist'); await r.page.keyboard.press('Enter'); await r.page.waitForTimeout(200);
   await setLeft(r.page, 2); await r.page.waitForTimeout(3000);
   s = await st(r.page);
   t.check('«Read»: intervalo de 5 min', s.phase === 'break' && s.left > 290 && s.left <= 300, JSON.stringify(s));
+  t.check('telemovel: o intervalo pede a nota e mostra o pensamento estacionado', s.rate && /book the dentist/.test(s.parked), JSON.stringify(s));
   L = await layout(r.page, SESS);
   t.check('intervalo 390x844: tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));
+  await r.page.tap('#fcRate [data-rate="4"]'); await r.page.waitForTimeout(200);
+  await r.page.tap('#fcParkL .fc-x'); await r.page.waitForTimeout(200);
+  s = await st(r.page);
+  t.check('telemovel: a nota fica e o pensamento tratado sai da lista', (await flog(r.page)).log.b[2].r === 4 && s.parked === '' &&
+    (await r.page.evaluate(() => HMFR.fc.park.length)) === 0, JSON.stringify(s));
   await r.page.tap('#fcMore'); await r.page.waitForTimeout(500);
   const sheet = await r.page.evaluate(() => { const b = document.getElementById('fcDrawer').getBoundingClientRect(); return { top: b.top, bottom: b.bottom, h: innerHeight }; });
   t.check('telemovel: ajustes numa folha que sobe de baixo', sheet.bottom <= sheet.h + 1 && sheet.top > 60, JSON.stringify(sheet));
