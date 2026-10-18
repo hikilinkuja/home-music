@@ -1,5 +1,16 @@
 # Registo das voltas
 
+## 2026-10-18: v4.8, três vídeos corrigidos por decisão do Paulo (sessão local do Claude Code)
+
+- Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust»: dados como apagados na v4.5, mas o
+  erro era do catálogo, com uma letra do videoId na caixa errada («GL4OSV4q9LI» por «Gl4OSV4q9LI»,
+  «BkB4DWT3BbE» por «Bkb4DWT3BbE»; os IDs do YouTube distinguem maiúsculas). Ficam os mesmos
+  uploads (Do Funkk, 390 s; Houseum, 566 s), sem «Topic» de nenhuma das duas. A pesquisa mostra que
+  a do Brawther é a sua dub, por editar, de Jeremiah, «Khawuleza» (título do catálogo mantido).
+- Sam Binga, «Get Down Low (En:vy Remix)»: o vídeo tocava outra faixa («Proud», Enei Remix);
+  passou para o «Topic» (183 s, a mesma duração do upload da Critical Music).
+- Os três novos confirmados por oEmbed; registo em `topic-swap-2026-10-17-applied.tsv`.
+
 ## 2026-10-18: v4.7, revisão manual das 141 S4 da troca por «Topic» (sessão local do Claude Code)
 
 - As 141 faixas S4 de `topic-swap-2026-10-17-kept.tsv` (há «Topic» do artista com outro título)

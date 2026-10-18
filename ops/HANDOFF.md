@@ -88,9 +88,10 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
    `ops/queue/topic-swap-2026-10-18-s4-review.tsv` (104 sem a faixa no YouTube Music). Restam
    na kept, sem «Topic», as 64 S2, 20 S3 e 15 M: só um motor de pesquisa externo ou a revisão
    do Paulo as podem resolver.
-3. Por decidir pelo Paulo: Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust», têm o
-   vídeo apagado e não há «Topic» (retirar ou procurar outro upload); Sam Binga, «Get Down Low
-   (En:vy Remix)», toca outra faixa. Intrusion, «Reflection II»: o «Topic» só tem a «Unreleased
+3. Feito (v4.8): Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust», não estavam
+   apagados: o videoId do catálogo tinha uma letra com a caixa trocada (corrigido, mesmo upload);
+   Sam Binga, «Get Down Low (En:vy Remix)», passou para o «Topic» da faixa.
+   Por decidir pelo Paulo: Intrusion, «Reflection II»: o «Topic» só tem a «Unreleased
    Extended Mix» (774 s), o vídeo atual é a «Original Version» (265 s); trocar só se o Paulo
    aceitar a versão estendida como a mesma faixa.
 
