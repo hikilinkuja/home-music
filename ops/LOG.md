@@ -1,5 +1,32 @@
 # Registo das voltas
 
+## 2026-10-18: ensaio dos anúncios, leitor escondido contra visível (sessão local do Claude Code, sem publicação)
+
+- Pedido do Paulo: antes de corrigir o motor, medir se o disco seguinte, pré-carregado mudo num leitor
+  escondido, passa o anúncio tão bem como num leitor visível (ele não quer janela visível). Corrido no
+  Mac e não na nuvem: de um centro de dados o YouTube esconde o conteúdo licenciado e, por inferência,
+  também os anúncios.
+- Desenho e ferramentas: `ops/notes/2026-10-18/ads-probe.txt`, `ops/tools/yt_ads_probe.py`,
+  `ops/tools/yt_ads_summary.py`. 20 vídeos (10 «Topic», 10 sem «Topic»), cada um em três leitores ao
+  mesmo tempo: VIS (300 por 200, visível), HID (opacidade 0, como o leitor B), OFF (1 por 1 fora do
+  ecrã, como a sala de foco). Regras do motor proposto: recarregar depois de 15 s sem progresso,
+  limite de 90 s.
+- Música a tocar em 90 s: VIS 16 de 20, HID 11 de 20, OFF 19 de 20. Pares discordantes: HID contra
+  OFF 0 contra 8 (p=0,008); VIS contra HID 8 contra 3 (p=0,23); VIS contra OFF 1 contra 4 (p=0,38).
+  Esconder por opacidade 0 é o pior; o leitor fora do ecrã não ficou atrás do visível.
+- A falha principal não é o anúncio: é o leitor parado no zero, sem anúncio nem progresso (aos 90 s:
+  VIS 4, HID 8, OFF 1). Recarregar uma vez salvou cerca de metade (VIS 5 de 9, HID 5 de 14, OFF 6 de 7).
+- Anúncios: no leitor visível, em 8 de 10 «Topic» e 3 de 10 outros; o mais longo visto durou 29,5 s
+  (até 58 s num escondido). Nenhum anúncio com som (leitores mudos), nenhum estado PLAYING durante um
+  anúncio em cerca de 730 amostras, e a API (estado -1 com o tempo a avançar) reconheceu 96% das
+  amostras de anúncio: o portão do som pelo estado 1 é seguro.
+- Retoma: os 27 discos prontos, parados 20 s no zero e postos a tocar, entraram todos em menos de
+  2 s, sem anúncio.
+- Limites: um só computador e um só dia, perfis novos (que recebem mais anúncios do que um browser
+  com histórico), amostra pequena; o leitor OFF difere do HID também no tamanho e nos parâmetros.
+  Os «Topic» trouxeram anúncio mais vezes (8 de 10 contra 3 de 10), mas os outros da amostra são
+  faixas sem «Topic», não os uploads antigos trocados na v4.5: não mede o efeito da troca.
+
 ## 2026-10-18: v4.9, sala de foco, ronda 1 da avaliação científica (sessão local do Claude Code)
 
 - Avaliação da sala à luz da literatura (25 fontes: Pomodoro e pausas, música e ruído de fundo,

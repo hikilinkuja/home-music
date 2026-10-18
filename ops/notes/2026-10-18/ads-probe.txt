@@ -1,0 +1,90 @@
+Ensaio de anuncios do YouTube, 2026-10-18 (sessao local do Claude Code, Mac do Paulo, ligacao domestica)
+
+Pergunta: o disco seguinte, pre-carregado mudo num leitor escondido, passa o anuncio e fica pronto tao bem
+como num leitor visivel? Desenho: 20 videos do catalogo (10 «Topic» da troca da v4.5, 10 sem «Topic», sorteio
+com semente 2026, sem lofi nem focus_zen), cada um carregado ao mesmo tempo em tres leitores, cada leitor no
+seu contexto do Chrome 147 (cookies limpos antes de cada video), todos mudos:
+  VIS  300 x 200, visivel (parametros do leitor da radio)
+  HID  300 x 200, opacidade 0 (como o leitor B da radio enquanto espera)
+  OFF  1 x 1, fora do ecra em left:-9999px (como o leitor da sala de foco, parametros da sala)
+Regras do motor proposto, so com a API: progresso = getCurrentTime() a mudar; 15 s sem progresso -> recarregar
+uma vez; limite de 90 s. Depois de a musica tocar, VIS e HID param no zero (HID passa a visivel), esperam 20 s
+e voltam a tocar. O quadro do anuncio (classe ad-showing, video mudo) le-se dentro do iframe para validar a API.
+Ferramentas: ops/tools/yt_ads_probe.py e ops/tools/yt_ads_summary.py.
+
+Amostra (tipo, videoId):
+other	lQHk5ET3kQU
+topic	Ssk9g3yVXXw
+other	m0PjJISHM3k
+other	cn0ak6JzKyA
+other	ryX3E65HOjg
+topic	tf5oi2WJz4Q
+topic	iRBYUxrTPyU
+topic	wDJnh-AJWY0
+topic	JHq8KIHerCY
+other	-d5t8zl0gE4
+topic	9_HcpSQGHBg
+other	ISIWjpRquGA
+topic	rtbpqO5GLFc
+other	binhEXkR8RE
+other	fxhucjy57es
+topic	Azi3SvjiLdw
+other	mQy2V_3LRMQ
+other	72y-uuu44OQ
+topic	nOZDiXs2Ut8
+topic	inutnxinGcA
+
+Resumo:
+ensaios: 20 videos x 3 leitores
+
+VIS: musica a tocar em 90 s: 16/20 (<=30 s: 9, <=60 s: 14); mediana 22.65 s
+  sem recarregar: 11; parados 15 s e recarregados: 9, dos quais tocaram: 5
+  com anuncio: 11 (topic 8/10, outros 3/10); anuncio mais longo visto 29.5 s
+  anuncio com som em algum momento: 0
+  detecao pela API: 284/295 amostras de anuncio vistas como anuncio; PLAYING durante anuncio: 0
+  sem musica aos 90 s: {'parado no zero sem anuncio': 4}
+  retoma depois de 20 s parado: 16/16 em <=2 s; anuncio na retoma: 0
+
+HID: musica a tocar em 90 s: 11/20 (<=30 s: 7, <=60 s: 11); mediana 21.1 s
+  sem recarregar: 6; parados 15 s e recarregados: 14, dos quais tocaram: 5
+  com anuncio: 7 (topic 4/10, outros 3/10); anuncio mais longo visto 58.2 s
+  anuncio com som em algum momento: 0
+  detecao pela API: 206/213 amostras de anuncio vistas como anuncio; PLAYING durante anuncio: 0
+  sem musica aos 90 s: {'parado no zero sem anuncio': 8, 'parado em anuncio': 1}
+  retoma depois de 20 s parado: 11/11 em <=2 s; anuncio na retoma: 0
+
+OFF: musica a tocar em 90 s: 19/20 (<=30 s: 16, <=60 s: 19); mediana 21.1 s
+  sem recarregar: 13; parados 15 s e recarregados: 7, dos quais tocaram: 6
+  com anuncio: 9 (topic 8/10, outros 1/10); anuncio mais longo visto 19.8 s
+  anuncio com som em algum momento: 0
+  detecao pela API: 209/218 amostras de anuncio vistas como anuncio; PLAYING durante anuncio: 0
+  sem musica aos 90 s: {'parado no zero sem anuncio': 1}
+
+emparelhado por video (musica em 90 s):
+  VIS e HID ambos: 8; so VIS: 8; so HID: 3; nenhum: 1
+  VIS e OFF ambos: 15; so VIS: 1; so OFF: 4; nenhum: 0
+  HID e OFF ambos: 11; so HID: 0; so OFF: 8; nenhum: 1
+
+por video (VIS / HID / OFF: segundos ate a musica, a=anuncio, r=recarregado):
+   1 other lQHk5ET3kQU      11.1     16.1r       1.1
+   2 topic Ssk9g3yVXXw     Noner    37.3ar     23.2a
+   3 other m0PjJISHM3k     Noner       1.1       1.0
+   4 other cn0ak6JzKyA       7.1       1.1       2.0
+   5 other ryX3E65HOjg    38.3ar     22.2a      11.1
+   6 topic tf5oi2WJz4Q     Noner    38.3ar     21.2a
+   7 topic iRBYUxrTPyU    60.4ar     Noner     21.1a
+   8 topic wDJnh-AJWY0     21.2a     Noner    38.3ar
+   9 topic JHq8KIHerCY     36.3a     Noner    51.4ar
+  10 other -d5t8zl0gE4    61.5ar     36.3a     28.2a
+  11 topic 9_HcpSQGHBg     21.2a     16.1r    46.4ar
+  12 other ISIWjpRquGA       1.0     Noner       1.0
+  13 topic rtbpqO5GLFc    36.3ar    37.4ar       8.1
+  14 other binhEXkR8RE       1.0       1.0     26.2r
+  15 other fxhucjy57es     Noner     Noner     16.1r
+  16 topic Azi3SvjiLdw     21.2a     Noner     23.1a
+  17 other mQy2V_3LRMQ     37.3a    Nonear     Noner
+  18 other 72y-uuu44OQ       2.2     Noner     16.1r
+  19 topic nOZDiXs2Ut8    38.3ar     Noner      10.1
+  20 topic inutnxinGcA     24.1a     21.1a     23.2a
+
+Teste exato de sinais nos pares discordantes (bilateral): VIS/HID 8-3 p=0,23; VIS/OFF 1-4 p=0,38; HID/OFF 0-8 p=0,008.

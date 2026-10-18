@@ -112,15 +112,27 @@ Em fila, propostas e por decidir pelo Paulo:
 - por verificar num iPhone real: barra em duas linhas, folha de ajustes, sons de fundo e o
   intervalo a ligar a chuva sem toque.
 
-### Demora a carregar no computador (diagnóstico de 2026-10-18, por decidir)
+### Demora a carregar no computador (diagnóstico e ensaio de 2026-10-18; motor por fazer)
 
-Anúncios do YouTube antes dos vídeos de música no leitor embutido (20 a 40 s), agravados pelo
-motor: leitor B invisível onde o anúncio às vezes não avança, `REC_TIMEOUT` de 25 s, corte para
-outro disco com novo anúncio (ver `ops/LOG.md`, 2026-10-18). Opções para o Paulo: (a) do lado dele,
-YouTube Premium com sessão iniciada nesse browser ou um bloqueador de anúncios (Brave, uBlock Origin
-no Firefox); (b) motor (nível max, com teste): detetar a fase de anúncio, armar mais cedo e não
-cortar por tempo enquanto o anúncio corre, mostrando-o no monitor em vez de o tocar escondido (um
-leitor escondido a tocar anúncios contraria as regras do YouTube para leitores embutidos).
+Causa: anúncios do YouTube antes dos vídeos de música (20 a 60 s) e leitores que ficam parados no
+zero sem anúncio; o motor agrava com o leitor B escondido por opacidade 0 (o pior no ensaio),
+`REC_TIMEOUT` de 25 s e corte para outro disco, que traz outro anúncio. Medições em `ops/LOG.md` e
+`ops/notes/2026-10-18/ads-probe.txt`. Decidido pelo Paulo: anúncios sempre sem som; o disco
+seguinte carrega antes de o atual acabar; sem janela visível (o ensaio não a justifica).
+Ronda do motor (nível max, com `ops/tests/t-ads.js`: YouTube simulado com fase de anúncio e com
+leitor parado no zero):
+1. portão do som: cada leitor só sai do mudo quando a sua música está em PLAYING (estado 1); cobre o
+   primeiro disco, cortes e saltos, o botão de som e o leitor da sala de foco;
+2. o prato à espera deixa de se esconder por opacidade 0 e fica fora do ecrã, como o leitor da sala
+   de foco (só por CSS: mudar o iframe de sítio no DOM recarrega-o), e entra no monitor quando vai
+   para o ar;
+3. pré-carga cerca de 120 s antes do fim (logo no início nos discos curtos);
+4. espera que conhece o anúncio: progresso é `getCurrentTime()` a mudar; 15 s sem progresso,
+   recarregar uma vez; segunda paragem, outro disco; nunca cortar enquanto houver progresso;
+5. saltos manuais: o disco atual continua até o seguinte estar pronto;
+6. telemóvel (um só leitor): o anúncio passa calado no intervalo, com os pontos 1 e 4.
+Depois de publicar, confirmar numa ligação doméstica com `ops/tools/yt_ads_probe.py` (adaptado à
+sala) ou pelo registo `?dev` do Paulo.
 
 ## Próxima ronda (proposta)
 
