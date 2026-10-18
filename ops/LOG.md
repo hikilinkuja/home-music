@@ -22,6 +22,7 @@
 - Teste `ops/tests/t-ui.js` alargado (34 verificações).
 - Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
   ads 71, ui 34); `build.sh` com validação OK.
+- Servido confirmado: a liquid servida tem «Suggest a tune» e a contagem nova do painel The Genre.
 
 ## 2026-10-18: v5.3, auditoria de UI, correções da ronda 0 e proposta da ronda 1 (sessão Claude Code na nuvem)
 
