@@ -4,7 +4,11 @@
 // por cima da ficha nem do nome do artista. Termos escolhidos pelo Paulo (ops/notes/2026-10-18/ui-terms.md):
 // os antigos ausentes da pagina montada, os novos presentes, os rotulos visiveis certos no computador e no
 // telemovel (Skip... so no telemovel), o monitor do telemovel em duas filas no maximo, e as ligacoes do topo
-// do painel do genero escondidas quando ha painel estendido. Cerca de 50 segundos.
+// do painel do genero escondidas quando ha painel estendido. Ronda 2 (cores, ops/notes/2026-10-18/ui-colors.md):
+// nenhuma cor literal nas fontes da interface fora do :root (l01), das variaveis da consola (#ag-dk, l08) e das
+// excecoes (canvas e SVG desenhados em JavaScript; sombras e gradientes em preto, branco ou tinta com alfa);
+// todas as variaveis usadas estao definidas; contraste dos casos corrigidos; acento da madrugada em pergaminho.
+// Cerca de 60 segundos.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -37,6 +41,29 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
   t.check('termos antigos ausentes das fontes da interface', back.length === 0, back.join(' | '));
   const miss = NEW.filter(x => !html.includes(x));
   t.check('termos novos presentes nas fontes da interface', miss.length === 0, miss.join(' | '));
+  // cores: so papeis
+  const COLOR = /#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b(?![0-9a-fA-F])|rgba?\([^)]*\)/g;
+  const SHADE = /^rgba\((0,0,0|255,255,255|6,5,17),[.\d]+\)$/;
+  const stray = [], defs = new Set(['--blk']), uses = new Set();
+  for (const f of ['l01-head.html', 'l02-body.html', 'l03-plog.html', 'l06-art.html', 'l07-focus.html', 'l08-arcade.html', 'l09-dev.html']) {
+    const src = fs.readFileSync(path.join(T.ROOT, 'liquid', f), 'utf8');
+    const zones = [];
+    for (const re of [/:root\{[^}]*\}/g, /#ag-dk\{[^}]*\}/g, /\/\*[\s\S]*?\*\//g]) { let m; while ((m = re.exec(src))) zones.push([m.index, m.index + m[0].length]); }
+    src.split('\n').reduce((off, line, i) => {
+      let m; COLOR.lastIndex = 0;
+      while ((m = COLOR.exec(line))) {
+        const at = off + m.index, v = m[0].replace(/\s/g, '').toLowerCase();
+        if (zones.some(([a, b]) => at >= a && at < b) || SHADE.test(v) || /fillStyle|setAttribute\("stroke"/.test(line)) continue;
+        stray.push(`${f}:${i + 1} ${m[0]}`);
+      }
+      return off + line.length + 1;
+    }, 0);
+    for (const m of src.matchAll(/(--[\w-]+)\s*:/g)) defs.add(m[1]);
+    for (const m of src.matchAll(/var\((--[\w-]+)/g)) uses.add(m[1]);
+  }
+  t.check('cores: nenhuma literal fora do :root, da consola e das excecoes', stray.length === 0, stray.slice(0, 8).join(' | '));
+  const undef = [...uses].filter(v => !defs.has(v));
+  t.check('cores: todas as variaveis usadas estao definidas', undef.length === 0, undef.join(' | '));
   const browser = await T.launch();
 
   for (const mode of ['desktop', 'mobile']) {
@@ -82,9 +109,38 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
     for (const k of Object.keys(want)) t.check(`${mode}: rotulo ${want[k]}`, L[k] === want[k], L[k]);
     t.check(`${mode}: botoes do monitor em ${mode === 'mobile' ? 'duas filas no maximo' : 'uma fila'}`, L.rows <= (mode === 'mobile' ? 2 : 1), L.rows);
     t.check(`${mode}: painel do genero sem ligacoes repetidas com o painel estendido`, L.withExt === 'none' && L.noExt !== 'none', JSON.stringify(L));
+    if (mode === 'desktop') {
+      const C = await r.page.evaluate(() => {
+        const cs = (el, pseudo) => getComputedStyle(el, pseudo || null);
+        const tmp = document.createElement('span'); tmp.className = 'fc-lv lv-contested'; document.getElementById('focus').appendChild(tmp);
+        const dk = document.getElementById('dkBass'); dk.classList.add('on');
+        const out = { ph: cs(document.getElementById('giftWhat'), '::placeholder').color, why: cs(document.getElementById('fcWhy')).color,
+          seal: cs(document.getElementById('fcSealHint')).color, contested: cs(tmp).color,
+          bass: [cs(dk).color, cs(dk).backgroundColor], keys: [cs(document.querySelector('.dkkeys')).color, cs(document.getElementById('desk')).getPropertyValue('--dk-wood').trim()],
+          kv: cs(document.querySelector('.knob .kv')).color, line: cs(document.documentElement).getPropertyValue('--line').trim() };
+        dk.classList.remove('on'); tmp.remove();
+        return out;
+      });
+      const DIM = 'rgb(141, 144, 176)';
+      t.check('cores: marcadores dos campos em --dim', C.ph === DIM, C.ph);
+      t.check('cores: texto da respiracao e dica do ecra inteiro em --dim', C.why === DIM && C.seal === DIM, JSON.stringify([C.why, C.seal]));
+      t.check('cores: prova contested no vermelho da paleta', C.contested === 'rgb(232, 57, 44)', C.contested);
+      t.check('cores: borda e linhas em #3b3560', C.line === '#3b3560', C.line);
+      const hex = (h) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+      const rb = ratio(rgb(C.bass[0]), rgb(C.bass[1])), rk = ratio(rgb(C.keys[0]), hex(C.keys[1])), rv = ratio(rgb(C.kv), hex(C.keys[1]));
+      t.check('cores: Kill the bass aceso em verde', C.bass[1] === 'rgb(28, 122, 58)', C.bass[1]);
+      t.check('cores: consola com contraste AA (Kill the bass aceso, teclas, valores)', rb >= 4.5 && rk >= 4.5 && rv >= 4.5, [rb, rk, rv].map(x => x.toFixed(2)).join(' '));
+    }
     t.check(`${mode}: sem erros de JavaScript`, r.errors.length === 0, r.errors.join(' | '));
     await r.close();
   }
+
+  // acento da madrugada (06h a 08h): pergaminho, nao o cinzento que parecia desligado
+  const dw = await T.openLiquid(browser, { qs: '?block=dawn', dur: 60, load: 400 });
+  await dw.run(2);
+  const blk = await dw.page.evaluate(() => getComputedStyle(document.body).getPropertyValue('--blk').trim());
+  t.check('cores: acento da madrugada em pergaminho', blk === '#f4ecd9', blk);
+  await dw.close();
 
   // ala da arte no telemovel: ficha aberta por cima da dica
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });

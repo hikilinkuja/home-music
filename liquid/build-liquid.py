@@ -253,7 +253,7 @@ old_bk='function blockKeyFor(h){ if(h>=6 && h<13) return "morning"; if(h>=13 && 
 new_bk=('/* a grelha fina da sala liquida: sete sub-blocos, decididos pelo fundador (10/2026) */\n'
  '(function(){\n'
  '  var NB={\n'
- '    dawn:      { label:"DAWN PROGRAMME",      range:"06:00 - 08:00", accent:"#8d90b0", genres:["ambient","ambient_techno"] },\n'
+ '    dawn:      { label:"DAWN PROGRAMME",      range:"06:00 - 08:00", accent:"#f4ecd9", genres:["ambient","ambient_techno"] },\n'
  '    kingston:  { label:"KINGSTON BREAKFAST",  range:"08:00 - 13:00", accent:"#ffb12b", genres:["reggae","dub","ska_rocksteady"] },\n'
  '    groove:    { label:"LUNCH GROOVE",        range:"13:00 - 15:00", accent:"#41d9c8", genres:["house","lofi_house"] },\n'
  '    flight:    { label:"AFTERNOON FLIGHT",    range:"15:00 - 18:00", accent:"#41d9c8", genres:["liquid","atmospheric_jungle","intelligent_dnb"] },\n'

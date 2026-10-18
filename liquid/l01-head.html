@@ -6,18 +6,28 @@
 <title>Home Music Liquid</title>
 <style>
 :root{
-  --ink:#060511; --paper:#f4ecd9; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
-  --dim:#8d90b0; --line:#2b2745; --blk:#ffb12b;
+  /* paleta por papeis (auditoria de UI, ronda 2, escolhida pelo Paulo a 2026-10-18; ops/notes/2026-10-18/
+     ui-colors.md): nenhuma cor literal fora daqui, salvo a consola Dub Desk (variaveis proprias no l08) e as
+     excecoes da nota (canvas, sombras e gradientes); ops/tests/t-ui.js verifica */
+  --bg:#000000; --ink:#060511; --surface:#0b0918;
+  --panel:rgba(6,5,17,.95); --glass:rgba(5,4,16,.8); --chrome:rgba(5,4,16,.6); --scrim:rgba(3,2,10,.82);
+  --paper:#f4ecd9; --text:#c9c4d8; --dim:#8d90b0;
+  --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c; --line:#3b3560;
+  --amber-soft:rgba(255,177,43,.06); --amber-edge:rgba(255,177,43,.35);
+  --teal-soft:rgba(65,217,200,.06); --teal-glow:rgba(65,217,200,.15); --teal-edge:rgba(65,217,200,.45);
+  --red-soft:rgba(232,57,44,.3);
+  --blk:var(--amber);   /* acento do bloco: o motor muda-o (l05, setNow) */
   --mono:"Courier New", ui-monospace, Menlo, monospace;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0; background:#000; color:var(--paper); font-family:var(--mono); overflow:hidden}
+body{margin:0; background:var(--bg); color:var(--paper); font-family:var(--mono); overflow:hidden}
 button{font-family:var(--mono)}
+::placeholder{color:var(--dim); opacity:1}
 :focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
 /* o liquido e o proprio fundo da estacao */
-#vj{position:fixed; inset:0; z-index:0; width:100vw; height:100vh; background:#000}
+#vj{position:fixed; inset:0; z-index:0; width:100vw; height:100vh; background:var(--bg)}
 
 #app{display:none}
 #app.on{display:block}
@@ -35,7 +45,7 @@ button{font-family:var(--mono)}
 .hdr-btns{margin-left:auto; display:flex; align-items:center; gap:8px}
 #clock{font-size:13px; letter-spacing:.18em; color:var(--amber)}
 .tbtn{
-  cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  cursor:pointer; background:var(--chrome); border:1px solid var(--line); color:var(--dim);
   font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:7px 11px;
   font-family:var(--mono); text-decoration:none; display:inline-flex; align-items:center;
 }
@@ -45,7 +55,7 @@ button{font-family:var(--mono)}
    botoes; e box-shadow e nao outline, para o contorno ambar do teclado continuar a ver-se */
 .tbtn.back{border-color:var(--red); box-shadow:0 0 0 1px var(--red); color:var(--paper)}
 .tbtn.back:hover{color:var(--paper); border-color:var(--red); box-shadow:0 0 0 2px var(--red);
-  background:rgba(232,57,44,.22)}
+  background:var(--red-soft)}
 
 /* cartao da faixa: texto a flutuar sobre o liquido */
 #now{
@@ -56,25 +66,25 @@ button{font-family:var(--mono)}
 #gChip{font-size:9px; letter-spacing:.26em; text-transform:uppercase; color:var(--ink);
   background:var(--blk); padding:3px 8px; text-shadow:none}
 #tYear{font-size:11px; letter-spacing:.2em; color:var(--dim)}
-#tBpm{font-size:9.5px; letter-spacing:.22em; color:var(--amber); border:1px solid rgba(255,177,43,.35); padding:2px 6px; text-shadow:none}
+#tBpm{font-size:9.5px; letter-spacing:.22em; color:var(--amber); border:1px solid var(--amber-edge); padding:2px 6px; text-shadow:none}
 #tFresh{font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
   background:var(--teal); padding:3px 7px; text-shadow:none}
 #tArtist{margin:0; font-size:clamp(20px,3.4vw,34px); letter-spacing:.06em; text-transform:uppercase; line-height:1.08}
 #tTitle{color:var(--amber); font-size:clamp(13px,1.8vw,17px); margin:4px 0 8px}
-#tBlurb{color:#c9c4d8; font-size:12px; line-height:1.55; margin:0; max-width:52ch;
+#tBlurb{color:var(--text); font-size:12px; line-height:1.55; margin:0; max-width:52ch;
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
 .t-links{margin-top:9px; display:flex; gap:9px; flex-wrap:wrap}
 .t-links a{color:var(--teal); text-decoration:none; font-size:9.5px; letter-spacing:.18em;
-  text-transform:uppercase; border:1px solid rgba(65,217,200,.4); padding:5px 9px; background:rgba(5,4,16,.55)}
+  text-transform:uppercase; border:1px solid var(--teal-edge); padding:5px 9px; background:var(--chrome)}
 .t-links a:hover{border-color:var(--teal)}
 
 /* o monitor: o menor leitor conforme, moldura mate ao canto */
 .vidpanel{position:fixed; right:20px; bottom:20px; z-index:30; width:300px}
 .vp-top{display:flex; justify-content:space-between; align-items:center; padding:5px 8px;
-  background:rgba(5,4,16,.78); border:1px solid var(--line); border-bottom:none;
+  background:var(--glass); border:1px solid var(--line); border-bottom:none;
   font-size:8px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
 .vp-top .dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
-.vp-screen{position:relative; width:300px; height:200px; background:#000; border:1px solid var(--line)}
+.vp-screen{position:relative; width:300px; height:200px; background:var(--bg); border:1px solid var(--line)}
 .yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
 .yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
@@ -93,12 +103,12 @@ button{font-family:var(--mono)}
 .vp-screen.fill .yt-slot iframe{position:absolute; width:136%; height:136%; left:50%; top:50%;
   transform:translate(-50%,-50%)}
 #standby{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:6px; background:rgba(4,3,12,.92); z-index:3; transition:opacity .6s}
+  justify-content:center; gap:6px; background:var(--panel); z-index:3; transition:opacity .6s}
 #standby.off{opacity:0; pointer-events:none}
 #standby .big{font-size:13px; letter-spacing:.3em; color:var(--red); text-transform:uppercase}
 #standbyMsg{font-size:9px; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; text-align:center; max-width:34ch}
 .vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
-  background:rgba(5,4,16,.78); border:1px solid var(--line); border-top:none}
+  background:var(--glass); border:1px solid var(--line); border-top:none}
 #vol{flex:1; accent-color:var(--amber); background:transparent}
 /* rotulo curto no telemovel (monitor de 200 px): «Earn a skip» punha os botoes do monitor em tres filas */
 .lbl-narrow{display:none}
@@ -125,7 +135,7 @@ button{font-family:var(--mono)}
 .pclose{position:absolute; right:10px; top:8px; cursor:pointer; background:none; border:none;
   color:var(--dim); font-size:16px}
 #gName{font-size:15px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px}
-#gNote{color:#c9c4d8; font-size:12px; line-height:1.6}
+#gNote{color:var(--text); font-size:12px; line-height:1.6}
 #gTrackCount{color:var(--dim); font-size:10px; letter-spacing:.14em; margin:8px 0}
 .g-links{display:flex; flex-direction:column; gap:6px; margin-top:10px}
 .g-links a{color:var(--teal); font-size:10.5px; text-decoration:none}
@@ -133,7 +143,7 @@ button{font-family:var(--mono)}
   font-size:10px; line-height:1.7}
 .credits b{color:var(--amber)}
 #histList{list-style:none; margin:0; padding:0}
-#histList li{padding:7px 0; border-bottom:1px dotted var(--line); font-size:11px; color:#c9c4d8}
+#histList li{padding:7px 0; border-bottom:1px dotted var(--line); font-size:11px; color:var(--text)}
 #histList .h-time{color:var(--dim); margin-right:7px}
 /* as linhas que o motor escreve (pushHistory): artista, titulo e as duas ligacoes, separadas */
 #histList .h-art{color:var(--paper); margin-top:3px}
@@ -144,7 +154,7 @@ button{font-family:var(--mono)}
 .h-empty{color:var(--dim)}
 
 /* a luz da sala: abre do escuro ao normal nos primeiros segundos, com a musica a subir */
-#lightVeil{position:fixed; inset:0; z-index:65; background:#000; opacity:.9; pointer-events:none}
+#lightVeil{position:fixed; inset:0; z-index:65; background:var(--bg); opacity:.9; pointer-events:none}
 
 
 #fieldName{position:fixed; left:50%; transform:translateX(-50%); top:56px; z-index:46;
@@ -192,7 +202,7 @@ button{font-family:var(--mono)}
 
 /* ---------- the dance nearby + painel estendido ---------- */
 .dance-row{display:flex; gap:8px; margin:0 0 12px}
-#danceCity{flex:1; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+#danceCity{flex:1; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.08em}
 .dance-list{list-style:none; margin:0; padding:0}
 .dance-list li{padding:8px 0; border-bottom:1px dotted var(--line)}
@@ -206,7 +216,7 @@ button{font-family:var(--mono)}
 /* com o painel estendido, as ligacoes do topo repetiam as de «Go deeper»: ficam so as de baixo */
 #genrePanel:has(#gExt:not([hidden])) .g-links{display:none}
 #gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
-  background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
+  background:var(--amber-soft); color:var(--text); font-size:12px; line-height:1.65}
 #gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:9.5px;
   letter-spacing:.14em; text-transform:uppercase}
 #gExt blockquote cite a{color:var(--dim)}
@@ -215,7 +225,7 @@ button{font-family:var(--mono)}
 .gx-list li{padding:5px 0; font-size:11.5px; border-bottom:1px dotted var(--line)}
 .gx-list li a{color:var(--teal); text-decoration:none}
 .gx-list li span{display:block; color:var(--dim); font-size:10px; letter-spacing:.08em}
-.gx-p{color:#c9c4d8; font-size:11.5px; line-height:1.65; margin:0}
+.gx-p{color:var(--text); font-size:11.5px; line-height:1.65; margin:0}
 .gx-p a{color:var(--teal); text-decoration:none}
 .gx-note{color:var(--dim); font-size:10px; letter-spacing:.08em; margin:12px 0 0}
 
@@ -227,52 +237,52 @@ button{font-family:var(--mono)}
 .dw-in{padding:24px 26px 30px; max-width:860px; margin:0 auto; position:relative}
 .dw-title{margin:0 0 4px; font-size:16px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
 .dw-sub{margin:0 0 18px; color:var(--dim); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; line-height:1.8}
-.dw-tape{border:1px solid var(--line); background:rgba(13,11,28,.85); padding:14px 16px; margin:0 0 16px}
+.dw-tape{border:1px solid var(--line); background:var(--surface); padding:14px 16px; margin:0 0 16px}
 .dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 .dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
-.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:var(--bg)}
 /* soundcloud: cromo nativo; o widget fica dobrado a 0px e so abre como ultimo recurso */
 .schost{height:0; overflow:hidden; transition:height .4s ease}
 .schost.unfold{height:166px; margin-top:8px}
-.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:var(--bg)}
 .scrow{display:flex; align-items:center; gap:10px; margin-top:9px}
-.scbar{flex:1; height:4px; background:rgba(244,241,231,.14); cursor:pointer; position:relative}
-.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber, #ffb12b)}
+.scbar{flex:1; height:4px; background:var(--line); cursor:pointer; position:relative}
+.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber)}
 .sctime{font-size:10px; letter-spacing:.08em; color:var(--dim); min-width:72px; text-align:right}
 .sclink{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
 .sclink:hover{color:var(--paper)}
 
-.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
+.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:var(--bg); border:1px solid var(--line)}
 .dw-yt iframe{width:100%; height:100%}
 .dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:#04030c}
+  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:var(--ink)}
 .dw-ctl{display:flex; gap:8px; align-items:center; padding:9px 0 0}
 .dw-now{color:var(--amber); font-size:10px; letter-spacing:.1em}
 .dw-list{list-style:none; margin:10px 0 0; padding:0; counter-reset:dw}
 .dw-list li{counter-increment:dw; padding:6px 0; border-bottom:1px dotted var(--line);
-  font-size:11.5px; color:#c9c4d8; cursor:pointer}
+  font-size:11.5px; color:var(--text); cursor:pointer}
 .dw-list li::before{content:counter(dw,decimal-leading-zero)"  "; color:var(--dim)}
 .dw-list li.on{color:var(--amber)}
 .dw-list li:hover{color:var(--amber)}
 
 /* ---------- earn the skip ---------- */
 #skill{position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center;
-  background:rgba(3,2,10,.82)}
+  background:var(--scrim)}
 #skill.on{display:flex}
-.sk-card{position:relative; width:min(380px, 92vw); background:#0b0918; border:1px solid var(--amber);
+.sk-card{position:relative; width:min(380px, 92vw); background:var(--surface); border:1px solid var(--amber);
   padding:22px 22px 18px; text-align:center}
 .sk-title{font-size:14px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin-bottom:6px}
 .sk-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); text-transform:uppercase; line-height:1.8; margin-bottom:14px}
 .sk-target{font-size:11px; letter-spacing:.2em; color:var(--paper); margin-bottom:12px}
 .sk-target b{color:var(--teal); font-size:15px}
-#skPad{width:100%; height:92px; cursor:pointer; background:rgba(255,177,43,.07); border:2px solid var(--amber);
+#skPad{width:100%; height:92px; cursor:pointer; background:var(--amber-soft); border:2px solid var(--amber);
   color:var(--amber); font-size:16px; letter-spacing:.4em; text-transform:uppercase; font-family:var(--mono)}
-#skPad:active{background:var(--amber); color:#060511}
+#skPad:active{background:var(--amber); color:var(--ink)}
 #skPad:disabled{opacity:.35; cursor:not-allowed}
 .sk-meter{margin-top:10px; font-size:12px; letter-spacing:.2em; color:var(--paper)}
 .sk-meter b{color:var(--amber)}
 .sk-dots{display:flex; gap:7px; justify-content:center; margin-top:10px}
-.sk-dots i{width:9px; height:9px; background:#241d3c; display:block}
+.sk-dots i{width:9px; height:9px; background:var(--line); display:block}
 .sk-dots i.f{background:var(--teal)}
 .sk-msg{min-height:18px; margin-top:12px; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
 .sk-msg.ok{color:var(--teal)} .sk-msg.bad{color:var(--red)}
@@ -287,7 +297,7 @@ button{font-family:var(--mono)}
 
 /* ---------- a abertura da sala liquida: so o disco 2, depois a agulha ---------- */
 #splash{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
-  background:#000; transition:opacity 1s ease}
+  background:var(--bg); transition:opacity 1s ease}
 #splash.off{opacity:0; pointer-events:none}
 .sp-inner{text-align:center; padding:20px; max-width:560px}
 #tapHint{display:block; margin-top:26px; color:var(--amber); font-size:11px; letter-spacing:.34em;
@@ -298,7 +308,7 @@ button{font-family:var(--mono)}
 .mc-line{font-size:14px; letter-spacing:.14em; color:var(--paper); opacity:0; transform:translateY(8px);
   transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase}
 .mc-line.show{opacity:1; transform:none}
-.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 #000}
+.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 var(--bg)}
 #skipIntro{position:fixed; right:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
   cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
   font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:8px 13px}
@@ -327,8 +337,8 @@ button{font-family:var(--mono)}
   transform:translate(-50%,-50%)}
 /* lente de leitura (so computador): banda de lado a lado; o rato dita o detalhe */
 #waLens{position:absolute; left:0; right:0; height:36vh; top:50%; transform:translateY(-50%);
-  display:none; z-index:2; pointer-events:none; background-repeat:no-repeat; background-color:#000;
-  border-top:1px solid rgba(244,236,217,.28); border-bottom:1px solid rgba(244,236,217,.28);
+  display:none; z-index:2; pointer-events:none; background-repeat:no-repeat; background-color:var(--bg);
+  border-top:1px solid var(--dim); border-bottom:1px solid var(--dim);
   box-shadow:0 0 0 2000px rgba(0,0,0,.38)}
 #waPicWrap.lensing #waLens{display:block}
 #waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
@@ -339,7 +349,7 @@ button{font-family:var(--mono)}
   align-items:center; justify-content:center; text-align:left; padding:0 7vw; overflow:hidden}
 #waPoemLines{transition:transform .9s ease, opacity .8s ease}
 #waPoemLines div{font-family:var(--mono); font-size:14.5px; letter-spacing:.04em; line-height:2.05;
-  color:#e6dfcf; text-shadow:0 0 22px rgba(65,217,200,.16); opacity:0; transition:opacity 1.2s ease;
+  color:var(--paper); text-shadow:0 0 22px var(--teal-glow); opacity:0; transition:opacity 1.2s ease;
   margin:0 0 .35em}
 @media (max-width:760px){
   #waPoemLines div{font-size:13px}
@@ -370,13 +380,13 @@ button{font-family:var(--mono)}
 #waCap .bmore{margin:0}
 /* z-index acima da dica (#waHint, 4): no telemovel a ficha ocupa o ecra e a dica tapava o artista */
 #wartFicha{position:absolute; top:0; right:0; bottom:0; width:min(430px,94vw); z-index:5;
-  background:rgba(8,7,20,.97); border-left:1px solid var(--line); padding:54px 24px 28px; touch-action:pan-y;
+  background:var(--panel); border-left:1px solid var(--line); padding:54px 24px 28px; touch-action:pan-y;
   overflow-y:auto; transform:translateX(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1)}
 #wartFicha.on{transform:translateX(0)}
 #wartFicha h3{margin:0 0 2px; font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
 #wartFicha .fsub{font-size:9px; letter-spacing:.22em; color:var(--dim); text-transform:uppercase; margin:0 0 16px}
 #wartFicha .fk{font-size:9px; letter-spacing:.28em; color:var(--teal); text-transform:uppercase; margin:15px 0 4px}
-#wartFicha .fv{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0}
+#wartFicha .fv{font-size:12.5px; line-height:1.8; color:var(--text); margin:0}
 #wartFicha .fv b{color:var(--paper); font-weight:500}
 #wartFicha a{display:block; color:var(--amber); font-size:11px; letter-spacing:.1em;
   text-decoration:none; border-bottom:1px dotted var(--line); padding:7px 0}
@@ -460,8 +470,8 @@ button{font-family:var(--mono)}
 .bmore:hover{color:var(--paper); border-color:var(--paper)}
 
 /* ---------- suggest a tune (ids gift*) ---------- */
-#giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0 0 14px}
-.gift-field{width:100%; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+#giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:var(--text); margin:0 0 14px}
+.gift-field{width:100%; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.06em; margin:0 0 10px}
 textarea.gift-field{min-height:84px; resize:vertical}
 .gift-row{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px}
@@ -469,18 +479,18 @@ textarea.gift-field{min-height:84px; resize:vertical}
 
 /* ---------- modo de estaleiro (?dev): separadores Next, Log, Banks, Engine (l09); d mostra e esconde ---------- */
 #devPanel{position:fixed; left:12px; top:56px; z-index:89; width:250px; max-height:calc(100vh - 72px); overflow:auto;
-  background:rgba(8,7,20,.98); border:1px solid var(--teal); padding:8px 12px 10px; display:none; overscroll-behavior:contain}
+  background:var(--panel); border:1px solid var(--teal); padding:8px 12px 10px; display:none; overscroll-behavior:contain}
 #devPanel.on{display:block}
 #devPanel.wide{width:min(780px, calc(100vw - 24px))}
 #devPanel h4{margin:0 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
 #devPanel h5{margin:12px 0 4px; font-size:9px; letter-spacing:.24em; color:var(--amber); text-transform:uppercase; font-weight:500}
 #devTabs{display:flex; flex-wrap:wrap; gap:4px; margin:0 0 9px; position:sticky; top:-8px; z-index:1;
-  background:rgba(8,7,20,.98); padding:4px 0}
+  background:var(--panel); padding:4px 0}
 #devTabs button{background:none; border:1px solid var(--line); color:var(--dim); font-size:9px; letter-spacing:.2em;
   text-transform:uppercase; padding:4px 7px; cursor:pointer}
 #devTabs button[aria-selected="true"]{border-color:var(--teal); color:var(--teal)}
 #devTabs #devHide{margin-left:auto; letter-spacing:0}
-.dv-pane{display:none; font-size:10.5px; line-height:1.6; color:#d7d3e4}
+.dv-pane{display:none; font-size:10.5px; line-height:1.6; color:var(--text)}
 .dv-pane.on{display:block}
 .dv-pane p{margin:0 0 6px}
 .dv-pane table{border-collapse:collapse; width:100%; margin:0 0 4px}
@@ -501,7 +511,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
 .dv-pane pre{white-space:pre-wrap; word-break:break-word; margin:0; font-size:10px}
 .dv-scroll{overflow-x:auto}
 #devNext{list-style:none; margin:0 0 9px; padding:0}
-#devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:10.5px; line-height:1.6; color:#d7d3e4}
+#devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:10.5px; line-height:1.6; color:var(--text)}
 #devNext li b{color:var(--paper); font-weight:500; display:block}
 #devNext li span{color:var(--amber)}
 #devNext li i{color:var(--teal); font-style:normal; display:block; font-size:9px; letter-spacing:.2em; text-transform:uppercase}
@@ -511,9 +521,9 @@ textarea.gift-field{min-height:84px; resize:vertical}
 
 /* ---------- telemovel: sugestao de audicao com o ecra fechado ---------- */
 #braveTip{position:fixed; left:10px; right:10px; bottom:10px; z-index:70; display:none;
-  background:rgba(8,7,20,.97); border:1px solid var(--line); padding:12px 13px}
+  background:var(--panel); border:1px solid var(--line); padding:12px 13px}
 #braveTip.on{display:block}
-#braveTip p{margin:0 0 9px; font-size:11px; line-height:1.8; color:#d7d3e4}
+#braveTip p{margin:0 0 9px; font-size:11px; line-height:1.8; color:var(--text)}
 #braveTip b{color:var(--amber); font-weight:500}
 </style>
 </head>

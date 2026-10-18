@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v5.4 e auditoria de UI, rondas 0 e 1). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v5.5 e auditoria de UI, rondas 0 a 2). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -210,9 +210,15 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
 - Nota para o catálogo (fora da auditoria): um texto de faixa ainda diz «the heaviest score in tonight's
   crate» (Norman Grant, Twinkle Music) e oito textos antigos citam o AllMusic sem registo em
   `ops/queue/blurb-sources.tsv`.
-- Ronda 2 (cores) em curso: proposta em `ops/notes/2026-10-18/ui-colors.md` (20 papéis em variáveis, a
-  consola Dub Desk com 11 variáveis locais, exceções declaradas, cinco decisões), à espera do Paulo.
-- Em fila: ronda 3 (tipografia), 4 (conteúdo e densidade; ideia anotada: a ligação «Liner
+- Feito (v5.5): ronda 2, cores. Paleta de 20 papéis no `:root` do l01 (`ops/notes/2026-10-18/ui-colors.md`),
+  consola Dub Desk com 11 variáveis locais em `#ag-dk` (l08), marcadores dos campos em `--dim`, `--line`
+  #3b3560, madrugada em pergaminho (dado do bloco no `build-liquid.py`, secção 8). Regra: nenhuma cor literal
+  nas fontes da interface fora dessas definições e das exceções (canvas e SVG em JavaScript; sombras e
+  gradientes em preto, branco ou tinta com alfa); o `t-ui.js` falha se aparecer uma. «Kill the bass» aceso
+  passou a verde (a regra existia e perdia por especificidade).
+- Em fila: ronda 3 (tipografia), 4 (conteúdo e densidade; anotado: texto sobre o campo
+  líquido sem fundo (nome do bloco, «on air», BPM), pulsar de «drop the needle» até 0,3, «Spin the dubplate»
+  com o estilo geral dentro da consola, barra de cima a 1024 px em duas filas; a ligação «Liner
   source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em
   `ops/queue/blurb-sources.tsv`), 5 (limpeza de código; motor a nível max).
 

@@ -3,19 +3,19 @@
    ritual em tres tempos (v4.6): entrada (intencao, cena, Begin), sessao (anel do tempo e barra
    de controlos), gaveta de ajustes. O fundo e o campo proprio da sala (dusk, ink, off) ou um dos
    campos da radio (#vj, l04), copiado para o canvas da sala a cada imagem */
-#focus{position:fixed; inset:0; z-index:88; display:none; background:#000; color:var(--paper); font-family:var(--mono);
+#focus{position:fixed; inset:0; z-index:88; display:none; background:var(--bg); color:var(--paper); font-family:var(--mono);
   --fc-ring:min(380px, 70vw, 50vh)}
 #focus.on{display:block}
 /* o atributo hidden vence sempre as regras de display das pecas da sala */
 #focus [hidden]{display:none !important}
 #fcCv{position:absolute; inset:0; width:100%; height:100%}
-#fcGate{position:absolute; inset:0; z-index:9; background:#000; display:none; flex-direction:column;
+#fcGate{position:absolute; inset:0; z-index:9; background:var(--bg); display:none; flex-direction:column;
   align-items:center; justify-content:center; gap:30px}
 #fcGate.on{display:flex}
-#fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid rgba(65,217,200,.5);
-  box-shadow:0 0 60px rgba(65,217,200,.12) inset, 0 0 40px rgba(65,217,200,.1)}
+#fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid var(--teal-edge);
+  box-shadow:0 0 60px var(--teal-glow) inset, 0 0 40px var(--teal-glow)}
 #fcWord{font-size:11px; letter-spacing:.5em; text-transform:uppercase; color:var(--dim)}
-#fcWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:#4a4d6a; max-width:420px;
+#fcWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); max-width:420px;
   text-align:center; line-height:2.1; padding:0 16px}
 #fcGateSkip{position:absolute; right:18px; bottom:16px}
 
@@ -44,37 +44,37 @@
 #focus[data-stage=entry] #fcEntry, #focus[data-stage=session] #fcSess{opacity:1; visibility:visible; transform:none;
   transition:opacity .45s ease, transform .45s ease, visibility 0s}
 .fc-h{font-size:12px; letter-spacing:.32em; text-transform:uppercase; color:var(--teal); margin:0; font-weight:400}
-.fc-cap{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; text-align:center}
+.fc-cap{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); text-align:center}
 
 /* ---------- entrada ---------- */
 #fcEntry{display:flex; flex-direction:column; align-items:center; justify-content:center; justify-content:safe center; gap:14px;
   padding:90px 24px 32px; overflow-y:auto}
 /* nada se espreme a porta: se nao couber, desliza (e o topo fica sempre ao alcance) */
 #fcEntry > *{flex-shrink:0}
-#fcIntent{width:min(600px, 100%); height:52px; background:rgba(7,6,26,.85); border:1px solid var(--line);
+#fcIntent{width:min(600px, 100%); height:52px; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:16px; letter-spacing:.08em; padding:0 16px; text-align:center}
 #fcIntent:focus{border-color:var(--amber); outline:none}
 #fcEntry .fc-gap{margin-top:26px}
 #fcScenes{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; width:min(940px, 100%)}
 .fc-card{display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px; min-height:150px;
-  background:rgba(5,4,16,.78); border:1px solid var(--line); color:var(--paper); font-family:var(--mono);
+  background:var(--glass); border:1px solid var(--line); color:var(--paper); font-family:var(--mono);
   text-align:left; cursor:pointer; transition:border-color .2s, box-shadow .2s, background .2s}
 .fc-card:hover{border-color:var(--dim)}
-.fc-card[aria-pressed=true]{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber); background:rgba(20,14,10,.8)}
+.fc-card[aria-pressed=true]{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber); background:var(--amber-soft)}
 .fc-card.last{border-style:dashed}
 .fc-card .nm{font-size:14px; letter-spacing:.24em; text-transform:uppercase}
 .fc-card .mn{font-size:12px; letter-spacing:.2em; color:var(--amber); text-transform:uppercase}
-.fc-card .for{font-size:10px; letter-spacing:.08em; color:#c9c6d8; font-style:italic}
+.fc-card .for{font-size:10px; letter-spacing:.08em; color:var(--text); font-style:italic}
 .fc-card .gs{font-size:11px; line-height:1.6; color:var(--dim)}
 #fcPhone{display:flex; align-items:center; gap:8px; margin:20px 0 0}
 #fcPhone .fc-ico{width:15px; height:15px}
 .fc-card .sd{margin-top:auto; display:flex; align-items:center; gap:7px; font-size:10px; letter-spacing:.2em;
-  text-transform:uppercase; color:#c9c6d8}
+  text-transform:uppercase; color:var(--text)}
 #fcBegin{margin-top:12px; width:min(340px, 100%); height:60px; display:inline-flex; align-items:center;
   justify-content:center; gap:12px; background:var(--amber); border:1px solid var(--amber); color:var(--ink);
   font-family:var(--mono); font-size:15px; letter-spacing:.34em; text-transform:uppercase; cursor:pointer;
   transition:transform .15s ease, box-shadow .2s}
-#fcBegin:hover{box-shadow:0 0 0 3px rgba(255,177,43,.25)}
+#fcBegin:hover{box-shadow:0 0 0 3px var(--amber-edge)}
 #fcBegin:active{transform:scale(.98)}
 #fcBegin .fc-ico{fill:var(--ink); stroke:var(--ink)}
 #fcGoRow{display:flex; flex-direction:column; align-items:center; gap:14px; width:100%}
@@ -91,21 +91,21 @@
   letter-spacing:.2em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
 #fcFresh{display:flex; align-items:center; gap:6px; margin:0; color:var(--teal)}
 #fcCont{width:min(600px, 100%); min-height:56px; display:flex; align-items:center; gap:14px; padding:8px 16px; box-sizing:border-box;
-  background:rgba(7,6,26,.85); border:1px solid var(--teal); color:var(--paper); font-family:var(--mono); text-align:left;
+  background:var(--surface); border:1px solid var(--teal); color:var(--paper); font-family:var(--mono); text-align:left;
   cursor:pointer; transition:box-shadow .2s}
-#fcCont:hover{box-shadow:0 0 0 3px rgba(65,217,200,.2)}
+#fcCont:hover{box-shadow:0 0 0 3px var(--teal-glow)}
 #fcCont .fc-ico{color:var(--teal); fill:var(--teal); stroke:var(--teal)}
 #fcCont .tx{display:flex; flex-direction:column; gap:4px; min-width:0}
 #fcCont b{font-weight:400; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
 #fcContN{font-size:12px; letter-spacing:.06em; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-#fcStep{width:min(600px, 100%); height:40px; box-sizing:border-box; background:rgba(7,6,26,.7); border:1px solid var(--line);
+#fcStep{width:min(600px, 100%); height:40px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.06em; padding:0 14px; text-align:center}
 #fcStep:focus{border-color:var(--teal); outline:none}
 #fcHabit{display:flex; align-items:center; justify-content:center; gap:8px 10px; flex-wrap:wrap; margin-top:6px}
 #fcHabit .q{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--paper)}
 #fcSound{display:flex; align-items:center; justify-content:center; gap:4px 10px; flex-wrap:wrap; font-size:11px;
   letter-spacing:.12em; color:var(--dim); text-align:center}
-#fcSound .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3}
+#fcSound .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
 #fcSoundN{font-weight:400; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--paper)}
 #fcProfPick{justify-content:center; width:min(760px, 100%)}
 .fc-card .sd .fc-ico{width:15px; height:15px}
@@ -117,13 +117,13 @@
    do contentor), para nunca sair do circulo */
 #fcSess > *{flex-shrink:0}
 #fcSess > #fcDial{flex-shrink:1; min-height:96px; container-type:size}
-#fcTag{font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,236,217,.62);
+#fcTag{font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:var(--dim);
   text-align:center; max-width:90vw}
 #fcTag b{font-weight:400; color:var(--dim)}
 #fcDial{position:relative; width:var(--fc-ring); height:var(--fc-ring); background:none; border:0; padding:0;
   cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%}
 #fcDial svg{position:absolute; inset:0; width:100%; height:100%}
-#fcDial .trk{fill:rgba(5,4,16,.35); stroke:var(--line); stroke-width:2}
+#fcDial .trk{fill:var(--chrome); stroke:var(--line); stroke-width:2}
 #fcArc{fill:none; stroke:var(--amber); stroke-width:3; stroke-dasharray:1080.7;
   transition:stroke-dashoffset 1s linear, stroke .6s ease}
 #focus.brk #fcArc{stroke:var(--teal)}
@@ -146,7 +146,7 @@
 #focus.brk #fcHint{display:none}
 #fcBrk .tip{font-size:12px; line-height:1.6; letter-spacing:.06em; color:var(--paper); text-align:center; margin:0}
 #fcBrk label{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
-#fcNote{width:100%; height:44px; box-sizing:border-box; background:rgba(7,6,26,.85); border:1px solid var(--line);
+#fcNote{width:100%; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:13px; padding:0 12px}
 #fcNote:focus{border-color:var(--teal); outline:none}
 #fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
@@ -156,9 +156,9 @@
 #fcMarks{display:flex; gap:5px}
 #fcMarks i{width:18px; height:3px; background:var(--line); transition:background .6s}
 #fcMarks i.done{background:var(--amber)}
-#fcHint{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3}
+#fcHint{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
 #fcDock{position:absolute; left:50%; bottom:44px; transform:translateX(-50%); z-index:5; display:flex;
-  align-items:center; padding:10px 12px; background:rgba(5,4,16,.86); border:1px solid var(--line);
+  align-items:center; padding:10px 12px; background:var(--glass); border:1px solid var(--line);
   max-width:calc(100% - 32px)}
 .fc-sep{width:1px; align-self:stretch; background:var(--line); margin:0 14px; flex:none}
 #fcNowBox{display:flex; flex-direction:column; gap:4px; min-width:110px; flex:1 1 230px; max-width:260px; margin-right:8px}
@@ -175,14 +175,14 @@
 .fc-snd .lv i{display:block; height:2px; width:0; background:var(--amber); transition:width .3s ease}
 #focus .fc-snd[aria-pressed=true]{color:var(--amber); border-color:var(--amber)}
 #fcKeys{position:absolute; left:0; right:0; bottom:16px; text-align:center; font-size:9px; letter-spacing:.24em;
-  text-transform:uppercase; color:#7f82a3; z-index:5}
+  text-transform:uppercase; color:var(--dim); z-index:5}
 
 /* ---------- gaveta de ajustes ---------- */
 #fcScrim{position:absolute; inset:0; z-index:7; background:rgba(0,0,0,.38); opacity:0; visibility:hidden;
   transition:opacity .3s ease, visibility 0s linear .3s}
 #focus.drw #fcScrim{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s}
 #fcDrawer{position:absolute; top:0; right:0; bottom:0; z-index:8; width:min(460px, 100%); box-sizing:border-box;
-  background:rgba(7,6,22,.97); border-left:1px solid var(--line); padding:16px 26px 26px; overflow-y:auto;
+  background:var(--panel); border-left:1px solid var(--line); padding:16px 26px 26px; overflow-y:auto;
   transform:translateX(102%); visibility:hidden;
   transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear .32s}
 #focus.drw #fcDrawer{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s}
@@ -194,7 +194,7 @@
 .fc-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); font-style:italic}
 .fc-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .fc-l{font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); min-width:88px}
-#fcDrawer select{flex:1; min-width:0; height:44px; background:#07061a; border:1px solid var(--line); color:var(--paper);
+#fcDrawer select{flex:1; min-width:0; height:44px; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:0 10px}
 #fcDrawer .fc-row input[type=range]{flex:1; min-width:120px}
 .fc-seg{display:flex}
@@ -209,21 +209,21 @@
 .fc-chip[aria-pressed=true]{color:var(--teal); border-color:var(--teal)}
 #fcValve .fc-chip.more:not([aria-pressed=true]){display:none}
 #fcValve.all .fc-chip.more{display:inline-block}
-.fc-bgl{font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; width:100%; margin-top:4px}
+.fc-bgl{font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); width:100%; margin-top:4px}
 .fc-fader label{display:flex; justify-content:space-between; font-size:11px; letter-spacing:.24em; color:var(--dim);
   text-transform:uppercase; margin-bottom:4px}
 .fc-fader input{width:100%}
-.fc-chk{display:flex; align-items:center; gap:10px; font-size:12px; color:#c9c6d8; min-height:32px; cursor:pointer}
+.fc-chk{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text); min-height:32px; cursor:pointer}
 .fc-chk input{accent-color:var(--amber); width:16px; height:16px; margin:0}
 
 /* ---------- zona «why?» (v5.0): as provas de cada decisao, de focus-evidence.json ---------- */
 #focus.lab #fcScrim{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s}
 #fcLab{position:absolute; top:0; right:0; bottom:0; z-index:8; width:min(680px, 100%); box-sizing:border-box;
-  background:rgba(7,6,22,.98); border-left:1px solid var(--line); padding:16px 28px 30px; overflow-y:auto;
+  background:var(--panel); border-left:1px solid var(--line); padding:16px 28px 30px; overflow-y:auto;
   transform:translateX(102%); visibility:hidden;
   transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear .32s}
 #focus.lab #fcLab{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s}
-.fc-lead{font-size:12.5px; line-height:1.75; color:#c9c6d8; margin:6px 0 14px}
+.fc-lead{font-size:12.5px; line-height:1.75; color:var(--text); margin:6px 0 14px}
 .fc-lvls{display:grid; grid-template-columns:max-content 1fr; gap:8px 14px; align-items:center; margin:0 0 8px;
   font-size:11px; line-height:1.5; color:var(--dim)}
 .fc-lv{display:inline-block; font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:3px 7px;
@@ -232,7 +232,7 @@
 .lv-moderate{color:var(--teal)}
 .lv-weak{color:var(--dim)}
 .lv-design{color:var(--amber)}
-.lv-contested{color:#ec8b7d}
+.lv-contested{color:var(--red)}
 .fc-labs{margin:26px 0 4px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
 .fc-labs .fc-sub{font-style:normal}
 .fc-ev{border-top:1px solid var(--line); scroll-margin-top:12px}
@@ -242,21 +242,21 @@
 .fc-ev summary .dc{flex:1; min-width:0}
 .fc-ev summary::after{content:"+"; color:var(--dim); flex:none; width:10px}
 .fc-ev[open] summary::after{content:"-"}
-.fc-ev.hl{background:rgba(65,217,200,.06); box-shadow:-10px 0 0 rgba(65,217,200,.06), 10px 0 0 rgba(65,217,200,.06)}
-.fc-ev .bd{padding:0 0 16px; font-size:12px; line-height:1.75; color:#c9c6d8}
+.fc-ev.hl{background:var(--teal-soft); box-shadow:-10px 0 0 var(--teal-soft), 10px 0 0 var(--teal-soft)}
+.fc-ev .bd{padding:0 0 16px; font-size:12px; line-height:1.75; color:var(--text)}
 .fc-ev .bd p{margin:0 0 8px}
 .fc-ev .bd b{font-weight:400; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--teal); margin-right:10px}
 .fc-src{margin:8px 0 0; padding:0; list-style:none; font-size:11px; line-height:1.6}
 .fc-src li{position:relative; padding-left:16px; margin-bottom:4px}
 .fc-src li::before{content:"-"; position:absolute; left:0; color:var(--dim)}
-.fc-src a{color:var(--paper); text-decoration:underline; text-decoration-color:#4a4d6a; text-underline-offset:3px}
+.fc-src a{color:var(--paper); text-decoration:underline; text-decoration-color:var(--dim); text-underline-offset:3px}
 .fc-src a:hover{color:var(--amber)}
 .fc-foot{margin-top:24px; padding-top:14px; border-top:1px solid var(--line)}
 
 /* ---------- ronda 2b (v5.2): totais, plano «se... entao», pensamentos estacionados, nota de foco
    e experiencia pessoal (tudo so neste browser) ---------- */
 #fcTot{display:flex; align-items:center; gap:2px 14px; min-height:44px; padding:0 4px; background:none; border:0;
-  color:#7f82a3; font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
+  color:var(--dim); font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
   text-align:left; white-space:nowrap}
 #fcTot:hover{color:var(--paper)}
 #focus[data-stage=session] #fcTot{display:none}
@@ -267,16 +267,16 @@
 #fcStepRow, #fcIfRow{display:flex; align-items:center; gap:8px; width:min(600px, 100%)}
 #fcStepRow #fcStep{flex:1; width:auto; min-width:0}
 #fcIfRow .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal); flex:none}
-#fcIfRow input{flex:1; min-width:0; height:40px; box-sizing:border-box; background:rgba(7,6,26,.7); border:1px solid var(--line);
+#fcIfRow input{flex:1; min-width:0; height:40px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.04em; padding:0 10px}
 #fcIfRow input:focus{border-color:var(--teal); outline:none}
 #fcIfLnk{flex:none; white-space:nowrap}
 #fcActs{align-items:center}
-.fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:#7f82a3; font-family:var(--mono);
+.fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:var(--dim); font-family:var(--mono);
   font-size:10px; letter-spacing:.22em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s}
 .fc-quiet:hover{color:var(--paper); border-color:var(--line)}
 #fcParkBox{display:flex; align-items:center; gap:6px; width:min(440px, 86vw)}
-#fcPark{flex:1; min-width:0; height:44px; box-sizing:border-box; background:rgba(7,6,26,.85); border:1px solid var(--teal);
+#fcPark{flex:1; min-width:0; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--teal);
   color:var(--paper); font-family:var(--mono); font-size:13px; padding:0 12px}
 #fcPark:focus{outline:none}
 #fcRate{display:flex; align-items:center; justify-content:center; gap:6px 10px; flex-wrap:wrap}
@@ -297,13 +297,13 @@
 #focus.brk.more{--fc-ring:min(240px, 50vw, 28vh)}
 .fc-week{display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:6px; align-items:end}
 .fc-week .dy{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:9px; letter-spacing:.12em;
-  text-transform:uppercase; color:#7f82a3}
+  text-transform:uppercase; color:var(--dim)}
 .fc-week .bar{position:relative; width:100%; max-width:34px; height:56px; border-bottom:1px solid var(--line)}
 .fc-week .bar i{position:absolute; left:0; right:0; bottom:0; background:var(--teal); opacity:.75}
 .fc-week .td{color:var(--amber)}
 .fc-week .td .bar i{background:var(--amber)}
 .fc-week .mm{min-height:11px; color:var(--dim); letter-spacing:.04em; text-transform:none}
-.fc-xres{display:flex; flex-direction:column; gap:6px; font-size:11px; line-height:1.65; color:#c9c6d8}
+.fc-xres{display:flex; flex-direction:column; gap:6px; font-size:11px; line-height:1.65; color:var(--text)}
 .fc-xres p{margin:0}
 .fc-xres b{font-weight:400; color:var(--paper)}
 .fc-xres .vd{color:var(--teal)}
@@ -311,7 +311,7 @@
 /* ---------- selo (ecra inteiro) ---------- */
 #focus.sealed #fcTop, #focus.sealed .fc-chrome, #focus.sealed #fcHint{display:none}
 #fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
-  font-size:9px; letter-spacing:.3em; color:rgba(244,241,231,.22); text-transform:uppercase; display:none}
+  font-size:9px; letter-spacing:.3em; color:var(--dim); text-transform:uppercase; display:none}
 #focus.sealed #fcSealHint{display:block}
 
 /* barra mais estreita: os sons ficam so com o icone, o volume passa para a gaveta */

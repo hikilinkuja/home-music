@@ -1,7 +1,7 @@
 <style>
 /* ================= a arcada da casa ================= */
 #arcade{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:86; display:none;
-  width:min(880px, 94vw); max-height:92vh; overflow:auto; background:rgba(8,6,18,.97);
+  width:min(880px, 94vw); max-height:92vh; overflow:auto; background:var(--panel);
   border:1px solid var(--amber); padding:18px 22px 20px}
 #arcade.on{display:block}
 #arcClose{position:absolute; right:10px; top:8px; background:none; border:none; color:var(--dim);
@@ -14,60 +14,64 @@
 
 /* needle */
 #arcStage{display:flex; gap:18px; flex-wrap:wrap}
-#arcCover{position:relative; width:300px; height:168px; background:#000; border:1px solid var(--line);
+#arcCover{position:relative; width:300px; height:168px; background:var(--bg); border:1px solid var(--line);
   overflow:hidden; flex:0 0 auto}
 #arcYt{width:100%; height:100%}
-#arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,#0a0820 0 12px,#070617 12px 24px);
+#arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,var(--surface) 0 12px,var(--ink) 12px 24px);
   display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:10px;
   letter-spacing:.3em; text-transform:uppercase; text-align:center; padding:10px}
 #arcOpts{flex:1; min-width:250px}
 .arc-opt{display:block; width:100%; text-align:left; margin:0 0 7px; padding:9px 12px}
 .arc-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
-.arc-opt.bad{color:var(--paper); background:rgba(232,57,44,.4); border-color:var(--red)}
+.arc-opt.bad{color:var(--paper); background:var(--red-soft); border-color:var(--red)}
 #arcScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:6px 0 0}
-#arcReveal{font-size:11px; color:#d7d3e4; margin:8px 0 0; min-height:34px}
+#arcReveal{font-size:11px; color:var(--text); margin:8px 0 0; min-height:34px}
 
+/* consola Dub Desk: tema proprio (madeira e as tres cores), excecao declarada da paleta (ronda 2) */
+#ag-dk{--dk-wood-deep:#0f0a05; --dk-wood:#160d06; --dk-wood-lit:#241607; --dk-edge:#3a2a14; --dk-dim:#9a865c;
+  --dk-text:#cdbb92; --dk-text-hi:#e7d9b8; --dk-cream:#f6ead0; --dk-gold:#e3b71f; --dk-green:#1c7a3a; --dk-red:#b3271e}
 /* ---- dub desk: consola da casa ---- */
 #dkCrate{display:flex; gap:7px; flex-wrap:wrap; margin:6px 0 16px}
-.dkPlate{background:#241607; border:1px solid #3a2a14; color:#cdbb92; cursor:pointer;
+.dkPlate{background:var(--dk-wood-lit); border:1px solid var(--dk-edge); color:var(--dk-text); cursor:pointer;
   font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
   padding:8px 11px; text-align:left; line-height:1.5}
-.dkPlate b{display:block; color:#e7d9b8; font-weight:500; letter-spacing:.2em}
-.dkPlate.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
-.dkPlate.on b{color:#160d06}
-#desk{background:linear-gradient(180deg, #221409, #160d06 60%, #0f0a05);
-  border:1px solid #3a2a14; border-top:none; padding:16px 16px 14px; position:relative}
+.dkPlate b{display:block; color:var(--dk-text-hi); font-weight:500; letter-spacing:.2em}
+.dkPlate.on{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
+.dkPlate.on b{color:var(--dk-wood)}
+#desk{background:linear-gradient(180deg, var(--dk-wood-lit), var(--dk-wood) 60%, var(--dk-wood-deep));
+  border:1px solid var(--dk-edge); border-top:none; padding:16px 16px 14px; position:relative}
 #desk::before{content:""; display:block; position:absolute; left:0; right:0; top:0; height:4px;
-  background:linear-gradient(90deg, #1c7a3a 0 33%, #e3b71f 33% 66%, #b3271e 66% 100%)}
+  background:linear-gradient(90deg, var(--dk-green) 0 33%, var(--dk-gold) 33% 66%, var(--dk-red) 66% 100%)}
 #deskHead{display:flex; align-items:center; gap:12px; margin:6px 0 16px}
-#deskHead .dname{font-size:11px; letter-spacing:.34em; color:#e7d9b8; text-transform:uppercase}
-#deskHead .dsub{font-size:8.5px; letter-spacing:.2em; color:#8a7750; text-transform:uppercase}
+#deskHead .dname{font-size:11px; letter-spacing:.34em; color:var(--dk-text-hi); text-transform:uppercase}
+#deskHead .dsub{font-size:8.5px; letter-spacing:.2em; color:var(--dk-dim); text-transform:uppercase}
 #dkPlay{margin-left:auto}
 #deskRow{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start}
 .kbank{display:flex; gap:18px; flex-wrap:wrap}
 .knob{width:76px; text-align:center; user-select:none}
 .kcap{position:relative; width:58px; height:58px; margin:0 auto; border-radius:50%; cursor:ns-resize;
-  background:radial-gradient(circle at 36% 30%, #f2e7cd, #cdbb92 55%, #8f7a52 92%);
+  background:radial-gradient(circle at 36% 30%, var(--dk-cream), var(--dk-text) 55%, var(--dk-dim) 92%);
   box-shadow:0 3px 7px rgba(0,0,0,.65), inset 0 -3px 5px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.5);
-  border:2px solid #2a1c0c}
+  border:2px solid var(--dk-edge)}
 .kcap i{position:absolute; left:50%; top:4px; width:3px; height:18px; margin-left:-1.5px;
-  background:#b3271e; border-radius:2px; transform-origin:50% 25px}
-.knob label{display:block; margin-top:7px; font-size:8.5px; letter-spacing:.24em; color:#cdbb92;
+  background:var(--dk-red); border-radius:2px; transform-origin:50% 25px}
+.knob label{display:block; margin-top:7px; font-size:8.5px; letter-spacing:.24em; color:var(--dk-text);
   text-transform:uppercase}
-.knob .kv{font-size:9px; color:#8a7750}
-.kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted rgba(205,187,146,.3)}
+.knob .kv{font-size:9px; color:var(--dk-dim)}
+.kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted var(--dk-edge)}
 #dkTimeBank{display:flex; flex-direction:column; gap:6px}
-#dkTimeBank .tbtn{background:#241607; border-color:#3a2a14; color:#cdbb92}
-#dkTimeBank .tbtn.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+#dkTimeBank .tbtn{background:var(--dk-wood-lit); border-color:var(--dk-edge); color:var(--dk-text)}
+#dkTimeBank .tbtn.on{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
 .dk-side{min-width:200px; flex:1}
-#dkBass{background:#241607; border-color:#3a2a14; color:#cdbb92; padding:10px 12px}
-#dkBass.on{background:#1c7a3a; border-color:#1c7a3a; color:#0f0a05}
-#dkThrow{background:#b3271e; border-color:#b3271e; color:#f6ead0; padding:14px 16px; font-size:11px; width:100%}
-#dkThrow:active{background:#e3b71f; border-color:#e3b71f; color:#160d06}
-#dkVu{width:100%; height:46px; background:#0b0703; border:1px solid #3a2a14; margin-top:10px}
-#dkCredit{font-size:9.5px; color:#8a7750; line-height:1.8; margin-top:10px}
-#dkCredit b{color:#e3b71f; font-weight:500}
-.dkkeys{font-size:8.5px; color:#6a5a3c; letter-spacing:.16em; text-transform:uppercase; margin-top:6px}
+#dkBass{background:var(--dk-wood-lit); border-color:var(--dk-edge); color:var(--dk-text); padding:10px 12px}
+/* com #dkTimeBank a frente: a regra dos botoes de tempo acesos (.tbtn.on) ganhava e o grave cortado saia dourado */
+#dkTimeBank #dkBass.on{background:var(--dk-green); border-color:var(--dk-green); color:var(--dk-cream)}
+#dkThrow{background:var(--dk-red); border-color:var(--dk-red); color:var(--dk-cream); padding:14px 16px; font-size:11px; width:100%}
+#dkThrow:active{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
+#dkVu{width:100%; height:46px; background:var(--dk-wood-deep); border:1px solid var(--dk-edge); margin-top:10px}
+#dkCredit{font-size:9.5px; color:var(--dk-dim); line-height:1.8; margin-top:10px}
+#dkCredit b{color:var(--dk-gold); font-weight:500}
+.dkkeys{font-size:8.5px; color:var(--dk-dim); letter-spacing:.16em; text-transform:uppercase; margin-top:6px}
 </style>
 
 <div id="arcade" aria-label="the arcade">

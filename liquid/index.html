@@ -6,18 +6,28 @@
 <title>Home Music Liquid</title>
 <style>
 :root{
-  --ink:#060511; --paper:#f4ecd9; --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c;
-  --dim:#8d90b0; --line:#2b2745; --blk:#ffb12b;
+  /* paleta por papeis (auditoria de UI, ronda 2, escolhida pelo Paulo a 2026-10-18; ops/notes/2026-10-18/
+     ui-colors.md): nenhuma cor literal fora daqui, salvo a consola Dub Desk (variaveis proprias no l08) e as
+     excecoes da nota (canvas, sombras e gradientes); ops/tests/t-ui.js verifica */
+  --bg:#000000; --ink:#060511; --surface:#0b0918;
+  --panel:rgba(6,5,17,.95); --glass:rgba(5,4,16,.8); --chrome:rgba(5,4,16,.6); --scrim:rgba(3,2,10,.82);
+  --paper:#f4ecd9; --text:#c9c4d8; --dim:#8d90b0;
+  --amber:#ffb12b; --teal:#41d9c8; --red:#e8392c; --line:#3b3560;
+  --amber-soft:rgba(255,177,43,.06); --amber-edge:rgba(255,177,43,.35);
+  --teal-soft:rgba(65,217,200,.06); --teal-glow:rgba(65,217,200,.15); --teal-edge:rgba(65,217,200,.45);
+  --red-soft:rgba(232,57,44,.3);
+  --blk:var(--amber);   /* acento do bloco: o motor muda-o (l05, setNow) */
   --mono:"Courier New", ui-monospace, Menlo, monospace;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0; background:#000; color:var(--paper); font-family:var(--mono); overflow:hidden}
+body{margin:0; background:var(--bg); color:var(--paper); font-family:var(--mono); overflow:hidden}
 button{font-family:var(--mono)}
+::placeholder{color:var(--dim); opacity:1}
 :focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
 /* o liquido e o proprio fundo da estacao */
-#vj{position:fixed; inset:0; z-index:0; width:100vw; height:100vh; background:#000}
+#vj{position:fixed; inset:0; z-index:0; width:100vw; height:100vh; background:var(--bg)}
 
 #app{display:none}
 #app.on{display:block}
@@ -35,7 +45,7 @@ button{font-family:var(--mono)}
 .hdr-btns{margin-left:auto; display:flex; align-items:center; gap:8px}
 #clock{font-size:13px; letter-spacing:.18em; color:var(--amber)}
 .tbtn{
-  cursor:pointer; background:rgba(5,4,16,.6); border:1px solid var(--line); color:var(--dim);
+  cursor:pointer; background:var(--chrome); border:1px solid var(--line); color:var(--dim);
   font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:7px 11px;
   font-family:var(--mono); text-decoration:none; display:inline-flex; align-items:center;
 }
@@ -45,7 +55,7 @@ button{font-family:var(--mono)}
    botoes; e box-shadow e nao outline, para o contorno ambar do teclado continuar a ver-se */
 .tbtn.back{border-color:var(--red); box-shadow:0 0 0 1px var(--red); color:var(--paper)}
 .tbtn.back:hover{color:var(--paper); border-color:var(--red); box-shadow:0 0 0 2px var(--red);
-  background:rgba(232,57,44,.22)}
+  background:var(--red-soft)}
 
 /* cartao da faixa: texto a flutuar sobre o liquido */
 #now{
@@ -56,25 +66,25 @@ button{font-family:var(--mono)}
 #gChip{font-size:9px; letter-spacing:.26em; text-transform:uppercase; color:var(--ink);
   background:var(--blk); padding:3px 8px; text-shadow:none}
 #tYear{font-size:11px; letter-spacing:.2em; color:var(--dim)}
-#tBpm{font-size:9.5px; letter-spacing:.22em; color:var(--amber); border:1px solid rgba(255,177,43,.35); padding:2px 6px; text-shadow:none}
+#tBpm{font-size:9.5px; letter-spacing:.22em; color:var(--amber); border:1px solid var(--amber-edge); padding:2px 6px; text-shadow:none}
 #tFresh{font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
   background:var(--teal); padding:3px 7px; text-shadow:none}
 #tArtist{margin:0; font-size:clamp(20px,3.4vw,34px); letter-spacing:.06em; text-transform:uppercase; line-height:1.08}
 #tTitle{color:var(--amber); font-size:clamp(13px,1.8vw,17px); margin:4px 0 8px}
-#tBlurb{color:#c9c4d8; font-size:12px; line-height:1.55; margin:0; max-width:52ch;
+#tBlurb{color:var(--text); font-size:12px; line-height:1.55; margin:0; max-width:52ch;
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
 .t-links{margin-top:9px; display:flex; gap:9px; flex-wrap:wrap}
 .t-links a{color:var(--teal); text-decoration:none; font-size:9.5px; letter-spacing:.18em;
-  text-transform:uppercase; border:1px solid rgba(65,217,200,.4); padding:5px 9px; background:rgba(5,4,16,.55)}
+  text-transform:uppercase; border:1px solid var(--teal-edge); padding:5px 9px; background:var(--chrome)}
 .t-links a:hover{border-color:var(--teal)}
 
 /* o monitor: o menor leitor conforme, moldura mate ao canto */
 .vidpanel{position:fixed; right:20px; bottom:20px; z-index:30; width:300px}
 .vp-top{display:flex; justify-content:space-between; align-items:center; padding:5px 8px;
-  background:rgba(5,4,16,.78); border:1px solid var(--line); border-bottom:none;
+  background:var(--glass); border:1px solid var(--line); border-bottom:none;
   font-size:8px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
 .vp-top .dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
-.vp-screen{position:relative; width:300px; height:200px; background:#000; border:1px solid var(--line)}
+.vp-screen{position:relative; width:300px; height:200px; background:var(--bg); border:1px solid var(--line)}
 .yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
 .yt-slot.live{opacity:1; pointer-events:auto}
 .yt-slot iframe{width:100%; height:100%}
@@ -93,12 +103,12 @@ button{font-family:var(--mono)}
 .vp-screen.fill .yt-slot iframe{position:absolute; width:136%; height:136%; left:50%; top:50%;
   transform:translate(-50%,-50%)}
 #standby{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:6px; background:rgba(4,3,12,.92); z-index:3; transition:opacity .6s}
+  justify-content:center; gap:6px; background:var(--panel); z-index:3; transition:opacity .6s}
 #standby.off{opacity:0; pointer-events:none}
 #standby .big{font-size:13px; letter-spacing:.3em; color:var(--red); text-transform:uppercase}
 #standbyMsg{font-size:9px; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; text-align:center; max-width:34ch}
 .vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
-  background:rgba(5,4,16,.78); border:1px solid var(--line); border-top:none}
+  background:var(--glass); border:1px solid var(--line); border-top:none}
 #vol{flex:1; accent-color:var(--amber); background:transparent}
 /* rotulo curto no telemovel (monitor de 200 px): «Earn a skip» punha os botoes do monitor em tres filas */
 .lbl-narrow{display:none}
@@ -125,7 +135,7 @@ button{font-family:var(--mono)}
 .pclose{position:absolute; right:10px; top:8px; cursor:pointer; background:none; border:none;
   color:var(--dim); font-size:16px}
 #gName{font-size:15px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px}
-#gNote{color:#c9c4d8; font-size:12px; line-height:1.6}
+#gNote{color:var(--text); font-size:12px; line-height:1.6}
 #gTrackCount{color:var(--dim); font-size:10px; letter-spacing:.14em; margin:8px 0}
 .g-links{display:flex; flex-direction:column; gap:6px; margin-top:10px}
 .g-links a{color:var(--teal); font-size:10.5px; text-decoration:none}
@@ -133,7 +143,7 @@ button{font-family:var(--mono)}
   font-size:10px; line-height:1.7}
 .credits b{color:var(--amber)}
 #histList{list-style:none; margin:0; padding:0}
-#histList li{padding:7px 0; border-bottom:1px dotted var(--line); font-size:11px; color:#c9c4d8}
+#histList li{padding:7px 0; border-bottom:1px dotted var(--line); font-size:11px; color:var(--text)}
 #histList .h-time{color:var(--dim); margin-right:7px}
 /* as linhas que o motor escreve (pushHistory): artista, titulo e as duas ligacoes, separadas */
 #histList .h-art{color:var(--paper); margin-top:3px}
@@ -144,7 +154,7 @@ button{font-family:var(--mono)}
 .h-empty{color:var(--dim)}
 
 /* a luz da sala: abre do escuro ao normal nos primeiros segundos, com a musica a subir */
-#lightVeil{position:fixed; inset:0; z-index:65; background:#000; opacity:.9; pointer-events:none}
+#lightVeil{position:fixed; inset:0; z-index:65; background:var(--bg); opacity:.9; pointer-events:none}
 
 
 #fieldName{position:fixed; left:50%; transform:translateX(-50%); top:56px; z-index:46;
@@ -192,7 +202,7 @@ button{font-family:var(--mono)}
 
 /* ---------- the dance nearby + painel estendido ---------- */
 .dance-row{display:flex; gap:8px; margin:0 0 12px}
-#danceCity{flex:1; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+#danceCity{flex:1; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.08em}
 .dance-list{list-style:none; margin:0; padding:0}
 .dance-list li{padding:8px 0; border-bottom:1px dotted var(--line)}
@@ -206,7 +216,7 @@ button{font-family:var(--mono)}
 /* com o painel estendido, as ligacoes do topo repetiam as de «Go deeper»: ficam so as de baixo */
 #genrePanel:has(#gExt:not([hidden])) .g-links{display:none}
 #gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
-  background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
+  background:var(--amber-soft); color:var(--text); font-size:12px; line-height:1.65}
 #gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:9.5px;
   letter-spacing:.14em; text-transform:uppercase}
 #gExt blockquote cite a{color:var(--dim)}
@@ -215,7 +225,7 @@ button{font-family:var(--mono)}
 .gx-list li{padding:5px 0; font-size:11.5px; border-bottom:1px dotted var(--line)}
 .gx-list li a{color:var(--teal); text-decoration:none}
 .gx-list li span{display:block; color:var(--dim); font-size:10px; letter-spacing:.08em}
-.gx-p{color:#c9c4d8; font-size:11.5px; line-height:1.65; margin:0}
+.gx-p{color:var(--text); font-size:11.5px; line-height:1.65; margin:0}
 .gx-p a{color:var(--teal); text-decoration:none}
 .gx-note{color:var(--dim); font-size:10px; letter-spacing:.08em; margin:12px 0 0}
 
@@ -227,52 +237,52 @@ button{font-family:var(--mono)}
 .dw-in{padding:24px 26px 30px; max-width:860px; margin:0 auto; position:relative}
 .dw-title{margin:0 0 4px; font-size:16px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
 .dw-sub{margin:0 0 18px; color:var(--dim); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; line-height:1.8}
-.dw-tape{border:1px solid var(--line); background:rgba(13,11,28,.85); padding:14px 16px; margin:0 0 16px}
+.dw-tape{border:1px solid var(--line); background:var(--surface); padding:14px 16px; margin:0 0 16px}
 .dw-tape h4{margin:0 0 10px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 .dw-tape h4 span{display:block; margin-top:3px; color:var(--teal); font-size:9px; letter-spacing:.2em}
-.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:#000}
+.dw-tape iframe{width:100%; height:150px; border:1px solid var(--line); background:var(--bg)}
 /* soundcloud: cromo nativo; o widget fica dobrado a 0px e so abre como ultimo recurso */
 .schost{height:0; overflow:hidden; transition:height .4s ease}
 .schost.unfold{height:166px; margin-top:8px}
-.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:#000}
+.schost iframe.scmini{width:100%; height:166px; border:1px solid var(--line); background:var(--bg)}
 .scrow{display:flex; align-items:center; gap:10px; margin-top:9px}
-.scbar{flex:1; height:4px; background:rgba(244,241,231,.14); cursor:pointer; position:relative}
-.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber, #ffb12b)}
+.scbar{flex:1; height:4px; background:var(--line); cursor:pointer; position:relative}
+.scbar i.scfill{display:block; height:100%; width:0; background:var(--amber)}
 .sctime{font-size:10px; letter-spacing:.08em; color:var(--dim); min-width:72px; text-align:right}
 .sclink{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
 .sclink:hover{color:var(--paper)}
 
-.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:#000; border:1px solid var(--line)}
+.dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:var(--bg); border:1px solid var(--line)}
 .dw-yt iframe{width:100%; height:100%}
 .dw-idle{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:#04030c}
+  color:var(--dim); font-size:10px; letter-spacing:.26em; text-transform:uppercase; background:var(--ink)}
 .dw-ctl{display:flex; gap:8px; align-items:center; padding:9px 0 0}
 .dw-now{color:var(--amber); font-size:10px; letter-spacing:.1em}
 .dw-list{list-style:none; margin:10px 0 0; padding:0; counter-reset:dw}
 .dw-list li{counter-increment:dw; padding:6px 0; border-bottom:1px dotted var(--line);
-  font-size:11.5px; color:#c9c4d8; cursor:pointer}
+  font-size:11.5px; color:var(--text); cursor:pointer}
 .dw-list li::before{content:counter(dw,decimal-leading-zero)"  "; color:var(--dim)}
 .dw-list li.on{color:var(--amber)}
 .dw-list li:hover{color:var(--amber)}
 
 /* ---------- earn the skip ---------- */
 #skill{position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center;
-  background:rgba(3,2,10,.82)}
+  background:var(--scrim)}
 #skill.on{display:flex}
-.sk-card{position:relative; width:min(380px, 92vw); background:#0b0918; border:1px solid var(--amber);
+.sk-card{position:relative; width:min(380px, 92vw); background:var(--surface); border:1px solid var(--amber);
   padding:22px 22px 18px; text-align:center}
 .sk-title{font-size:14px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin-bottom:6px}
 .sk-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); text-transform:uppercase; line-height:1.8; margin-bottom:14px}
 .sk-target{font-size:11px; letter-spacing:.2em; color:var(--paper); margin-bottom:12px}
 .sk-target b{color:var(--teal); font-size:15px}
-#skPad{width:100%; height:92px; cursor:pointer; background:rgba(255,177,43,.07); border:2px solid var(--amber);
+#skPad{width:100%; height:92px; cursor:pointer; background:var(--amber-soft); border:2px solid var(--amber);
   color:var(--amber); font-size:16px; letter-spacing:.4em; text-transform:uppercase; font-family:var(--mono)}
-#skPad:active{background:var(--amber); color:#060511}
+#skPad:active{background:var(--amber); color:var(--ink)}
 #skPad:disabled{opacity:.35; cursor:not-allowed}
 .sk-meter{margin-top:10px; font-size:12px; letter-spacing:.2em; color:var(--paper)}
 .sk-meter b{color:var(--amber)}
 .sk-dots{display:flex; gap:7px; justify-content:center; margin-top:10px}
-.sk-dots i{width:9px; height:9px; background:#241d3c; display:block}
+.sk-dots i{width:9px; height:9px; background:var(--line); display:block}
 .sk-dots i.f{background:var(--teal)}
 .sk-msg{min-height:18px; margin-top:12px; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--dim)}
 .sk-msg.ok{color:var(--teal)} .sk-msg.bad{color:var(--red)}
@@ -287,7 +297,7 @@ button{font-family:var(--mono)}
 
 /* ---------- a abertura da sala liquida: so o disco 2, depois a agulha ---------- */
 #splash{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
-  background:#000; transition:opacity 1s ease}
+  background:var(--bg); transition:opacity 1s ease}
 #splash.off{opacity:0; pointer-events:none}
 .sp-inner{text-align:center; padding:20px; max-width:560px}
 #tapHint{display:block; margin-top:26px; color:var(--amber); font-size:11px; letter-spacing:.34em;
@@ -298,7 +308,7 @@ button{font-family:var(--mono)}
 .mc-line{font-size:14px; letter-spacing:.14em; color:var(--paper); opacity:0; transform:translateY(8px);
   transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase}
 .mc-line.show{opacity:1; transform:none}
-.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 #000}
+.mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:.3em; color:var(--amber); text-shadow:2px 2px 0 var(--bg)}
 #skipIntro{position:fixed; right:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
   cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
   font-size:10px; letter-spacing:.24em; text-transform:uppercase; padding:8px 13px}
@@ -327,8 +337,8 @@ button{font-family:var(--mono)}
   transform:translate(-50%,-50%)}
 /* lente de leitura (so computador): banda de lado a lado; o rato dita o detalhe */
 #waLens{position:absolute; left:0; right:0; height:36vh; top:50%; transform:translateY(-50%);
-  display:none; z-index:2; pointer-events:none; background-repeat:no-repeat; background-color:#000;
-  border-top:1px solid rgba(244,236,217,.28); border-bottom:1px solid rgba(244,236,217,.28);
+  display:none; z-index:2; pointer-events:none; background-repeat:no-repeat; background-color:var(--bg);
+  border-top:1px solid var(--dim); border-bottom:1px solid var(--dim);
   box-shadow:0 0 0 2000px rgba(0,0,0,.38)}
 #waPicWrap.lensing #waLens{display:block}
 #waCv{position:absolute; inset:0; width:100%; height:100%; display:none}
@@ -339,7 +349,7 @@ button{font-family:var(--mono)}
   align-items:center; justify-content:center; text-align:left; padding:0 7vw; overflow:hidden}
 #waPoemLines{transition:transform .9s ease, opacity .8s ease}
 #waPoemLines div{font-family:var(--mono); font-size:14.5px; letter-spacing:.04em; line-height:2.05;
-  color:#e6dfcf; text-shadow:0 0 22px rgba(65,217,200,.16); opacity:0; transition:opacity 1.2s ease;
+  color:var(--paper); text-shadow:0 0 22px var(--teal-glow); opacity:0; transition:opacity 1.2s ease;
   margin:0 0 .35em}
 @media (max-width:760px){
   #waPoemLines div{font-size:13px}
@@ -370,13 +380,13 @@ button{font-family:var(--mono)}
 #waCap .bmore{margin:0}
 /* z-index acima da dica (#waHint, 4): no telemovel a ficha ocupa o ecra e a dica tapava o artista */
 #wartFicha{position:absolute; top:0; right:0; bottom:0; width:min(430px,94vw); z-index:5;
-  background:rgba(8,7,20,.97); border-left:1px solid var(--line); padding:54px 24px 28px; touch-action:pan-y;
+  background:var(--panel); border-left:1px solid var(--line); padding:54px 24px 28px; touch-action:pan-y;
   overflow-y:auto; transform:translateX(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1)}
 #wartFicha.on{transform:translateX(0)}
 #wartFicha h3{margin:0 0 2px; font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber)}
 #wartFicha .fsub{font-size:9px; letter-spacing:.22em; color:var(--dim); text-transform:uppercase; margin:0 0 16px}
 #wartFicha .fk{font-size:9px; letter-spacing:.28em; color:var(--teal); text-transform:uppercase; margin:15px 0 4px}
-#wartFicha .fv{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0}
+#wartFicha .fv{font-size:12.5px; line-height:1.8; color:var(--text); margin:0}
 #wartFicha .fv b{color:var(--paper); font-weight:500}
 #wartFicha a{display:block; color:var(--amber); font-size:11px; letter-spacing:.1em;
   text-decoration:none; border-bottom:1px dotted var(--line); padding:7px 0}
@@ -460,8 +470,8 @@ button{font-family:var(--mono)}
 .bmore:hover{color:var(--paper); border-color:var(--paper)}
 
 /* ---------- suggest a tune (ids gift*) ---------- */
-#giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0 0 14px}
-.gift-field{width:100%; background:#0b0918; border:1px solid var(--line); color:var(--paper);
+#giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:var(--text); margin:0 0 14px}
+.gift-field{width:100%; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.06em; margin:0 0 10px}
 textarea.gift-field{min-height:84px; resize:vertical}
 .gift-row{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px}
@@ -469,18 +479,18 @@ textarea.gift-field{min-height:84px; resize:vertical}
 
 /* ---------- modo de estaleiro (?dev): separadores Next, Log, Banks, Engine (l09); d mostra e esconde ---------- */
 #devPanel{position:fixed; left:12px; top:56px; z-index:89; width:250px; max-height:calc(100vh - 72px); overflow:auto;
-  background:rgba(8,7,20,.98); border:1px solid var(--teal); padding:8px 12px 10px; display:none; overscroll-behavior:contain}
+  background:var(--panel); border:1px solid var(--teal); padding:8px 12px 10px; display:none; overscroll-behavior:contain}
 #devPanel.on{display:block}
 #devPanel.wide{width:min(780px, calc(100vw - 24px))}
 #devPanel h4{margin:0 0 7px; font-size:9px; letter-spacing:.3em; color:var(--teal); text-transform:uppercase}
 #devPanel h5{margin:12px 0 4px; font-size:9px; letter-spacing:.24em; color:var(--amber); text-transform:uppercase; font-weight:500}
 #devTabs{display:flex; flex-wrap:wrap; gap:4px; margin:0 0 9px; position:sticky; top:-8px; z-index:1;
-  background:rgba(8,7,20,.98); padding:4px 0}
+  background:var(--panel); padding:4px 0}
 #devTabs button{background:none; border:1px solid var(--line); color:var(--dim); font-size:9px; letter-spacing:.2em;
   text-transform:uppercase; padding:4px 7px; cursor:pointer}
 #devTabs button[aria-selected="true"]{border-color:var(--teal); color:var(--teal)}
 #devTabs #devHide{margin-left:auto; letter-spacing:0}
-.dv-pane{display:none; font-size:10.5px; line-height:1.6; color:#d7d3e4}
+.dv-pane{display:none; font-size:10.5px; line-height:1.6; color:var(--text)}
 .dv-pane.on{display:block}
 .dv-pane p{margin:0 0 6px}
 .dv-pane table{border-collapse:collapse; width:100%; margin:0 0 4px}
@@ -501,7 +511,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
 .dv-pane pre{white-space:pre-wrap; word-break:break-word; margin:0; font-size:10px}
 .dv-scroll{overflow-x:auto}
 #devNext{list-style:none; margin:0 0 9px; padding:0}
-#devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:10.5px; line-height:1.6; color:#d7d3e4}
+#devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:10.5px; line-height:1.6; color:var(--text)}
 #devNext li b{color:var(--paper); font-weight:500; display:block}
 #devNext li span{color:var(--amber)}
 #devNext li i{color:var(--teal); font-style:normal; display:block; font-size:9px; letter-spacing:.2em; text-transform:uppercase}
@@ -511,9 +521,9 @@ textarea.gift-field{min-height:84px; resize:vertical}
 
 /* ---------- telemovel: sugestao de audicao com o ecra fechado ---------- */
 #braveTip{position:fixed; left:10px; right:10px; bottom:10px; z-index:70; display:none;
-  background:rgba(8,7,20,.97); border:1px solid var(--line); padding:12px 13px}
+  background:var(--panel); border:1px solid var(--line); padding:12px 13px}
 #braveTip.on{display:block}
-#braveTip p{margin:0 0 9px; font-size:11px; line-height:1.8; color:#d7d3e4}
+#braveTip p{margin:0 0 9px; font-size:11px; line-height:1.8; color:var(--text)}
 #braveTip b{color:var(--amber); font-weight:500}
 </style>
 </head>
@@ -4698,7 +4708,7 @@ function metaFor(t){
 /* a grelha fina da sala liquida: sete sub-blocos, decididos pelo fundador (10/2026) */
 (function(){
   var NB={
-    dawn:      { label:"DAWN PROGRAMME",      range:"06:00 - 08:00", accent:"#8d90b0", genres:["ambient","ambient_techno"] },
+    dawn:      { label:"DAWN PROGRAMME",      range:"06:00 - 08:00", accent:"#f4ecd9", genres:["ambient","ambient_techno"] },
     kingston:  { label:"KINGSTON BREAKFAST",  range:"08:00 - 13:00", accent:"#ffb12b", genres:["reggae","dub","ska_rocksteady"] },
     groove:    { label:"LUNCH GROOVE",        range:"13:00 - 15:00", accent:"#41d9c8", genres:["house","lofi_house"] },
     flight:    { label:"AFTERNOON FLIGHT",    range:"15:00 - 18:00", accent:"#41d9c8", genres:["liquid","atmospheric_jungle","intelligent_dnb"] },
@@ -7173,19 +7183,19 @@ window.HMDAWN=(function(){
    ritual em tres tempos (v4.6): entrada (intencao, cena, Begin), sessao (anel do tempo e barra
    de controlos), gaveta de ajustes. O fundo e o campo proprio da sala (dusk, ink, off) ou um dos
    campos da radio (#vj, l04), copiado para o canvas da sala a cada imagem */
-#focus{position:fixed; inset:0; z-index:88; display:none; background:#000; color:var(--paper); font-family:var(--mono);
+#focus{position:fixed; inset:0; z-index:88; display:none; background:var(--bg); color:var(--paper); font-family:var(--mono);
   --fc-ring:min(380px, 70vw, 50vh)}
 #focus.on{display:block}
 /* o atributo hidden vence sempre as regras de display das pecas da sala */
 #focus [hidden]{display:none !important}
 #fcCv{position:absolute; inset:0; width:100%; height:100%}
-#fcGate{position:absolute; inset:0; z-index:9; background:#000; display:none; flex-direction:column;
+#fcGate{position:absolute; inset:0; z-index:9; background:var(--bg); display:none; flex-direction:column;
   align-items:center; justify-content:center; gap:30px}
 #fcGate.on{display:flex}
-#fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid rgba(65,217,200,.5);
-  box-shadow:0 0 60px rgba(65,217,200,.12) inset, 0 0 40px rgba(65,217,200,.1)}
+#fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid var(--teal-edge);
+  box-shadow:0 0 60px var(--teal-glow) inset, 0 0 40px var(--teal-glow)}
 #fcWord{font-size:11px; letter-spacing:.5em; text-transform:uppercase; color:var(--dim)}
-#fcWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:#4a4d6a; max-width:420px;
+#fcWhy{font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); max-width:420px;
   text-align:center; line-height:2.1; padding:0 16px}
 #fcGateSkip{position:absolute; right:18px; bottom:16px}
 
@@ -7214,37 +7224,37 @@ window.HMDAWN=(function(){
 #focus[data-stage=entry] #fcEntry, #focus[data-stage=session] #fcSess{opacity:1; visibility:visible; transform:none;
   transition:opacity .45s ease, transform .45s ease, visibility 0s}
 .fc-h{font-size:12px; letter-spacing:.32em; text-transform:uppercase; color:var(--teal); margin:0; font-weight:400}
-.fc-cap{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; text-align:center}
+.fc-cap{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); text-align:center}
 
 /* ---------- entrada ---------- */
 #fcEntry{display:flex; flex-direction:column; align-items:center; justify-content:center; justify-content:safe center; gap:14px;
   padding:90px 24px 32px; overflow-y:auto}
 /* nada se espreme a porta: se nao couber, desliza (e o topo fica sempre ao alcance) */
 #fcEntry > *{flex-shrink:0}
-#fcIntent{width:min(600px, 100%); height:52px; background:rgba(7,6,26,.85); border:1px solid var(--line);
+#fcIntent{width:min(600px, 100%); height:52px; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:16px; letter-spacing:.08em; padding:0 16px; text-align:center}
 #fcIntent:focus{border-color:var(--amber); outline:none}
 #fcEntry .fc-gap{margin-top:26px}
 #fcScenes{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; width:min(940px, 100%)}
 .fc-card{display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px; min-height:150px;
-  background:rgba(5,4,16,.78); border:1px solid var(--line); color:var(--paper); font-family:var(--mono);
+  background:var(--glass); border:1px solid var(--line); color:var(--paper); font-family:var(--mono);
   text-align:left; cursor:pointer; transition:border-color .2s, box-shadow .2s, background .2s}
 .fc-card:hover{border-color:var(--dim)}
-.fc-card[aria-pressed=true]{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber); background:rgba(20,14,10,.8)}
+.fc-card[aria-pressed=true]{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber); background:var(--amber-soft)}
 .fc-card.last{border-style:dashed}
 .fc-card .nm{font-size:14px; letter-spacing:.24em; text-transform:uppercase}
 .fc-card .mn{font-size:12px; letter-spacing:.2em; color:var(--amber); text-transform:uppercase}
-.fc-card .for{font-size:10px; letter-spacing:.08em; color:#c9c6d8; font-style:italic}
+.fc-card .for{font-size:10px; letter-spacing:.08em; color:var(--text); font-style:italic}
 .fc-card .gs{font-size:11px; line-height:1.6; color:var(--dim)}
 #fcPhone{display:flex; align-items:center; gap:8px; margin:20px 0 0}
 #fcPhone .fc-ico{width:15px; height:15px}
 .fc-card .sd{margin-top:auto; display:flex; align-items:center; gap:7px; font-size:10px; letter-spacing:.2em;
-  text-transform:uppercase; color:#c9c6d8}
+  text-transform:uppercase; color:var(--text)}
 #fcBegin{margin-top:12px; width:min(340px, 100%); height:60px; display:inline-flex; align-items:center;
   justify-content:center; gap:12px; background:var(--amber); border:1px solid var(--amber); color:var(--ink);
   font-family:var(--mono); font-size:15px; letter-spacing:.34em; text-transform:uppercase; cursor:pointer;
   transition:transform .15s ease, box-shadow .2s}
-#fcBegin:hover{box-shadow:0 0 0 3px rgba(255,177,43,.25)}
+#fcBegin:hover{box-shadow:0 0 0 3px var(--amber-edge)}
 #fcBegin:active{transform:scale(.98)}
 #fcBegin .fc-ico{fill:var(--ink); stroke:var(--ink)}
 #fcGoRow{display:flex; flex-direction:column; align-items:center; gap:14px; width:100%}
@@ -7261,21 +7271,21 @@ window.HMDAWN=(function(){
   letter-spacing:.2em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
 #fcFresh{display:flex; align-items:center; gap:6px; margin:0; color:var(--teal)}
 #fcCont{width:min(600px, 100%); min-height:56px; display:flex; align-items:center; gap:14px; padding:8px 16px; box-sizing:border-box;
-  background:rgba(7,6,26,.85); border:1px solid var(--teal); color:var(--paper); font-family:var(--mono); text-align:left;
+  background:var(--surface); border:1px solid var(--teal); color:var(--paper); font-family:var(--mono); text-align:left;
   cursor:pointer; transition:box-shadow .2s}
-#fcCont:hover{box-shadow:0 0 0 3px rgba(65,217,200,.2)}
+#fcCont:hover{box-shadow:0 0 0 3px var(--teal-glow)}
 #fcCont .fc-ico{color:var(--teal); fill:var(--teal); stroke:var(--teal)}
 #fcCont .tx{display:flex; flex-direction:column; gap:4px; min-width:0}
 #fcCont b{font-weight:400; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
 #fcContN{font-size:12px; letter-spacing:.06em; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-#fcStep{width:min(600px, 100%); height:40px; box-sizing:border-box; background:rgba(7,6,26,.7); border:1px solid var(--line);
+#fcStep{width:min(600px, 100%); height:40px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.06em; padding:0 14px; text-align:center}
 #fcStep:focus{border-color:var(--teal); outline:none}
 #fcHabit{display:flex; align-items:center; justify-content:center; gap:8px 10px; flex-wrap:wrap; margin-top:6px}
 #fcHabit .q{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--paper)}
 #fcSound{display:flex; align-items:center; justify-content:center; gap:4px 10px; flex-wrap:wrap; font-size:11px;
   letter-spacing:.12em; color:var(--dim); text-align:center}
-#fcSound .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3}
+#fcSound .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
 #fcSoundN{font-weight:400; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--paper)}
 #fcProfPick{justify-content:center; width:min(760px, 100%)}
 .fc-card .sd .fc-ico{width:15px; height:15px}
@@ -7287,13 +7297,13 @@ window.HMDAWN=(function(){
    do contentor), para nunca sair do circulo */
 #fcSess > *{flex-shrink:0}
 #fcSess > #fcDial{flex-shrink:1; min-height:96px; container-type:size}
-#fcTag{font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,236,217,.62);
+#fcTag{font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:var(--dim);
   text-align:center; max-width:90vw}
 #fcTag b{font-weight:400; color:var(--dim)}
 #fcDial{position:relative; width:var(--fc-ring); height:var(--fc-ring); background:none; border:0; padding:0;
   cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%}
 #fcDial svg{position:absolute; inset:0; width:100%; height:100%}
-#fcDial .trk{fill:rgba(5,4,16,.35); stroke:var(--line); stroke-width:2}
+#fcDial .trk{fill:var(--chrome); stroke:var(--line); stroke-width:2}
 #fcArc{fill:none; stroke:var(--amber); stroke-width:3; stroke-dasharray:1080.7;
   transition:stroke-dashoffset 1s linear, stroke .6s ease}
 #focus.brk #fcArc{stroke:var(--teal)}
@@ -7316,7 +7326,7 @@ window.HMDAWN=(function(){
 #focus.brk #fcHint{display:none}
 #fcBrk .tip{font-size:12px; line-height:1.6; letter-spacing:.06em; color:var(--paper); text-align:center; margin:0}
 #fcBrk label{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
-#fcNote{width:100%; height:44px; box-sizing:border-box; background:rgba(7,6,26,.85); border:1px solid var(--line);
+#fcNote{width:100%; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:13px; padding:0 12px}
 #fcNote:focus{border-color:var(--teal); outline:none}
 #fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
@@ -7326,9 +7336,9 @@ window.HMDAWN=(function(){
 #fcMarks{display:flex; gap:5px}
 #fcMarks i{width:18px; height:3px; background:var(--line); transition:background .6s}
 #fcMarks i.done{background:var(--amber)}
-#fcHint{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3}
+#fcHint{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
 #fcDock{position:absolute; left:50%; bottom:44px; transform:translateX(-50%); z-index:5; display:flex;
-  align-items:center; padding:10px 12px; background:rgba(5,4,16,.86); border:1px solid var(--line);
+  align-items:center; padding:10px 12px; background:var(--glass); border:1px solid var(--line);
   max-width:calc(100% - 32px)}
 .fc-sep{width:1px; align-self:stretch; background:var(--line); margin:0 14px; flex:none}
 #fcNowBox{display:flex; flex-direction:column; gap:4px; min-width:110px; flex:1 1 230px; max-width:260px; margin-right:8px}
@@ -7345,14 +7355,14 @@ window.HMDAWN=(function(){
 .fc-snd .lv i{display:block; height:2px; width:0; background:var(--amber); transition:width .3s ease}
 #focus .fc-snd[aria-pressed=true]{color:var(--amber); border-color:var(--amber)}
 #fcKeys{position:absolute; left:0; right:0; bottom:16px; text-align:center; font-size:9px; letter-spacing:.24em;
-  text-transform:uppercase; color:#7f82a3; z-index:5}
+  text-transform:uppercase; color:var(--dim); z-index:5}
 
 /* ---------- gaveta de ajustes ---------- */
 #fcScrim{position:absolute; inset:0; z-index:7; background:rgba(0,0,0,.38); opacity:0; visibility:hidden;
   transition:opacity .3s ease, visibility 0s linear .3s}
 #focus.drw #fcScrim{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s}
 #fcDrawer{position:absolute; top:0; right:0; bottom:0; z-index:8; width:min(460px, 100%); box-sizing:border-box;
-  background:rgba(7,6,22,.97); border-left:1px solid var(--line); padding:16px 26px 26px; overflow-y:auto;
+  background:var(--panel); border-left:1px solid var(--line); padding:16px 26px 26px; overflow-y:auto;
   transform:translateX(102%); visibility:hidden;
   transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear .32s}
 #focus.drw #fcDrawer{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s}
@@ -7364,7 +7374,7 @@ window.HMDAWN=(function(){
 .fc-sub{font-size:10px; letter-spacing:.12em; color:var(--dim); font-style:italic}
 .fc-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .fc-l{font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); min-width:88px}
-#fcDrawer select{flex:1; min-width:0; height:44px; background:#07061a; border:1px solid var(--line); color:var(--paper);
+#fcDrawer select{flex:1; min-width:0; height:44px; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:0 10px}
 #fcDrawer .fc-row input[type=range]{flex:1; min-width:120px}
 .fc-seg{display:flex}
@@ -7379,21 +7389,21 @@ window.HMDAWN=(function(){
 .fc-chip[aria-pressed=true]{color:var(--teal); border-color:var(--teal)}
 #fcValve .fc-chip.more:not([aria-pressed=true]){display:none}
 #fcValve.all .fc-chip.more{display:inline-block}
-.fc-bgl{font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3; width:100%; margin-top:4px}
+.fc-bgl{font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); width:100%; margin-top:4px}
 .fc-fader label{display:flex; justify-content:space-between; font-size:11px; letter-spacing:.24em; color:var(--dim);
   text-transform:uppercase; margin-bottom:4px}
 .fc-fader input{width:100%}
-.fc-chk{display:flex; align-items:center; gap:10px; font-size:12px; color:#c9c6d8; min-height:32px; cursor:pointer}
+.fc-chk{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text); min-height:32px; cursor:pointer}
 .fc-chk input{accent-color:var(--amber); width:16px; height:16px; margin:0}
 
 /* ---------- zona «why?» (v5.0): as provas de cada decisao, de focus-evidence.json ---------- */
 #focus.lab #fcScrim{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s}
 #fcLab{position:absolute; top:0; right:0; bottom:0; z-index:8; width:min(680px, 100%); box-sizing:border-box;
-  background:rgba(7,6,22,.98); border-left:1px solid var(--line); padding:16px 28px 30px; overflow-y:auto;
+  background:var(--panel); border-left:1px solid var(--line); padding:16px 28px 30px; overflow-y:auto;
   transform:translateX(102%); visibility:hidden;
   transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear .32s}
 #focus.lab #fcLab{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s}
-.fc-lead{font-size:12.5px; line-height:1.75; color:#c9c6d8; margin:6px 0 14px}
+.fc-lead{font-size:12.5px; line-height:1.75; color:var(--text); margin:6px 0 14px}
 .fc-lvls{display:grid; grid-template-columns:max-content 1fr; gap:8px 14px; align-items:center; margin:0 0 8px;
   font-size:11px; line-height:1.5; color:var(--dim)}
 .fc-lv{display:inline-block; font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:3px 7px;
@@ -7402,7 +7412,7 @@ window.HMDAWN=(function(){
 .lv-moderate{color:var(--teal)}
 .lv-weak{color:var(--dim)}
 .lv-design{color:var(--amber)}
-.lv-contested{color:#ec8b7d}
+.lv-contested{color:var(--red)}
 .fc-labs{margin:26px 0 4px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
 .fc-labs .fc-sub{font-style:normal}
 .fc-ev{border-top:1px solid var(--line); scroll-margin-top:12px}
@@ -7412,21 +7422,21 @@ window.HMDAWN=(function(){
 .fc-ev summary .dc{flex:1; min-width:0}
 .fc-ev summary::after{content:"+"; color:var(--dim); flex:none; width:10px}
 .fc-ev[open] summary::after{content:"-"}
-.fc-ev.hl{background:rgba(65,217,200,.06); box-shadow:-10px 0 0 rgba(65,217,200,.06), 10px 0 0 rgba(65,217,200,.06)}
-.fc-ev .bd{padding:0 0 16px; font-size:12px; line-height:1.75; color:#c9c6d8}
+.fc-ev.hl{background:var(--teal-soft); box-shadow:-10px 0 0 var(--teal-soft), 10px 0 0 var(--teal-soft)}
+.fc-ev .bd{padding:0 0 16px; font-size:12px; line-height:1.75; color:var(--text)}
 .fc-ev .bd p{margin:0 0 8px}
 .fc-ev .bd b{font-weight:400; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--teal); margin-right:10px}
 .fc-src{margin:8px 0 0; padding:0; list-style:none; font-size:11px; line-height:1.6}
 .fc-src li{position:relative; padding-left:16px; margin-bottom:4px}
 .fc-src li::before{content:"-"; position:absolute; left:0; color:var(--dim)}
-.fc-src a{color:var(--paper); text-decoration:underline; text-decoration-color:#4a4d6a; text-underline-offset:3px}
+.fc-src a{color:var(--paper); text-decoration:underline; text-decoration-color:var(--dim); text-underline-offset:3px}
 .fc-src a:hover{color:var(--amber)}
 .fc-foot{margin-top:24px; padding-top:14px; border-top:1px solid var(--line)}
 
 /* ---------- ronda 2b (v5.2): totais, plano «se... entao», pensamentos estacionados, nota de foco
    e experiencia pessoal (tudo so neste browser) ---------- */
 #fcTot{display:flex; align-items:center; gap:2px 14px; min-height:44px; padding:0 4px; background:none; border:0;
-  color:#7f82a3; font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
+  color:var(--dim); font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
   text-align:left; white-space:nowrap}
 #fcTot:hover{color:var(--paper)}
 #focus[data-stage=session] #fcTot{display:none}
@@ -7437,16 +7447,16 @@ window.HMDAWN=(function(){
 #fcStepRow, #fcIfRow{display:flex; align-items:center; gap:8px; width:min(600px, 100%)}
 #fcStepRow #fcStep{flex:1; width:auto; min-width:0}
 #fcIfRow .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal); flex:none}
-#fcIfRow input{flex:1; min-width:0; height:40px; box-sizing:border-box; background:rgba(7,6,26,.7); border:1px solid var(--line);
+#fcIfRow input{flex:1; min-width:0; height:40px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.04em; padding:0 10px}
 #fcIfRow input:focus{border-color:var(--teal); outline:none}
 #fcIfLnk{flex:none; white-space:nowrap}
 #fcActs{align-items:center}
-.fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:#7f82a3; font-family:var(--mono);
+.fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:var(--dim); font-family:var(--mono);
   font-size:10px; letter-spacing:.22em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s}
 .fc-quiet:hover{color:var(--paper); border-color:var(--line)}
 #fcParkBox{display:flex; align-items:center; gap:6px; width:min(440px, 86vw)}
-#fcPark{flex:1; min-width:0; height:44px; box-sizing:border-box; background:rgba(7,6,26,.85); border:1px solid var(--teal);
+#fcPark{flex:1; min-width:0; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--teal);
   color:var(--paper); font-family:var(--mono); font-size:13px; padding:0 12px}
 #fcPark:focus{outline:none}
 #fcRate{display:flex; align-items:center; justify-content:center; gap:6px 10px; flex-wrap:wrap}
@@ -7467,13 +7477,13 @@ window.HMDAWN=(function(){
 #focus.brk.more{--fc-ring:min(240px, 50vw, 28vh)}
 .fc-week{display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:6px; align-items:end}
 .fc-week .dy{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:9px; letter-spacing:.12em;
-  text-transform:uppercase; color:#7f82a3}
+  text-transform:uppercase; color:var(--dim)}
 .fc-week .bar{position:relative; width:100%; max-width:34px; height:56px; border-bottom:1px solid var(--line)}
 .fc-week .bar i{position:absolute; left:0; right:0; bottom:0; background:var(--teal); opacity:.75}
 .fc-week .td{color:var(--amber)}
 .fc-week .td .bar i{background:var(--amber)}
 .fc-week .mm{min-height:11px; color:var(--dim); letter-spacing:.04em; text-transform:none}
-.fc-xres{display:flex; flex-direction:column; gap:6px; font-size:11px; line-height:1.65; color:#c9c6d8}
+.fc-xres{display:flex; flex-direction:column; gap:6px; font-size:11px; line-height:1.65; color:var(--text)}
 .fc-xres p{margin:0}
 .fc-xres b{font-weight:400; color:var(--paper)}
 .fc-xres .vd{color:var(--teal)}
@@ -7481,7 +7491,7 @@ window.HMDAWN=(function(){
 /* ---------- selo (ecra inteiro) ---------- */
 #focus.sealed #fcTop, #focus.sealed .fc-chrome, #focus.sealed #fcHint{display:none}
 #fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
-  font-size:9px; letter-spacing:.3em; color:rgba(244,241,231,.22); text-transform:uppercase; display:none}
+  font-size:9px; letter-spacing:.3em; color:var(--dim); text-transform:uppercase; display:none}
 #focus.sealed #fcSealHint{display:block}
 
 /* barra mais estreita: os sons ficam so com o icone, o volume passa para a gaveta */
@@ -9472,7 +9482,7 @@ window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor, log:function(){ return F
 <style>
 /* ================= a arcada da casa ================= */
 #arcade{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:86; display:none;
-  width:min(880px, 94vw); max-height:92vh; overflow:auto; background:rgba(8,6,18,.97);
+  width:min(880px, 94vw); max-height:92vh; overflow:auto; background:var(--panel);
   border:1px solid var(--amber); padding:18px 22px 20px}
 #arcade.on{display:block}
 #arcClose{position:absolute; right:10px; top:8px; background:none; border:none; color:var(--dim);
@@ -9485,60 +9495,64 @@ window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor, log:function(){ return F
 
 /* needle */
 #arcStage{display:flex; gap:18px; flex-wrap:wrap}
-#arcCover{position:relative; width:300px; height:168px; background:#000; border:1px solid var(--line);
+#arcCover{position:relative; width:300px; height:168px; background:var(--bg); border:1px solid var(--line);
   overflow:hidden; flex:0 0 auto}
 #arcYt{width:100%; height:100%}
-#arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,#0a0820 0 12px,#070617 12px 24px);
+#arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,var(--surface) 0 12px,var(--ink) 12px 24px);
   display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:10px;
   letter-spacing:.3em; text-transform:uppercase; text-align:center; padding:10px}
 #arcOpts{flex:1; min-width:250px}
 .arc-opt{display:block; width:100%; text-align:left; margin:0 0 7px; padding:9px 12px}
 .arc-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
-.arc-opt.bad{color:var(--paper); background:rgba(232,57,44,.4); border-color:var(--red)}
+.arc-opt.bad{color:var(--paper); background:var(--red-soft); border-color:var(--red)}
 #arcScore{font-size:11px; color:var(--amber); letter-spacing:.14em; margin:6px 0 0}
-#arcReveal{font-size:11px; color:#d7d3e4; margin:8px 0 0; min-height:34px}
+#arcReveal{font-size:11px; color:var(--text); margin:8px 0 0; min-height:34px}
 
+/* consola Dub Desk: tema proprio (madeira e as tres cores), excecao declarada da paleta (ronda 2) */
+#ag-dk{--dk-wood-deep:#0f0a05; --dk-wood:#160d06; --dk-wood-lit:#241607; --dk-edge:#3a2a14; --dk-dim:#9a865c;
+  --dk-text:#cdbb92; --dk-text-hi:#e7d9b8; --dk-cream:#f6ead0; --dk-gold:#e3b71f; --dk-green:#1c7a3a; --dk-red:#b3271e}
 /* ---- dub desk: consola da casa ---- */
 #dkCrate{display:flex; gap:7px; flex-wrap:wrap; margin:6px 0 16px}
-.dkPlate{background:#241607; border:1px solid #3a2a14; color:#cdbb92; cursor:pointer;
+.dkPlate{background:var(--dk-wood-lit); border:1px solid var(--dk-edge); color:var(--dk-text); cursor:pointer;
   font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
   padding:8px 11px; text-align:left; line-height:1.5}
-.dkPlate b{display:block; color:#e7d9b8; font-weight:500; letter-spacing:.2em}
-.dkPlate.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
-.dkPlate.on b{color:#160d06}
-#desk{background:linear-gradient(180deg, #221409, #160d06 60%, #0f0a05);
-  border:1px solid #3a2a14; border-top:none; padding:16px 16px 14px; position:relative}
+.dkPlate b{display:block; color:var(--dk-text-hi); font-weight:500; letter-spacing:.2em}
+.dkPlate.on{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
+.dkPlate.on b{color:var(--dk-wood)}
+#desk{background:linear-gradient(180deg, var(--dk-wood-lit), var(--dk-wood) 60%, var(--dk-wood-deep));
+  border:1px solid var(--dk-edge); border-top:none; padding:16px 16px 14px; position:relative}
 #desk::before{content:""; display:block; position:absolute; left:0; right:0; top:0; height:4px;
-  background:linear-gradient(90deg, #1c7a3a 0 33%, #e3b71f 33% 66%, #b3271e 66% 100%)}
+  background:linear-gradient(90deg, var(--dk-green) 0 33%, var(--dk-gold) 33% 66%, var(--dk-red) 66% 100%)}
 #deskHead{display:flex; align-items:center; gap:12px; margin:6px 0 16px}
-#deskHead .dname{font-size:11px; letter-spacing:.34em; color:#e7d9b8; text-transform:uppercase}
-#deskHead .dsub{font-size:8.5px; letter-spacing:.2em; color:#8a7750; text-transform:uppercase}
+#deskHead .dname{font-size:11px; letter-spacing:.34em; color:var(--dk-text-hi); text-transform:uppercase}
+#deskHead .dsub{font-size:8.5px; letter-spacing:.2em; color:var(--dk-dim); text-transform:uppercase}
 #dkPlay{margin-left:auto}
 #deskRow{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start}
 .kbank{display:flex; gap:18px; flex-wrap:wrap}
 .knob{width:76px; text-align:center; user-select:none}
 .kcap{position:relative; width:58px; height:58px; margin:0 auto; border-radius:50%; cursor:ns-resize;
-  background:radial-gradient(circle at 36% 30%, #f2e7cd, #cdbb92 55%, #8f7a52 92%);
+  background:radial-gradient(circle at 36% 30%, var(--dk-cream), var(--dk-text) 55%, var(--dk-dim) 92%);
   box-shadow:0 3px 7px rgba(0,0,0,.65), inset 0 -3px 5px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.5);
-  border:2px solid #2a1c0c}
+  border:2px solid var(--dk-edge)}
 .kcap i{position:absolute; left:50%; top:4px; width:3px; height:18px; margin-left:-1.5px;
-  background:#b3271e; border-radius:2px; transform-origin:50% 25px}
-.knob label{display:block; margin-top:7px; font-size:8.5px; letter-spacing:.24em; color:#cdbb92;
+  background:var(--dk-red); border-radius:2px; transform-origin:50% 25px}
+.knob label{display:block; margin-top:7px; font-size:8.5px; letter-spacing:.24em; color:var(--dk-text);
   text-transform:uppercase}
-.knob .kv{font-size:9px; color:#8a7750}
-.kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted rgba(205,187,146,.3)}
+.knob .kv{font-size:9px; color:var(--dk-dim)}
+.kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted var(--dk-edge)}
 #dkTimeBank{display:flex; flex-direction:column; gap:6px}
-#dkTimeBank .tbtn{background:#241607; border-color:#3a2a14; color:#cdbb92}
-#dkTimeBank .tbtn.on{background:#e3b71f; border-color:#e3b71f; color:#160d06}
+#dkTimeBank .tbtn{background:var(--dk-wood-lit); border-color:var(--dk-edge); color:var(--dk-text)}
+#dkTimeBank .tbtn.on{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
 .dk-side{min-width:200px; flex:1}
-#dkBass{background:#241607; border-color:#3a2a14; color:#cdbb92; padding:10px 12px}
-#dkBass.on{background:#1c7a3a; border-color:#1c7a3a; color:#0f0a05}
-#dkThrow{background:#b3271e; border-color:#b3271e; color:#f6ead0; padding:14px 16px; font-size:11px; width:100%}
-#dkThrow:active{background:#e3b71f; border-color:#e3b71f; color:#160d06}
-#dkVu{width:100%; height:46px; background:#0b0703; border:1px solid #3a2a14; margin-top:10px}
-#dkCredit{font-size:9.5px; color:#8a7750; line-height:1.8; margin-top:10px}
-#dkCredit b{color:#e3b71f; font-weight:500}
-.dkkeys{font-size:8.5px; color:#6a5a3c; letter-spacing:.16em; text-transform:uppercase; margin-top:6px}
+#dkBass{background:var(--dk-wood-lit); border-color:var(--dk-edge); color:var(--dk-text); padding:10px 12px}
+/* com #dkTimeBank a frente: a regra dos botoes de tempo acesos (.tbtn.on) ganhava e o grave cortado saia dourado */
+#dkTimeBank #dkBass.on{background:var(--dk-green); border-color:var(--dk-green); color:var(--dk-cream)}
+#dkThrow{background:var(--dk-red); border-color:var(--dk-red); color:var(--dk-cream); padding:14px 16px; font-size:11px; width:100%}
+#dkThrow:active{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
+#dkVu{width:100%; height:46px; background:var(--dk-wood-deep); border:1px solid var(--dk-edge); margin-top:10px}
+#dkCredit{font-size:9.5px; color:var(--dk-dim); line-height:1.8; margin-top:10px}
+#dkCredit b{color:var(--dk-gold); font-weight:500}
+.dkkeys{font-size:8.5px; color:var(--dk-dim); letter-spacing:.16em; text-transform:uppercase; margin-top:6px}
 </style>
 
 <div id="arcade" aria-label="the arcade">

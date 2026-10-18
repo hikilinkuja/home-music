@@ -1,8 +1,19 @@
 # Auditoria de UI e UX da sala liquid: ronda 2 (cores), proposta
 
-2026-10-18. Base: secção 3 do relatório da ronda 0 (`ui-audit.md`). Nada implementado: espera a escolha
-do Paulo. Amostras numa página gerada na pasta temporária da sessão (enviada ao Paulo); os valores estão
-todos aqui.
+2026-10-18. Base: secção 3 do relatório da ronda 0 (`ui-audit.md`). Amostras numa página gerada na pasta
+temporária da sessão (enviada ao Paulo); os valores estão todos aqui.
+
+**Implementado na v5.5 (2026-10-18): o Paulo aceitou todas as recomendações** (paleta, `--line` #3b3560,
+«contested» no `--red`, dica do ecrã inteiro em `--dim`, madrugada em pergaminho). Resultado medido com
+`ops/tools/ui_audit.js`: falhas AA de 16 para 4 textos no computador e de 13 para 1 no telemóvel; cores
+calculadas visíveis de 54 para 33 e de 51 para 31. As que restam não são da paleta: «drop the needle»
+pulsa até à opacidade 0,3, e o nome do bloco, «on air» e o BPM leem-se sobre o campo líquido (ronda 3 ou 4).
+
+Correção à proposta: o «Kill the bass» aceso não falhava (3,65:1), porque a regra verde (`#dkBass.on`)
+nunca se aplicava; a regra dos botões de tempo acesos (`#dkTimeBank .tbtn.on`) era mais específica e o
+botão saía dourado (10,1:1). Corrigida a especificidade (`#dkTimeBank #dkBass.on`): o grave cortado sai
+verde, como a regra pretendia, com texto creme (4,52:1). Anotado para a ronda 4: «Spin the dubplate» usa o
+estilo geral dentro da consola.
 
 ## 1. O que se propõe
 

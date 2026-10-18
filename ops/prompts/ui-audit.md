@@ -62,7 +62,7 @@ painel, botões, nota de rodapé, texto da nota enviada ao GitHub e linha «a pr
 cartão. Tratar também os outros termos da secção 5 do relatório da ronda 0 e os factos errados
 do painel The Sound (secção 4.3). Implementar só os termos que o Paulo escolher.
 
-## Ronda 2: cores
+## Ronda 2: cores (feita a 2026-10-18, v5.5; `ops/notes/2026-10-18/ui-colors.md`)
 Propor uma paleta de papéis em variáveis CSS (:root), com o menor número de cores que cubra
 os usos reais. Cada cor leva papel definido, contraste medido e amostra numa página HTML
 (linguagem de marcação de hipertexto) na pasta temporária, com os pares lado a lado.

@@ -1,5 +1,20 @@
 # Registo das voltas
 
+## 2026-10-18: v5.5, auditoria de UI, ronda 2 (cores) (sessão Claude Code na nuvem)
+
+- Escolha do Paulo: todas as recomendações de `ops/notes/2026-10-18/ui-colors.md`.
+- Paleta de 20 papéis em variáveis no `:root` do l01; 144 literais substituídos por script, só dentro dos
+  blocos `<style>` (l01 48, l07 42, l08 54); consola Dub Desk com variáveis locais; marcadores dos campos em
+  `--dim`; `--line` #3b3560; prova «contested» no `--red`; dica do ecrã inteiro em `--dim`.
+- Motor: um valor de dados, o acento da madrugada (#8d90b0 para #f4ecd9), no `build-liquid.py`; diff revisto.
+- Medido antes e depois (`ops/tools/ui_audit.js`): falhas AA de 16 para 4 (computador) e de 13 para 1
+  (telemóvel); cores visíveis de 54 para 33 e de 51 para 31. Restam texto sobre o campo líquido e o pulsar
+  de «drop the needle» (rondas 3 e 4).
+- Correção minha: o «Kill the bass» aceso não falhava o contraste (a regra verde perdia por especificidade e
+  o botão saía dourado); a regra passou a ganhar e o botão sai verde, com texto creme.
+- Teste `t-ui.js` alargado (43 verificações); confirmado que falha 7 contra a versão anterior.
+- Testes: RESULTADO
+
 ## 2026-10-18: auditoria de UI, ronda 2 (cores), proposta (sessão Claude Code na nuvem)
 
 - Proposta em `ops/notes/2026-10-18/ui-colors.md`: 145 valores literais de cor passam a 20 papéis em
