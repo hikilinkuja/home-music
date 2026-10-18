@@ -25,6 +25,8 @@
 - Limites: o YouTube simulado não é o real (da nuvem não há anúncios nem conteúdo licenciado); a
   confirmação com anúncios reais fica para uma ligação doméstica (`ops/HANDOFF.md`). O tamanho de
   1 por 1 segue o leitor OFF do ensaio, que não separou o tamanho da posição.
+- Publicado num commit (`400bf23`), depois de um rebase sobre a v5.0 da sala de foco; servido
+  confirmado (as duas salas iguais às montadas).
 
 ## 2026-10-18: v5.0, sala de foco, ronda 2a (sessão local do Claude Code)
 
