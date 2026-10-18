@@ -1,5 +1,27 @@
 # Registo das voltas
 
+## 2026-10-18: v5.4, auditoria de UI, ronda 1 (termos) (sessão Claude Code na nuvem)
+
+- Escolha do Paulo: todas as recomendações de `ops/notes/2026-10-18/ui-terms.md`.
+- Termos novos: Suggest a tune (painel, botões, nota enviada ao GitHub, crédito «suggested by»), Full
+  screen (rádio, ala da arte; alterna com «Exit full screen»), Visuals, Room sounds, Screen background
+  (leitores de ecrã), Earn a skip (no telemóvel «Skip…»), The genre, Kind of work, subtítulos da gaveta da
+  sala de foco (focus and break lengths, which genres play, mixed under the music), Calm genres only,
+  drop the needle, Guess the Genre, demonstration sheet, film loop on loan, about the work, Video, Keep
+  screen on e Let screen sleep (também na dica do ecrã fechado).
+- Painel The Genre: créditos com os sete blocos, «Liner notes draw mainly on Discogs and Wikipedia»,
+  atalhos certos (seta, m, f, v, w); contagem «records of this genre in the station's crates»; com o painel
+  estendido, as ligações do topo escondem-se (CSS `:has`).
+- Motor: três literais de texto no `build-liquid.py` (secção 13 nova e o crédito da secção 5), sem lógica;
+  diff revisto.
+- Medido ao implementar: «Earn a skip» com «Keep screen on» punha os botões do monitor do telemóvel em
+  três filas (de 103 para 151 px); daí «Skip…» só no telemóvel, como a recomendação previa. A barra de cima a
+  1024 px já tinha duas filas antes (fica para a ronda 4).
+- Correção minha: na proposta escrevi que nenhum texto citava o AllMusic; oito textos antigos do catálogo
+  citam-no. Os créditos dizem por isso «draw mainly on» e não «come from».
+- Teste `ops/tests/t-ui.js` alargado (34 verificações).
+- Testes: RESULTADO
+
 ## 2026-10-18: v5.3, auditoria de UI, correções da ronda 0 e proposta da ronda 1 (sessão Claude Code na nuvem)
 
 - Decisões do Paulo sobre a ronda 0: corrigir já os dois defeitos; eliminar `radio/index.html`,

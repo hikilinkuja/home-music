@@ -522,11 +522,11 @@
     </div>
 
     <div class="fc-sec">
-      <div class="fc-row"><label class="fc-l" for="fcSceneSel">Scene</label><select id="fcSceneSel"></select></div>
+      <div class="fc-row"><label class="fc-l" for="fcSceneSel">Kind of work</label><select id="fcSceneSel"></select></div>
     </div>
 
     <div class="fc-sec">
-      <div class="fc-hd"><h3 class="fc-h">Timer</h3><span class="fc-sub">the selector&#39;s pomodoro</span></div>
+      <div class="fc-hd"><h3 class="fc-h">Timer</h3><span class="fc-sub">focus and break lengths</span></div>
       <div class="fc-row">
         <div class="fc-seg" id="fcLenSeg">
           <button class="tbtn" type="button" data-len="25">25</button><button class="tbtn" type="button" data-len="35">35</button><button class="tbtn" type="button" data-len="50">50</button>
@@ -569,7 +569,7 @@
       <div class="fc-hd"><h3 class="fc-h">Your experiment</h3><span class="fc-sub">which sound works for you?</span><button class="fc-why" type="button" data-why="personal-experiment">why?</button></div>
       <div id="fcXSetup">
         <p class="fc-note">Compare two sounds for one kind of work. The room alternates them block by block (A B, then B A), and after each block you rate your focus with one tap. The result waits for 4 rated blocks of each.</p>
-        <div class="fc-row"><label class="fc-l" for="fcXScene">Work</label><select id="fcXScene"></select></div>
+        <div class="fc-row"><label class="fc-l" for="fcXScene">Kind of work</label><select id="fcXScene"></select></div>
         <div class="fc-row"><label class="fc-l" for="fcXA">Sound A</label><select id="fcXA"></select></div>
         <div class="fc-row"><label class="fc-l" for="fcXB">Sound B</label><select id="fcXB"></select></div>
         <div class="fc-row"><button class="tbtn" id="fcXGo" type="button">Start the experiment</button></div>
@@ -583,20 +583,20 @@
     </div>
 
     <div class="fc-sec">
-      <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">the programme valve</span></div>
+      <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">which genres play</span></div>
       <label class="fc-chk"><input type="checkbox" id="fcMusicOn">Play music while I work</label>
       <p class="fc-note">For reading, studying and writing, silence or music without words works best. <button class="fc-why" type="button" data-why="no-lyrics-for-words">why?</button></p>
       <div id="fcValve" class="fc-chips"></div>
       <div class="fc-row">
         <button class="tbtn" id="fcMoreG" type="button" aria-expanded="false">more genres</button>
-        <button class="tbtn" id="fcCalm" type="button">Calm set</button>
+        <button class="tbtn" id="fcCalm" type="button">Calm genres only</button>
       </div>
       <p class="fc-note">Each lit genre gets an equal share. Changes apply from the next track; Next hurries it. Outside, the broadcast keeps running in silence, exactly where you left it.</p>
       <div class="fc-row"><label class="fc-l" for="fcVolR">Volume</label><input type="range" id="fcVolR" min="0" max="100" value="80"></div>
     </div>
 
     <div class="fc-sec">
-      <div class="fc-hd"><h3 class="fc-h">Background sounds</h3><span class="fc-sub">the house noise desk</span></div>
+      <div class="fc-hd"><h3 class="fc-h">Room sounds</h3><span class="fc-sub">mixed under the music</span></div>
       <div class="fc-fader"><label for="fcRn"><span>rain on the window</span><span id="fcVRn">0</span></label>
         <input type="range" id="fcRn" min="0" max="100" value="0"></div>
       <div class="fc-fader"><label for="fcFp"><span>fireplace</span><span id="fcVFp">0</span></label>
@@ -607,7 +607,7 @@
 
     <div class="fc-sec">
       <div class="fc-hd"><h3 class="fc-h">Screen</h3><button class="fc-why" type="button" data-why="slow-background">why?</button></div>
-      <div id="fcBgs" class="fc-chips" role="group" aria-label="Background"></div>
+      <div id="fcBgs" class="fc-chips" role="group" aria-label="Screen background"></div>
       <label class="fc-chk"><input type="checkbox" id="fcBlack" checked>Hide controls when idle</label>
       <div class="fc-row">
         <label class="fc-chk"><input type="checkbox" id="fcBreathe">Breathe before starting</label>

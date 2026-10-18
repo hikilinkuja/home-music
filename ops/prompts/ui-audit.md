@@ -54,7 +54,7 @@ Entregar ops/notes/<data>/ui-audit.md com:
   chamadas, código comentado e restos de versões antigas.
 - As dez constatações com maior ganho por custo, por ordem.
 
-## Ronda 1: termos
+## Ronda 1: termos (feita a 2026-10-18, v5.4; `ops/notes/2026-10-18/ui-terms.md`)
 Tabela: termo atual, o que faz, problema, duas ou três alternativas com o comprimento em
 caracteres (a barra de botões tem pouco espaço), recomendação. Tratar o «Gift a tune» em
 todos os pontos onde aparece, para que o termo novo fique coerente: botão, título, texto do

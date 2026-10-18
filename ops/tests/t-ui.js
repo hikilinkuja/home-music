@@ -1,9 +1,28 @@
 // Auditoria de UI (ops/prompts/ui-audit.md), ronda 1: correcoes e termos.
 // Session log: as linhas que o motor escreve tem estilo (ligacoes em teal, sem sublinhado, separadas,
 // contraste AA sobre o painel); ala da arte no telemovel: com a ficha aberta, a dica (#waHint) nao fica
-// por cima da ficha nem do nome do artista. Cerca de 40 segundos.
+// por cima da ficha nem do nome do artista. Termos escolhidos pelo Paulo (ops/notes/2026-10-18/ui-terms.md):
+// os antigos ausentes da pagina montada, os novos presentes, os rotulos visiveis certos no computador e no
+// telemovel (Skip... so no telemovel), o monitor do telemovel em duas filas no maximo, e as ligacoes do topo
+// do painel do genero escondidas quando ha painel estendido. Cerca de 50 segundos.
 'use strict';
+const fs = require('fs');
+const path = require('path');
 const T = require('./lib/common');
+
+// textos que nao podem voltar (visiveis ou enviados), e os que os substituem
+const OLD = ['>Gift a tune<', 'Gift a Tune', 'recommend music', 'Hand it over', 'Copy the note', 'a present from', 'Tune recommendation',
+  '>Immerse<', '"Immerse"', '>Background<', 'Background sounds', 'aria-label="Background"', 'liquid background', '>Skip<', '>The sound<',
+  '>The Sound<', '>Scene<', '>Work<', 'selector&#39;s pomodoro', 'programme valve', 'house noise desk', '>Calm set<',
+  'touch to drop the needle', 'tap to drop the needle', '>Drop the Needle<', 'drop the needle pauses', 'demonstration ficha',
+  'ceded film loop', 'room sheet', '>Live feed<', '"Screen on"', '"Screen off"', '>Screen on<', "tonight's crate", 'AllMusic',
+  '[&rarr;] next', 'morning 06-13'];
+const NEW = ['>Suggest a tune<', 'Suggest a Tune', 'we listen to every suggestion', '>Send via GitHub<', '>Copy the suggestion<',
+  '"suggested by "', 'Tune suggestion', '>Full screen<', '"Full screen"', '>Visuals<', '>Room sounds<', 'aria-label="Screen background"',
+  'Earn a skip', 'Skip&hellip;', '>The genre<', '>The Genre<', '>Kind of work<', 'focus and break lengths', 'which genres play',
+  'mixed under the music', '>Calm genres only<', '>drop the needle<', '>Guess the Genre<', 'demonstration sheet', 'film loop on loan',
+  'about the work', '>Video<', '"Keep screen on"', '"Let screen sleep"', "records of this genre in the station's crates",
+  'Liner notes draw mainly on Discogs and Wikipedia', '[&rarr;] earn a skip', 'seven blocks'];
 
 const lum = (c) => { const f = (x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
 const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
@@ -11,6 +30,13 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
 
 (async () => {
   const t = T.suite('ui');
+  // so as fontes da interface (l01 a l09, com o l05 gerado): o catalogo e os textos das faixas ficam fora
+  const html = fs.readdirSync(path.join(T.ROOT, 'liquid')).filter(f => /^l0\d-.*\.html$/.test(f))
+    .map(f => fs.readFileSync(path.join(T.ROOT, 'liquid', f), 'utf8')).join('\n');
+  const back = OLD.filter(x => html.includes(x));
+  t.check('termos antigos ausentes das fontes da interface', back.length === 0, back.join(' | '));
+  const miss = NEW.filter(x => !html.includes(x));
+  t.check('termos novos presentes nas fontes da interface', miss.length === 0, miss.join(' | '));
   const browser = await T.launch();
 
   for (const mode of ['desktop', 'mobile']) {
@@ -37,6 +63,25 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
       const worst = Math.min(...h.color.map(c => ratio(rgb(c), bg)), ratio(rgb(h.art), bg), ratio(rgb(h.tit), bg));
       t.check(`${mode}: contraste AA das linhas sobre o painel`, worst >= 4.5, worst.toFixed(2));
     }
+    const L = await r.page.evaluate(() => {
+      const vis = (el) => [...el.querySelectorAll('span')].filter(x => getComputedStyle(x).display !== 'none').map(x => x.textContent).join('') || el.textContent;
+      const lab = (id) => vis(document.getElementById(id)).trim();
+      document.getElementById('histBtn').click();
+      document.getElementById('wakeBtn').classList.add('avail');
+      const bs = [...document.querySelectorAll('.vp-ctrl .tbtn')].filter(e => e.getBoundingClientRect().width > 0);
+      const gp = document.getElementById('genrePanel'), gx = document.getElementById('gExt'), gl = gp.querySelector('.g-links');
+      const was = gx.hidden;
+      gx.hidden = false; const withExt = getComputedStyle(gl).display;
+      gx.hidden = true; const noExt = getComputedStyle(gl).display;
+      gx.hidden = was;
+      return { gift: lab('giftBtn'), field: lab('fieldBtn'), fs: lab('fsBtn'), genre: lab('genreBtn'), skip: lab('skipBtn'),
+        video: document.querySelector('.vp-top .lab').textContent, rows: new Set(bs.map(e => Math.round(e.getBoundingClientRect().top))).size,
+        withExt, noExt };
+    });
+    const want = { gift: 'Suggest a tune', field: 'Visuals', fs: 'Full screen', genre: 'The genre', skip: mode === 'mobile' ? 'Skip\u2026' : 'Earn a skip', video: 'Video' };
+    for (const k of Object.keys(want)) t.check(`${mode}: rotulo ${want[k]}`, L[k] === want[k], L[k]);
+    t.check(`${mode}: botoes do monitor em ${mode === 'mobile' ? 'duas filas no maximo' : 'uma fila'}`, L.rows <= (mode === 'mobile' ? 2 : 1), L.rows);
+    t.check(`${mode}: painel do genero sem ligacoes repetidas com o painel estendido`, L.withExt === 'none' && L.noExt !== 'none', JSON.stringify(L));
     t.check(`${mode}: sem erros de JavaScript`, r.errors.length === 0, r.errors.join(' | '));
     await r.close();
   }

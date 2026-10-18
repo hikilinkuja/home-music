@@ -100,6 +100,8 @@ button{font-family:var(--mono)}
 .vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
   background:rgba(5,4,16,.78); border:1px solid var(--line); border-top:none}
 #vol{flex:1; accent-color:var(--amber); background:transparent}
+/* rotulo curto no telemovel (monitor de 200 px): «Earn a skip» punha os botoes do monitor em tres filas */
+.lbl-narrow{display:none}
 #needle{
   position:fixed; right:20px; bottom:252px; z-index:31; display:none; cursor:pointer;
   background:var(--amber); color:var(--ink); border:none; font-size:9.5px; letter-spacing:.2em;
@@ -169,6 +171,8 @@ button{font-family:var(--mono)}
   .vidpanel{right:10px; bottom:10px; width:200px}
   .vp-screen{width:200px; height:200px}
   .vp-ctrl{padding:6px 6px; gap:6px}
+  .lbl-wide{display:none}
+  .lbl-narrow{display:inline}
   #needle{top:calc(env(safe-area-inset-top,0px) + 100px); bottom:auto; left:50%; right:auto;
     transform:translateX(-50%); min-height:42px; z-index:33}
   #now{left:10px; right:220px; bottom:14px; max-width:none; z-index:32}
@@ -199,6 +203,8 @@ button{font-family:var(--mono)}
 .dance-more{display:block; color:var(--amber); font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 0}
 
 #gExt{margin-top:16px; border-top:1px dashed var(--line); padding-top:12px}
+/* com o painel estendido, as ligacoes do topo repetiam as de «Go deeper»: ficam so as de baixo */
+#genrePanel:has(#gExt:not([hidden])) .g-links{display:none}
 #gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
   background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
 #gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:9.5px;
@@ -348,7 +354,7 @@ button{font-family:var(--mono)}
 #waPoemTitle{position:absolute; left:22px; right:22px; top:10px; font-size:9px; letter-spacing:.3em;
   line-height:1.7; text-align:right; color:var(--dim); text-transform:uppercase}
 /* a barra da ala: o regresso a esquerda, as duas paredes (esta semana, o quadro do dia) em
-   botoes segmentados, e o Immerse; fica por cima de tudo menos da ficha da sala */
+   botoes segmentados, e o Full screen; fica por cima de tudo menos da ficha da sala */
 #waBar{position:absolute; left:0; right:0; top:0; z-index:2; display:flex; align-items:center; gap:8px;
   padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
   background:linear-gradient(to bottom, rgba(0,0,0,.62), rgba(0,0,0,0))}
@@ -414,7 +420,7 @@ button{font-family:var(--mono)}
   /* titulos longos do quadro do dia: tres linhas no cartao (inteiro na ficha), a coluna nao transborda */
   #waCap .t{font-size:13px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
   /* as setas ficam na coluna, entre a barra e o cartao, e nunca sobem acima do fundo da barra:
-     com um cartao alto num ecra baixo (a peca de campo a 320 px) tapavam o Immerse e roubavam-lhe
+     com um cartao alto num ecra baixo (a peca de campo a 320 px) tapavam o Full screen e roubavam-lhe
      o toque. --wa-bh inclui os 8 px de folga por baixo do ultimo botao; com 6 px de folga vertical
      as setas tem 46 px, e o 100% - --wa-bh - 40px poe-lhes o topo 2 px abaixo desse botao */
   .wa-nav{top:auto; bottom:min(calc(var(--wa-ch) + 2px), calc(100% - var(--wa-bh) - 40px)); transform:none;
@@ -453,7 +459,7 @@ button{font-family:var(--mono)}
   cursor:pointer; padding:2px 0 1px; margin:4px 0 0}
 .bmore:hover{color:var(--paper); border-color:var(--paper)}
 
-/* ---------- gift a tune ---------- */
+/* ---------- suggest a tune (ids gift*) ---------- */
 #giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0 0 14px}
 .gift-field{width:100%; background:#0b0918; border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.06em; margin:0 0 10px}
@@ -519,7 +525,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
 <div id="splash">
   <div class="sp-inner">
     <div id="mc" aria-live="polite"></div>
-    <div id="tapHint" role="button" tabindex="0">tap to drop the needle</div>
+    <div id="tapHint" role="button" tabindex="0">drop the needle</div>
   </div>
 </div>
 <button id="skipIntro" type="button">skip the intro &raquo;</button>
@@ -532,7 +538,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
       <button class="tbtn waWing on" data-wing="week" type="button" aria-pressed="true">This week</button>
       <button class="tbtn waWing" data-wing="day" type="button" aria-pressed="false">Daily canvas</button>
     </div>
-    <button class="tbtn" id="waFsBtn" type="button" title="full screen">Immerse</button>
+    <button class="tbtn" id="waFsBtn" type="button" title="full screen">Full screen</button>
   </nav>
   <video id="waVid" loop muted playsinline preload="none"></video>
   <div id="waPicWrap"><img id="waPic" alt=""><div id="waLens"></div></div>
@@ -547,14 +553,14 @@ textarea.gift-field{min-height:84px; resize:vertical}
     <div class="t" id="waT"></div>
     <div class="wa-arow">
       <div class="a" id="waA"></div>
-      <button class="bmore" id="waFichaBtn" type="button" aria-controls="wartFicha" aria-expanded="false">room sheet</button>
+      <button class="bmore" id="waFichaBtn" type="button" aria-controls="wartFicha" aria-expanded="false">about the work</button>
     </div>
   </div>
   <aside id="wartFicha">
     <button id="wartFichaClose" type="button">&times;</button>
     <h3 id="waFT">&hellip;</h3>
-    <p class="fsub" id="waFSub">room sheet</p>
-    <div id="waBadge">demonstration ficha &middot; fictional resident</div>
+    <p class="fsub" id="waFSub">about the work</p>
+    <div id="waBadge">demonstration sheet &middot; fictional resident</div>
     <div class="fk">artist</div><p class="fv" id="waFArtist"></p>
     <div class="fk">life</div><p class="fv" id="waFLife"></p>
     <div class="fk">who they are</div><p class="fv" id="waFWho"></p>
@@ -571,12 +577,12 @@ textarea.gift-field{min-height:84px; resize:vertical}
     <div class="hdr-btns">
       <div id="clock">--:--</div>
       <button class="tbtn" id="mixBtn" type="button">Mixtapes</button>
-      <button class="tbtn" id="giftBtn" type="button" title="recommend music to the house">Gift a tune</button>
-      <button class="tbtn" id="fieldBtn" type="button" title="change the liquid background [v]">Background</button>
+      <button class="tbtn" id="giftBtn" type="button" title="we listen to every suggestion">Suggest a tune</button>
+      <button class="tbtn" id="fieldBtn" type="button" title="change the visuals [v]">Visuals</button>
       <button class="tbtn" id="wartBtn" type="button" title="the art wing [w]">Art</button>
       <button class="tbtn" id="focusBtn" type="button" title="the focus room">Focus</button>
       <button class="tbtn" id="arcBtn" type="button" title="the arcade">Arcade</button>
-      <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Immerse</button>
+      <button class="tbtn" id="fsBtn" type="button" title="full screen [f]">Full screen</button>
     </div>
   </header>
 
@@ -597,13 +603,13 @@ textarea.gift-field{min-height:84px; resize:vertical}
       <a id="aSP" href="#" target="_blank" rel="noopener">&#9678; Spotify</a>
       <a id="aSrc" href="#" target="_blank" rel="noopener" hidden>&#9636; Liner source</a>
       <button class="tbtn" id="danceBtn" type="button">&#9737; The dance nearby</button>
-      <button class="tbtn" id="genreBtn" type="button">The sound</button>
+      <button class="tbtn" id="genreBtn" type="button">The genre</button>
       <button class="tbtn" id="histBtn" type="button">Session log</button>
     </div>
   </section>
 
   <div class="vidpanel">
-    <div class="vp-top"><span class="lab">Live feed</span><span class="dot"></span></div>
+    <div class="vp-top"><span class="lab">Video</span><span class="dot"></span></div>
     <div class="vp-screen">
       <div class="yt-slot" id="slotA"><div id="ytA"></div></div>
       <div class="yt-slot" id="slotB"><div id="ytB"></div></div>
@@ -614,19 +620,19 @@ textarea.gift-field{min-height:84px; resize:vertical}
     </div>
     <div class="vp-ctrl">
       <button class="tbtn" id="muteBtn" type="button" aria-label="mute">Mute</button>
-      <button class="tbtn" id="skipBtn" type="button" title="earn the skip">Skip</button>
+      <button class="tbtn" id="skipBtn" type="button" title="tap the tempo of this record to skip it"><span class="lbl-wide">Earn a skip</span><span class="lbl-narrow">Skip&hellip;</span></button>
       <button class="tbtn" id="cropBtn" type="button" title="crop away the black bars of the video">Crop</button>
-      <button class="tbtn" id="wakeBtn" type="button" title="keep the screen awake so the music keeps playing">Screen on</button>
+      <button class="tbtn" id="wakeBtn" type="button" title="keep the screen awake so the music keeps playing">Keep screen on</button>
       <input id="vol" type="range" min="0" max="100" value="80" aria-label="volume">
     </div>
     <div class="vp-resize" id="vpResize" title="drag to resize, double click to reset"></div>
   </div>
 
-  <button id="needle" type="button">touch to drop the needle</button>
+  <button id="needle" type="button">drop the needle</button>
 
   <aside id="genrePanel" class="panel" aria-label="about this genre">
     <button class="pclose" data-close="genrePanel" type="button">&times;</button>
-    <h3>The Sound</h3>
+    <h3>The Genre</h3>
     <p class="psub">what you are hearing, and why</p>
     <div id="gName">&hellip;</div>
     <p id="gNote">&hellip;</p>
@@ -637,7 +643,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
     </div>
     <div id="gExt" hidden></div>
     <div class="credits">
-      <b>HOME MUSIC LIQUID</b> &middot; the liquid room of the house: same 24-hour programme, morning 06-13, afternoon 13-20, night 20-06, same crates, no stage, no ceremony. The background is the sound itself: a liquid field breathing with the levels and the tempo of what is playing. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes compiled from Wikipedia, Discogs, AllMusic and the music press. The main room, with the selector and the rite of the 45, lives at the station's front door. Shortcuts: [&rarr;] next &middot; [m] mute.
+      <b>HOME MUSIC LIQUID</b> &middot; the liquid room of the house: its own 24-hour programme in seven blocks, from Dawn (06-08) to After Hours (02-06), drawn from the same crates as the main room, with no stage and no ceremony. The background is the sound itself: a liquid field breathing with the levels and the tempo of what is playing. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes draw mainly on Discogs and Wikipedia. The main room, with the selector and the rite of the 45, lives at the station's front door. Shortcuts: [&rarr;] earn a skip &middot; [m] mute &middot; [f] full screen &middot; [v] visuals &middot; [w] art wing.
     </div>
   </aside>
 
@@ -653,18 +659,18 @@ textarea.gift-field{min-height:84px; resize:vertical}
     <p id="danceNote" class="dance-note"></p>
   </aside>
 
-  <aside id="giftPanel" class="panel" aria-label="recommend music">
+  <aside id="giftPanel" class="panel" aria-label="suggest a tune">
     <button class="pclose" data-close="giftPanel" type="button">&times;</button>
-    <h3>Gift a Tune</h3>
-    <p class="psub">recommend music to the house</p>
-    <p class="gift-lede">Heard something that belongs in this room? Hand it over. The founders listen first and check the liner facts; if it enters the crates, the card carries your name while it plays: <b style="color:var(--amber)">a present from you</b>. Single tunes or whole playlists, both welcome.</p>
+    <h3>Suggest a Tune</h3>
+    <p class="psub">we listen to every suggestion</p>
+    <p class="gift-lede">Heard something that belongs in this room? Suggest it. The founders listen to every suggestion and check the facts; if it joins the crates, the card credits you while it plays. Single tunes or whole playlists, both welcome.</p>
     <input class="gift-field" id="giftName" type="text" maxlength="60" placeholder="your name or handle (for the credit)">
     <textarea class="gift-field" id="giftWhat" maxlength="2000" placeholder="artist and title, a link, or a whole playlist... anything we can chase"></textarea>
     <div class="gift-row">
-      <button class="tbtn" id="giftGo" type="button">Hand it over (GitHub)</button>
-      <button class="tbtn" id="giftCopy" type="button">Copy the note</button>
+      <button class="tbtn" id="giftGo" type="button">Send via GitHub</button>
+      <button class="tbtn" id="giftCopy" type="button">Copy the suggestion</button>
     </div>
-    <p class="gift-note">The first button opens a prefilled note on the station's GitHub, where the queue lives in the open; it needs a free GitHub login. No account? Copy the note and pass it to the founders any way you like.</p>
+    <p class="gift-note">Send via GitHub opens a prefilled issue on the station's public GitHub page (a free account is needed). No account? Copy the suggestion and send it to the founders any way you like.</p>
   </aside>
 
   <aside id="histPanel" class="panel" aria-label="session history">
@@ -749,7 +755,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
   </div>
 
   <div id="braveTip">
-    <p><b>Listening with the screen off?</b> Chrome and Safari pause video when the phone locks. The free Brave browser keeps this station playing in the background, ads already stripped. Or press Screen on below the monitor to keep the screen awake here.</p>
+    <p><b>Listening with the screen off?</b> Chrome and Safari pause video when the phone locks. The free Brave browser keeps this station playing in the background, ads already stripped. Or press Keep screen on below the monitor to keep the screen awake here.</p>
     <button class="tbtn" id="braveTipOk" type="button">Got it</button>
   </div>
 </div>
@@ -5498,7 +5504,7 @@ function setNow(t, push){
   $("tBlurb").textContent = t.b;
   (function(){
     var r=$("tRec");
-    if(r){ if(t.rec){ r.textContent="a present from "+t.rec; r.hidden=false; } else { r.hidden=true; } }
+    if(r){ if(t.rec){ r.textContent="suggested by "+t.rec; r.hidden=false; } else { r.hidden=true; } }
     var fz=$("tFresh");
     if(fz){
       var isF=false;
@@ -5520,7 +5526,7 @@ function setNow(t, push){
   var gw = $("gWiki");
   if(g.w){ gw.href = g.w; gw.hidden = false; } else { gw.hidden = true; }
   var n = TRACKS.filter(function(x){ return x.g===t.g; }).length;
-  $("gTrackCount").textContent = n + " records from this sound in tonight's crate.";
+  $("gTrackCount").textContent = n + " records of this genre in the station's crates.";
   /* amostra do painel estendido: escrita de fora primeiro, a nossa so como argamassa */
   var ext=$("gExt");
   if(ext){
@@ -5927,7 +5933,7 @@ function toggleFs(){
 $("fsBtn").addEventListener("click", toggleFs);
 document.addEventListener("fullscreenchange", function(){
   $("fsBtn").classList.toggle("on", !!document.fullscreenElement);
-  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";
+  $("fsBtn").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";
 });
 document.querySelectorAll(".pclose").forEach(function(b){
   b.addEventListener("click", function(){
@@ -6468,7 +6474,7 @@ var YEATS=[
   "Tread softly because you tread on my dreams."
 ];
 var WPIECES=[
-  { kind:"film", k:"Residency &middot; ceded film loop", t:"Symphonie Diagonale", a:"Viking Eggeling", real:true,
+  { kind:"film", k:"Residency &middot; film loop on loan", t:"Symphonie Diagonale", a:"Viking Eggeling", real:true,
     life:"Lund 1880, Berlin 1925",
     who:"Swedish painter and film-maker of the Dada circle in Zurich and Berlin. With Hans Richter he searched for a universal language of abstract form; <b>Symphonie Diagonale</b>, his only finished film, premiered in Berlin in May 1925, days before his death.",
     piece:"Diagonal figures animated frame by frame orchestrate growth and decay in time: cinema treated as scored music for the eye. It runs dimmed under a veil that breathes with the broadcast.",
@@ -6499,7 +6505,7 @@ var wa={ on:false, raf:0, cur:0, poemT0:0, wing:"week", hinted:{}, hintT:0, kind
 function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
 function waFillFicha(p){
   $("waFT").innerHTML=p.t;
-  $("waFSub").textContent="room sheet · week "+isoWeek(new Date())+" programme";
+  $("waFSub").textContent="about the work · week "+isoWeek(new Date())+" programme";
   $("waBadge").style.display=p.real?"none":"inline-block";
   $("waFArtist").innerHTML=p.a;
   $("waFLife").textContent=p.life;
@@ -6719,7 +6725,7 @@ var DAILY_PIECE="Daily canvas: every day the house hangs one public-domain work 
 var DAILY_LIC="Public-domain artwork; image and record served by the Art Institute of Chicago open API (CC0 designated data).";
 /* a ficha do quadro do dia; sem quadro (a pedir, ou o museu sem resposta) diz isso mesmo */
 function dailyFicha(d, why){
-  $("waFSub").textContent="room sheet · daily canvas · day "+dayOfYear();
+  $("waFSub").textContent="about the work · daily canvas · day "+dayOfYear();
   $("waBadge").style.display="none";
   $("waFT").textContent = d ? d.t : "Daily canvas";
   $("waFArtist").textContent = d ? d.artist : "(no painting on the wall yet)";
@@ -6980,14 +6986,14 @@ if(DESK){
   function acquire(){
     navigator.wakeLock.request("screen").then(function(l){
       lock=l;
-      btn.textContent="Screen off";
-      l.addEventListener("release", function(){ lock=null; if(!want) btn.textContent="Screen on"; });
-    }).catch(function(){ want=false; btn.textContent="Screen on"; });
+      btn.textContent="Let screen sleep";
+      l.addEventListener("release", function(){ lock=null; if(!want) btn.textContent="Keep screen on"; });
+    }).catch(function(){ want=false; btn.textContent="Keep screen on"; });
   }
   btn.addEventListener("click", function(){
     want=!want;
     if(want){ acquire(); }
-    else if(lock){ lock.release(); btn.textContent="Screen on"; }
+    else if(lock){ lock.release(); btn.textContent="Keep screen on"; }
   });
   document.addEventListener("visibilitychange", function(){
     if(want && !lock && document.visibilityState==="visible") acquire();
@@ -6996,7 +7002,7 @@ if(DESK){
 
 /* ---------------- 4b. modo de estaleiro (?dev na morada): mudou-se para o liquid/l09-dev.html ---------------- */
 
-/* ---------------- 5. gift a tune: recomendacoes da sala ---------------- */
+/* ---------------- 5. suggest a tune (ids gift*): sugestoes de musica para a sala ---------------- */
 (function(){
   var btn=$("giftBtn");
   if(!btn) return;
@@ -7007,15 +7013,15 @@ if(DESK){
   });
   function giftText(){
     var n=($("giftName").value||"").trim(), w=($("giftWhat").value||"").trim();
-    return "Tune recommendation for Home Music\n\nFrom: "+(n||"(no name given)")+
+    return "Tune suggestion for Home Music\n\nFrom: "+(n||"(no name given)")+
       "\n\nThe music:\n"+(w||"(empty)")+
-      "\n\nHouse protocol: the founders listen first and verify artist, title and liner facts; accepted tunes enter the crates credited as a present from the sender.";
+      "\n\nHouse protocol: the founders listen first and verify artist, title and liner facts; accepted tunes join the crates, credited to the sender.";
   }
   $("giftGo").addEventListener("click", function(){
     var w=($("giftWhat").value||"").trim();
     if(!w){ $("giftWhat").focus(); return; }
     var u="https://github.com/hikilinkuja/home-music/issues/new?title="+
-      encodeURIComponent("Tune recommendation: "+w.slice(0,60))+
+      encodeURIComponent("Tune suggestion: "+w.slice(0,60))+
       "&body="+encodeURIComponent(giftText());
     window.open(u, "_blank", "noopener");
   });
@@ -7023,7 +7029,7 @@ if(DESK){
     var b=this;
     try{
       navigator.clipboard.writeText(giftText()).then(function(){
-        b.textContent="Copied"; setTimeout(function(){ b.textContent="Copy the note"; }, 1600);
+        b.textContent="Copied"; setTimeout(function(){ b.textContent="Copy the suggestion"; }, 1600);
       });
     }catch(e){}
   });
@@ -7686,11 +7692,11 @@ window.HMDAWN=(function(){
     </div>
 
     <div class="fc-sec">
-      <div class="fc-row"><label class="fc-l" for="fcSceneSel">Scene</label><select id="fcSceneSel"></select></div>
+      <div class="fc-row"><label class="fc-l" for="fcSceneSel">Kind of work</label><select id="fcSceneSel"></select></div>
     </div>
 
     <div class="fc-sec">
-      <div class="fc-hd"><h3 class="fc-h">Timer</h3><span class="fc-sub">the selector&#39;s pomodoro</span></div>
+      <div class="fc-hd"><h3 class="fc-h">Timer</h3><span class="fc-sub">focus and break lengths</span></div>
       <div class="fc-row">
         <div class="fc-seg" id="fcLenSeg">
           <button class="tbtn" type="button" data-len="25">25</button><button class="tbtn" type="button" data-len="35">35</button><button class="tbtn" type="button" data-len="50">50</button>
@@ -7733,7 +7739,7 @@ window.HMDAWN=(function(){
       <div class="fc-hd"><h3 class="fc-h">Your experiment</h3><span class="fc-sub">which sound works for you?</span><button class="fc-why" type="button" data-why="personal-experiment">why?</button></div>
       <div id="fcXSetup">
         <p class="fc-note">Compare two sounds for one kind of work. The room alternates them block by block (A B, then B A), and after each block you rate your focus with one tap. The result waits for 4 rated blocks of each.</p>
-        <div class="fc-row"><label class="fc-l" for="fcXScene">Work</label><select id="fcXScene"></select></div>
+        <div class="fc-row"><label class="fc-l" for="fcXScene">Kind of work</label><select id="fcXScene"></select></div>
         <div class="fc-row"><label class="fc-l" for="fcXA">Sound A</label><select id="fcXA"></select></div>
         <div class="fc-row"><label class="fc-l" for="fcXB">Sound B</label><select id="fcXB"></select></div>
         <div class="fc-row"><button class="tbtn" id="fcXGo" type="button">Start the experiment</button></div>
@@ -7747,20 +7753,20 @@ window.HMDAWN=(function(){
     </div>
 
     <div class="fc-sec">
-      <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">the programme valve</span></div>
+      <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">which genres play</span></div>
       <label class="fc-chk"><input type="checkbox" id="fcMusicOn">Play music while I work</label>
       <p class="fc-note">For reading, studying and writing, silence or music without words works best. <button class="fc-why" type="button" data-why="no-lyrics-for-words">why?</button></p>
       <div id="fcValve" class="fc-chips"></div>
       <div class="fc-row">
         <button class="tbtn" id="fcMoreG" type="button" aria-expanded="false">more genres</button>
-        <button class="tbtn" id="fcCalm" type="button">Calm set</button>
+        <button class="tbtn" id="fcCalm" type="button">Calm genres only</button>
       </div>
       <p class="fc-note">Each lit genre gets an equal share. Changes apply from the next track; Next hurries it. Outside, the broadcast keeps running in silence, exactly where you left it.</p>
       <div class="fc-row"><label class="fc-l" for="fcVolR">Volume</label><input type="range" id="fcVolR" min="0" max="100" value="80"></div>
     </div>
 
     <div class="fc-sec">
-      <div class="fc-hd"><h3 class="fc-h">Background sounds</h3><span class="fc-sub">the house noise desk</span></div>
+      <div class="fc-hd"><h3 class="fc-h">Room sounds</h3><span class="fc-sub">mixed under the music</span></div>
       <div class="fc-fader"><label for="fcRn"><span>rain on the window</span><span id="fcVRn">0</span></label>
         <input type="range" id="fcRn" min="0" max="100" value="0"></div>
       <div class="fc-fader"><label for="fcFp"><span>fireplace</span><span id="fcVFp">0</span></label>
@@ -7771,7 +7777,7 @@ window.HMDAWN=(function(){
 
     <div class="fc-sec">
       <div class="fc-hd"><h3 class="fc-h">Screen</h3><button class="fc-why" type="button" data-why="slow-background">why?</button></div>
-      <div id="fcBgs" class="fc-chips" role="group" aria-label="Background"></div>
+      <div id="fcBgs" class="fc-chips" role="group" aria-label="Screen background"></div>
       <label class="fc-chk"><input type="checkbox" id="fcBlack" checked>Hide controls when idle</label>
       <div class="fc-row">
         <label class="fc-chk"><input type="checkbox" id="fcBreathe">Breathe before starting</label>
@@ -9538,9 +9544,9 @@ window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor, log:function(){ return F
 <div id="arcade" aria-label="the arcade">
   <button id="arcClose" type="button">&times;</button>
   <h3>The Arcade</h3>
-  <p class="asub">drop the needle pauses the broadcast in a fade; the dub desk spins the house dubplates</p>
+  <p class="asub">guess the genre pauses the broadcast in a fade; the dub desk spins the house dubplates</p>
   <nav class="arc-tabs">
-    <button class="tbtn arcTab on" data-g="nd" type="button">Drop the Needle</button>
+    <button class="tbtn arcTab on" data-g="nd" type="button">Guess the Genre</button>
     <button class="tbtn arcTab" data-g="dk" type="button">Dub Desk</button>
   </nav>
 

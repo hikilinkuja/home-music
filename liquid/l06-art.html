@@ -235,7 +235,7 @@ var YEATS=[
   "Tread softly because you tread on my dreams."
 ];
 var WPIECES=[
-  { kind:"film", k:"Residency &middot; ceded film loop", t:"Symphonie Diagonale", a:"Viking Eggeling", real:true,
+  { kind:"film", k:"Residency &middot; film loop on loan", t:"Symphonie Diagonale", a:"Viking Eggeling", real:true,
     life:"Lund 1880, Berlin 1925",
     who:"Swedish painter and film-maker of the Dada circle in Zurich and Berlin. With Hans Richter he searched for a universal language of abstract form; <b>Symphonie Diagonale</b>, his only finished film, premiered in Berlin in May 1925, days before his death.",
     piece:"Diagonal figures animated frame by frame orchestrate growth and decay in time: cinema treated as scored music for the eye. It runs dimmed under a veil that breathes with the broadcast.",
@@ -266,7 +266,7 @@ var wa={ on:false, raf:0, cur:0, poemT0:0, wing:"week", hinted:{}, hintT:0, kind
 function lvLo(){ return Math.max(0, Math.min(1, Math.max(window.LV?LV.A:0, window.LV?LV.B:0)*1.25)); }
 function waFillFicha(p){
   $("waFT").innerHTML=p.t;
-  $("waFSub").textContent="room sheet · week "+isoWeek(new Date())+" programme";
+  $("waFSub").textContent="about the work · week "+isoWeek(new Date())+" programme";
   $("waBadge").style.display=p.real?"none":"inline-block";
   $("waFArtist").innerHTML=p.a;
   $("waFLife").textContent=p.life;
@@ -486,7 +486,7 @@ var DAILY_PIECE="Daily canvas: every day the house hangs one public-domain work 
 var DAILY_LIC="Public-domain artwork; image and record served by the Art Institute of Chicago open API (CC0 designated data).";
 /* a ficha do quadro do dia; sem quadro (a pedir, ou o museu sem resposta) diz isso mesmo */
 function dailyFicha(d, why){
-  $("waFSub").textContent="room sheet · daily canvas · day "+dayOfYear();
+  $("waFSub").textContent="about the work · daily canvas · day "+dayOfYear();
   $("waBadge").style.display="none";
   $("waFT").textContent = d ? d.t : "Daily canvas";
   $("waFArtist").textContent = d ? d.artist : "(no painting on the wall yet)";
@@ -747,14 +747,14 @@ if(DESK){
   function acquire(){
     navigator.wakeLock.request("screen").then(function(l){
       lock=l;
-      btn.textContent="Screen off";
-      l.addEventListener("release", function(){ lock=null; if(!want) btn.textContent="Screen on"; });
-    }).catch(function(){ want=false; btn.textContent="Screen on"; });
+      btn.textContent="Let screen sleep";
+      l.addEventListener("release", function(){ lock=null; if(!want) btn.textContent="Keep screen on"; });
+    }).catch(function(){ want=false; btn.textContent="Keep screen on"; });
   }
   btn.addEventListener("click", function(){
     want=!want;
     if(want){ acquire(); }
-    else if(lock){ lock.release(); btn.textContent="Screen on"; }
+    else if(lock){ lock.release(); btn.textContent="Keep screen on"; }
   });
   document.addEventListener("visibilitychange", function(){
     if(want && !lock && document.visibilityState==="visible") acquire();
@@ -763,7 +763,7 @@ if(DESK){
 
 /* ---------------- 4b. modo de estaleiro (?dev na morada): mudou-se para o liquid/l09-dev.html ---------------- */
 
-/* ---------------- 5. gift a tune: recomendacoes da sala ---------------- */
+/* ---------------- 5. suggest a tune (ids gift*): sugestoes de musica para a sala ---------------- */
 (function(){
   var btn=$("giftBtn");
   if(!btn) return;
@@ -774,15 +774,15 @@ if(DESK){
   });
   function giftText(){
     var n=($("giftName").value||"").trim(), w=($("giftWhat").value||"").trim();
-    return "Tune recommendation for Home Music\n\nFrom: "+(n||"(no name given)")+
+    return "Tune suggestion for Home Music\n\nFrom: "+(n||"(no name given)")+
       "\n\nThe music:\n"+(w||"(empty)")+
-      "\n\nHouse protocol: the founders listen first and verify artist, title and liner facts; accepted tunes enter the crates credited as a present from the sender.";
+      "\n\nHouse protocol: the founders listen first and verify artist, title and liner facts; accepted tunes join the crates, credited to the sender.";
   }
   $("giftGo").addEventListener("click", function(){
     var w=($("giftWhat").value||"").trim();
     if(!w){ $("giftWhat").focus(); return; }
     var u="https://github.com/hikilinkuja/home-music/issues/new?title="+
-      encodeURIComponent("Tune recommendation: "+w.slice(0,60))+
+      encodeURIComponent("Tune suggestion: "+w.slice(0,60))+
       "&body="+encodeURIComponent(giftText());
     window.open(u, "_blank", "noopener");
   });
@@ -790,7 +790,7 @@ if(DESK){
     var b=this;
     try{
       navigator.clipboard.writeText(giftText()).then(function(){
-        b.textContent="Copied"; setTimeout(function(){ b.textContent="Copy the note"; }, 1600);
+        b.textContent="Copied"; setTimeout(function(){ b.textContent="Copy the suggestion"; }, 1600);
       });
     }catch(e){}
   });

@@ -111,7 +111,7 @@ old_b='''  $("tBlurb").textContent = t.b;'''
 new_b='''  $("tBlurb").textContent = t.b;
   (function(){
     var r=$("tRec");
-    if(r){ if(t.rec){ r.textContent="a present from "+t.rec; r.hidden=false; } else { r.hidden=true; } }
+    if(r){ if(t.rec){ r.textContent="suggested by "+t.rec; r.hidden=false; } else { r.hidden=true; } }
     var bl=$("tBlurb"), bm=$("blurbMore");
     if(bl && bm){
       bl.classList.remove("open"); bm.textContent="more";
@@ -1547,6 +1547,13 @@ function rampInFirst(){
   firstRampPending=false; firstRampWait=false;
   /* lenta e constante, em linha reta */
   var DURR=rampDur;''', what='rampa do primeiro disco')
+# 13) termos da interface (auditoria de UI, ronda 1, escolhidos pelo Paulo a 2026-10-18;
+#     ops/notes/2026-10-18/ui-terms.md): so textos visiveis, nenhuma logica
+rep('''  $("gTrackCount").textContent = n + " records from this sound in tonight's crate.";''',
+    '''  $("gTrackCount").textContent = n + " records of this genre in the station's crates.";''', what='13 contagem do genero')
+rep('''  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";''',
+    '''  $("fsBtn").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";''', what='13 ecra inteiro')
+
 assert 'REC_TIMEOUT' not in s and 'hardNextAudio' not in s and 'cutTo(' not in s, '12: restos do prazo fixo e do corte no mesmo prato'
 assert s.count('.unMute(')==1, '12: o unMute so pode viver no portao do som (gate): %d' % s.count('.unMute(')
 

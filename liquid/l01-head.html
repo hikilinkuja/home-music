@@ -100,6 +100,8 @@ button{font-family:var(--mono)}
 .vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
   background:rgba(5,4,16,.78); border:1px solid var(--line); border-top:none}
 #vol{flex:1; accent-color:var(--amber); background:transparent}
+/* rotulo curto no telemovel (monitor de 200 px): «Earn a skip» punha os botoes do monitor em tres filas */
+.lbl-narrow{display:none}
 #needle{
   position:fixed; right:20px; bottom:252px; z-index:31; display:none; cursor:pointer;
   background:var(--amber); color:var(--ink); border:none; font-size:9.5px; letter-spacing:.2em;
@@ -169,6 +171,8 @@ button{font-family:var(--mono)}
   .vidpanel{right:10px; bottom:10px; width:200px}
   .vp-screen{width:200px; height:200px}
   .vp-ctrl{padding:6px 6px; gap:6px}
+  .lbl-wide{display:none}
+  .lbl-narrow{display:inline}
   #needle{top:calc(env(safe-area-inset-top,0px) + 100px); bottom:auto; left:50%; right:auto;
     transform:translateX(-50%); min-height:42px; z-index:33}
   #now{left:10px; right:220px; bottom:14px; max-width:none; z-index:32}
@@ -199,6 +203,8 @@ button{font-family:var(--mono)}
 .dance-more{display:block; color:var(--amber); font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 0}
 
 #gExt{margin-top:16px; border-top:1px dashed var(--line); padding-top:12px}
+/* com o painel estendido, as ligacoes do topo repetiam as de «Go deeper»: ficam so as de baixo */
+#genrePanel:has(#gExt:not([hidden])) .g-links{display:none}
 #gExt blockquote{margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--amber);
   background:rgba(255,177,43,.05); color:#d8d2e4; font-size:12px; line-height:1.65}
 #gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:9.5px;
@@ -348,7 +354,7 @@ button{font-family:var(--mono)}
 #waPoemTitle{position:absolute; left:22px; right:22px; top:10px; font-size:9px; letter-spacing:.3em;
   line-height:1.7; text-align:right; color:var(--dim); text-transform:uppercase}
 /* a barra da ala: o regresso a esquerda, as duas paredes (esta semana, o quadro do dia) em
-   botoes segmentados, e o Immerse; fica por cima de tudo menos da ficha da sala */
+   botoes segmentados, e o Full screen; fica por cima de tudo menos da ficha da sala */
 #waBar{position:absolute; left:0; right:0; top:0; z-index:2; display:flex; align-items:center; gap:8px;
   padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
   background:linear-gradient(to bottom, rgba(0,0,0,.62), rgba(0,0,0,0))}
@@ -414,7 +420,7 @@ button{font-family:var(--mono)}
   /* titulos longos do quadro do dia: tres linhas no cartao (inteiro na ficha), a coluna nao transborda */
   #waCap .t{font-size:13px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
   /* as setas ficam na coluna, entre a barra e o cartao, e nunca sobem acima do fundo da barra:
-     com um cartao alto num ecra baixo (a peca de campo a 320 px) tapavam o Immerse e roubavam-lhe
+     com um cartao alto num ecra baixo (a peca de campo a 320 px) tapavam o Full screen e roubavam-lhe
      o toque. --wa-bh inclui os 8 px de folga por baixo do ultimo botao; com 6 px de folga vertical
      as setas tem 46 px, e o 100% - --wa-bh - 40px poe-lhes o topo 2 px abaixo desse botao */
   .wa-nav{top:auto; bottom:min(calc(var(--wa-ch) + 2px), calc(100% - var(--wa-bh) - 40px)); transform:none;
@@ -453,7 +459,7 @@ button{font-family:var(--mono)}
   cursor:pointer; padding:2px 0 1px; margin:4px 0 0}
 .bmore:hover{color:var(--paper); border-color:var(--paper)}
 
-/* ---------- gift a tune ---------- */
+/* ---------- suggest a tune (ids gift*) ---------- */
 #giftPanel p.gift-lede{font-size:12.5px; line-height:1.8; color:#d7d3e4; margin:0 0 14px}
 .gift-field{width:100%; background:#0b0918; border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:12px; padding:8px 10px; letter-spacing:.06em; margin:0 0 10px}

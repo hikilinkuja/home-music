@@ -1,9 +1,22 @@
 # Auditoria de UI e UX da sala liquid: ronda 1 (termos), proposta
 
 2026-10-18. Base: secções 4.3 e 5 do relatório da ronda 0 (`ui-audit.md`). O site continua em inglês.
-Comprimentos em caracteres, com espaços. A barra de cima do computador tem hoje 50 caracteres de
+Comprimentos em caracteres, com espaços. A barra de cima do computador tinha 50 caracteres de
 rótulos (Mixtapes, Gift a tune, Background, Art, Focus, Arcade, Immerse); com as recomendações passa
-a 54, folga que cabe sem mudar o desenho. Nada disto está implementado: espera a escolha do Paulo.
+a 54, folga que cabe sem mudar o desenho.
+
+**Implementado na v5.4 (2026-10-18): o Paulo aceitou todas as recomendações.** Ajustes feitos ao
+implementar, todos dentro do que a proposta previa ou exigia:
+- termo 4: «Earn a skip» no computador e «Skip…» no telemóvel. Com «Earn a skip» e «Keep screen on»
+  juntos, os botões do monitor do telemóvel (200 px) passavam de duas para três filas (103 para 151 px);
+  é a salvaguarda prevista na própria recomendação, aplicada só onde falta espaço;
+- termo 2: o botão de ecrã inteiro da rádio alterna agora entre «Full screen» e «Exit full screen»
+  (antes «Immerse» e «Exit»), no motor (build-liquid.py, secção 13);
+- termo 1: também a etiqueta do painel para leitores de ecrã (aria-label «suggest a tune») e a dica do
+  botão Skip («tap the tempo of this record to skip it»);
+- créditos: «Liner notes draw mainly on Discogs and Wikipedia», e não «come from»: oito textos antigos
+  do catálogo citam o AllMusic (sete do cânone ska e um de drum and bass);
+- a barra de cima a 1024 px já se partia em duas filas antes desta ronda; fica para a ronda 4.
 
 ## 1. Termos
 
@@ -54,12 +67,13 @@ Depois:
 > Dawn (06-08) to After Hours (02-06), drawn from the same crates as the main room, with no stage and no
 > ceremony. The background is the sound itself: a liquid field breathing with the levels and the tempo
 > of what is playing. Tracks stream via YouTube, every tune linked to YouTube and Spotify. Liner notes
-> come from Discogs and Wikipedia. The main room, with the selector and the rite of the 45, lives at
+> draw mainly on Discogs and Wikipedia. The main room, with the selector and the rite of the 45, lives at
 > the station's front door. Shortcuts: [→] earn a skip · [m] mute · [f] full screen · [v] visuals ·
 > [w] art wing.
 
 Fundamentos: sete sub-blocos na secção 8 do build-liquid.py (l05:528-534); dos 726 textos com fonte,
-719 citam o Discogs e 5 a Wikipédia (`ops/queue/blurb-sources.tsv`), nenhum o AllMusic; a seta abre o
+719 citam o Discogs e 5 a Wikipédia (`ops/queue/blurb-sources.tsv`); oito textos antigos, anteriores à
+regra das fontes, citam o AllMusic (corrigido na implementação: «draw mainly on», e não «come from»); a seta abre o
 Earn the skip (l05:1854); f, v e w estão no l05:1856-1857 e no l06:673. «[→] earn a skip» e
 «[v] visuals» acompanham os termos 4 e 3; se o Paulo os recusar, ficam «[→] skip» e «[v] background».
 

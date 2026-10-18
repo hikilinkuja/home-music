@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v5.3 e auditoria de UI, rondas 0 e 1). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v5.4 e auditoria de UI, rondas 0 e 1). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -201,10 +201,15 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
 - Feito (v5.3): os dois defeitos da ronda 0 (Session log sem estilo; no telemóvel, a dica da ala da
   arte por cima da ficha), com o teste `ops/tests/t-ui.js`; eliminados `radio/index.html`,
   `introlab.html`, `labs/` e o gerador `ops/tools/arcade_data.py` (decisões do Paulo).
-- Ronda 1 (termos) em curso: proposta em `ops/notes/2026-10-18/ui-terms.md` (15 termos, factos do
-  painel The Sound, texto novo do «Suggest a tune»), à espera da escolha do Paulo. Dois textos vivem no
-  `build-liquid.py` (motor): «suggested by» e a contagem do painel; trocas de texto com o diff revisto.
-  Cada termo implementado entra no `t-ui.js`.
+- Feito (v5.4): ronda 1, termos. O Paulo aceitou todas as recomendações de
+  `ops/notes/2026-10-18/ui-terms.md` (Suggest a tune, Full screen, Visuals, Room sounds, Earn a skip com
+  «Skip…» no telemóvel, The genre, Kind of work, subtítulos da gaveta, drop the needle, Guess the Genre,
+  demonstration sheet, film loop on loan, about the work, Video, Keep screen on) e as correções do painel
+  The Sound (sete blocos, fontes, atalhos, contagem, ligações repetidas escondidas por CSS). Três textos no
+  motor (build-liquid.py, secção 13, e o crédito «suggested by»); diff revisto. Teste `t-ui.js` alargado.
+- Nota para o catálogo (fora da auditoria): um texto de faixa ainda diz «the heaviest score in tonight's
+  crate» (Norman Grant, Twinkle Music) e oito textos antigos citam o AllMusic sem registo em
+  `ops/queue/blurb-sources.tsv`.
 - Em fila: ronda 2 (cores), 3 (tipografia), 4 (conteúdo e densidade; ideia anotada: a ligação «Liner
   source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em
   `ops/queue/blurb-sources.tsv`), 5 (limpeza de código; motor a nível max).
