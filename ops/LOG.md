@@ -1,5 +1,23 @@
 # Registo das voltas
 
+## 2026-10-18: v4.9, sala de foco, ronda 1 da avaliação científica (sessão local do Claude Code)
+
+- Avaliação da sala à luz da literatura (25 fontes: Pomodoro e pausas, música e ruído de fundo,
+  intenções e resíduo de atenção, interrupções, ecrã, respiração, registo); o Paulo aprovou a
+  ronda 1. Só `liquid/l07-focus.html` mudou; motor, catálogo e sala antiga intactos.
+- Seis cenas por tarefa: Read (sem música, chuva baixa, 25+5), Study (silêncio, 25+5), Write
+  (dub techno e ambient techno, 50+10), Code & numbers (dub, hypnotic e ambient techno, 50+10),
+  Create (sem música, chuva moderada, 35+7), Routine (deep house, lo-fi house, lo-fi beats,
+  25+5). Interruptor «Play music while I work» na gaveta; tocar ou saltar à mão liga a música.
+- Intervalo de um quinto do bloco (longo, 30 min, a cada terceiro); no último minuto a música desce
+  e aparece «+5 min», que também desfaz o intervalo no primeiro minuto e meio. Intervalo guiado:
+  música calada, chuva baixa, convite a sair do ecrã, «onde paraste» (lembrado no bloco seguinte e
+  na entrada da visita seguinte), respiração de 1 minuto.
+- Só minutos durante o foco (segundos ao passar o rato, em pausa e no intervalo); sino suave por
+  omissão e sino grave no fim do intervalo; respiração desligada por omissão, 1 ou 3 minutos;
+  linha «phone on silent, out of sight» antes do Begin. Memória passa à versão 2, com migração.
+- Testes: `t-focus` reescrito (46 verificações, relógio acelerado por `window.HMFR`).
+
 ## 2026-10-18: diagnóstico da demora a carregar no computador (sessão local do Claude Code, sem publicação)
 
 - Queixa do Paulo: no computador (Chrome e Firefox, também na sala de foco) os vídeos demoram muito a

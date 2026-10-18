@@ -7049,8 +7049,8 @@ window.HMDAWN=(function(){
   color:var(--paper); font-family:var(--mono); font-size:16px; letter-spacing:.08em; padding:0 16px; text-align:center}
 #fcIntent:focus{border-color:var(--amber); outline:none}
 #fcEntry .fc-gap{margin-top:26px}
-#fcScenes{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); gap:16px; width:min(900px, 100%)}
-.fc-card{display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:18px; min-height:190px;
+#fcScenes{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; width:min(940px, 100%)}
+.fc-card{display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px; min-height:150px;
   background:rgba(5,4,16,.78); border:1px solid var(--line); color:var(--paper); font-family:var(--mono);
   text-align:left; cursor:pointer; transition:border-color .2s, box-shadow .2s, background .2s}
 .fc-card:hover{border-color:var(--dim)}
@@ -7058,10 +7058,15 @@ window.HMDAWN=(function(){
 .fc-card.last{border-style:dashed}
 .fc-card .nm{font-size:14px; letter-spacing:.24em; text-transform:uppercase}
 .fc-card .mn{font-size:12px; letter-spacing:.2em; color:var(--amber); text-transform:uppercase}
-.fc-card .gs{font-size:11px; line-height:1.7; color:var(--dim)}
+.fc-card .for{font-size:10px; letter-spacing:.08em; color:#c9c6d8; font-style:italic}
+.fc-card .gs{font-size:11px; line-height:1.6; color:var(--dim)}
+#fcLastNote{max-width:min(600px, 100%); font-size:11px; letter-spacing:.08em; line-height:1.5; color:var(--dim);
+  text-align:center; margin:0}
+#fcPhone{display:flex; align-items:center; gap:8px; margin:20px 0 0}
+#fcPhone .fc-ico{width:15px; height:15px}
 .fc-card .sd{margin-top:auto; display:flex; align-items:center; gap:7px; font-size:10px; letter-spacing:.2em;
   text-transform:uppercase; color:#c9c6d8}
-#fcBegin{margin-top:28px; width:min(340px, 100%); height:60px; display:inline-flex; align-items:center;
+#fcBegin{margin-top:12px; width:min(340px, 100%); height:60px; display:inline-flex; align-items:center;
   justify-content:center; gap:12px; background:var(--amber); border:1px solid var(--amber); color:var(--ink);
   font-family:var(--mono); font-size:15px; letter-spacing:.34em; text-transform:uppercase; cursor:pointer;
   transition:transform .15s ease, box-shadow .2s}
@@ -7086,7 +7091,28 @@ window.HMDAWN=(function(){
 #focus.brk #fcArc{stroke:var(--teal)}
 #fcDial .in{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:12px}
-#fcTime{font-size:calc(var(--fc-ring) * .25); line-height:1; letter-spacing:.04em}
+#fcDial{transition:width .6s ease, height .6s ease}
+/* durante o foco so os minutos (os segundos a mudar no centro do ecra puxam o olhar); os
+   segundos voltam ao passar o rato, em pausa e nos intervalos */
+#fcTime{font-size:calc(var(--fc-ring) * .25); line-height:1; letter-spacing:.04em; display:flex; align-items:baseline;
+  gap:.15em; transition:font-size .6s ease}
+#fcTU{font-size:.2em; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
+#fcTU:empty{display:none}
+#fcNext{font-size:11px; letter-spacing:.1em; line-height:1.5; color:var(--dim); text-align:center; max-width:min(560px, 90vw)}
+#fcNext b, #fcLastNote b{font-weight:400; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal);
+  margin-right:8px}
+/* intervalo guiado: anel menor, convite a sair do ecra, onde paraste */
+#focus.brk{--fc-ring:min(300px, 60vw, 38vh)}
+#fcBrk{display:none; flex-direction:column; align-items:center; gap:8px; width:min(520px, 92vw)}
+#focus.brk #fcBrk{display:flex}
+#focus.brk #fcHint{display:none}
+#fcBrk .tip{font-size:12px; line-height:1.6; letter-spacing:.06em; color:var(--paper); text-align:center; margin:0}
+#fcBrk label{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
+#fcNote{width:100%; height:44px; box-sizing:border-box; background:rgba(7,6,26,.85); border:1px solid var(--line);
+  color:var(--paper); font-family:var(--mono); font-size:13px; padding:0 12px}
+#fcNote:focus{border-color:var(--teal); outline:none}
+#fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+#focus #fcActs .tbtn[hidden]{display:none}
 #fcPhase{font-size:11px; letter-spacing:.3em; color:var(--amber); text-transform:uppercase; transition:color .6s}
 #focus.brk #fcPhase{color:var(--teal)}
 #fcMarks{display:flex; gap:5px}
@@ -7177,11 +7203,15 @@ window.HMDAWN=(function(){
   #fcEntry{justify-content:flex-start; padding:76px 20px 28px; gap:10px}
   #fcEntry .fc-gap{margin-top:14px}
   #fcIntent{height:48px; font-size:15px}
-  #fcScenes{grid-auto-flow:row; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px}
-  .fc-card{min-height:140px; padding:14px; gap:7px}
+  #fcScenes{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px}
+  .fc-card{min-height:0; padding:12px; gap:5px}
   .fc-card .nm{font-size:12px}
-  .fc-card .gs{font-size:10px; line-height:1.6}
-  #fcBegin{margin-top:14px; width:100%}
+  .fc-card .for, #fcEntry .opt{display:none}
+  .fc-card .gs{font-size:10px; line-height:1.5}
+  .fc-card .sd{margin-top:2px}
+  #fcPhone{margin-top:10px}
+  #fcBegin{margin-top:8px; width:100%}
+  #focus.brk{--fc-ring:min(220px, 60vw, 30vh)}
   #fcSess{padding:64px 12px 190px}
   #fcDock{left:12px; right:12px; bottom:16px; transform:none; max-width:none; display:grid;
     grid-template-columns:auto 1fr 52px 52px 52px 44px; grid-template-areas:"now now now now play skip" "go . rn fp ck more";
@@ -7203,8 +7233,17 @@ window.HMDAWN=(function(){
   #focus{--fc-ring:min(170px, 42vh)}
   #fcSess{padding:56px 16px 96px; gap:6px}
   #fcDock{bottom:10px}
-  #fcKeys, #fcHint{display:none}
+  #fcKeys, #fcHint, #fcTag, #fcNext, #fcBrk .tip, #fcBrk label{display:none}
+  #focus.brk{--fc-ring:min(120px, 30vh)}
   #fcEntry{justify-content:flex-start}
+}
+/* ecra de computador baixo: as sete cartas e o Begin cabem sem deslizar */
+@media (min-width:761px) and (max-height:860px){
+  .fc-card .for, #fcEntry .opt{display:none}
+  .fc-card{min-height:118px}
+  #fcEntry{padding-top:76px; gap:10px}
+  #fcEntry .fc-gap{margin-top:12px}
+  #fcPhone{margin-top:12px}
 }
 </style>
 
@@ -7215,7 +7254,7 @@ window.HMDAWN=(function(){
   <div id="fcGate">
     <div id="fcOrb"></div>
     <div id="fcWord">breathe in</div>
-    <div id="fcWhy">the gate: three slow breaths before the room opens. the light breathes at six cycles a minute; borrow its pace.</div>
+    <div id="fcWhy">slow breathing: six breaths a minute. follow the light in and out; skip whenever you like.</div>
     <button class="tbtn" id="fcGateSkip" type="button">skip the breathing &raquo;</button>
   </div>
 
@@ -7231,26 +7270,38 @@ window.HMDAWN=(function(){
   <section id="fcEntry" class="fc-stage" aria-label="Start a focus session">
     <label class="fc-h" for="fcIntent">What are you working on?</label>
     <input id="fcIntent" type="text" maxlength="60" placeholder="e.g. chapter 3 draft" autocomplete="off">
-    <span class="fc-cap">optional &middot; shown on screen while you work</span>
-    <h2 class="fc-h fc-gap">Pick a scene</h2>
+    <span class="fc-cap opt">optional &middot; shown on screen while you work</span>
+    <p id="fcLastNote" hidden></p>
+    <h2 class="fc-h fc-gap">What kind of work?</h2>
     <div id="fcScenes"></div>
     <span id="fcCustom" class="fc-cap" hidden>your own settings, from the panel</span>
+    <p id="fcPhone" class="fc-cap"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1.5"></rect><path d="M11 18h2"></path></svg>first: phone on silent, out of sight</p>
     <button id="fcBegin" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg>Begin</button>
-    <span class="fc-cap">Begin starts the timer and the music together</span>
+    <span class="fc-cap opt">Begin starts the timer, and the music if the scene has it</span>
     <button id="fcAdjust" type="button">or adjust the details first</button>
   </section>
 
   <section id="fcSess" class="fc-stage" aria-label="Focus session">
     <div id="fcTag"></div>
+    <div id="fcNext" hidden></div>
     <button id="fcDial" type="button" aria-label="Pause the timer">
       <svg viewBox="0 0 380 380" aria-hidden="true">
         <circle class="trk" cx="190" cy="190" r="172"></circle>
         <g id="fcDepth"></g>
         <circle id="fcArc" cx="190" cy="190" r="172" transform="rotate(-90 190 190)"></circle>
       </svg>
-      <span class="in"><span id="fcTime">25:00</span><span id="fcPhase">ready</span><span id="fcMarks"><i></i><i></i><i></i></span></span>
+      <span class="in"><span id="fcTime"><span id="fcTN">25</span><span id="fcTU">min</span></span><span id="fcPhase">ready</span><span id="fcMarks"><i></i><i></i><i></i></span></span>
     </button>
     <div id="fcHint">tap the ring to pause</div>
+    <div id="fcBrk">
+      <p class="tip">Stand up, look out of a window, drink some water. The phone can wait.</p>
+      <label for="fcNote">Where did you stop, and what comes next?</label>
+      <input id="fcNote" type="text" maxlength="90" placeholder="e.g. halfway through section 2; next: the figures" autocomplete="off">
+    </div>
+    <div id="fcActs">
+      <button class="tbtn" id="fcPlus" type="button" hidden>+5 min of work</button>
+      <button class="tbtn" id="fcBreatheNow" type="button" hidden>Breathe 1 min</button>
+    </div>
     <nav id="fcDock" class="fc-chrome" aria-label="Room controls">
       <button class="tbtn lit" id="fcGo" type="button"></button>
       <span class="fc-sep"></span>
@@ -7287,10 +7338,11 @@ window.HMDAWN=(function(){
         </div>
         <span class="fc-l">min</span>
       </div>
-      <p class="fc-note">Break: 5 min. Long break: 30 min after every 3rd block. A new length applies from the next block.</p>
+      <p class="fc-note">Break: a fifth of the block (5 min after 25, 10 after 50). Long break: 30 min after every 3rd block. In the last minute the music fades and you can add 5 minutes. A new length applies from the next block.</p>
       <div class="fc-row">
         <label class="fc-l" for="fcRing">End sound</label>
         <select id="fcRing">
+          <option value="5">soft bell</option>
           <option value="0">air horn</option><option value="1">dub siren</option>
           <option value="2">spinback</option><option value="3">cowbell echo</option>
           <option value="4">tape stop</option>
@@ -7302,6 +7354,8 @@ window.HMDAWN=(function(){
 
     <div class="fc-sec">
       <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">the programme valve</span></div>
+      <label class="fc-chk"><input type="checkbox" id="fcMusicOn">Play music while I work</label>
+      <p class="fc-note">For reading, studying and writing, silence or music without words works best.</p>
       <div id="fcValve" class="fc-chips"></div>
       <div class="fc-row">
         <button class="tbtn" id="fcMoreG" type="button" aria-expanded="false">more genres</button>
@@ -7325,7 +7379,10 @@ window.HMDAWN=(function(){
       <h3 class="fc-h">Screen</h3>
       <div id="fcBgs" class="fc-chips" role="group" aria-label="Background"></div>
       <label class="fc-chk"><input type="checkbox" id="fcBlack" checked>Hide controls when idle</label>
-      <label class="fc-chk"><input type="checkbox" id="fcBreathe" checked>Breathe before entering</label>
+      <div class="fc-row">
+        <label class="fc-chk"><input type="checkbox" id="fcBreathe">Breathe before starting</label>
+        <select id="fcBreLen" aria-label="Breathing length" style="flex:0 0 auto; width:auto"><option value="1">1 min</option><option value="3">3 min</option></select>
+      </div>
       <p class="fc-note fc-kbd">space play / pause &middot; n next track &middot; esc closes this panel or leaves full screen</p>
     </div>
   </aside>
@@ -7337,16 +7394,25 @@ window.HMDAWN=(function(){
 (function(){
 var $=function(id){ return document.getElementById(id); };
 var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null, stage:"entry", hold:false,
-  bg:"dusk", breakLift:0, agitUntil:0, allow:{}, scene:"deep", pick:"deep", len:25, vol:null,
-  pomo:{ run:false, started:false, phase:"work", long:false, left:25*60, total:25*60, works:0, focusedSec:0 } };
+  bg:"dusk", breakLift:0, agitUntil:0, allow:{}, scene:"read", pick:"read", len:25, vol:null,
+  music:false, note:"", sndOv:null, exact:false, brkMusic:false,
+  pomo:{ run:false, started:false, phase:"work", long:false, left:25*60, total:25*60, works:0, focusedSec:0, brkT:0 } };
 var DEEP={focus_zen:1, ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
 var DEEPK=Object.keys(DEEP);
-/* cenas prontas da entrada (exemplos; a curadoria e do Paulo) */
+/* cenas por tipo de tarefa (ronda 1 da avaliacao de 2026-10-18): musica com voz prejudica ler,
+   estudar e escrever, e o silencio nunca perde; musica rapida e alta prejudica a leitura; ruido
+   moderado ajuda tarefas criativas; nas tarefas simples a musica so melhora o humor.
+   Generos e volumes sao curadoria por confirmar pelo Paulo */
 var SCENES=[
-  { id:"deep", name:"Deep work", len:50, g:["dub_techno","hypnotic_techno","ambient_techno"], snd:{ rn:45, fp:0, ck:0 } },
-  { id:"study", name:"Study", len:25, g:["lofi","lofi_house","focus_zen"], snd:{ rn:0, fp:40, ck:0 } },
-  { id:"read", name:"Read", len:25, g:["focus_zen","ambient","ambient_techno"], snd:{ rn:0, fp:0, ck:30 } }
+  { id:"read", name:"Read", use:"articles, books, papers", len:25, music:false, vol:35, g:["ambient","focus_zen"], snd:{ rn:25, fp:0, ck:0 } },
+  { id:"study", name:"Study", use:"memorising, revising", len:25, music:false, vol:35, g:["ambient","focus_zen"], snd:{ rn:0, fp:0, ck:0 } },
+  { id:"write", name:"Write", use:"drafts, essays, reports", len:50, music:true, vol:50, g:["dub_techno","ambient_techno"], snd:{ rn:0, fp:0, ck:0 } },
+  { id:"tech", name:"Code & numbers", use:"programming, maths, design", len:50, music:true, vol:60, g:["dub_techno","hypnotic_techno","ambient_techno"], snd:{ rn:0, fp:0, ck:0 } },
+  { id:"create", name:"Create", use:"ideas, sketches, planning", len:35, music:false, vol:50, g:["ambient_techno","lofi"], snd:{ rn:55, fp:0, ck:0 } },
+  { id:"routine", name:"Routine", use:"admin, email, tidying", len:25, music:true, vol:70, g:["deep_house","lofi_house","lofi"], snd:{ rn:0, fp:0, ck:0 } }
 ];
+/* intervalo: um quinto do bloco (25 -> 5, 35 -> 7, 50 -> 10); longo, 30 min, a cada terceiro bloco */
+function brkFor(len){ return Math.max(5, Math.round(len/5)); }
 var LENS=[25,35,50];
 var SNDN={ rn:"rain", fp:"fireplace", ck:"vinyl crackle" };
 var DID={ ck:"fcCk", rn:"fcRn", fp:"fcFp" };
@@ -7366,14 +7432,24 @@ function lit(){ return Object.keys(FC.allow).filter(function(g){ return FC.allow
 
 /* ---------- memoria da sala (so neste browser; nada sai dele) ---------- */
 var MEMK="hm_focus";
-var MEM=(function(){ try{ var s=localStorage.getItem(MEMK); var m=s ? JSON.parse(s) : null; return (m && m.v===1) ? m : null; }catch(e){ return null; } })();
+var MEM=(function(){
+  try{
+    var s=localStorage.getItem(MEMK), m=s ? JSON.parse(s) : null;
+    if(!m || (m.v!==1 && m.v!==2)) return null;
+    /* memoria da v4.6: as cenas mudaram, o toque por omissao passa a ser o sino suave e a
+       respiracao passa a opcional; o resto (generos, sons, fundo, volume) fica */
+    if(m.v===1){ m.v=2; m.scene="custom"; m.music=true; m.breathe=false; if(!m.ring) m.ring=5; }
+    return m;
+  }catch(e){ return null; }
+})();
 var memT=0;
 function memSave(){
   clearTimeout(memT); memT=0;
-  MEM={ v:1, scene:FC.scene, len:FC.len, allow:lit(),
+  MEM={ v:2, scene:FC.scene, len:FC.len, allow:lit(), music:FC.music, note:FC.note,
     snd:{ rn:+$("fcRn").value||0, fp:+$("fcFp").value||0, ck:+$("fcCk").value||0 },
     ring:parseInt($("fcRing").value,10)||0, vol:FC.vol, bg:FC.bg,
-    idle:$("fcBlack").checked, breathe:$("fcBreathe").checked, intent:$("fcIntent").value.trim() };
+    idle:$("fcBlack").checked, breathe:$("fcBreathe").checked, breLen:parseInt($("fcBreLen").value,10)||1,
+    intent:$("fcIntent").value.trim() };
   try{ localStorage.setItem(MEMK, JSON.stringify(MEM)); }catch(e){}
 }
 function memSoon(){ clearTimeout(memT); memT=setTimeout(memSave, 400); }
@@ -7383,14 +7459,17 @@ function memSoon(){ clearTimeout(memT); memT=setTimeout(memSave, 400); }
   FC.allow={};
   ((m.allow && m.allow.length) ? m.allow : DEEPK).forEach(function(g){ FC.allow[g]=true; });
   if(m.snd){ $("fcRn").value=m.snd.rn||0; $("fcFp").value=m.snd.fp||0; $("fcCk").value=m.snd.ck||0; }
-  $("fcRing").value=String(m.ring||0);
+  $("fcRing").value=String(m.ring==null ? 5 : m.ring);
   if(typeof m.vol==="number") FC.vol=m.vol;
   if(typeof m.bg==="string") FC.bg=m.bg;
   $("fcBlack").checked=(m.idle!==false);
-  $("fcBreathe").checked=(m.breathe!==false);
+  $("fcBreathe").checked=(m.breathe===true);
+  $("fcBreLen").value=String(m.breLen===3 ? 3 : 1);
   $("fcIntent").value=m.intent||"";
-  FC.scene=m.scene||"deep";
-  FC.pick=MEM ? "last" : "deep";
+  FC.music=MEM ? (m.music!==false) : false;
+  FC.note=m.note||"";
+  FC.scene=m.scene||"read";
+  FC.pick=MEM ? "last" : "read";
   FC.pomo.left=FC.pomo.total=FC.len*60;
 })();
 
@@ -7526,8 +7605,9 @@ function zenStop(ms){
     else { try{ zen.yt.pauseVideo(); }catch(e){} }
   })();
 }
-function gateRun(){
-  var t0=performance.now(), DUR=30000;
+/* respiracao lenta, opcional: 1 ou 3 minutos a entrada, 1 minuto no intervalo */
+function gateRun(ms){
+  var t0=performance.now(), DUR=ms||60000;
   $("fcGate").classList.add("on");
   zenStart();
   (function tick(){
@@ -7564,6 +7644,7 @@ $("fcBlack").addEventListener("change", function(){
   wakeChrome(); memSoon();
 });
 $("fcBreathe").addEventListener("change", memSoon);
+$("fcBreLen").addEventListener("change", memSoon);
 
 /* ---------- relogio ---------- */
 setInterval(function(){
@@ -7582,7 +7663,13 @@ function setStage(s){
 }
 function tagPaint(){
   var it=$("fcIntent").value.trim();
-  $("fcTag").innerHTML="<b>"+esc(sceneName(FC.scene).toLowerCase())+"</b>"+(it ? " &middot; "+esc(it) : "");
+  var h="<b>"+esc(sceneName(FC.scene).toLowerCase())+"</b>"+(it ? " &middot; "+esc(it) : "");
+  if($("fcTag").innerHTML!==h) $("fcTag").innerHTML=h;
+  /* onde paraste: lembrado durante o bloco seguinte (plano de retoma) */
+  var nx=$("fcNext"), show=(FC.stage==="session" && FC.pomo.phase==="work" && !!FC.note);
+  nx.hidden=!show;
+  var hn="<b>you stopped at</b>"+esc(FC.note);
+  if(show && nx.innerHTML!==hn) nx.innerHTML=hn;
 }
 $("fcIntent").addEventListener("input", function(){ tagPaint(); memSoon(); });
 
@@ -7592,70 +7679,98 @@ function topSound(snd){
   ["rn","fp","ck"].forEach(function(k){ if(snd && snd[k]>0 && (!best || snd[k]>snd[best])) best=k; });
   return best;
 }
+function soundSum(snd){
+  var k=topSound(snd); if(!k) return "";
+  var v=snd[k];
+  return SNDN[k]+(v<=30 ? ", soft" : v<=60 ? ", moderate" : "");
+}
 function entryBuild(){
   var el=$("fcScenes"); el.innerHTML="";
-  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, len:s.len, g:s.g, snd:s.snd }; });
-  if(MEM) list.push({ id:"last", name:"My last", len:MEM.len, g:MEM.allow||[], snd:MEM.snd||{}, last:true });
-  if(FC.pick==="last" && !MEM) FC.pick="deep";
+  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, use:s.use, len:s.len, g:s.g, snd:s.snd, music:s.music }; });
+  if(MEM) list.push({ id:"last", name:"My last", use:"as you left it", len:MEM.len, g:MEM.allow||[], snd:MEM.snd||{}, music:MEM.music!==false, last:true });
+  if(FC.pick==="last" && !MEM) FC.pick="read";
   list.forEach(function(s){
     var b=document.createElement("button");
     b.type="button"; b.className="fc-card"+(s.last?" last":"");
     b.setAttribute("data-id", s.id);
-    var gs=s.last ? ("as you left it<br>"+s.g.length+" genre"+(s.g.length===1?"":"s")) : s.g.map(function(g){ return esc(gname(g)); }).join("<br>");
     var k=topSound(s.snd);
-    b.innerHTML='<span class="nm">'+esc(s.name)+'</span><span class="mn">'+s.len+' min</span><span class="gs">'+gs+'</span>'+
-      '<span class="sd">'+(k ? ICO[k]+esc(SNDN[k]) : "no background sound")+'</span>';
+    var gs=!s.music ? (k ? "no music" : "silence") :
+      s.last ? (s.g.length+" genre"+(s.g.length===1?"":"s")) : s.g.map(function(g){ return gname(g); }).join(", ");
+    b.innerHTML='<span class="nm">'+esc(s.name)+'</span><span class="mn">'+s.len+' + '+brkFor(s.len)+' min</span>'+
+      '<span class="for">'+esc(s.use)+'</span><span class="gs">'+esc(gs)+'</span>'+
+      (k ? '<span class="sd">'+ICO[k]+esc(soundSum(s.snd))+'</span>' : '');
     b.addEventListener("click", function(){ FC.pick=s.id; pickApply(); entryMark(); });
     el.appendChild(b);
   });
+  var ln=$("fcLastNote");
+  ln.hidden=!(MEM && MEM.note);
+  if(!ln.hidden) ln.innerHTML="<b>last time you stopped at</b>"+esc(MEM.note);
   entryMark();
 }
 /* a cena escolhida na entrada aplica-se logo, para a gaveta mostrar o que vai tocar */
 function pickApply(){
-  if(FC.pick==="last" && MEM) applyCfg({ scene:MEM.scene, len:MEM.len, g:MEM.allow, snd:MEM.snd });
-  else if(sceneById(FC.pick)){ var s=sceneById(FC.pick); applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd }); }
+  if(FC.pick==="last" && MEM) applyCfg({ scene:MEM.scene, len:MEM.len, g:MEM.allow, snd:MEM.snd, music:MEM.music!==false, vol:MEM.vol });
+  else if(sceneById(FC.pick)){ var s=sceneById(FC.pick); applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd, music:s.music, vol:s.vol }); }
 }
 function entryMark(){
   document.querySelectorAll("#fcScenes .fc-card").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-id")===FC.pick)); });
   $("fcCustom").hidden=(FC.pick!=="custom");
 }
-/* aplica uma configuracao (cena pronta ou a ultima): generos, duracao e sons */
+/* aplica uma configuracao (cena pronta ou a ultima): generos, musica sim ou nao, volume, duracao e sons */
 function applyCfg(c){
   FC.scene=c.scene||"custom";
   if(LENS.indexOf(c.len)>=0) FC.len=c.len;
   FC.allow={};
   (c.g||[]).forEach(function(g){ FC.allow[g]=true; });
+  if(typeof c.music==="boolean") FC.music=c.music;
+  if(typeof c.vol==="number") FC.vol=c.vol;
   if(c.snd){ $("fcRn").value=c.snd.rn||0; $("fcFp").value=c.snd.fp||0; $("fcCk").value=c.snd.ck||0; }
   if(!FC.pomo.started){ FC.pomo.left=FC.pomo.total=FC.len*60; }
   if(snd.els) sndApply();
-  valveBuild(); sndUi(); lenPaint(); sceneSelPaint(); tagPaint(); pomoPaint();
+  volApply();
+  valveBuild(); sndUi(); lenPaint(); sceneSelPaint(); musicPaint(); volPaint(); tagPaint(); pomoPaint();
 }
 function anySound(){ return (+$("fcRn").value>0) || (+$("fcFp").value>0) || (+$("fcCk").value>0); }
+function musicPaint(){ $("fcMusicOn").checked=FC.music; }
 function begin(){
   rctx();
   pickApply();
   pomoReset();
   FC.pomo.started=true; FC.pomo.run=true; FC.hold=false;
   setStage("session");
-  /* a musica comeca com o tempo; se ja tocava um genero que continua aceso, segue */
-  if(!(fcp.playing && fcp.cur && FC.allow[fcp.cur.g])) fcNext();
-  if(anySound()){ sndInit(); sndApply(); }
+  /* a musica comeca com o tempo, se a cena a tiver; se ja tocava um genero que continua aceso, segue */
+  if(FC.music){ if(!(fcp.playing && fcp.cur && FC.allow[fcp.cur.g])) fcNext(); }
+  else fcStopTune();
+  /* os tres discos da mesa arrancam ja, dentro do gesto, mesmo a zero: o intervalo guiado
+     precisa de lhes subir o nivel sem novo toque (no iOS o som so arranca dentro de um gesto) */
+  sndInit(); sndApply();
   sndUi(); pomoPaint(); memSave();
 }
 $("fcBegin").addEventListener("click", begin);
 $("fcAdjust").addEventListener("click", function(){ drawer(true); });
 
-/* ---------- pomodoro: blocos de foco, pausa curta, pausa longa a cada terceiro bloco ---------- */
+/* ---------- pomodoro: blocos de foco, intervalo de um quinto do bloco, longo a cada terceiro ---------- */
 var CIRC=2*Math.PI*172;
 function pomoReset(){
   var p=FC.pomo;
-  p.run=false; p.started=false; p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.works=0;
-  FC.breakLift=0; duckBroadcast(false);
+  p.run=false; p.started=false; p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.works=0; p.brkT=0;
+  FC.breakLift=0; FC.sndOv=null; fadeTo(1, 0);
 }
 function mmss(s){ var m=Math.floor(s/60), x=s%60; return (m<10?"0":"")+m+":"+(x<10?"0":"")+x; }
+/* o regresso ao trabalho pelo «+5 min» vale no primeiro minuto e meio do intervalo */
+function plusBack(){ return !!FC.pomo.brkT && (Date.now()-FC.pomo.brkT)<=90000; }
 function pomoPaint(){
   var p=FC.pomo;
-  $("fcTime").textContent=mmss(p.left);
+  /* com o foco a correr, so os minutos (arredondados para cima); os segundos ao passar o rato,
+     em pausa e no intervalo */
+  var exact=FC.exact || !p.started || !p.run || p.phase==="break";
+  $("fcTN").textContent=exact ? mmss(p.left) : String(Math.ceil(p.left/60));
+  $("fcTU").textContent=exact ? "" : "min";
+  $("fcDial").setAttribute("data-left", p.left);
+  var plus=p.started && ((p.phase==="work" && p.run && p.left<=60) || (p.phase==="break" && plusBack()));
+  $("fcPlus").hidden=!plus;
+  $("fcPlus").textContent=(p.phase==="work") ? "+5 min" : "+5 min of work";
+  $("fcBreatheNow").hidden=!(p.started && p.phase==="break");
   $("fcArc").style.strokeDashoffset=(CIRC*(1-(p.total ? p.left/p.total : 1))).toFixed(1);
   $("focus").classList.toggle("brk", p.phase==="break");
   $("fcPhase").textContent= !p.started ? "ready" : !p.run ? "paused" :
@@ -7667,6 +7782,7 @@ function pomoPaint(){
   $("fcDial").setAttribute("aria-label", (p.run?"Pause":"Resume")+" the timer, "+m+" min "+sx+" s left");
   $("fcHint").textContent=p.run ? "tap the ring to pause" : "tap the ring to resume";
   $("fcGo").innerHTML=(p.run ? ICO.pause+"<span>Pause</span>" : ICO.play+"<span>Resume</span>");
+  tagPaint();
 }
 function lenPaint(){
   document.querySelectorAll("#fcLenSeg .tbtn").forEach(function(b){ b.setAttribute("aria-pressed", String(+b.getAttribute("data-len")===FC.len)); });
@@ -7675,26 +7791,76 @@ setInterval(function(){
   var p=FC.pomo;
   if(!FC.on || !p.run) return;
   p.left--;
-  if(p.phase==="work"){ p.focusedSec++; ringsPaint(); }
-  if(p.left<=0){
-    if(p.phase==="work"){
-      p.works++;
-      ringPlay(parseInt($("fcRing").value,10)||0);
-      FC.agitUntil=performance.now()+6000;
-      p.phase="break"; p.long=(p.works%3===0); p.left=p.total=(p.long?30:5)*60;
-      FC.breakLift=1; duckBroadcast(true);
-    } else {
-      p.phase="work"; p.long=false; p.left=p.total=FC.len*60; FC.breakLift=0; duckBroadcast(false);
-    }
+  if(p.phase==="work"){
+    p.focusedSec++; ringsPaint();
+    /* ultimo minuto: a musica desce devagar, para fechar o pensamento sem sobressalto */
+    if(p.left===60) fadeTo(.4, 20000);
   }
+  if(p.left<=0){ if(p.phase==="work") breakStart(); else breakEnd(); }
   pomoPaint();
 }, 1000);
+/* intervalo guiado: a musica cala-se devagar, os sons de trabalho dao lugar a agua (a chuva,
+   baixa), e o ecra convida a sair dele; no fim tudo volta como estava, com um sino grave */
+var BRKSND={ rn:35, fp:0, ck:0 };
+function breakStart(){
+  var p=FC.pomo;
+  p.works++;
+  ringPlay(parseInt($("fcRing").value,10)||0);
+  FC.agitUntil=performance.now()+6000;
+  p.phase="break"; p.long=(p.works%3===0); p.left=p.total=(p.long ? 30 : brkFor(FC.len))*60; p.brkT=Date.now();
+  FC.breakLift=1;
+  $("fcNote").value="";
+  breakAudio(true);
+}
+function breakEnd(){
+  var p=FC.pomo;
+  p.phase="work"; p.long=false; p.left=p.total=FC.len*60; p.brkT=0; FC.breakLift=0;
+  breakAudio(false);
+  ringPlay(6);
+}
+function breakAudio(on){
+  if(on){
+    FC.brkMusic=fcp.playing;
+    if(fcp.playing) fadeTo(0, 3000, function(){ if(FC.pomo.phase==="break") fcStopTune(); });
+    FC.sndOv=BRKSND;
+  } else {
+    FC.sndOv=null;
+    if(FC.brkMusic && FC.music){
+      fadeTo(0, 0);
+      if(fcp.cur && !fcp.playing) fcToggle(); else if(!fcp.cur) fcNext();
+      fadeTo(1, 4000);
+    } else fadeTo(1, 0);
+    FC.brkMusic=false;
+  }
+  if(snd.els) sndApply();
+  else if(FC.sndOv || anySound()){ rctx(); sndInit(); sndApply(); }
+  sndUi();
+}
+/* mais cinco minutos: no ultimo minuto do bloco, ou logo a seguir, desfazendo o intervalo */
+function plusFive(){
+  var p=FC.pomo;
+  if(p.phase==="work"){ p.left+=300; p.total+=300; fadeTo(1, 3000); }
+  else if(plusBack()){
+    p.works--; p.phase="work"; p.long=false; p.left=p.total=300; p.brkT=0; FC.breakLift=0;
+    breakAudio(false);
+  }
+  pomoPaint();
+}
+$("fcPlus").addEventListener("click", plusFive);
+$("fcBreatheNow").addEventListener("click", function(){ gateRun(60000); });
+/* o que se escreve no intervalo fica como «onde paraste» para o bloco seguinte e para a proxima visita */
+$("fcNote").addEventListener("input", function(){ var v=this.value.trim(); if(v){ FC.note=v; memSoon(); } });
+/* os segundos aparecem ao passar o rato ou com o foco do teclado no anel */
+["mouseenter","focus"].forEach(function(ev){ $("fcDial").addEventListener(ev, function(){ FC.exact=true; pomoPaint(); }); });
+["mouseleave","blur"].forEach(function(ev){ $("fcDial").addEventListener(ev, function(){ FC.exact=false; pomoPaint(); }); });
 /* sair da sala pausa tudo; ao voltar, retomar o tempo devolve tambem a musica e os sons */
 function resumeMedia(){
   if(!FC.hold) return;
   FC.hold=false;
-  if(!fcp.playing){ if(fcp.cur) fcToggle(); else fcNext(); }
-  if(anySound()){ rctx(); sndInit(); sndApply(); }
+  var brk=(FC.pomo.phase==="break");
+  if(!brk && FC.music && !fcp.playing){ fadeTo(1, 0); if(fcp.cur) fcToggle(); else fcNext(); }
+  if(brk) FC.sndOv=BRKSND;
+  rctx(); sndInit(); sndApply();
 }
 function timerToggle(){
   var p=FC.pomo;
@@ -7804,12 +7970,35 @@ function fcStopTune(){
   try{ if(fcp.yt&&fcp.ready) fcp.yt.pauseVideo(); }catch(e){}
   fcp.playing=false; playPaint();
 }
-function fcDuck(on){
-  fcp.duck = on ? 0.35 : 1;
-  try{ if(fcp.yt&&fcp.ready) fcp.yt.setVolume(fcVol()); }catch(e){}
+function volApply(){ try{ if(fcp.yt&&fcp.ready) fcp.yt.setVolume(fcVol()); }catch(e){} }
+/* desce ou sobe o leitor da sala aos poucos (fcp.duck, de 0 a 1), em passos de 100 ms */
+var fadeT=0;
+function fadeTo(target, ms, cb){
+  clearInterval(fadeT); fadeT=0;
+  var from=fcp.duck, t0=performance.now();
+  if(!ms){ fcp.duck=target; volApply(); if(cb) cb(); return; }
+  fadeT=setInterval(function(){
+    var x=Math.min(1, (performance.now()-t0)/ms);
+    fcp.duck=from+(target-from)*x; volApply();
+    if(x>=1){ clearInterval(fadeT); fadeT=0; if(cb) cb(); }
+  }, 100);
 }
-$("fcPlay").addEventListener("click", fcToggle);
-$("fcSkipT").addEventListener("click", fcNext);
+function fcDuck(on){ fadeTo(on ? 0 : 1, 0); }
+/* tocar ou saltar pela mao liga a musica, mesmo numa cena sem ela, e no volume inteiro */
+function wantMusic(){
+  if(!FC.music){ FC.music=true; musicPaint(); memSoon(); }
+  fadeTo(1, 0);
+}
+function playToggle(){ if(!fcp.playing) wantMusic(); fcToggle(); }
+function skipTrack(){ wantMusic(); fcNext(); }
+$("fcPlay").addEventListener("click", playToggle);
+$("fcSkipT").addEventListener("click", skipTrack);
+$("fcMusicOn").addEventListener("change", function(){
+  FC.music=this.checked;
+  if(!FC.music) fcStopTune();
+  else if(FC.stage==="session" && FC.pomo.phase==="work" && !fcp.playing){ fadeTo(1, 0); fcNext(); }
+  markCustom(); memSoon();
+});
 function volPaint(){ $("fcVolD").value=$("fcVolR").value=String(FC.vol==null ? mainVol() : FC.vol); }
 ["fcVolD","fcVolR"].forEach(function(id){
   $(id).addEventListener("input", function(){
@@ -7822,10 +8011,9 @@ function volPaint(){ $("fcVolD").value=$("fcVolR").value=String(FC.vol==null ? m
 document.addEventListener("keydown", function(ev){
   if(!FC.on) return;
   if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="SELECT"||ev.target.tagName==="TEXTAREA")) return;
-  if(ev.key===" "){ ev.preventDefault(); ev.stopImmediatePropagation(); fcToggle(); }
-  else if(ev.key==="n"){ ev.stopImmediatePropagation(); fcNext(); }
+  if(ev.key===" "){ ev.preventDefault(); ev.stopImmediatePropagation(); playToggle(); }
+  else if(ev.key==="n"){ ev.stopImmediatePropagation(); skipTrack(); }
 }, true);
-function duckBroadcast(on){ fcDuck(on); }
 
 /* ---------- aneis de profundidade: um por cada 20 minutos de foco, dentro do anel do tempo ---------- */
 function ringsPaint(){
@@ -7886,9 +8074,10 @@ function sceneSelPaint(){
 }
 $("fcSceneSel").addEventListener("change", function(){
   var s=sceneById(this.value); if(!s) return;
-  applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd });
+  applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd, music:s.music, vol:s.vol });
   if(FC.stage==="entry"){ FC.pick=s.id; entryMark(); }
-  if(fcp.playing && fcp.cur && !FC.allow[fcp.cur.g]) fcNext();
+  if(!FC.music) fcStopTune();
+  else if(FC.stage==="session" && FC.pomo.phase==="work" && (!fcp.playing || (fcp.cur && !FC.allow[fcp.cur.g]))){ fadeTo(1, 0); fcNext(); }
   rctx(); if(anySound() || snd.els){ sndInit(); sndApply(); }
   memSoon();
 });
@@ -8006,10 +8195,12 @@ function sndTick(){
   });
   if(!live){ clearInterval(snd.tick); snd.tick=0; }
 }
+/* nivel em vigor: o do fader, ou o do intervalo guiado enquanto dura (os faders nao mudam) */
+function sndLevel(k){ return FC.sndOv ? (FC.sndOv[k]||0) : (parseInt($(DID[k]).value,10)||0); }
 function sndApply(){
   if(!snd.els) return;
   Object.keys(DID).forEach(function(k){
-    var x=Math.max(0, Math.min(1, ($(DID[k]).value||0)/100)), lv=sndLvl(k, x);
+    var x=Math.max(0, Math.min(1, sndLevel(k)/100)), lv=sndLvl(k, x);
     if(snd.g[k]){
       var p=snd.g[k].gain, t=snd.rctx.currentTime;
       p.cancelScheduledValues(t); p.setTargetAtTime(lv, t, .05);
@@ -8027,7 +8218,8 @@ function sndApply(){
 /* botoes da barra e numeros da gaveta seguem os faders */
 function sndUi(){
   Object.keys(DID).forEach(function(k){
-    var v=parseInt($(DID[k]).value,10)||0, b=$(TID[k]);
+    /* os botoes da barra mostram o que soa (no intervalo, a chuva do intervalo) */
+    var v=sndLevel(k), b=$(TID[k]);
     b.setAttribute("aria-pressed", String(v>0));
     b.setAttribute("aria-label", SNDN[k]+(v>0 ? ", on, level "+v : ", off"));
     b.querySelector(".lv i").style.width=v+"%";
@@ -8038,15 +8230,15 @@ function sndUi(){
 }
 ["fcCk","fcRn","fcFp"].forEach(function(id){
   /* o gesto no fader acorda o contexto de audio (suspenso pelo autoplay ou interrompido no iOS) */
-  $(id).addEventListener("input", function(){ rctx(); sndInit(); sndApply(); sndUi(); memSoon(); });
+  $(id).addEventListener("input", function(){ FC.sndOv=null; rctx(); sndInit(); sndApply(); sndUi(); memSoon(); });
 });
 /* um toque liga ou desliga; volta ao ultimo nivel usado */
 var SLAST={ rn:50, fp:40, ck:30 };
 Object.keys(TID).forEach(function(k){
   $(TID[k]).addEventListener("click", function(){
-    var f=$(DID[k]), v=parseInt(f.value,10)||0;
+    var f=$(DID[k]), v=sndLevel(k);
     if(v>0){ SLAST[k]=v; f.value=0; } else { f.value=SLAST[k]; }
-    rctx(); sndInit(); sndApply(); sndUi(); memSoon();
+    FC.sndOv=null; rctx(); sndInit(); sndApply(); sndUi(); memSoon();
   });
 });
 function sndStop(){
@@ -8124,6 +8316,18 @@ function ringPlay(which){
       a1.connect(bp); a2.connect(bp); bp.connect(gb); gb.connect(ac.destination); gb.connect(e3);
       a1.start(th); a2.start(th); a1.stop(th+.2); a2.stop(th+.2);
     }
+  } else if(which===5 || which===6){
+    /* sino suave (por omissao): parciais de sino em seno, ataque curto, decaimento longo, nivel
+       baixo; o 6 marca o fim do intervalo, mais grave e mais baixo */
+    var base=(which===5) ? 523.25 : 392, lvl=(which===5) ? .07 : .045;
+    [[1,1],[2.01,.45],[3.02,.22],[4.17,.1]].forEach(function(pt){
+      var os=ac.createOscillator(), gs=ac.createGain();
+      os.type="sine"; os.frequency.value=base*pt[0];
+      gs.gain.setValueAtTime(.0001, t); gs.gain.exponentialRampToValueAtTime(lvl*pt[1], t+.015);
+      gs.gain.exponentialRampToValueAtTime(.0001, t+.4+2.6/pt[0]);
+      os.connect(gs); gs.connect(ac.destination);
+      os.start(t); os.stop(t+3.2);
+    });
   } else {
     var o5=ac.createOscillator(), g5=ac.createGain(), f5=ac.createBiquadFilter();
     o5.type="sawtooth";
@@ -8183,12 +8387,11 @@ function focusOpen(){
   bgBuild();
   if(FC.bg.indexOf("radio:")===0) bgSet(FC.bg);
   if(!FC.pomo.started) pickApply();
-  valveBuild(); sceneSelPaint(); lenPaint(); volPaint(); sndUi(); playPaint();
-  if(FC.pomo.started && FC.pomo.phase==="break") fcDuck(true);
+  valveBuild(); sceneSelPaint(); lenPaint(); volPaint(); sndUi(); playPaint(); musicPaint();
   setStage(FC.pomo.started ? "session" : "entry");
   $("focus").classList.add("on");
   $("focus").classList.toggle("noidle", !$("fcBlack").checked);
-  if(!FC.gateDone && $("fcBreathe").checked) gateRun();
+  if(!FC.gateDone && $("fcBreathe").checked) gateRun((parseInt($("fcBreLen").value,10)||1)*60000);
   wakeChrome();
   pomoPaint();
   field();
@@ -8212,6 +8415,8 @@ function focusClose(){
 }
 document.getElementById("focusBtn").addEventListener("click", focusOpen);
 $("fcExit").addEventListener("click", focusClose);
+/* estado da sala para os testes (ops/tests/t-focus.js); o motor usa outro nome, HMFOCUS */
+window.HMFR={ fc:FC };
 })();
 </script>
 <style>

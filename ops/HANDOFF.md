@@ -95,13 +95,22 @@ Por decidir pelo Paulo (perguntas feitas a 2026-10-08):
    Extended Mix» (774 s), o vídeo atual é a «Original Version» (265 s); trocar só se o Paulo
    aceitar a versão estendida como a mesma faixa.
 
-## Sala de foco v4.6 (publicada a 2026-10-17)
+## Sala de foco v4.6 e ronda 1 da avaliação (v4.9, 2026-10-18)
 
 Alternativa D escolhida pelo Paulo (entrada com cenas, sessão com anel e barra, gaveta), com os
-fundos da rádio integrados e os três da sala mantidos; teste `ops/tests/t-focus.js`. Por decidir
-pelo Paulo: as três cenas (Deep work, Study, Read) são exemplos; «Read» tem pouca música (zen
-focus 27, ambient 4, ambient techno 15). Por verificar num iPhone real: barra em duas linhas,
-folha de ajustes, sons de fundo.
+fundos da rádio integrados e os três da sala mantidos; teste `ops/tests/t-focus.js`. A 2026-10-18
+entrou a ronda 1 da avaliação à luz da literatura (seis cenas por tarefa, intervalo proporcional e
+guiado, «+5 min», «onde paraste», só minutos, sino suave, respiração opcional).
+
+Em fila, propostas e por decidir pelo Paulo:
+- ronda 2: registo diário e semanal dos blocos, campo para despejar distrações, intenção do bloco
+  em «se... então», aviso ao passar 4 horas;
+- ronda 3 (catálogo): marcar as faixas com voz (`vx:1`) para as cenas de leitura, estudo e escrita
+  filtrarem por faixa e não por género;
+- curadoria das seis cenas (géneros, volumes e sons são proposta minha);
+- som de pássaros CC0 para os intervalos (hoje é a chuva);
+- por verificar num iPhone real: barra em duas linhas, folha de ajustes, sons de fundo e o
+  intervalo a ligar a chuva sem toque.
 
 ### Demora a carregar no computador (diagnóstico de 2026-10-18, por decidir)
 

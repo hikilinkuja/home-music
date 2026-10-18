@@ -102,9 +102,15 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   `hm_intro_log` guarda porque a introdução falhou, quando falha. Os dados nunca saem do browser.
 - Sala de foco (`liquid/l07-focus.html`, v4.6, alternativa D escolhida pelo Paulo): entrada
   (intenção, cenas `SCENES`, Begin), sessão (anel do tempo, barra de controlos) e gaveta de
-  ajustes; memória em localStorage `hm_focus`. O leitor da sala sorteia primeiro um género aceso e
-  depois a faixa. Fundos: os três da sala (dusk, ink, off) ou um campo da rádio, copiado do canvas
-  `#vj`; escolher um campo da rádio na sala muda também o da rádio (`HMFIELD.next`, l04 intacto).
+  ajustes; memória em localStorage `hm_focus` (versão 2). O leitor da sala sorteia primeiro um
+  género aceso e depois a faixa. Fundos: os três da sala (dusk, ink, off) ou um campo da rádio,
+  copiado do canvas `#vj`; escolher um campo da rádio na sala muda também o da rádio
+  (`HMFIELD.next`, l04 intacto). Ronda 1 da avaliação científica (v4.9, decidida pelo Paulo a
+  2026-10-18): seis cenas por tarefa (Read e Study sem música; música com voz só em Routine),
+  intervalo de um quinto do bloco, música a descer no último minuto e «+5 min», intervalo guiado
+  (música calada, chuva baixa, convite a sair do ecrã, «onde paraste»), só minutos durante o foco,
+  sino suave por omissão, respiração opcional (1 ou 3 min). `window.HMFR` expõe o estado aos
+  testes; não confundir com `HMFOCUS`, do motor.
 - Fontes da liquid, pela ordem de montagem em `ops/tools/build.sh`: `liquid/l01-head.html`,
   `l02-body.html`, o catálogo `radio/e03-data.html`, `l03-plog.html` (tem de ficar antes do
   l05, que o chama), `l04-vj.html`, `l05-engine.html`, `l06-art.html`, `l07-focus.html`,
@@ -129,7 +135,7 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
    Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
    corre os testes no Chromium com o YouTube simulado, cerca de 7 minutos; ver
    `ops/tests/README.md`). Com `FAIL`, não publicar.
-4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v4.9), e
+4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.0), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a
    `https://hikilinkuja.github.io/home-music/liquid/index.html?cb=<tempo>`.
