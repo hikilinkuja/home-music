@@ -210,7 +210,9 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
 - Nota para o catálogo (fora da auditoria): um texto de faixa ainda diz «the heaviest score in tonight's
   crate» (Norman Grant, Twinkle Music) e oito textos antigos citam o AllMusic sem registo em
   `ops/queue/blurb-sources.tsv`.
-- Em fila: ronda 2 (cores), 3 (tipografia), 4 (conteúdo e densidade; ideia anotada: a ligação «Liner
+- Ronda 2 (cores) em curso: proposta em `ops/notes/2026-10-18/ui-colors.md` (20 papéis em variáveis, a
+  consola Dub Desk com 11 variáveis locais, exceções declaradas, cinco decisões), à espera do Paulo.
+- Em fila: ronda 3 (tipografia), 4 (conteúdo e densidade; ideia anotada: a ligação «Liner
   source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em
   `ops/queue/blurb-sources.tsv`), 5 (limpeza de código; motor a nível max).
 

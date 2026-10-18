@@ -1,5 +1,14 @@
 # Registo das voltas
 
+## 2026-10-18: auditoria de UI, ronda 2 (cores), proposta (sessão Claude Code na nuvem)
+
+- Proposta em `ops/notes/2026-10-18/ui-colors.md`: 145 valores literais de cor passam a 20 papéis em
+  variáveis (interface) e 11 variáveis locais (consola Dub Desk); todo o literal tem destino (verificado por
+  script). Corrige seis falhas de contraste, duas delas em estados que a ronda 0 não visitou (dica do ecrã
+  inteiro da sala de foco, 1,71:1; «Kill the bass» aceso, 3,65:1). Página de amostras enviada ao Paulo.
+- Nada implementado; cinco decisões pedidas (paleta, borda dos botões, prova «contested», dica do ecrã
+  inteiro, acento da madrugada).
+
 ## 2026-10-18: v5.4, auditoria de UI, ronda 1 (termos) (sessão Claude Code na nuvem)
 
 - Escolha do Paulo: todas as recomendações de `ops/notes/2026-10-18/ui-terms.md`.
