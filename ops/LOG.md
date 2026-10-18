@@ -17,6 +17,7 @@
   correções factuais do painel The Sound, texto do «Suggest a tune»). Nada implementado até à escolha.
 - Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
   ads 71, ui 16); `build.sh` com validação OK.
+- Servido confirmado: a liquid servida tem o estilo novo do Session log; `radio/index.html` e `labs/` devolvem 404.
 
 ## 2026-10-18: auditoria de UI e UX da liquid, ronda 0 (sessão Claude Code na nuvem)
 
