@@ -1,5 +1,22 @@
 # Registo das voltas
 
+## 2026-10-18: v5.3, auditoria de UI, correções da ronda 0 e proposta da ronda 1 (sessão Claude Code na nuvem)
+
+- Decisões do Paulo sobre a ronda 0: corrigir já os dois defeitos; eliminar `radio/index.html`,
+  `introlab.html` e `labs/`.
+- Session log: o motor escreve `.h-art`, `.h-tit` e `.h-links`, que na liquid não tinham estilo; agora
+  artista em pergaminho, título em âmbar, ligações em teal sem sublinhado e separadas. Saiu a regra órfã
+  `#histList li b` (l01).
+- Ala da arte no telemóvel: a ficha passou para cima da dica (z-index 5 contra 4); o nome do artista
+  deixou de ficar tapado.
+- Teste novo `ops/tests/t-ui.js` (16 verificações): falha 10 antes da correção, passa 16 depois.
+- Eliminados `radio/index.html`, `introlab.html`, as oito páginas de `labs/` e `ops/tools/arcade_data.py`
+  (gerava só os dados de `labs/arcade.html`); `build.sh` e `validate.py` deixaram de os referir; a linha
+  do `CLAUDE.md` sobre a cópia antiga saiu.
+- Ronda 1: proposta em `ops/notes/2026-10-18/ui-terms.md` (15 termos com alternativas e comprimentos,
+  correções factuais do painel The Sound, texto do «Suggest a tune»). Nada implementado até à escolha.
+- Testes: ver a linha de resultado no fim desta entrada.
+
 ## 2026-10-18: auditoria de UI e UX da liquid, ronda 0 (sessão Claude Code na nuvem)
 
 - Pedido do Paulo: auditoria por rondas (letra, cor, conteúdo, termos, limpeza de código); prompt

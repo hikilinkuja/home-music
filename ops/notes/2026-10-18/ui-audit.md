@@ -184,7 +184,7 @@ de altura (inline, admitidas pela exceção do critério).
 | the selector's pomodoro, the programme valve, the house noise desk, Calm set | l07:529, l07:586, l07:599 | subtítulos da gaveta | gíria da casa, opaca à primeira leitura (interpretação) |
 | tap to drop the needle, touch to drop the needle | l02:8, l02:111 | a mesma ação | dois verbos |
 | demonstration ficha, ceded film loop, room sheet | l02:43, l06:238, l02:36 e 42 | ficha de demonstração; filme cedido; ficha da obra | «ficha» é português no site em inglês; «ceded» quer dizer «cedido» no sentido de renunciado (território, direitos), provável decalque de «cedido» (emprestado); «room sheet» parece-me corrente nos museus britânicos, mas não o verifiquei nesta sessão |
-| Crop / Fit | l02:104, l06:817 | alterna o corte das barras pretas; o rótulo mostra a ação seguinte | alternância sem estado visível |
+| Crop / Fit | l02:104, l06:817 | alterna o corte das barras pretas; o rótulo mostra a ação seguinte | revisto na ronda 1: segue a convenção da casa (Mute / Unmute, Screen on / off); sem problema |
 | Live feed | l02:92 | o vídeo do disco que toca | não é uma emissão ao vivo |
 | tonight's crate | l05:1356 | catálogo inteiro do género | «tonight» a qualquer hora |
 
@@ -210,9 +210,9 @@ build-liquid.py:620; os kits tocam pela tabela `GAPKIT`), `HM.skipIfBlocked` (l0
 build-liquid.py:240), `HM.flushPeek` e `HM.reVol` (l05:1920 e 1921, build-liquid.py:150 e 151). São
 motor: ronda 5, nível max, diff revisto.
 
-Fora da sala (fora do âmbito, para decisão): `radio/index.html` (187 KB, a cópia criada por engano,
-ainda servida pelo GitHub Pages), `introlab.html` na raiz e oito páginas em `labs/`, todas públicas;
-`labs/arcade-data.js` é gerado pelo build e fica.
+Fora da sala: `radio/index.html` (187 KB, a cópia criada por engano, ainda servida pelo GitHub Pages),
+`introlab.html` na raiz e oito páginas em `labs/`, todas públicas. Eliminados a 2026-10-18 por decisão do
+Paulo, com o gerador `ops/tools/arcade_data.py` (só servia `labs/arcade.html`).
 
 ## 7. As dez constatações com maior ganho por custo
 
@@ -232,6 +232,9 @@ ainda servida pelo GitHub Pages), `introlab.html` na raiz e oito páginas em `la
 Para a ronda 5: as cinco funções do motor, as repetições e os seis blocos `@media` do l01, a regra órfã.
 
 ## 8. Decisões do Paulo antes da ronda 1
+
+Respondidas a 2026-10-18: os dois defeitos corrigidos na sessão da ronda 1 (v5.3, teste
+`ops/tests/t-ui.js`); `radio/index.html`, `introlab.html` e `labs/` eliminados.
 
 - Os dois defeitos (1 e 2) podem entrar já na sessão da ronda 1, como correções com teste, ou esperar pela
   ronda 4. Recomendação: já, porque são pequenos e não dependem de nenhuma escolha de desenho.

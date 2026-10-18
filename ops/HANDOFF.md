@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v5.2 e auditoria de UI, ronda 0). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v5.3 e auditoria de UI, rondas 0 e 1). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -198,11 +198,16 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
 - Feito: ronda 0, levantamento só de leitura, relatório em `ops/notes/2026-10-18/ui-audit.md`;
   ferramentas `ops/tools/ui_audit.js`, `ui_report.py` e `ui_static.py` (repetir antes e depois de
   cada ronda; capturas fora do repositório).
-- Em fila: ronda 1 (termos, factos do painel The Sound), 2 (cores), 3 (tipografia), 4 (conteúdo e
-  densidade), 5 (limpeza de código; motor a nível max).
-- Perguntas ao Paulo (secção 8 do relatório): corrigir já, na sessão da ronda 1, os dois defeitos
-  (Session log sem estilo; dica da ala da arte por cima da ficha no telemóvel)? Que fazer a
-  `radio/index.html`, `introlab.html` e `labs/`, públicos e fora da sala?
+- Feito (v5.3): os dois defeitos da ronda 0 (Session log sem estilo; no telemóvel, a dica da ala da
+  arte por cima da ficha), com o teste `ops/tests/t-ui.js`; eliminados `radio/index.html`,
+  `introlab.html`, `labs/` e o gerador `ops/tools/arcade_data.py` (decisões do Paulo).
+- Ronda 1 (termos) em curso: proposta em `ops/notes/2026-10-18/ui-terms.md` (15 termos, factos do
+  painel The Sound, texto novo do «Suggest a tune»), à espera da escolha do Paulo. Dois textos vivem no
+  `build-liquid.py` (motor): «suggested by» e a contagem do painel; trocas de texto com o diff revisto.
+  Cada termo implementado entra no `t-ui.js`.
+- Em fila: ronda 2 (cores), 3 (tipografia), 4 (conteúdo e densidade; ideia anotada: a ligação «Liner
+  source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em
+  `ops/queue/blurb-sources.tsv`), 5 (limpeza de código; motor a nível max).
 
 ## Próxima ronda (proposta)
 
@@ -263,7 +268,7 @@ validar e publicar.
 
 ## Tarefa 3: manutenção
 
-- Feito a 2026-10-08 (v3.8): `labs/arcade-data.js` passou a ser gerado por
+- Feito a 2026-10-08 (v3.8; laboratório e gerador eliminados a 2026-10-18): `labs/arcade-data.js` passou a ser gerado por
   `ops/tools/arcade_data.py` (chamado pelo `build.sh` e verificado pelo `validate.py`) a
   partir de `radio/e03-data.html`, com o catálogo inteiro e só os campos que o laboratório
   usa (g, a, t, y, v). Não há nada a fazer à mão: cada montagem atualiza-o.

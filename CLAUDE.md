@@ -26,7 +26,6 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 - Há duas salas. A antiga é `index.html` na raiz do repositório; a «liquid» é
   `liquid/index.html`. Só a liquid recebe funcionalidades novas; a antiga fica congelada.
   O catálogo partilhado `radio/e03-data.html` pode receber dados novos, que chegam às duas.
-- `radio/index.html` é uma cópia antiga criada por engano: não usar, não publicar a partir dela.
 - Protocolo de importação (regra permanente): canal «Artista - Topic» do YouTube primeiro; se
   não houver, canal oficial do artista ou da editora; se não houver, outro upload que confirme
   artista e faixa no título. «A música tocar é o mais importante», mas nunca aceitar um vídeo

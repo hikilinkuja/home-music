@@ -132,8 +132,13 @@ button{font-family:var(--mono)}
 .credits b{color:var(--amber)}
 #histList{list-style:none; margin:0; padding:0}
 #histList li{padding:7px 0; border-bottom:1px dotted var(--line); font-size:11px; color:#c9c4d8}
-#histList li b{color:var(--paper)}
 #histList .h-time{color:var(--dim); margin-right:7px}
+/* as linhas que o motor escreve (pushHistory): artista, titulo e as duas ligacoes, separadas */
+#histList .h-art{color:var(--paper); margin-top:3px}
+#histList .h-tit{color:var(--amber)}
+#histList .h-links{display:flex; gap:16px; margin-top:4px; font-size:10px; letter-spacing:.14em}
+#histList .h-links a{color:var(--teal); text-decoration:none; padding:3px 0}
+#histList .h-links a:hover{color:var(--amber)}
 .h-empty{color:var(--dim)}
 
 /* a luz da sala: abre do escuro ao normal nos primeiros segundos, com a musica a subir */
@@ -357,7 +362,8 @@ button{font-family:var(--mono)}
 #waCap .a{font-size:10px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase}
 .wa-arow{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 16px}
 #waCap .bmore{margin:0}
-#wartFicha{position:absolute; top:0; right:0; bottom:0; width:min(430px,94vw); z-index:3;
+/* z-index acima da dica (#waHint, 4): no telemovel a ficha ocupa o ecra e a dica tapava o artista */
+#wartFicha{position:absolute; top:0; right:0; bottom:0; width:min(430px,94vw); z-index:5;
   background:rgba(8,7,20,.97); border-left:1px solid var(--line); padding:54px 24px 28px; touch-action:pan-y;
   overflow-y:auto; transform:translateX(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1)}
 #wartFicha.on{transform:translateX(0)}

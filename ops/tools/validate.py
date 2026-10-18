@@ -7,7 +7,6 @@ Verifica:
   - videoIds com 11 caracteres e sem duplicados;
   - todos os generos usados existem em GENRES (e03) e em GBPM (radio/e05-engine.html);
   - as duas salas montadas contem o catalogo inteiro;
-  - labs/arcade-data.js (gerado pelo build.sh) tem sintaxe valida e o catalogo inteiro;
   - liquid/focus-evidence.json (zona «why?» da sala de foco) e JSON valido, com campos, forcas e
     estados conhecidos, ids unicos, e cobre todos os data-why e why: do liquid/l07-focus.html.
 Uso: python3 ops/tools/validate.py   (a partir da raiz do repositorio)
@@ -21,7 +20,6 @@ import tempfile
 from collections import Counter
 
 PAGES = ["index.html", "liquid/index.html"]
-ARCADE = "labs/arcade-data.js"
 EVID = "liquid/focus-evidence.json"
 FOCUS = "liquid/l07-focus.html"
 EVSTATUS = {"in room", "tip", "proposed", "not planned"}
@@ -113,7 +111,7 @@ def main():
     gbkeys = set(re.findall(r"([a-z_]+):", gb.group(1))) if gb else set()
     if set(used) - gbkeys:
         fails.append(f"generos sem BPM em GBPM: {sorted(set(used) - gbkeys)}")
-    for page in PAGES + [E03, ARCADE]:
+    for page in PAGES + [E03]:
         txt = open(page, encoding="utf-8").read()
         for ch, name in BANNED.items():
             if ch in txt:
@@ -125,11 +123,6 @@ def main():
         n = len(re.findall(r'\{ g:"[a-z_]+"', html))
         if n < len(vids):
             fails.append(f"{page} tem {n} faixas, o catalogo tem {len(vids)}: montar de novo")
-    arc = open(ARCADE, encoding="utf-8").read()
-    node_check(arc, ARCADE)
-    n = len(re.findall(r'\{ g:"[a-z_]+"', arc))
-    if n != len(vids):
-        fails.append(f"{ARCADE} tem {n} faixas, o catalogo tem {len(vids)}: montar de novo")
     nev = evidence_check()
     print(f"catalogo: {len(vids)} faixas, {len(used)} generos; provas da sala de foco: {nev}")
     for g, n in used.most_common():

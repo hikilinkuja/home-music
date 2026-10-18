@@ -10,3 +10,5 @@
   cor e contraste, densidade, termos, código; dez constatações por ganho e custo. Prompt das rondas em
   `ops/prompts/ui-audit.md`; ferramentas `ops/tools/ui_audit.js`, `ui_report.py`, `ui_static.py`.
 - `ads-probe.txt`: resultados do ensaio dos anúncios do YouTube (v4.9).
+- `ui-terms.md`: ronda 1 da auditoria de UI (termos): 15 termos com alternativas, comprimentos e
+  recomendação; correções factuais do painel The Sound; texto novo do «Suggest a tune».

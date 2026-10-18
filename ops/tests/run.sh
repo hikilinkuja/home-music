@@ -2,7 +2,7 @@
 # Testes da sala liquid: monta o site (build.sh, com validacao) e corre os testes no Chromium com o
 # YouTube simulado. Uso, a partir de qualquer pasta do repositorio:
 #   bash ops/tests/run.sh                 todos (cerca de 9 minutos)
-#   bash ops/tests/run.sh art devlog      so os indicados (art gate rain focus devlog intro ritual ads)
+#   bash ops/tests/run.sh art devlog      so os indicados (art gate rain focus devlog intro ritual ads ui)
 #   NOBUILD=1 bash ops/tests/run.sh ...   sem montar antes
 # Sai com codigo 1 se algum teste falhar. Nao publicar com falhas.
 set -uo pipefail
@@ -14,7 +14,7 @@ if [ -z "${NOBUILD:-}" ]; then
   echo "build: $(tail -1 /tmp/hm-build.log)"
 fi
 
-ALL="art gate rain focus devlog intro ritual ads"
+ALL="art gate rain focus devlog intro ritual ads ui"
 LIST="${*:-$ALL}"
 fail=0
 for t in $LIST; do
