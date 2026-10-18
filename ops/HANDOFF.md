@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v5.2). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-18, v5.2 e auditoria de UI, ronda 0). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -191,6 +191,18 @@ Por fazer:
   Spotify, por falta de fonte; uma volta futura pode tentar o Bandcamp ou o Resident Advisor
   (este último recusa pedidos da nuvem, código 403).
 - Cada importação passa a escrever os textos das faixas novas: `ops/tools/blurbs/README.md`.
+
+## Auditoria de UI e UX da liquid (pedido do Paulo, 2026-10-18)
+
+Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa a ronda N»).
+- Feito: ronda 0, levantamento só de leitura, relatório em `ops/notes/2026-10-18/ui-audit.md`;
+  ferramentas `ops/tools/ui_audit.js`, `ui_report.py` e `ui_static.py` (repetir antes e depois de
+  cada ronda; capturas fora do repositório).
+- Em fila: ronda 1 (termos, factos do painel The Sound), 2 (cores), 3 (tipografia), 4 (conteúdo e
+  densidade), 5 (limpeza de código; motor a nível max).
+- Perguntas ao Paulo (secção 8 do relatório): corrigir já, na sessão da ronda 1, os dois defeitos
+  (Session log sem estilo; dica da ala da arte por cima da ficha no telemóvel)? Que fazer a
+  `radio/index.html`, `introlab.html` e `labs/`, públicos e fora da sala?
 
 ## Próxima ronda (proposta)
 

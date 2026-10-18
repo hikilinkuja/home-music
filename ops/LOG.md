@@ -1,5 +1,25 @@
 # Registo das voltas
 
+## 2026-10-18: auditoria de UI e UX da liquid, ronda 0 (sessão Claude Code na nuvem)
+
+- Pedido do Paulo: auditoria por rondas (letra, cor, conteúdo, termos, limpeza de código); prompt
+  reescrito e guardado em `ops/prompts/ui-audit.md`. Esta volta fez só a ronda 0 (levantamento): nenhuma
+  fonte da sala mudou, o site servido fica igual.
+- Ferramentas novas: `ops/tools/ui_audit.js` (25 estados a 1440x900 e 390x844 no Chromium com o YouTube
+  simulado; capturas com e sem texto; cobertura de CSS e JavaScript), `ui_report.py` (contraste sobre o
+  fundo real, tipografia, densidade, alvos de toque, código sem uso) e `ui_static.py` (inventário das
+  fontes). Relatório: `ops/notes/2026-10-18/ui-audit.md`.
+- Principais números: 20 tamanhos de letra desenhados no computador, metade do texto abaixo de 11 px,
+  59% em maiúsculas, 21 espaçamentos declarados; 48 cores de base fora dos campos do l04; contraste AA
+  falha em 16 de 434 textos (computador) e 13 de 318 (telemóvel); nenhuma regra de CSS aponta para um
+  elemento inexistente; 12 seletores repetidos; 5 funções do motor sem chamador.
+- Defeitos encontrados (não corrigidos, à espera do Paulo): Session log sem estilo (ligações coladas no
+  azul por omissão); no telemóvel, a dica da ala da arte tapa o nome do artista na ficha. Factos errados
+  no painel The Sound (três programas em vez de sete sub-blocos, «[→] next», «tonight's crate»).
+- Limite: o contentor não tem Courier New (o Chromium usou a Liberation Mono, de métricas iguais e traço
+  mais grosso), por isso as capturas parecem mais legíveis do que o site num Mac ou num iPhone.
+- Testes da sala não corridos (nada na sala mudou); `build.sh` com validação OK.
+
 ## 2026-10-18: v5.2, sala de foco, ronda 2b (sessão local do Claude Code)
 
 - Pedido: registo de totais, experiência pessoal, campo para despejar distrações e intenção «se...
