@@ -7004,6 +7004,8 @@ window.HMDAWN=(function(){
 #focus{position:fixed; inset:0; z-index:88; display:none; background:#000; color:var(--paper); font-family:var(--mono);
   --fc-ring:min(380px, 70vw, 50vh)}
 #focus.on{display:block}
+/* o atributo hidden vence sempre as regras de display das pecas da sala */
+#focus [hidden]{display:none !important}
 #fcCv{position:absolute; inset:0; width:100%; height:100%}
 #fcGate{position:absolute; inset:0; z-index:9; background:#000; display:none; flex-direction:column;
   align-items:center; justify-content:center; gap:30px}
@@ -7060,8 +7062,6 @@ window.HMDAWN=(function(){
 .fc-card .mn{font-size:12px; letter-spacing:.2em; color:var(--amber); text-transform:uppercase}
 .fc-card .for{font-size:10px; letter-spacing:.08em; color:#c9c6d8; font-style:italic}
 .fc-card .gs{font-size:11px; line-height:1.6; color:var(--dim)}
-#fcLastNote{max-width:min(600px, 100%); font-size:11px; letter-spacing:.08em; line-height:1.5; color:var(--dim);
-  text-align:center; margin:0}
 #fcPhone{display:flex; align-items:center; gap:8px; margin:20px 0 0}
 #fcPhone .fc-ico{width:15px; height:15px}
 .fc-card .sd{margin-top:auto; display:flex; align-items:center; gap:7px; font-size:10px; letter-spacing:.2em;
@@ -7075,6 +7075,35 @@ window.HMDAWN=(function(){
 #fcBegin .fc-ico{fill:var(--ink); stroke:var(--ink)}
 #fcAdjust{background:none; border:0; min-height:44px; color:var(--teal); font-family:var(--mono); font-size:11px;
   letter-spacing:.2em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
+/* porta (v5.0): recomeco a segunda e no dia 1, continuar onde parei, passo mais pequeno, habito
+   de musica (so na primeira visita) e o som da cena, um passo atras das cartas */
+.fc-qh{display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap}
+.fc-why{background:none; border:0; min-height:30px; min-width:30px; padding:0 4px; color:var(--teal); font-family:var(--mono);
+  font-size:10px; letter-spacing:.14em; text-transform:none; text-decoration:underline dotted; text-underline-offset:3px;
+  cursor:pointer; opacity:.85}
+.fc-why:hover{opacity:1; color:var(--amber)}
+.fc-link{background:none; border:0; min-height:32px; padding:0 4px; color:var(--teal); font-family:var(--mono); font-size:10px;
+  letter-spacing:.2em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
+#fcFresh{display:flex; align-items:center; gap:6px; margin:0; color:var(--teal)}
+#fcCont{width:min(600px, 100%); min-height:56px; display:flex; align-items:center; gap:14px; padding:8px 16px; box-sizing:border-box;
+  background:rgba(7,6,26,.85); border:1px solid var(--teal); color:var(--paper); font-family:var(--mono); text-align:left;
+  cursor:pointer; transition:box-shadow .2s}
+#fcCont:hover{box-shadow:0 0 0 3px rgba(65,217,200,.2)}
+#fcCont .fc-ico{color:var(--teal); fill:var(--teal); stroke:var(--teal)}
+#fcCont .tx{display:flex; flex-direction:column; gap:4px; min-width:0}
+#fcCont b{font-weight:400; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal)}
+#fcContN{font-size:12px; letter-spacing:.06em; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#fcStep{width:min(600px, 100%); height:40px; box-sizing:border-box; background:rgba(7,6,26,.7); border:1px solid var(--line);
+  color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.06em; padding:0 14px; text-align:center}
+#fcStep:focus{border-color:var(--teal); outline:none}
+#fcHabit{display:flex; align-items:center; justify-content:center; gap:8px 10px; flex-wrap:wrap; margin-top:6px}
+#fcHabit .q{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--paper)}
+#fcSound{display:flex; align-items:center; justify-content:center; gap:4px 10px; flex-wrap:wrap; font-size:11px;
+  letter-spacing:.12em; color:var(--dim); text-align:center}
+#fcSound .k{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#7f82a3}
+#fcSoundN{font-weight:400; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--paper)}
+#fcProfPick{justify-content:center; width:min(760px, 100%)}
+.fc-card .sd .fc-ico{width:15px; height:15px}
 
 /* ---------- sessao ---------- */
 #fcSess{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
@@ -7099,7 +7128,7 @@ window.HMDAWN=(function(){
 #fcTU{font-size:.2em; letter-spacing:.24em; text-transform:uppercase; color:var(--dim)}
 #fcTU:empty{display:none}
 #fcNext{font-size:11px; letter-spacing:.1em; line-height:1.5; color:var(--dim); text-align:center; max-width:min(560px, 90vw)}
-#fcNext b, #fcLastNote b{font-weight:400; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal);
+#fcNext b{font-weight:400; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal);
   margin-right:8px}
 /* intervalo guiado: anel menor, convite a sair do ecra, onde paraste */
 #focus.brk{--fc-ring:min(300px, 60vw, 38vh)}
@@ -7178,6 +7207,43 @@ window.HMDAWN=(function(){
 .fc-chk{display:flex; align-items:center; gap:10px; font-size:12px; color:#c9c6d8; min-height:32px; cursor:pointer}
 .fc-chk input{accent-color:var(--amber); width:16px; height:16px; margin:0}
 
+/* ---------- zona «why?» (v5.0): as provas de cada decisao, de focus-evidence.json ---------- */
+#focus.lab #fcScrim{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s}
+#fcLab{position:absolute; top:0; right:0; bottom:0; z-index:8; width:min(680px, 100%); box-sizing:border-box;
+  background:rgba(7,6,22,.98); border-left:1px solid var(--line); padding:16px 28px 30px; overflow-y:auto;
+  transform:translateX(102%); visibility:hidden;
+  transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear .32s}
+#focus.lab #fcLab{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s}
+.fc-lead{font-size:12.5px; line-height:1.75; color:#c9c6d8; margin:6px 0 14px}
+.fc-lvls{display:grid; grid-template-columns:max-content 1fr; gap:8px 14px; align-items:center; margin:0 0 8px;
+  font-size:11px; line-height:1.5; color:var(--dim)}
+.fc-lv{display:inline-block; font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:3px 7px;
+  border:1px solid currentColor; white-space:nowrap; flex:none; justify-self:start}
+.lv-strong{color:var(--ink); background:var(--teal); border-color:var(--teal)}
+.lv-moderate{color:var(--teal)}
+.lv-weak{color:var(--dim)}
+.lv-design{color:var(--amber)}
+.lv-contested{color:#ec8b7d}
+.fc-labs{margin:26px 0 4px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.fc-labs .fc-sub{font-style:normal}
+.fc-ev{border-top:1px solid var(--line); scroll-margin-top:12px}
+.fc-ev summary{display:flex; align-items:baseline; gap:14px; padding:12px 0; cursor:pointer; list-style:none;
+  font-size:13px; line-height:1.55; color:var(--paper)}
+.fc-ev summary::-webkit-details-marker{display:none}
+.fc-ev summary .dc{flex:1; min-width:0}
+.fc-ev summary::after{content:"+"; color:var(--dim); flex:none; width:10px}
+.fc-ev[open] summary::after{content:"-"}
+.fc-ev.hl{background:rgba(65,217,200,.06); box-shadow:-10px 0 0 rgba(65,217,200,.06), 10px 0 0 rgba(65,217,200,.06)}
+.fc-ev .bd{padding:0 0 16px; font-size:12px; line-height:1.75; color:#c9c6d8}
+.fc-ev .bd p{margin:0 0 8px}
+.fc-ev .bd b{font-weight:400; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--teal); margin-right:10px}
+.fc-src{margin:8px 0 0; padding:0; list-style:none; font-size:11px; line-height:1.6}
+.fc-src li{position:relative; padding-left:16px; margin-bottom:4px}
+.fc-src li::before{content:"-"; position:absolute; left:0; color:var(--dim)}
+.fc-src a{color:var(--paper); text-decoration:underline; text-decoration-color:#4a4d6a; text-underline-offset:3px}
+.fc-src a:hover{color:var(--amber)}
+.fc-foot{margin-top:24px; padding-top:14px; border-top:1px solid var(--line)}
+
 /* ---------- selo (ecra inteiro) ---------- */
 #focus.sealed #fcTop, #focus.sealed .fc-chrome, #focus.sealed #fcHint{display:none}
 #fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
@@ -7200,7 +7266,7 @@ window.HMDAWN=(function(){
   #fcTop .w{display:none}
   #fcSeal{width:44px; padding:0}
   #fcSeal .nm{display:none}
-  #fcEntry{justify-content:flex-start; padding:76px 20px 28px; gap:10px}
+  #fcEntry{justify-content:flex-start; padding:72px 20px 28px; gap:9px}
   #fcEntry .fc-gap{margin-top:14px}
   #fcIntent{height:48px; font-size:15px}
   #fcScenes{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px}
@@ -7227,23 +7293,40 @@ window.HMDAWN=(function(){
   #fcDrawer{top:auto; left:0; width:auto; max-height:82vh; border-left:0; border-top:1px solid var(--line);
     padding:10px 18px 24px; transform:translateY(102%)}
   #fcDrawer::before{content:""; display:block; width:40px; height:4px; background:var(--line); margin:0 auto 8px}
+  #fcWhyBtn{width:44px; padding:0}
+  #fcLab{top:auto; left:0; width:auto; height:88vh; border-left:0; border-top:1px solid var(--line);
+    padding:10px 18px 24px; transform:translateY(102%)}
+  #fcLab::before{content:""; display:block; width:40px; height:4px; background:var(--line); margin:0 auto 8px}
+  .fc-lvls{grid-template-columns:1fr; gap:4px}
+  .fc-lvls span:not(.fc-lv){margin-bottom:6px}
+  #fcCont{min-height:52px; padding:6px 12px}
+  #fcHabit{gap:6px 8px; margin-top:2px}
+  #fcHabit .fc-qh{width:100%}
+  #fcHabit .q{letter-spacing:.12em}
+  #fcHabit .tbtn{padding:0 12px; letter-spacing:.12em}
+  .fc-card .gs{display:none}
+  .fc-card .nm{letter-spacing:.16em}
+  #fcSound{gap:2px 8px}
+  #fcSound .k{display:none}
+  #fcStep{font-size:12px; letter-spacing:.02em; padding:0 8px}
 }
 /* telemovel deitado: anel pequeno, sem linhas de ajuda */
 @media (max-height:520px){
   #focus{--fc-ring:min(170px, 42vh)}
   #fcSess{padding:56px 16px 96px; gap:6px}
   #fcDock{bottom:10px}
-  #fcKeys, #fcHint, #fcTag, #fcNext, #fcBrk .tip, #fcBrk label{display:none}
+  #fcKeys, #fcHint, #fcTag, #fcNext, #fcBrk .tip, #fcBrk .fc-qh{display:none}
   #focus.brk{--fc-ring:min(120px, 30vh)}
   #fcEntry{justify-content:flex-start}
 }
 /* ecra de computador baixo: as sete cartas e o Begin cabem sem deslizar */
 @media (min-width:761px) and (max-height:860px){
   .fc-card .for, #fcEntry .opt{display:none}
-  .fc-card{min-height:118px}
-  #fcEntry{padding-top:76px; gap:10px}
-  #fcEntry .fc-gap{margin-top:12px}
-  #fcPhone{margin-top:12px}
+  .fc-card{min-height:108px; gap:6px}
+  #fcEntry{padding-top:72px; gap:9px}
+  #fcEntry .fc-gap{margin-top:8px}
+  #fcPhone{margin-top:4px}
+  #fcBegin{margin-top:4px; height:54px}
 }
 </style>
 
@@ -7262,20 +7345,26 @@ window.HMDAWN=(function(){
     <div class="fbrand">Focus<span class="w"> room</span></div>
     <div id="fcClock">--:--</div>
     <div class="fc-tr">
+      <button class="tbtn" id="fcWhyBtn" type="button" aria-label="Why the room works this way" aria-controls="fcLab" aria-expanded="false"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.5M12 17h.01"></path></svg><span class="w">Why?</span></button>
       <button class="tbtn fc-sess" id="fcSeal" type="button" aria-label="Full screen" title="full screen, the screen stays awake and the controls hide; esc to leave"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg><span class="nm">Full screen</span></button>
       <button class="tbtn back" id="fcExit" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l-6 6 6 6M4 12h16"></path></svg><span><span class="w">Back to the </span>radio</span></button>
     </div>
   </header>
 
   <section id="fcEntry" class="fc-stage" aria-label="Start a focus session">
-    <label class="fc-h" for="fcIntent">What are you working on?</label>
+    <p id="fcFresh" class="fc-cap" hidden><span id="fcFreshT"></span><button class="fc-why" type="button" data-why="fresh-start">why?</button></p>
+    <button id="fcCont" type="button" hidden><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg><span class="tx"><b>Continue where you stopped</b><span id="fcContN"></span></span></button>
+    <div class="fc-qh"><label class="fc-h" for="fcIntent">What are you working on?</label><button class="fc-why" type="button" data-why="intention">why?</button></div>
     <input id="fcIntent" type="text" maxlength="60" placeholder="e.g. chapter 3 draft" autocomplete="off">
+    <input id="fcStep" type="text" maxlength="60" placeholder="smallest first step, e.g. open the file" aria-label="Smallest first step (optional)" autocomplete="off" hidden>
     <span class="fc-cap opt">optional &middot; shown on screen while you work</span>
-    <p id="fcLastNote" hidden></p>
-    <h2 class="fc-h fc-gap">What kind of work?</h2>
+    <div id="fcHabit" hidden><div class="fc-qh"><span class="q">Do you usually work with music on?</span><button class="fc-why" type="button" data-why="your-own-instrumental">why?</button></div><button class="tbtn" type="button" data-habit="music">Yes, usually</button><button class="tbtn" type="button" data-habit="quiet">No, I like it quiet</button></div>
+    <div class="fc-qh fc-gap"><h2 class="fc-h">What kind of work?</h2><button class="fc-why" type="button" data-why="scenes-by-task">why?</button></div>
     <div id="fcScenes"></div>
+    <div id="fcSound"><span><span class="k">sound</span> <b id="fcSoundN"></b> <span id="fcSoundT"></span></span><button class="fc-link" id="fcSoundCh" type="button" aria-expanded="false" aria-controls="fcProfPick">change</button><button class="fc-why" id="fcSoundWhy" type="button" data-why="steady-over-changing">why?</button></div>
+    <div id="fcProfPick" class="fc-chips" role="group" aria-label="Sound for this kind of work" hidden></div>
     <span id="fcCustom" class="fc-cap" hidden>your own settings, from the panel</span>
-    <p id="fcPhone" class="fc-cap"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1.5"></rect><path d="M11 18h2"></path></svg>first: phone on silent, out of sight</p>
+    <p id="fcPhone" class="fc-cap"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1.5"></rect><path d="M11 18h2"></path></svg>first: phone on silent, out of sight<button class="fc-why" type="button" data-why="phone-away">why?</button></p>
     <button id="fcBegin" type="button"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"></path></svg>Begin</button>
     <span class="fc-cap opt">Begin starts the timer, and the music if the scene has it</span>
     <button id="fcAdjust" type="button">or adjust the details first</button>
@@ -7294,8 +7383,8 @@ window.HMDAWN=(function(){
     </button>
     <div id="fcHint">tap the ring to pause</div>
     <div id="fcBrk">
-      <p class="tip">Stand up, look out of a window, drink some water. The phone can wait.</p>
-      <label for="fcNote">Where did you stop, and what comes next?</label>
+      <p class="tip">Stand up, look out of a window, drink some water. The phone can wait. <button class="fc-why" type="button" data-why="guided-break">why?</button></p>
+      <div class="fc-qh"><label for="fcNote">Where did you stop, and what comes next?</label><button class="fc-why" type="button" data-why="where-you-stopped">why?</button></div>
       <input id="fcNote" type="text" maxlength="90" placeholder="e.g. halfway through section 2; next: the figures" autocomplete="off">
     </div>
     <div id="fcActs">
@@ -7338,7 +7427,8 @@ window.HMDAWN=(function(){
         </div>
         <span class="fc-l">min</span>
       </div>
-      <p class="fc-note">Break: a fifth of the block (5 min after 25, 10 after 50). Long break: 30 min after every 3rd block. In the last minute the music fades and you can add 5 minutes. A new length applies from the next block.</p>
+      <p class="fc-note">Break: a fifth of the block (5 min after 25, 10 after 50). Long break: 30 min after every 3rd block. In the last minute the music fades and you can add 5 minutes. A new length applies from the next block. <button class="fc-why" type="button" data-why="break-length">why a fifth?</button><button class="fc-why" type="button" data-why="plus-five">why +5?</button></p>
+      <p class="fc-note">While you focus, the ring shows minutes only; point at it for the seconds. <button class="fc-why" type="button" data-why="minutes-only">why?</button></p>
       <div class="fc-row">
         <label class="fc-l" for="fcRing">End sound</label>
         <select id="fcRing">
@@ -7353,9 +7443,16 @@ window.HMDAWN=(function(){
     </div>
 
     <div class="fc-sec">
+      <div class="fc-hd"><h3 class="fc-h">Sound</h3><span class="fc-sub">for this kind of work</span></div>
+      <div id="fcProfs" class="fc-chips" role="group" aria-label="Sound for this scene"></div>
+      <p class="fc-note" id="fcProfNote"></p>
+      <div class="fc-row"><label class="fc-chk"><input type="checkbox" id="fcHabitChk">I usually work with music</label><button class="fc-why" type="button" data-why="your-own-instrumental">why?</button></div>
+    </div>
+
+    <div class="fc-sec">
       <div class="fc-hd"><h3 class="fc-h">Music</h3><span class="fc-sub">the programme valve</span></div>
       <label class="fc-chk"><input type="checkbox" id="fcMusicOn">Play music while I work</label>
-      <p class="fc-note">For reading, studying and writing, silence or music without words works best.</p>
+      <p class="fc-note">For reading, studying and writing, silence or music without words works best. <button class="fc-why" type="button" data-why="no-lyrics-for-words">why?</button></p>
       <div id="fcValve" class="fc-chips"></div>
       <div class="fc-row">
         <button class="tbtn" id="fcMoreG" type="button" aria-expanded="false">more genres</button>
@@ -7376,15 +7473,22 @@ window.HMDAWN=(function(){
     </div>
 
     <div class="fc-sec">
-      <h3 class="fc-h">Screen</h3>
+      <div class="fc-hd"><h3 class="fc-h">Screen</h3><button class="fc-why" type="button" data-why="slow-background">why?</button></div>
       <div id="fcBgs" class="fc-chips" role="group" aria-label="Background"></div>
       <label class="fc-chk"><input type="checkbox" id="fcBlack" checked>Hide controls when idle</label>
       <div class="fc-row">
         <label class="fc-chk"><input type="checkbox" id="fcBreathe">Breathe before starting</label>
-        <select id="fcBreLen" aria-label="Breathing length" style="flex:0 0 auto; width:auto"><option value="1">1 min</option><option value="3">3 min</option></select>
+        <select id="fcBreLen" aria-label="Breathing length" style="flex:0 0 auto; width:auto"><option value="1">1 min</option><option value="3">3 min</option></select><button class="fc-why" type="button" data-why="breathing">why?</button>
       </div>
       <p class="fc-note fc-kbd">space play / pause &middot; n next track &middot; esc closes this panel or leaves full screen</p>
     </div>
+  </aside>
+  <aside id="fcLab" role="dialog" aria-labelledby="fcLabH">
+    <div class="fc-dh">
+      <h2 class="fc-h" id="fcLabH">Why it works this way</h2>
+      <button class="tbtn ic" id="fcLabX" type="button" aria-label="Close"><svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <div id="fcLabBody"><p class="fc-note">Loading the evidence&hellip;</p></div>
   </aside>
   <div id="fcSealHint">full screen &middot; esc to leave</div>
 </div>
@@ -7396,21 +7500,53 @@ var $=function(id){ return document.getElementById(id); };
 var FC={ on:false, raf:0, gateDone:false, sealed:false, wlock:null, stage:"entry", hold:false,
   bg:"dusk", breakLift:0, agitUntil:0, allow:{}, scene:"read", pick:"read", len:25, vol:null,
   music:false, note:"", sndOv:null, exact:false, brkMusic:false,
+  prof:{}, habit:null, curProf:"custom", step:"", stepOn:false,
   pomo:{ run:false, started:false, phase:"work", long:false, left:25*60, total:25*60, works:0, focusedSec:0, brkT:0 } };
 var DEEP={focus_zen:1, ambient:1, ambient_techno:1, dub_techno:1, hypnotic_techno:1, deep_house:1, lofi:1, lofi_house:1};
 var DEEPK=Object.keys(DEEP);
-/* cenas por tipo de tarefa (ronda 1 da avaliacao de 2026-10-18): musica com voz prejudica ler,
-   estudar e escrever, e o silencio nunca perde; musica rapida e alta prejudica a leitura; ruido
-   moderado ajuda tarefas criativas; nas tarefas simples a musica so melhora o humor.
-   Generos e volumes sao curadoria por confirmar pelo Paulo */
-var SCENES=[
-  { id:"read", name:"Read", use:"articles, books, papers", len:25, music:false, vol:35, g:["ambient","focus_zen"], snd:{ rn:25, fp:0, ck:0 } },
-  { id:"study", name:"Study", use:"memorising, revising", len:25, music:false, vol:35, g:["ambient","focus_zen"], snd:{ rn:0, fp:0, ck:0 } },
-  { id:"write", name:"Write", use:"drafts, essays, reports", len:50, music:true, vol:50, g:["dub_techno","ambient_techno"], snd:{ rn:0, fp:0, ck:0 } },
-  { id:"tech", name:"Code & numbers", use:"programming, maths, design", len:50, music:true, vol:60, g:["dub_techno","hypnotic_techno","ambient_techno"], snd:{ rn:0, fp:0, ck:0 } },
-  { id:"create", name:"Create", use:"ideas, sketches, planning", len:35, music:false, vol:50, g:["ambient_techno","lofi"], snd:{ rn:55, fp:0, ck:0 } },
-  { id:"routine", name:"Routine", use:"admin, email, tidying", len:25, music:true, vol:70, g:["deep_house","lofi_house","lofi"], snd:{ rn:0, fp:0, ck:0 } }
+/* perfis de som (ronda 2a, v5.0): o que soa durante o trabalho. A musica instrumental de que se
+   gosta nao prejudica e pode ajudar, mesmo a ler para quem costuma estudar com musica; a voz
+   cantada prejudica tarefas com palavras; som estavel e repetitivo distrai menos do que som que
+   muda. Os generos de cada perfil sao curadoria, nao ciencia (liquid/focus-evidence.json).
+   why: a prova que o «why?» junto do som abre */
+var PROFS=[
+  { id:"silence", name:"Silence", note:"nothing at all", g:[], why:"no-lyrics-for-words" },
+  { id:"nature", name:"Nature", note:"rain on the window", g:[], rain:35, why:"water-sounds" },
+  { id:"ambient", name:"Ambient", note:"zen and ambient, very calm", g:["focus_zen","ambient","ambient_techno"], why:"steady-over-changing" },
+  { id:"lofi", name:"Lo-fi", note:"lo-fi beats", g:["lofi"], why:"your-own-instrumental" },
+  { id:"minimal", name:"Minimal", note:"dub and hypnotic techno", g:["dub_techno","hypnotic_techno","ambient_techno"], why:"steady-over-changing" },
+  { id:"liquid", name:"Liquid", note:"smooth drum and bass", g:["liquid"], why:"steady-over-changing" },
+  { id:"energy", name:"Energy", note:"deep house, lo-fi house", g:["deep_house","lofi_house"], why:"energy-matches-task" }
 ];
+/* cenas por tipo de tarefa (ronda 1 da avaliacao de 2026-10-18), cada uma com um perfil de som
+   por omissao (def) e o perfil que vale depois da pergunta da primeira visita: «music» para quem
+   costuma trabalhar com musica, «quiet» para quem prefere silencio (nenhuma cena arranca com
+   musica). rn: nivel da chuva no perfil Nature. Perfis e volumes por confirmar pelo Paulo */
+var SCENES=[
+  { id:"read", name:"Read", use:"articles, books, papers", len:25, vol:35, rn:25, p:{ def:"nature", music:"lofi", quiet:"nature" } },
+  { id:"study", name:"Study", use:"memorising, revising", len:25, vol:35, p:{ def:"silence", music:"lofi", quiet:"silence" } },
+  { id:"write", name:"Write", use:"drafts, essays, reports", len:50, vol:50, p:{ def:"minimal", music:"minimal", quiet:"silence" } },
+  { id:"tech", name:"Code & numbers", use:"programming, maths, design", len:50, vol:60, p:{ def:"minimal", music:"minimal", quiet:"silence" } },
+  { id:"create", name:"Create", use:"ideas, sketches, planning", len:35, vol:50, rn:55, p:{ def:"nature", music:"nature", quiet:"nature" } },
+  { id:"routine", name:"Routine", use:"admin, email, tidying", len:25, vol:70, p:{ def:"energy", music:"energy", quiet:"silence" } }
+];
+function profById(id){ for(var i=0;i<PROFS.length;i++){ if(PROFS[i].id===id) return PROFS[i]; } return null; }
+/* o perfil de uma cena: o escolhido pela pessoa, senao o da resposta a primeira pergunta, senao o de omissao */
+function profFor(sid){
+  var s=sceneById(sid); if(!s) return null;
+  return profById(FC.prof[sid]) ? FC.prof[sid] : s.p[FC.habit||"def"];
+}
+function profCfg(sid, pid){
+  var s=sceneById(sid), P=profById(pid);
+  return { scene:sid, len:s.len, vol:s.vol, g:P.g, music:P.g.length>0, prof:pid,
+    snd:{ rn:P.rain ? (s.rn||P.rain) : 0, fp:0, ck:0 } };
+}
+/* recomeco: segunda-feira, dia 1 do mes e do ano (efeito de recomeco, Dai e colegas, 2014) */
+function freshLabel(d){
+  if(d.getDate()===1) return d.getMonth()===0 ? "A new year. A fresh start." : "A new month. A fresh start.";
+  if(d.getDay()===1) return "A new week. A fresh start.";
+  return "";
+}
 /* intervalo: um quinto do bloco (25 -> 5, 35 -> 7, 50 -> 10); longo, 30 min, a cada terceiro bloco */
 function brkFor(len){ return Math.max(5, Math.round(len/5)); }
 var LENS=[25,35,50];
@@ -7449,12 +7585,20 @@ function memSave(){
     snd:{ rn:+$("fcRn").value||0, fp:+$("fcFp").value||0, ck:+$("fcCk").value||0 },
     ring:parseInt($("fcRing").value,10)||0, vol:FC.vol, bg:FC.bg,
     idle:$("fcBlack").checked, breathe:$("fcBreathe").checked, breLen:parseInt($("fcBreLen").value,10)||1,
-    intent:$("fcIntent").value.trim() };
+    intent:$("fcIntent").value.trim(), prof:FC.prof, habit:FC.habit, curProf:FC.curProf };
   try{ localStorage.setItem(MEMK, JSON.stringify(MEM)); }catch(e){}
 }
 function memSoon(){ clearTimeout(memT); memT=setTimeout(memSave, 400); }
+/* «My last» e «continuar onde parei» leem a memoria tal como estava ao abrir a pagina, ou no fim
+   da ultima sessao: o que se mexe a porta nao muda as cartas a meio da escolha */
+var LAST=MEM;
 (function memApply(){
   var m=MEM||{};
+  /* campos da v5.0 (a memoria continua na versao 2: os campos novos sao opcionais) */
+  FC.prof={};
+  if(m.prof && typeof m.prof==="object") Object.keys(m.prof).forEach(function(k){ if(sceneById(k) && profById(m.prof[k])) FC.prof[k]=m.prof[k]; });
+  FC.habit=(m.habit==="music" || m.habit==="quiet") ? m.habit : null;
+  FC.curProf=profById(m.curProf) ? m.curProf : "custom";
   FC.len=LENS.indexOf(m.len)>=0 ? m.len : 25;
   FC.allow={};
   ((m.allow && m.allow.length) ? m.allow : DEEPK).forEach(function(g){ FC.allow[g]=true; });
@@ -7625,14 +7769,15 @@ function gateRun(ms){
 function gateOpen(ms){ $("fcGate").classList.remove("on"); FC.gateDone=true; zenStop(ms||4500); }
 $("fcGateSkip").addEventListener("click", function(){ gateOpen(1200); });
 
-/* ---------- cromo que desvanece (so na sessao, com a gaveta fechada) ---------- */
+/* ---------- cromo que desvanece (so na sessao, com a gaveta e o painel «why?» fechados) ---------- */
 var idleT=null;
+function panelOpen(){ var f=$("focus"); return f.classList.contains("drw") || f.classList.contains("lab"); }
 function wakeChrome(){
   $("focus").classList.remove("idle");
   clearTimeout(idleT);
-  if($("fcBlack").checked && FC.stage==="session" && !$("focus").classList.contains("drw")){
+  if($("fcBlack").checked && FC.stage==="session" && !panelOpen()){
     idleT=setTimeout(function(){
-      if(FC.on && FC.stage==="session" && !$("focus").classList.contains("drw")) $("focus").classList.add("idle");
+      if(FC.on && FC.stage==="session" && !panelOpen()) $("focus").classList.add("idle");
     }, 5000);
   }
 }
@@ -7665,58 +7810,73 @@ function tagPaint(){
   var it=$("fcIntent").value.trim();
   var h="<b>"+esc(sceneName(FC.scene).toLowerCase())+"</b>"+(it ? " &middot; "+esc(it) : "");
   if($("fcTag").innerHTML!==h) $("fcTag").innerHTML=h;
-  /* onde paraste: lembrado durante o bloco seguinte (plano de retoma) */
-  var nx=$("fcNext"), show=(FC.stage==="session" && FC.pomo.phase==="work" && !!FC.note);
-  nx.hidden=!show;
-  var hn="<b>you stopped at</b>"+esc(FC.note);
-  if(show && nx.innerHTML!==hn) nx.innerHTML=hn;
+  /* durante o trabalho: o primeiro passo (so no primeiro bloco) e onde se parou (plano de retoma) */
+  var nx=$("fcNext"), work=(FC.stage==="session" && FC.pomo.phase==="work"), ln=[];
+  if(work && FC.stepOn && FC.step) ln.push("<b>first step</b>"+esc(FC.step));
+  if(work && FC.note) ln.push("<b>you stopped at</b>"+esc(FC.note));
+  nx.hidden=!ln.length;
+  var hn=ln.join("<br>");
+  if(nx.innerHTML!==hn) nx.innerHTML=hn;
 }
-$("fcIntent").addEventListener("input", function(){ tagPaint(); memSoon(); });
+/* o passo mais pequeno aparece quando ha intencao (ou ja tem texto) */
+function stepPaint(){ $("fcStep").hidden=!($("fcIntent").value.trim() || $("fcStep").value.trim()); }
+$("fcIntent").addEventListener("input", function(){ stepPaint(); tagPaint(); memSoon(); });
+$("fcStep").addEventListener("input", function(){ FC.step=this.value.trim(); });
 
-/* ---------- entrada: cenas e Begin ---------- */
+/* ---------- entrada: recomeco, continuar, cenas, som e Begin ---------- */
+var ICOP={
+  silence:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4z"></path><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"></path></svg>',
+  music:'<svg class="fc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>'
+};
+function profIco(P){ return !P ? ICOP.music : P.id==="silence" ? ICOP.silence : P.rain ? ICO.rn : ICOP.music; }
+/* o som de «My last» numa linha: o perfil, se o havia, senao o que a memoria guardou */
+function mixNote(music, n, snd){
+  if(music) return n ? n+" genre"+(n===1?"":"s")+" of your choice" : "the calm set";
+  var k=topSound(snd);
+  return k ? "no music, "+SNDN[k] : "no music";
+}
 function topSound(snd){
   var best=null;
   ["rn","fp","ck"].forEach(function(k){ if(snd && snd[k]>0 && (!best || snd[k]>snd[best])) best=k; });
   return best;
 }
-function soundSum(snd){
-  var k=topSound(snd); if(!k) return "";
-  var v=snd[k];
-  return SNDN[k]+(v<=30 ? ", soft" : v<=60 ? ", moderate" : "");
-}
 function entryBuild(){
   var el=$("fcScenes"); el.innerHTML="";
-  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, use:s.use, len:s.len, g:s.g, snd:s.snd, music:s.music }; });
-  if(MEM) list.push({ id:"last", name:"My last", use:"as you left it", len:MEM.len, g:MEM.allow||[], snd:MEM.snd||{}, music:MEM.music!==false, last:true });
-  if(FC.pick==="last" && !MEM) FC.pick="read";
+  if(FC.pick==="last" && !LAST) FC.pick="read";
+  var list=SCENES.map(function(s){ return { id:s.id, name:s.name, use:s.use, len:s.len, P:profById(profFor(s.id)) }; });
+  if(LAST) list.push({ id:"last", name:"My last", use:"as you left it", len:LAST.len, P:profById(LAST.curProf), last:true,
+    mix:mixNote(LAST.music!==false, (LAST.allow||[]).length, LAST.snd) });
   list.forEach(function(s){
     var b=document.createElement("button");
     b.type="button"; b.className="fc-card"+(s.last?" last":"");
     b.setAttribute("data-id", s.id);
-    var k=topSound(s.snd);
-    var gs=!s.music ? (k ? "no music" : "silence") :
-      s.last ? (s.g.length+" genre"+(s.g.length===1?"":"s")) : s.g.map(function(g){ return gname(g); }).join(", ");
     b.innerHTML='<span class="nm">'+esc(s.name)+'</span><span class="mn">'+s.len+' + '+brkFor(s.len)+' min</span>'+
-      '<span class="for">'+esc(s.use)+'</span><span class="gs">'+esc(gs)+'</span>'+
-      (k ? '<span class="sd">'+ICO[k]+esc(soundSum(s.snd))+'</span>' : '');
+      '<span class="for">'+esc(s.use)+'</span><span class="gs">'+esc(s.P ? s.P.note : s.mix)+'</span>'+
+      '<span class="sd">'+profIco(s.P)+esc(s.P ? s.P.name : "your mix")+'</span>';
     b.addEventListener("click", function(){ FC.pick=s.id; pickApply(); entryMark(); });
     el.appendChild(b);
   });
-  var ln=$("fcLastNote");
-  ln.hidden=!(MEM && MEM.note);
-  if(!ln.hidden) ln.innerHTML="<b>last time you stopped at</b>"+esc(MEM.note);
-  entryMark();
+  /* continuar onde parei: um toque retoma a ultima configuracao com a nota a vista */
+  var cn=!!(LAST && LAST.note && !FC.pomo.started);
+  $("fcCont").hidden=!cn;
+  if(cn) $("fcContN").textContent=LAST.note;
+  var fr=freshLabel(new Date());
+  $("fcFresh").hidden=!fr;
+  $("fcFreshT").textContent=fr;
+  $("fcHabit").hidden=(FC.habit!==null);
+  stepPaint();
+  entryMark(); profPaint();
 }
 /* a cena escolhida na entrada aplica-se logo, para a gaveta mostrar o que vai tocar */
 function pickApply(){
-  if(FC.pick==="last" && MEM) applyCfg({ scene:MEM.scene, len:MEM.len, g:MEM.allow, snd:MEM.snd, music:MEM.music!==false, vol:MEM.vol });
-  else if(sceneById(FC.pick)){ var s=sceneById(FC.pick); applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd, music:s.music, vol:s.vol }); }
+  if(FC.pick==="last" && LAST) applyCfg({ scene:LAST.scene, len:LAST.len, g:LAST.allow, snd:LAST.snd, music:LAST.music!==false, vol:LAST.vol, prof:LAST.curProf });
+  else if(sceneById(FC.pick)) applyCfg(profCfg(FC.pick, profFor(FC.pick)));
 }
 function entryMark(){
   document.querySelectorAll("#fcScenes .fc-card").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-id")===FC.pick)); });
   $("fcCustom").hidden=(FC.pick!=="custom");
 }
-/* aplica uma configuracao (cena pronta ou a ultima): generos, musica sim ou nao, volume, duracao e sons */
+/* aplica uma configuracao (cena pronta ou a ultima): generos, musica sim ou nao, volume, duracao, sons e perfil */
 function applyCfg(c){
   FC.scene=c.scene||"custom";
   if(LENS.indexOf(c.len)>=0) FC.len=c.len;
@@ -7724,11 +7884,12 @@ function applyCfg(c){
   (c.g||[]).forEach(function(g){ FC.allow[g]=true; });
   if(typeof c.music==="boolean") FC.music=c.music;
   if(typeof c.vol==="number") FC.vol=c.vol;
+  FC.curProf=profById(c.prof) ? c.prof : "custom";
   if(c.snd){ $("fcRn").value=c.snd.rn||0; $("fcFp").value=c.snd.fp||0; $("fcCk").value=c.snd.ck||0; }
   if(!FC.pomo.started){ FC.pomo.left=FC.pomo.total=FC.len*60; }
   if(snd.els) sndApply();
   volApply();
-  valveBuild(); sndUi(); lenPaint(); sceneSelPaint(); musicPaint(); volPaint(); tagPaint(); pomoPaint();
+  valveBuild(); sndUi(); lenPaint(); sceneSelPaint(); musicPaint(); volPaint(); tagPaint(); pomoPaint(); profPaint();
 }
 function anySound(){ return (+$("fcRn").value>0) || (+$("fcFp").value>0) || (+$("fcCk").value>0); }
 function musicPaint(){ $("fcMusicOn").checked=FC.music; }
@@ -7737,6 +7898,7 @@ function begin(){
   pickApply();
   pomoReset();
   FC.pomo.started=true; FC.pomo.run=true; FC.hold=false;
+  FC.step=$("fcStep").value.trim(); FC.stepOn=!!FC.step;
   setStage("session");
   /* a musica comeca com o tempo, se a cena a tiver; se ja tocava um genero que continua aceso, segue */
   if(FC.music){ if(!(fcp.playing && fcp.cur && FC.allow[fcp.cur.g])) fcNext(); }
@@ -7747,6 +7909,73 @@ function begin(){
   sndUi(); pomoPaint(); memSave();
 }
 $("fcBegin").addEventListener("click", begin);
+$("fcCont").addEventListener("click", function(){ FC.pick="last"; begin(); });
+
+/* ---------- perfis de som: a porta mostra o da cena escolhida (mudar fica um passo atras),
+   a gaveta mostra-os todos; a escolha fica lembrada por cena ---------- */
+function profBuild(){
+  ["fcProfPick","fcProfs"].forEach(function(id){
+    var el=$(id); el.innerHTML="";
+    PROFS.forEach(function(P){
+      var b=document.createElement("button");
+      b.type="button"; b.className="fc-chip"; b.setAttribute("data-prof", P.id);
+      b.textContent=P.name; b.title=P.note;
+      b.addEventListener("click", function(){ profChoose(P.id); });
+      el.appendChild(b);
+    });
+  });
+}
+function profPaint(){
+  var P=profById(FC.curProf);
+  $("fcSoundN").textContent=P ? P.name : "Your mix";
+  $("fcSoundT").textContent=P ? P.note : mixNote(FC.music, lit().length, { rn:+$("fcRn").value, fp:+$("fcFp").value, ck:+$("fcCk").value });
+  $("fcSoundWhy").setAttribute("data-why", P ? P.why : "your-own-instrumental");
+  document.querySelectorAll("#fcProfPick .fc-chip, #fcProfs .fc-chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-prof")===FC.curProf)); });
+  var s=sceneById(FC.scene);
+  $("fcProfNote").textContent=s ? "Remembered for "+s.name+". Lit genres and volume can still be changed below." :
+    "Your own mix. Pick a sound to start from one of the room's.";
+  $("fcHabitChk").checked=(FC.habit==="music");
+}
+/* aplicar um perfil: generos, musica sim ou nao e sons de fundo; a duracao e o volume ficam */
+function profChoose(pid){
+  var P=profById(pid); if(!P) return;
+  var s=sceneById(FC.scene);
+  if(s) FC.prof[s.id]=pid;
+  FC.curProf=pid;
+  FC.allow={}; P.g.forEach(function(g){ FC.allow[g]=true; });
+  FC.music=P.g.length>0;
+  $("fcRn").value=P.rain ? ((s && s.rn) || P.rain) : 0; $("fcFp").value=0; $("fcCk").value=0;
+  /* a porta deixa de estar em «My last»: o Begin reaplica a escolha e apagaria este som */
+  if(FC.stage==="entry" && !FC.pomo.started) FC.pick=s ? s.id : "custom";
+  valveBuild(); sndUi(); musicPaint();
+  if(FC.stage==="entry") entryBuild(); else profPaint();
+  musicSync(); memSoon();
+}
+/* depois de mudar cena ou perfil: a musica segue o que ficou aceso (so na sessao; a porta fica calada) */
+function musicSync(){
+  if(snd.els) sndApply();
+  if(!FC.music){ fcStopTune(); return; }
+  if(FC.stage==="session" && FC.pomo.phase==="work" && (!fcp.playing || (fcp.cur && !FC.allow[fcp.cur.g]))){ fadeTo(1, 0); fcNext(); }
+  if(FC.stage==="session" && anySound()){ rctx(); sndInit(); sndApply(); }
+}
+/* mexer nos generos ou ligar e desligar a musica a mao faz do som uma mistura propria */
+function soundCustom(){ FC.curProf="custom"; profPaint(); }
+$("fcSoundCh").addEventListener("click", function(){
+  var pk=$("fcProfPick"), on=pk.hidden;
+  pk.hidden=!on;
+  this.setAttribute("aria-expanded", String(on));
+  this.textContent=on ? "done" : "change";
+});
+/* primeira visita: costuma trabalhar com musica? a resposta muda o som por omissao das cenas */
+function habitSet(h){
+  FC.habit=h;
+  if(FC.stage==="entry"){ entryBuild(); if(!FC.pomo.started && sceneById(FC.pick)) pickApply(); }
+  profPaint(); memSoon();
+}
+document.querySelectorAll("#fcHabit [data-habit]").forEach(function(b){
+  b.addEventListener("click", function(){ habitSet(b.getAttribute("data-habit")); });
+});
+$("fcHabitChk").addEventListener("change", function(){ habitSet(this.checked ? "music" : "quiet"); });
 $("fcAdjust").addEventListener("click", function(){ drawer(true); });
 
 /* ---------- pomodoro: blocos de foco, intervalo de um quinto do bloco, longo a cada terceiro ---------- */
@@ -7809,6 +8038,7 @@ function breakStart(){
   FC.agitUntil=performance.now()+6000;
   p.phase="break"; p.long=(p.works%3===0); p.left=p.total=(p.long ? 30 : brkFor(FC.len))*60; p.brkT=Date.now();
   FC.breakLift=1;
+  FC.stepOn=false; FC.step=""; $("fcStep").value="";
   $("fcNote").value="";
   breakAudio(true);
 }
@@ -7881,7 +8111,8 @@ document.querySelectorAll("#fcLenSeg .tbtn").forEach(function(b){
 $("fcEnd").addEventListener("click", function(){
   pomoReset(); fcStopTune(); sndStop(); FC.hold=false;
   /* de volta a entrada, a configuracao que se usava fica escolhida como «My last» */
-  memSave(); FC.pick="last";
+  FC.stepOn=false;
+  memSave(); LAST=MEM; FC.pick="last";
   drawer(false); setStage("entry"); pomoPaint();
 });
 
@@ -7986,7 +8217,7 @@ function fadeTo(target, ms, cb){
 function fcDuck(on){ fadeTo(on ? 0 : 1, 0); }
 /* tocar ou saltar pela mao liga a musica, mesmo numa cena sem ela, e no volume inteiro */
 function wantMusic(){
-  if(!FC.music){ FC.music=true; musicPaint(); memSoon(); }
+  if(!FC.music){ FC.music=true; musicPaint(); soundCustom(); memSoon(); }
   fadeTo(1, 0);
 }
 function playToggle(){ if(!fcp.playing) wantMusic(); fcToggle(); }
@@ -7997,7 +8228,7 @@ $("fcMusicOn").addEventListener("change", function(){
   FC.music=this.checked;
   if(!FC.music) fcStopTune();
   else if(FC.stage==="session" && FC.pomo.phase==="work" && !fcp.playing){ fadeTo(1, 0); fcNext(); }
-  markCustom(); memSoon();
+  markCustom(); soundCustom(); memSoon();
 });
 function volPaint(){ $("fcVolD").value=$("fcVolR").value=String(FC.vol==null ? mainVol() : FC.vol); }
 ["fcVolD","fcVolR"].forEach(function(id){
@@ -8011,6 +8242,7 @@ function volPaint(){ $("fcVolD").value=$("fcVolR").value=String(FC.vol==null ? m
 document.addEventListener("keydown", function(ev){
   if(!FC.on) return;
   if(ev.target && (ev.target.tagName==="INPUT"||ev.target.tagName==="SELECT"||ev.target.tagName==="TEXTAREA")) return;
+  if(ev.target && ev.target.closest && ev.target.closest("#fcDrawer, #fcLab")) return;
   if(ev.key===" "){ ev.preventDefault(); ev.stopImmediatePropagation(); playToggle(); }
   else if(ev.key==="n"){ ev.stopImmediatePropagation(); skipTrack(); }
 }, true);
@@ -8046,7 +8278,7 @@ function valveBuild(){
     b.addEventListener("click", function(){
       FC.allow[g]=!FC.allow[g];
       b.setAttribute("aria-pressed", String(!!FC.allow[g]));
-      markCustom(); memSoon();
+      markCustom(); soundCustom(); memSoon();
     });
     el.appendChild(b);
   });
@@ -8057,7 +8289,7 @@ function valveBuild(){
 $("fcMoreG").addEventListener("click", function(){ $("fcValve").classList.toggle("all"); valveBuild(); });
 $("fcCalm").addEventListener("click", function(){
   FC.allow={}; DEEPK.forEach(function(g){ FC.allow[g]=true; });
-  valveBuild(); markCustom(); memSoon();
+  valveBuild(); markCustom(); soundCustom(); memSoon();
 });
 /* mexer nos generos ou na duracao faz da configuracao uma cena propria */
 function markCustom(){
@@ -8074,11 +8306,9 @@ function sceneSelPaint(){
 }
 $("fcSceneSel").addEventListener("change", function(){
   var s=sceneById(this.value); if(!s) return;
-  applyCfg({ scene:s.id, len:s.len, g:s.g, snd:s.snd, music:s.music, vol:s.vol });
-  if(FC.stage==="entry"){ FC.pick=s.id; entryMark(); }
-  if(!FC.music) fcStopTune();
-  else if(FC.stage==="session" && FC.pomo.phase==="work" && (!fcp.playing || (fcp.cur && !FC.allow[fcp.cur.g]))){ fadeTo(1, 0); fcNext(); }
-  rctx(); if(anySound() || snd.els){ sndInit(); sndApply(); }
+  applyCfg(profCfg(s.id, profFor(s.id)));
+  if(FC.stage==="entry"){ FC.pick=s.id; entryBuild(); }
+  musicSync();
   memSoon();
 });
 
@@ -8343,6 +8573,7 @@ $("fcRing").addEventListener("change", memSoon);
 
 /* ---------- gaveta de ajustes ---------- */
 function drawer(on){
+  if(on) lab(false);
   $("focus").classList.toggle("drw", on);
   $("fcMore").setAttribute("aria-expanded", String(on));
   if(on){ $("focus").classList.remove("idle"); clearTimeout(idleT); setTimeout(function(){ try{ $("fcDrawerX").focus(); }catch(e){} }, 60); }
@@ -8350,7 +8581,121 @@ function drawer(on){
 }
 $("fcMore").addEventListener("click", function(){ drawer(!$("focus").classList.contains("drw")); });
 $("fcDrawerX").addEventListener("click", function(){ drawer(false); });
-$("fcScrim").addEventListener("click", function(){ drawer(false); });
+$("fcScrim").addEventListener("click", function(){ drawer(false); lab(false); });
+
+/* ---------- zona «why?» (forma C, v5.0): um separador com as provas de cada decisao, lidas de
+   liquid/focus-evidence.json (so ao abrir, uma vez), e ligacoes «why?» junto de cada decisao que
+   abrem a prova certa. Todo o texto do ficheiro passa por esc() ---------- */
+var EV={ data:null, busy:false, wait:[], back:null };
+var LVL=["strong","moderate","weak","design","contested"];
+var LVN={ strong:"strong", moderate:"moderate", weak:"weak", design:"our design", contested:"contested" };
+var EVSEC=[
+  ["in room", "In this room", "what the room does, and why"],
+  ["tip", "Outside the room", "what the room cannot do for you"],
+  ["proposed", "Next ideas", "backed by research, not built yet"],
+  ["not planned", "Not planned", "considered, and left out for now"]
+];
+function lvBadge(k, label){ return '<span class="fc-lv lv-'+(LVL.indexOf(k)>=0 ? k : "weak")+'">'+esc(label || LVN[k] || k)+'</span>'; }
+function srcUrl(s){
+  var u=s.doi ? "https://doi.org/"+s.doi : s.pmcid ? "https://pmc.ncbi.nlm.nih.gov/articles/"+s.pmcid+"/" :
+    s.pmid ? "https://pubmed.ncbi.nlm.nih.gov/"+s.pmid+"/" : (s.url||"");
+  return /^https:\/\//.test(u) ? u : "";
+}
+function srcHtml(list){
+  if(!list || !list.length) return "";
+  return '<ul class="fc-src">'+list.map(function(s){
+    var u=srcUrl(s), c=esc(s.cite||"");
+    return "<li>"+(u ? '<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+c+"</a>" : c)+"</li>";
+  }).join("")+"</ul>";
+}
+function evItem(id, title, badge, body){
+  return '<details class="fc-ev"'+(id ? ' id="why-'+esc(id)+'"' : "")+'><summary><span class="dc">'+esc(title)+"</span>"+badge+
+    '</summary><div class="bd">'+body+"</div></details>";
+}
+function evHtml(d){
+  var h='<p class="fc-lead">Nothing in this room was chosen at random. Each choice below says what research found, '+
+    "how strong that evidence is, what is still unknown, and how to do it your own way.</p>";
+  h+='<div class="fc-lvls">'+LVL.map(function(k){ return lvBadge(k)+"<span>"+esc((d.levels||{})[k]||"")+"</span>"; }).join("")+"</div>";
+  EVSEC.forEach(function(sec){
+    var es=(d.entries||[]).filter(function(e){ return e.status===sec[0]; });
+    if(!es.length) return;
+    h+='<div class="fc-labs"><h3 class="fc-h">'+esc(sec[1])+'</h3><span class="fc-sub">'+esc(sec[2])+" &middot; "+es.length+"</span></div>";
+    es.forEach(function(e){
+      h+=evItem(e.id, e.decision, lvBadge(e.strength), "<p>"+esc(e.finding)+"</p>"+
+        (e.unknown ? "<p><b>Not known yet</b>"+esc(e.unknown)+"</p>" : "")+
+        (e.yourCall ? "<p><b>Your call</b>"+esc(e.yourCall)+"</p>" : "")+srcHtml(e.sources));
+    });
+  });
+  if((d.myths||[]).length){
+    h+='<div class="fc-labs"><h3 class="fc-h">Myths</h3><span class="fc-sub">popular advice the evidence does not back</span></div>';
+    d.myths.forEach(function(m){ h+=evItem("", m.claim, lvBadge("contested", "myth"), "<p>"+esc(m.verdict)+"</p>"+srcHtml(m.sources)); });
+  }
+  if((d.retracted||[]).length){
+    h+='<div class="fc-labs"><h3 class="fc-h">Retracted studies</h3><span class="fc-sub">withdrawn papers we do not rely on</span></div>';
+    d.retracted.forEach(function(r){
+      h+=evItem("", r.cite, lvBadge("contested", "retracted"), "<p><b>Status</b>"+esc(r.status||"")+"</p>"+
+        (r.consequence ? "<p><b>What we do</b>"+esc(r.consequence)+"</p>" : "")+srcHtml([{ cite:"The paper, now retracted", doi:r.doi }]));
+    });
+  }
+  h+='<p class="fc-note fc-foot">Evidence reviewed on '+esc(d.reviewed||"")+". Findings are paraphrased; the links lead to the papers. "+
+    "Most studies used students, lab tasks and short sessions, so treat them as a starting point and keep what works for you.</p>";
+  return h;
+}
+function labLoad(cb){
+  if(EV.data){ cb(); return; }
+  EV.wait.push(cb);
+  if(EV.busy) return;
+  EV.busy=true;
+  function done(){ EV.busy=false; var w=EV.wait; EV.wait=[]; w.forEach(function(f){ try{ f(); }catch(e){} }); }
+  fetch("focus-evidence.json", { cache:"no-cache" }).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d){ EV.data=d; $("fcLabBody").innerHTML=evHtml(d); done(); })
+    .catch(function(){
+      /* sem o ficheiro, o painel diz onde estao as provas; a proxima abertura tenta de novo */
+      $("fcLabBody").innerHTML='<p class="fc-lead">The evidence could not be loaded just now. It is public, in the file '+
+        '<a class="fc-link" href="https://github.com/hikilinkuja/home-music/blob/main/liquid/focus-evidence.json" target="_blank" rel="noopener noreferrer">focus-evidence.json</a>.</p>';
+      done();
+    });
+}
+function lab(on, id){
+  var f=$("focus"), was=f.classList.contains("lab");
+  if(!on){
+    if(!was) return;
+    f.classList.remove("lab");
+    $("fcWhyBtn").setAttribute("aria-expanded", "false");
+    wakeChrome();
+    if(EV.back){ try{ EV.back.focus({ preventScroll:true }); }catch(e){} EV.back=null; }
+    return;
+  }
+  if(f.classList.contains("drw")) drawer(false);
+  f.classList.add("lab"); f.classList.remove("idle"); clearTimeout(idleT);
+  $("fcWhyBtn").setAttribute("aria-expanded", "true");
+  labLoad(function(){
+    if(!f.classList.contains("lab")) return;
+    document.querySelectorAll("#fcLab .fc-ev.hl").forEach(function(e){ e.classList.remove("hl"); });
+    var el=id ? document.getElementById("why-"+id) : null;
+    if(el){
+      el.open=true; el.classList.add("hl");
+      el.scrollIntoView({ block:"start" });
+      try{ el.querySelector("summary").focus({ preventScroll:true }); }catch(e){}
+    } else {
+      $("fcLab").scrollTop=0;
+      try{ $("fcLabX").focus({ preventScroll:true }); }catch(e){}
+    }
+  });
+}
+$("fcWhyBtn").addEventListener("click", function(){
+  if($("focus").classList.contains("lab")){ lab(false); return; }
+  EV.back=this; lab(true);
+});
+$("fcLabX").addEventListener("click", function(){ lab(false); });
+/* cada «why?» abre o painel na prova da decisao que esta ao lado */
+$("focus").addEventListener("click", function(ev){
+  var b=ev.target && ev.target.closest ? ev.target.closest(".fc-why") : null;
+  if(!b) return;
+  ev.preventDefault();
+  EV.back=b;
+  lab(true, b.getAttribute("data-why"));
+});
 
 /* ---------- selo (ecra inteiro, ecra acordado, controlos escondidos) ---------- */
 function seal(on){
@@ -8372,7 +8717,8 @@ document.addEventListener("fullscreenchange", function(){
 document.addEventListener("keydown", function(ev){
   if(!FC.on) return;
   if(ev.key==="Escape"){
-    if($("focus").classList.contains("drw")){ drawer(false); ev.stopImmediatePropagation(); }
+    if($("focus").classList.contains("lab")){ lab(false); ev.stopImmediatePropagation(); }
+    else if($("focus").classList.contains("drw")){ drawer(false); ev.stopImmediatePropagation(); }
     else if(FC.sealed){ seal(false); ev.stopImmediatePropagation(); }
   }
 }, true);
@@ -8415,8 +8761,9 @@ function focusClose(){
 }
 document.getElementById("focusBtn").addEventListener("click", focusOpen);
 $("fcExit").addEventListener("click", focusClose);
+profBuild();
 /* estado da sala para os testes (ops/tests/t-focus.js); o motor usa outro nome, HMFOCUS */
-window.HMFR={ fc:FC };
+window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor };
 })();
 </script>
 <style>

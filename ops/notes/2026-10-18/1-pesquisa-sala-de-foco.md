@@ -4,7 +4,7 @@ Pedido do Paulo: rever a literatura sobre métodos e disposição que maximizam 
 produtivo dos ouvintes; a sala deve ser o «porto seguro» que dá vontade de trabalhar; preparar a
 base da zona «why?» (forma C: separador mais ligações no sítio de cada decisão). Trabalho feito
 sozinho, com cerca de 30 pesquisas e mais de 60 fontes vistas. As provas, uma por decisão, estão
-em `focus-evidence.json` (em inglês, porque alimentarão a zona «why?»).
+em `liquid/focus-evidence.json` (em inglês, porque alimentam a zona «why?» da v5.0).
 
 Força da prova: forte (várias meta-análises concordantes), moderada, fraca, desenho (escolha ou
 inferência nossa), contestada.
@@ -133,7 +133,7 @@ nenhuma relação entre 20 e 30 °C numa meta-análise de 35 estudos em 2021).
 - Resultado com a incerteza à vista e os limites ditos: sem ocultação, nota subjetiva, tarefas que
   variam. Dados só no browser, exportáveis.
 
-**E. Zona «why?»** (forma C). Gerada a partir de `focus-evidence.json`: cada decisão com selo de
+**E. Zona «why?»** (forma C). Gerada a partir de `liquid/focus-evidence.json`: cada decisão com selo de
 força, duas ou três frases, fontes com ligação, o que não se sabe e como contrariar. Secções de
 mitos e de estudos retirados. Data de revisão visível. Ligações «why?» junto das cartas das cenas,
 do intervalo, dos minutos, do telemóvel e da respiração.

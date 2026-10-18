@@ -1,9 +1,11 @@
-// Sala de foco (v4.6, ronda 1 da avaliacao em v4.9): entrada com seis cenas por tarefa e Begin,
+// Sala de foco (v4.6, ronda 1 da avaliacao em v4.9, ronda 2a em v5.0): entrada com seis cenas por tarefa e Begin,
 // sessao com anel (so minutos durante o foco), ultimo minuto com a musica a descer e «+5 min»,
 // intervalo de um quinto do bloco com a musica calada, chuva baixa e «onde paraste», sino suave por
 // omissao, respiracao opcional, gaveta, fundos da sala e da radio, sorteio por genero, memoria (e a
 // migracao da memoria da v4.6). Nada sobreposto nem fora do ecra em 1440x900, 1024x768, 390x844 e
-// 844x390, no trabalho e no intervalo. O relogio da sala acelera-se pelo window.HMFR. Cerca de 2 min.
+// 844x390, no trabalho e no intervalo. Ronda 2a: perfis de som por cena e pergunta da primeira visita,
+// zona «why?» (painel e ligacoes, todas com prova no focus-evidence.json), «continuar onde parei»,
+// passo mais pequeno e linha de recomeco. O relogio da sala acelera-se pelo window.HMFR. Cerca de 2 min.
 'use strict';
 const T = require('./lib/common');
 
@@ -32,8 +34,9 @@ const layout = (page, sels) => page.evaluate((sels) => {
   }
   return { n: items.length, bad: out };
 }, sels);
-const ENTRY = ['#fcTop .fbrand', '#fcExit', '#fcIntent', '#fcLastNote', '#fcScenes .fc-card', '#fcPhone', '#fcBegin', '#fcAdjust'];
-const SESS = ['#fcTop .fbrand', '#fcSeal', '#fcExit', '#fcTag', '#fcNext', '#fcDial', '#fcHint', '#fcBrk', '#fcPlus', '#fcBreatheNow',
+const ENTRY = ['#fcTop .fbrand', '#fcWhyBtn', '#fcExit', '#fcFresh', '#fcCont', '#fcIntent', '#fcStep', '#fcHabit', '#fcScenes .fc-card',
+  '#fcSound', '#fcPhone', '#fcBegin', '#fcAdjust'];
+const SESS = ['#fcTop .fbrand', '#fcWhyBtn', '#fcSeal', '#fcExit', '#fcTag', '#fcNext', '#fcDial', '#fcHint', '#fcBrk', '#fcPlus', '#fcBreatheNow',
   '#fcGo', '#fcNowBox', '#fcPlay', '#fcSkipT', '.fc-vol', '#fcTgRn', '#fcTgFp', '#fcTgCk', '#fcMore', '#fcKeys'];
 
 const st = (page) => page.evaluate(() => {
@@ -48,7 +51,18 @@ const st = (page) => page.evaluate(() => {
     plus: !d('fcPlus').hidden, breathe: !d('fcBreatheNow').hidden,
     brk: getComputedStyle(d('fcBrk')).display !== 'none',
     next: d('fcNext').hidden ? '' : d('fcNext').textContent,
+    sd: [...document.querySelectorAll('#fcScenes .fc-card .sd')].map(e => e.textContent.trim()).join(','),
+    habit: !d('fcHabit').hidden, sound: d('fcSoundN').textContent,
   };
+});
+/* painel «why?»: aberto, quantas provas, qual a destacada e se esta dentro do ecra */
+const labSt = (page) => page.evaluate(() => {
+  const hl = document.querySelector('#fcLab .fc-ev.hl');
+  const r = document.getElementById('fcLab').getBoundingClientRect();
+  return { on: document.getElementById('focus').classList.contains('lab'), n: document.querySelectorAll('#fcLab .fc-ev').length,
+    hl: hl ? hl.id : '', open: hl ? hl.open : false, top: hl ? Math.round(hl.getBoundingClientRect().top) : -1,
+    inView: r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1,
+    links: document.querySelectorAll('#fcLab .fc-src a[href^="https://"]').length };
 });
 const setLeft = (page, s) => page.evaluate((s) => { HMFR.fc.pomo.left = s; }, s);
 const enter = async (r) => {
@@ -89,14 +103,45 @@ const tune = (page) => page.evaluate(() => {
   const after = await r.page.evaluate(() => HMFIELD.next());
   t.check('fundos: ler a lista dos campos da radio deixa o campo onde estava', after === before[1], before.join(',') + ' -> ' + after);
 
+  /* ronda 2a: primeira visita, perfis de som por omissao, recomeco e zona «why?» */
+  t.check('primeira visita: pergunta do habito e um perfil de som por cena', s.habit && s.sd === 'Nature,Silence,Minimal,Minimal,Nature,Energy' && s.sound === 'Nature', JSON.stringify(s));
+  const fr = await r.page.evaluate(() => ({ el: document.getElementById('fcFresh').hidden ? '' : document.getElementById('fcFreshT').textContent,
+    now: HMFR.fresh(new Date()), mon: HMFR.fresh(new Date(2026, 9, 19)), tue: HMFR.fresh(new Date(2026, 9, 20)),
+    m1: HMFR.fresh(new Date(2026, 10, 1)), y1: HMFR.fresh(new Date(2027, 0, 1)) }));
+  t.check('recomeco: segunda-feira, dia 1 e 1 de janeiro; a linha da porta segue a data de hoje', fr.el === fr.now && /week/.test(fr.mon) && fr.tue === '' &&
+    /month/.test(fr.m1) && /year/.test(fr.y1), JSON.stringify(fr));
+  await r.page.click('#fcWhyBtn'); await r.page.waitForTimeout(900);
+  let W = await labSt(r.page);
+  t.check('why: o separador abre com as provas, mitos e retirados, e as fontes com ligacao', W.on && W.n >= 40 && W.links >= 40 && W.inView, JSON.stringify(W));
+  await r.page.keyboard.press('Escape'); await r.page.waitForTimeout(400);
+  t.check('why: Esc fecha o painel', !(await labSt(r.page)).on);
+  await r.page.click('#fcPhone .fc-why'); await r.page.waitForTimeout(700);
+  W = await labSt(r.page);
+  t.check('why: a ligacao junto do telemovel abre a prova certa, aberta e a vista', W.on && W.hl === 'why-phone-away' && W.open && W.top >= 0 && W.top < 200, JSON.stringify(W));
+  const orphan = await r.page.evaluate(() => [...document.querySelectorAll('#focus [data-why]')].map(b => b.getAttribute('data-why')).filter(i => !document.getElementById('why-' + i)));
+  t.check('why: todas as ligacoes da sala tem prova no ficheiro', orphan.length === 0, orphan.join(','));
+  await r.page.click('#fcLabX'); await r.page.waitForTimeout(400);
+  await r.page.click('#fcHabit [data-habit="music"]'); await r.page.waitForTimeout(300);
+  s = await st(r.page);
+  t.check('habito «Yes, usually»: a pergunta sai e Read e Study passam a lo-fi', !s.habit && s.sd === 'Lo-fi,Lo-fi,Minimal,Minimal,Nature,Energy' && s.sound === 'Lo-fi', JSON.stringify(s));
+
   await r.page.fill('#fcIntent', 'chapter 3 draft');
+  t.check('passo mais pequeno: aparece quando ha intencao', await r.page.isVisible('#fcStep'));
+  await r.page.fill('#fcStep', 'open the outline');
   await r.page.click('#fcScenes .fc-card[data-id="write"]');
+  await r.page.click('#fcSoundCh'); await r.page.waitForTimeout(200);
+  await r.page.click('#fcProfPick .fc-chip[data-prof="liquid"]'); await r.page.waitForTimeout(300);
+  s = await st(r.page);
+  t.check('som da cena: mudar a porta muda a carta de Write e o som em vigor', s.sd.split(',')[2] === 'Liquid' && s.sound === 'Liquid' && /write\*/.test(s.cards), JSON.stringify(s));
+  L = await layout(r.page, ENTRY.concat(['#fcProfPick .fc-chip']));
+  t.check('entrada com os perfis abertos 1440x900: tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));
   await r.page.click('#fcBegin'); await r.page.waitForTimeout(2600);
   s = await st(r.page);
   t.check('Begin: sessao de 50 min a correr', s.stage === 'session' && /focus/.test(s.phase) && s.left > 2990 && s.left < 3000, JSON.stringify(s));
   t.check('foco: so minutos, sem segundos', s.tn === '50' && s.tu === 'min', s.tn + ' ' + s.tu);
   let m = await tune(r.page);
-  t.check('Begin: a musica arranca num genero da cena', m.loads.length >= 1 && ['dub_techno', 'ambient_techno'].includes(m.loads[0]), m.loads.join(','));
+  t.check('Begin: a musica arranca no perfil escolhido (liquid)', m.loads.length >= 1 && m.loads[0] === 'liquid', m.loads.join(','));
+  t.check('primeiro passo: a vista no primeiro bloco', /first step/.test(s.next) && /open the outline/.test(s.next), s.next);
   const tag = await r.page.textContent('#fcTag');
   t.check('sessao: cena e intencao por cima do anel', /write/.test(tag) && /chapter 3 draft/.test(tag), tag);
   L = await layout(r.page, SESS);
@@ -130,7 +175,7 @@ const tune = (page) => page.evaluate(() => {
   await r.page.click('#fcPlus'); await r.page.waitForTimeout(1800);
   s = await st(r.page); m = await tune(r.page);
   t.check('«+5 min» no intervalo: volta ao trabalho por 5 min com a musica', /focus/.test(s.phase) && s.left > 290 && s.left <= 300 && m.state === 1, JSON.stringify(s) + ' estado ' + m.state);
-  t.check('onde paraste: lembrado no bloco seguinte', /halfway through section 2/.test(s.next), s.next);
+  t.check('onde paraste: lembrado no bloco seguinte; o primeiro passo ja nao', /halfway through section 2/.test(s.next) && !/first step/.test(s.next), s.next);
   await setLeft(r.page, 2); await r.page.waitForTimeout(3000);
   await setLeft(r.page, 2); await r.page.waitForTimeout(3000);
   s = await st(r.page); m = await tune(r.page);
@@ -139,6 +184,14 @@ const tune = (page) => page.evaluate(() => {
   await r.page.click('#fcMore'); await r.page.waitForTimeout(500);
   L = await layout(r.page, ['#fcDrawer']);
   t.check('gaveta: abre dentro do ecra', (await st(r.page)).drw && L.n === 1 && !L.bad.length, L.bad.join(' | '));
+  await r.page.click('#fcProfs .fc-chip[data-prof="silence"]'); await r.page.waitForTimeout(400);
+  m = await tune(r.page);
+  t.check('gaveta: o perfil Silence cala a musica', m.state === 2, 'estado ' + m.state);
+  const nl = m.loads.length;
+  await r.page.click('#fcProfs .fc-chip[data-prof="minimal"]'); await r.page.waitForTimeout(1800);
+  m = await tune(r.page);
+  t.check('gaveta: o perfil Minimal traz musica de dub ou hypnotic techno', m.state === 1 && m.loads.length > nl &&
+    ['dub_techno', 'hypnotic_techno', 'ambient_techno'].includes(m.loads[m.loads.length - 1]), m.loads.slice(nl).join(',') + ' estado ' + m.state);
   const bgs = await r.page.$$eval('#fcBgs .fc-chip', bs => bs.map(b => b.getAttribute('data-bg')));
   t.check('fundos: os tres da sala e os sete da radio', bgs.slice(0, 3).join() === 'dusk,ink,off' && bgs.filter(b => b.startsWith('radio:')).length === 7, bgs.join(','));
   const radio = bgs.find(b => b.startsWith('radio:'));
@@ -186,14 +239,19 @@ const tune = (page) => page.evaluate(() => {
   const mem = await r.page.evaluate(() => JSON.parse(localStorage.getItem('hm_focus')));
   t.check('memoria: guarda fundo, intencao, generos e onde se parou', mem && mem.v === 2 && mem.bg === 'ink' && mem.intent === 'chapter 3 draft' &&
     mem.allow.length === 2 && mem.note === 'halfway through section 2', JSON.stringify(mem));
-  const ln = await r.page.textContent('#fcLastNote');
-  t.check('memoria: a entrada mostra onde se parou da ultima vez', /halfway through section 2/.test(ln), ln);
+  t.check('memoria: guarda o habito e o perfil escolhido por cena', mem.habit === 'music' && mem.prof && mem.prof.write === 'minimal' && mem.curProf === 'custom' &&
+    !s.habit && s.sd === 'Lo-fi,Lo-fi,Minimal,Minimal,Nature,Energy,your mix', JSON.stringify({ habit: mem.habit, prof: mem.prof, cur: mem.curProf, sd: s.sd }));
+  const ln = await r.page.evaluate(() => document.getElementById('fcCont').hidden ? '' : document.getElementById('fcContN').textContent);
+  t.check('continuar onde parei: a porta mostra o botao com a nota', /halfway through section 2/.test(ln), ln);
 
   /* 1024x768: entrada, trabalho e intervalo sem sobreposicoes */
   await r.page.setViewportSize({ width: 1024, height: 768 }); await r.page.waitForTimeout(400);
   L = await layout(r.page, ENTRY);
   t.check('entrada 1024x768: tudo no ecra, nada sobreposto', L.n >= 10 && !L.bad.length, L.bad.join(' | '));
-  await r.page.click('#fcBegin'); await r.page.waitForTimeout(800);
+  await r.page.click('#fcCont'); await r.page.waitForTimeout(800);
+  s = await st(r.page);
+  t.check('continuar onde parei: um toque abre a sessao com a ultima configuracao e a nota', s.stage === 'session' && /focus/.test(s.phase) &&
+    s.left > 2990 && /halfway through section 2/.test(s.next), JSON.stringify(s));
   L = await layout(r.page, SESS);
   t.check('sessao 1024x768: tudo no ecra, nada sobreposto', L.n >= 12 && !L.bad.length, L.bad.join(' | '));
   await setLeft(r.page, 2); await r.page.waitForTimeout(3000);
@@ -207,6 +265,13 @@ const tune = (page) => page.evaluate(() => {
   const mig = await r.page.evaluate(() => ({ ring: document.getElementById('fcRing').value, breathe: document.getElementById('fcBreathe').checked,
     scene: document.getElementById('fcSceneSel').value, cards: [...document.querySelectorAll('#fcScenes .fc-card')].map(b => b.getAttribute('data-id') + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(',') }));
   t.check('migracao v4.6: sino suave, sem respiracao, «My last» escolhida', !gate2 && mig.ring === '5' && !mig.breathe && mig.scene === 'custom' && /last\*$/.test(mig.cards), JSON.stringify(mig));
+  /* com «My last» escolhida, mudar o som a porta tem de sobreviver ao Begin (que reaplica a escolha) */
+  await r.page.click('#fcSoundCh'); await r.page.waitForTimeout(200);
+  await r.page.click('#fcProfPick .fc-chip[data-prof="lofi"]'); await r.page.waitForTimeout(300);
+  await r.page.click('#fcBegin'); await r.page.waitForTimeout(2200);
+  m = await tune(r.page);
+  const cp = await r.page.evaluate(() => HMFR.fc.curProf);
+  t.check('«My last» e outro som: o Begin toca o som escolhido (lo-fi)', cp === 'lofi' && m.loads.length >= 1 && m.loads[0] === 'lofi', cp + ' ' + m.loads.join(','));
   t.check('migracao: sem erros de JavaScript', r.errors.length === 0, r.errors.join(' | '));
   await r.close();
 
@@ -229,6 +294,10 @@ const tune = (page) => page.evaluate(() => {
   const sheet = await r.page.evaluate(() => { const b = document.getElementById('fcDrawer').getBoundingClientRect(); return { top: b.top, bottom: b.bottom, h: innerHeight }; });
   t.check('telemovel: ajustes numa folha que sobe de baixo', sheet.bottom <= sheet.h + 1 && sheet.top > 60, JSON.stringify(sheet));
   await r.page.tap('#fcDrawerX'); await r.page.waitForTimeout(500);
+  await r.page.tap('#fcBrk .tip .fc-why'); await r.page.waitForTimeout(900);
+  W = await labSt(r.page);
+  t.check('telemovel: o «why?» do intervalo abre a prova numa folha dentro do ecra', W.on && W.hl === 'why-guided-break' && W.inView, JSON.stringify(W));
+  await r.page.tap('#fcLabX'); await r.page.waitForTimeout(500);
   await r.page.setViewportSize({ width: 844, height: 390 }); await r.page.waitForTimeout(600);
   L = await layout(r.page, SESS);
   t.check('intervalo 844x390 (deitado): tudo no ecra, nada sobreposto', !L.bad.length, L.bad.join(' | '));

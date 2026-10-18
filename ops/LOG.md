@@ -1,5 +1,29 @@
 # Registo das voltas
 
+## 2026-10-18: v5.0, sala de foco, ronda 2a (sessão local do Claude Code)
+
+- Pedido do Paulo: perfis de som por cena com a pergunta da primeira visita, zona «why?» na forma C a
+  partir do ficheiro de provas e porta com «continuar onde parei», passo mais pequeno e recomeço.
+  Mudaram `liquid/l07-focus.html`, `liquid/focus-evidence.json` (mudado de `ops/notes/2026-10-18/`),
+  `ops/tools/validate.py` e `ops/tests/t-focus.js`; motor, catálogo e sala antiga intactos.
+- Perfis de som: Silence, Nature (chuva), Ambient (focus zen, ambient, ambient techno), Lo-fi,
+  Minimal (dub, hypnotic e ambient techno), Liquid (só liquid, sem intelligent), Energy (deep house,
+  lo-fi house). Por omissão: Read Nature, Study Silence, Write e Code Minimal, Create Nature,
+  Routine Energy. Resposta «Yes, usually»: Read e Study passam a Lo-fi. Resposta «No, I like it
+  quiet»: nenhuma cena com música. A escolha da pessoa fica lembrada por cena; o seletor fica um passo
+  atrás das cartas («change») e na gaveta.
+- Zona «why?»: separador na barra de cima e 15 ligações junto das decisões (o «why?» do som segue o
+  perfil em vigor). O painel lê o ficheiro de provas: 33 entradas (24 na sala, 2 conselhos para fora
+  dela, 6 propostas, 1 fora de plano), 9 mitos e 2 estudos retirados, com selo de força e ligações
+  às fontes; sem o ficheiro, diz onde ele está. `validate.py` verifica o ficheiro e falha se uma
+  ligação da sala não tiver prova.
+- Porta: «Continue where you stopped» com a nota da última vez (um toque abre a sessão), passo mais
+  pequeno opcional (aparece com a intenção e fica à vista no primeiro bloco), linha de recomeço à
+  segunda-feira, no dia 1 do mês e a 1 de janeiro.
+- Testes: `t-focus` com 63 verificações (eram 46). Defeito apanhado na revisão do diff e corrigido
+  antes de publicar: com «My last» escolhida, o som mudado à porta perdia-se no Begin; o teste novo
+  falha sem a correção. Bateria completa a passar (art saltado: falta o ffmpeg neste Mac).
+
 ## 2026-10-18: v4.5, textos específicos e com fonte para as faixas (sessão Claude Code na nuvem)
 
 - Regra nova no `CLAUDE.md`: texto `b` específico de cada faixa, só com factos de fonte

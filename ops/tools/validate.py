@@ -7,9 +7,12 @@ Verifica:
   - videoIds com 11 caracteres e sem duplicados;
   - todos os generos usados existem em GENRES (e03) e em GBPM (radio/e05-engine.html);
   - as duas salas montadas contem o catalogo inteiro;
-  - labs/arcade-data.js (gerado pelo build.sh) tem sintaxe valida e o catalogo inteiro.
+  - labs/arcade-data.js (gerado pelo build.sh) tem sintaxe valida e o catalogo inteiro;
+  - liquid/focus-evidence.json (zona «why?» da sala de foco) e JSON valido, com campos, forcas e
+    estados conhecidos, ids unicos, e cobre todos os data-why e why: do liquid/l07-focus.html.
 Uso: python3 ops/tools/validate.py   (a partir da raiz do repositorio)
 """
+import json
 import os
 import re
 import subprocess
@@ -19,6 +22,9 @@ from collections import Counter
 
 PAGES = ["index.html", "liquid/index.html"]
 ARCADE = "labs/arcade-data.js"
+EVID = "liquid/focus-evidence.json"
+FOCUS = "liquid/l07-focus.html"
+EVSTATUS = {"in room", "tip", "proposed", "not planned"}
 E03 = "radio/e03-data.html"
 BANNED = {chr(0x2014): "travessao", chr(0x2013): "meia-risca", chr(0x2022): "marcador"}
 fails = []
@@ -48,6 +54,41 @@ def scripts(html):
             yield m.group("body"), False
         elif typ == "module":
             yield m.group("body"), True
+
+
+def evidence_check():
+    """Base de provas da zona «why?» da sala de foco (liquid/focus-evidence.json)."""
+    try:
+        txt = open(EVID, encoding="utf-8").read()
+        ev = json.loads(txt)
+    except (OSError, ValueError) as e:
+        fails.append(f"{EVID} ilegivel: {e}")
+        return 0
+    for ch, name in BANNED.items():
+        if ch in txt:
+            fails.append(f"{name} ({ch!r}) em {EVID}: {txt.count(ch)} ocorrencias")
+    levels = set(ev.get("levels", {}))
+    ids = []
+    for e in ev.get("entries", []):
+        miss = [k for k in ("id", "status", "decision", "finding", "strength", "sources") if not e.get(k)]
+        if miss:
+            fails.append(f"{EVID}: entrada {e.get('id', '?')} sem {miss}")
+        if e.get("strength") not in levels:
+            fails.append(f"{EVID}: {e.get('id')} com forca desconhecida {e.get('strength')!r}")
+        if e.get("status") not in EVSTATUS:
+            fails.append(f"{EVID}: {e.get('id')} com estado desconhecido {e.get('status')!r}")
+        for src in e.get("sources", []):
+            if not src.get("cite"):
+                fails.append(f"{EVID}: {e.get('id')} com fonte sem cite")
+        ids.append(e.get("id"))
+    dups = [i for i, n in Counter(ids).items() if n > 1]
+    if dups:
+        fails.append(f"{EVID}: ids repetidos {dups}")
+    focus = open(FOCUS, encoding="utf-8").read()
+    used = set(re.findall(r'(?:data-why="|why:")([a-z0-9-]+)"', focus))
+    if used - set(ids):
+        fails.append(f"{FOCUS} pede provas que nao existem: {sorted(used - set(ids))}")
+    return len(ids)
 
 
 def main():
@@ -89,7 +130,8 @@ def main():
     n = len(re.findall(r'\{ g:"[a-z_]+"', arc))
     if n != len(vids):
         fails.append(f"{ARCADE} tem {n} faixas, o catalogo tem {len(vids)}: montar de novo")
-    print(f"catalogo: {len(vids)} faixas, {len(used)} generos")
+    nev = evidence_check()
+    print(f"catalogo: {len(vids)} faixas, {len(used)} generos; provas da sala de foco: {nev}")
     for g, n in used.most_common():
         print(f"  {g:22s} {n}")
     if fails:
