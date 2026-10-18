@@ -42,6 +42,16 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   e03, para reposição exata).
 - Curadoria: sons quintessenciais e underground de cada género, com o Discogs e sítios de
   seleção exigente como referência. Nunca inventar avaliações, datas ou factos nos textos.
+- Texto de cada faixa (campo `b`, o que aparece no canto inferior esquerdo; decidido a
+  2026-10-18): específico dessa faixa, em inglês, até cerca de 220 caracteres. Ângulos, por
+  ordem de preferência: impacto na cena ou no mundo; como foi feita (sample, estúdio, máquinas,
+  circunstâncias); curiosidades e o que a faixa influenciou. Só factos com fonte verificável
+  (Discogs, Wikipédia, entrevistas, imprensa especializada); a fonte fica registada em
+  `ops/queue/blurb-sources.tsv` (videoId, URL da fonte). Sem fonte para nada disso, o texto diz o
+  que a edição documenta (editora, ano, formato, créditos, notas da capa), nunca uma história
+  inventada nem adjetivos de enchimento. Regra para todas as faixas novas: os textos genéricos
+  de importação («From the station's ... crates») são provisórios e cada volta de importação
+  escreve os textos das faixas que acrescentou antes de fechar.
 - Este repositório é público: nunca guardar tokens, chaves ou dados pessoais em ficheiros.
 
 ## Gastos e qualidade (decidido pelo Paulo a 2026-10-08)
