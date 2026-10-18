@@ -103,6 +103,16 @@ pelo Paulo: as três cenas (Deep work, Study, Read) são exemplos; «Read» tem 
 focus 27, ambient 4, ambient techno 15). Por verificar num iPhone real: barra em duas linhas,
 folha de ajustes, sons de fundo.
 
+### Demora a carregar no computador (diagnóstico de 2026-10-18, por decidir)
+
+Anúncios do YouTube antes dos vídeos de música no leitor embutido (20 a 40 s), agravados pelo
+motor: leitor B invisível onde o anúncio às vezes não avança, `REC_TIMEOUT` de 25 s, corte para
+outro disco com novo anúncio (ver `ops/LOG.md`, 2026-10-18). Opções para o Paulo: (a) do lado dele,
+YouTube Premium com sessão iniciada nesse browser ou um bloqueador de anúncios (Brave, uBlock Origin
+no Firefox); (b) motor (nível max, com teste): detetar a fase de anúncio, armar mais cedo e não
+cortar por tempo enquanto o anúncio corre, mostrando-o no monitor em vez de o tocar escondido (um
+leitor escondido a tocar anúncios contraria as regras do YouTube para leitores embutidos).
+
 ## Próxima ronda (proposta)
 
 Sessão nova, a partir deste ficheiro. Ordem sugerida, uma ronda de cada vez, conforme as decisões

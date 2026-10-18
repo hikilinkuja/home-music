@@ -1,5 +1,22 @@
 # Registo das voltas
 
+## 2026-10-18: diagnóstico da demora a carregar no computador (sessão local do Claude Code, sem publicação)
+
+- Queixa do Paulo: no computador (Chrome e Firefox, também na sala de foco) os vídeos demoram muito a
+  entrar; no telemóvel (Chrome, Brave) não.
+- Causa: o YouTube põe anúncios antes dos vídeos de música no leitor embutido (um ou dois seguidos,
+  vistos e fotografados: «Sponsored 1 of 2», cerca de 20 a 40 s). Medido com o Chrome instalado,
+  perfil novo, numa página mínima: «Me at the zoo» (sem anúncios) toca em 1,1 s; os vídeos de
+  música, «Topic» ou não, tocam aos 18 a 39 s. Amostra de 8 pares da troca da v4.5: demoraram 6 dos
+  8 uploads antigos e 7 dos 8 «Topic»; a troca não é a causa (amostra pequena).
+- O motor agrava: o disco seguinte arma-se mudo no leitor B, invisível (opacidade 0), e a sala de
+  foco usa um leitor de 1 por 1 píxel; num leitor invisível o anúncio às vezes nunca avança (2 de 4
+  ensaios sem música em 70 s). Com `REC_TIMEOUT` de 25 s, o disco armado cai por tempo e a rádio corta
+  para outro, que também traz anúncio. O registo de emissão do browser embutido (17/10) tem 5 de 5
+  discos do leitor B em «timeout» e silêncios de 26 a 69 s entre discos. No telemóvel há um só
+  leitor, visível, e o Brave tira os anúncios.
+- Nada mudado no motor; opções em `ops/HANDOFF.md`, à espera da escolha do Paulo.
+
 ## 2026-10-18: v4.8, três vídeos corrigidos por decisão do Paulo (sessão local do Claude Code)
 
 - Brawther, «Khawuleza (Unreleased Dub)», e Harrison BDP, «Dust»: dados como apagados na v4.5, mas o
