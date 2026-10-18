@@ -216,7 +216,11 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
   nas fontes da interface fora dessas definições e das exceções (canvas e SVG em JavaScript; sombras e
   gradientes em preto, branco ou tinta com alfa); o `t-ui.js` falha se aparecer uma. «Kill the bass» aceso
   passou a verde (a regra existia e perdia por especificidade).
-- Em fila: ronda 3 (tipografia), 4 (conteúdo e densidade; anotado: texto sobre o campo
+- Ronda 3 (tipografia) em curso: proposta em `ops/notes/2026-10-18/ui-type.md` (cinco tamanhos, dois
+  espaçamentos, regra das maiúsculas, mínimo de 10 px em maiúsculas e 12 px em frases; família mantida),
+  com o script `ui-typescale.py` na mesma pasta; à espera do Paulo. O `ui_audit.js` aceita agora `?block=`
+  como terceiro argumento, para comparar antes e depois no mesmo bloco.
+- Em fila: ronda 4 (conteúdo e densidade; anotado: texto sobre o campo
   líquido sem fundo (nome do bloco, «on air», BPM), pulsar de «drop the needle» até 0,3, «Spin the dubplate»
   com o estilo geral dentro da consola, barra de cima a 1024 px em duas filas; a ligação «Liner
   source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em

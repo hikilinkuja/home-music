@@ -14,3 +14,5 @@
   recomendação; correções factuais do painel The Sound; texto novo do «Suggest a tune».
 - `ui-colors.md`: ronda 2 da auditoria de UI (cores): paleta de 20 papéis, consola Dub Desk com variáveis
   locais, contrastes antes e depois, exceções e decisões em aberto.
+- `ui-type.md` e `ui-typescale.py`: ronda 3 da auditoria de UI (tipografia): escala de cinco tamanhos, regra das
+  maiúsculas, mínimo, medições antes e depois; o script aplica a proposta às fontes.

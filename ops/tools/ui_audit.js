@@ -4,7 +4,8 @@
 // real por baixo de cada linha) e mede o texto visivel, os controlos e as cores calculadas. Grava
 // tambem a cobertura de CSS e de JavaScript da visita inteira. As capturas ficam na PASTA indicada,
 // nunca no repositorio. Uso:
-//   node ops/tools/ui_audit.js PASTA [desktop|mobile]
+//   node ops/tools/ui_audit.js PASTA [desktop|mobile|ambos] [?block=flight]
+// (o terceiro argumento fixa o bloco da grelha, para comparar antes e depois no mesmo bloco)
 // Depois: python3 ops/tools/ui_report.py PASTA   (tabelas e contrastes a partir do data-*.json)
 'use strict';
 const fs = require('fs');
@@ -13,7 +14,8 @@ const { serve, launch, INIT } = require('../tests/lib/common.js');
 
 const OUT = process.argv[2];
 if (!OUT) { console.error('uso: node ops/tools/ui_audit.js PASTA [desktop|mobile]'); process.exit(2); }
-const MODES = process.argv[3] ? [process.argv[3]] : ['desktop', 'mobile'];
+const MODES = process.argv[3] && process.argv[3] !== 'ambos' ? [process.argv[3]] : ['desktop', 'mobile'];
+const QS = process.argv[4] || '';
 
 // medicao dentro da pagina: texto visivel (tamanho, espacamento, cor, retangulos), controlos e cores
 const MEASURE = () => {
@@ -140,7 +142,7 @@ async function run(mode) {
   }
   async function step(name, fn, note) { try { await fn(); await snap(name, note); } catch (e) { console.log(mode, name, 'FALHOU', e.message); } }
 
-  await page.goto('http://hm.test/liquid/index.html');
+  await page.goto('http://hm.test/liquid/index.html' + QS);
   await wait(1500);
   await snap('splash', 'antes do primeiro toque');
   if (mode === 'mobile') await page.tap('#splash'); else await page.click('#splash');

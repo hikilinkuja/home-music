@@ -1,5 +1,16 @@
 # Registo das voltas
 
+## 2026-10-18: auditoria de UI, ronda 3 (tipografia), proposta (sessão Claude Code na nuvem)
+
+- Proposta em `ops/notes/2026-10-18/ui-type.md`: cinco tamanhos (10, 12, 13, 14, 16 px) e dois espaçamentos
+  (0,12em e 0,2em) em variáveis; maiúsculas só em rótulos, botões e títulos curtos; mínimo de 10 px em
+  maiúsculas e 12 px em frases; família mantida.
+- Aplicada numa cópia de trabalho e medida no mesmo bloco: tamanhos de 20 para 10 (computador), mínimo de 8 para
+  10 px, frases abaixo de 12 px de 91 para 4 (rótulos), maiúsculas longas de 22 para 3 (exceções); `t-ui` e
+  `t-focus` passaram. Fontes repostas; nada publicado na sala.
+- Correção durante o ensaio: com 0,14em os botões do cartão partiam em duas filas; 0,12em mantém a largura atual.
+- `ops/tools/ui_audit.js`: terceiro argumento opcional `?block=` (comparar antes e depois no mesmo bloco).
+
 ## 2026-10-18: v5.5, auditoria de UI, ronda 2 (cores) (sessão Claude Code na nuvem)
 
 - Escolha do Paulo: todas as recomendações de `ops/notes/2026-10-18/ui-colors.md`.
