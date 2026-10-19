@@ -7512,16 +7512,18 @@ window.HMDAWN=(function(){
   #fcTop .w{display:none}
   #fcSeal{width:44px; padding:0}
   #fcSeal .nm{display:none}
-  #fcEntry{justify-content:flex-start; padding:72px 20px 28px; gap:9px}
-  #fcEntry .fc-gap{margin-top:14px}
+  /* a porta tem de caber em 390x844 tambem a segunda-feira e no dia 1 (linha de recomeco) na primeira visita
+     (pergunta da musica): espacos curtos e nomes das cenas a 12 px */
+  #fcEntry{justify-content:flex-start; padding:72px 20px 28px; gap:8px}
+  #fcEntry .fc-gap{margin-top:10px}
   #fcIntent{height:48px; font-size:var(--fs-title)}
   #fcScenes{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px}
   .fc-card{min-height:0; padding:12px; gap:5px}
-  .fc-card .nm{font-size:var(--fs-title)}
+  .fc-card .nm{font-size:var(--fs-small)}
   .fc-card .for, #fcEntry .opt{display:none}
   .fc-card .gs{font-size:var(--fs-small); line-height:1.5}
   .fc-card .sd{margin-top:2px}
-  #fcPhone{margin-top:10px}
+  #fcPhone{margin-top:6px}
   #fcBegin{margin-top:8px; width:100%}
   #fcGoRow{gap:9px}
   #focus.brk{--fc-ring:min(220px, 60vw, 30vh)}

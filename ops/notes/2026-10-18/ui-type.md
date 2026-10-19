@@ -7,6 +7,12 @@ mínimo, família mantida). O script aplicado às fontes deu o mesmo diff do ens
 acrescentadas e 392 retiradas, contando o `liquid/index.html` montado); as medições da secção 2 valem para a
 versão publicada. Teste no `ops/tests/t-ui.js`.
 
+Ajuste ao implementar: a bateria falhou na porta da sala de foco a 390x844 («or adjust the details first» fora
+do ecrã). O defeito é anterior a esta ronda (a v5.5 publicada também falha) e só aparece à segunda-feira e no
+dia 1, quando a porta mostra a linha de recomeço, somada à pergunta da primeira visita; o teste da sala foi
+escrito a um domingo. Corrigido no telemóvel: espaços da porta mais curtos e os nomes das cenas a 12 px (o
+script tinha-os passado a 14 px por serem maiúsculas de 12 px). O fundo da porta fica a 824 px de 844.
+
 Texto original da proposta: A proposta foi aplicada numa cópia de trabalho, medida e fotografada (antes e depois no mesmo bloco da
 grelha, `?block=flight`), e as fontes voltaram ao estado publicado. O script que a aplica está em
 `ui-typescale.py`, nesta pasta.

@@ -12,6 +12,11 @@
 - Teste `t-ui.js` alargado (46 verificações): tamanhos e espaçamentos só pelas variáveis; mínimos e
   maiúsculas verificados na emissão, nos painéis, nas Mixtapes, no Earn a skip e na sala de foco; falha 3
   verificações contra a versão anterior.
+- Defeito anterior encontrado pela bateria (hoje é segunda-feira): na porta da sala de foco, a 390x844, a linha
+  de recomeço da semana somada à pergunta da primeira visita empurrava «or adjust the details first» para fora
+  do ecrã; a v5.5 publicada também falhava. Corrigido no telemóvel (espaços mais curtos, nomes das cenas a 12 px,
+  que o script tinha passado a 14 px); o `t-ui.js` passa a forçar a linha de recomeço, para o apanhar em qualquer
+  dia.
 - Testes: RESULTADO
 
 ## 2026-10-18: auditoria de UI, ronda 3 (tipografia), proposta (sessão Claude Code na nuvem)
