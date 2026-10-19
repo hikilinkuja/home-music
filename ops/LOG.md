@@ -1,5 +1,12 @@
 # Registo das voltas
 
+## 2026-10-19: escolha da letra e passagem para o computador (sessão Claude Code na nuvem)
+
+- Estudo de letras enviado ao Paulo (cinco folhas, seis pares contra as capturas dele). Escolha: 6, Recursive
+  (monoespaçada nos rótulos, casual no texto corrido). Por implementar; plano no `ops/HANDOFF.md`.
+- O Paulo pediu para continuar no computador (limite de uso na nuvem) e, a seguir, a ronda 5. Nada ficou por enviar:
+  tudo está em `main`.
+
 ## 2026-10-19: v5.7, rádio calada de lado (sessão Claude Code na nuvem)
 
 - Queixa do Paulo, com captura: na sala de foco («Read», lo-fi beats a tocar), a música da rádio ouvia-se por trás,
