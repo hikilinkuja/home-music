@@ -83,6 +83,9 @@ function media() {
 // leitor) } e recebe { ad: segundos de anuncio, stuck: parado no zero, dur: duracao }. Anuncio como no
 // ensaio de 2026-10-18: estado -1 com o tempo a avancar, nunca o 1; depois 3 e a musica do zero.
 // Parado: estado -1 no zero, sem progresso, ate outra carga. Sem __ytRule, o leitor e o de sempre.
+// restore: { vol, unmute, each } imita um YouTube que, quando a musica comeca (com each, tambem quando volta
+// depois de um anuncio a meio), repoe um volume seu (por exemplo o que a pessoa usa no YouTube) e, com unmute,
+// tira tambem o mudo; _restoreNow(vol) fa-lo a meio da musica, sem mudar de estado (t-side.js).
 function ytStub(dur, load) {
   return `
 (function(){
@@ -98,7 +101,9 @@ function ytStub(dur, load) {
   }
   Player.prototype._set=function(st){ this.st=st; L({ev:'state', el:this.el, st:st, vid:this.vid, cur:+this.getCurrentTime().toFixed(3), dur:this.dur, mu:this.mu, vol:this.vol, ad:this.inAd}); var e=this.opts.events; if(e && e.onStateChange) e.onStateChange({data:st, target:this}); };
   Player.prototype._err=function(code){ L({ev:'err', el:this.el, vid:this.vid, code:code}); clearTimeout(this.endT); this._loadTok=(this._loadTok||0)+1; this.inAd=false; this.stuck=false; var e=this.opts.events; if(e && e.onError) e.onError({data:code, target:this}); };
-  Player.prototype._play=function(){ var self=this; clearTimeout(this.endT); this.p0=performance.now(); this._set(1); var left=(this.dur-this.t0)*1000; this.endT=setTimeout(function(){ self.t0=self.dur; self._set(0); }, Math.max(0,left)); };
+  Player.prototype._play=function(){ var self=this; clearTimeout(this.endT); this.p0=performance.now();
+    if(this.rule && this.rule.restore && (!this.restored || this.rule.restore.each)){ this.restored=true; this.vol=this.rule.restore.vol; if(this.rule.restore.unmute) this.mu=false; L({ev:'restore', el:this.el, vid:this.vid, vol:this.vol, mu:this.mu}); }
+    this._set(1); var left=(this.dur-this.t0)*1000; this.endT=setTimeout(function(){ self.t0=self.dur; self._set(0); }, Math.max(0,left)); };
   Player.prototype._freeze=function(){ if(this.inAd){ this.t0=0; } else { this.t0=this.getCurrentTime(); } clearTimeout(this.endT); };
   Player.prototype._cancel=function(){ if(this.inAd) L({ev:'adCut', el:this.el, vid:this.vid}); this.inAd=false; this.stuck=false; };
   Player.prototype.loadVideoById=function(a){
@@ -106,7 +111,7 @@ function ytStub(dur, load) {
     var self=this; this._freeze(); this._cancel(); this.vid=id; this.t0=start; this._loadTok=(this._loadTok||0)+1; var tok=this._loadTok;
     var kv=this.el+'|'+id; NL++; NLV[kv]=(NLV[kv]||0)+1; NLE[this.el]=(NLE[this.el]||0)+1;
     var r=(window.__ytRule && window.__ytRule({ el:this.el, vid:id, n:NL, nv:NLV[kv], ne:NLE[this.el] })) || {};
-    this.dur=r.dur || durFor(id);
+    this.dur=r.dur || durFor(id); this.rule=r; this.restored=false;
     L({ev:'load', el:this.el, vid:id, dur:this.dur, mu:this.mu, vol:this.vol, n:NL, nv:NLV[kv], ne:NLE[this.el], ad:r.ad||0, stuck:!!r.stuck});
     this._set(-1);
     if(r.stuck){ this.stuck=true; return; }
@@ -145,6 +150,8 @@ function ytStub(dur, load) {
     }, secs*1000);
     return true;
   };
+  /* o YouTube a repor um volume seu e a tirar o mudo a meio da musica, sem mudar de estado (t-side.js) */
+  Player.prototype._restoreNow=function(vol){ this.vol=vol; this.mu=false; L({ev:'restore', el:this.el, vid:this.vid, vol:vol, mu:false}); };
   Player.prototype.playVideo=function(){ if(this.vid && this.st!==1 && this.st!==-1 && this.st!==3) this._play(); };
   Player.prototype.pauseVideo=function(){ if(this.st===1){ this._freeze(); this._set(2); } };
   Player.prototype.stopVideo=function(){ this._freeze(); this._cancel(); this._loadTok=(this._loadTok||0)+1; this._set(5); };
