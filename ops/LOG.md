@@ -19,6 +19,7 @@
   dia.
 - Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
   ads 71, ui 46), depois `ui` com a verificação da porta (47, falha na v5.5); `build.sh` com validação OK.
+- Servido confirmado: a liquid servida tem as variáveis da escala e a correção da porta da sala de foco.
 
 ## 2026-10-18: auditoria de UI, ronda 3 (tipografia), proposta (sessão Claude Code na nuvem)
 
