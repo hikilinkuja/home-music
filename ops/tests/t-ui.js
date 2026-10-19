@@ -193,6 +193,25 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
   t.check('cores: acento da madrugada em pergaminho', blk === '#f4ecd9', blk);
   await dw.close();
 
+  // porta da sala de foco em 390x844 com a linha de recomeco (segunda-feira e dia 1), totais e experiencia:
+  // forca-se a linha, para o teste valer em qualquer dia
+  // (o estado do t-focus: dois blocos de hoje no registo, para a porta ter totais, e uma experiencia em Read)
+  const fd = await T.openLiquid(browser, { mode: 'mobile', dur: 60, load: 400, init: `if(!sessionStorage.getItem('mb')){ sessionStorage.setItem('mb','1');
+    var d=new Date(), p=function(n){ return (n<10?'0':'')+n; }, k=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+    localStorage.setItem('hm_focus_log', JSON.stringify({ v:1, b:[{ t:d.getTime()-7200000, d:k, s:'write', p:'minimal', m:50 }, { t:d.getTime()-3600000, d:k, s:'write', p:'minimal', m:50 }],
+      x:{ id:'xmob', s:'read', A:'nature', B:'silence', f:'A', t0:d.getTime(), un:{ A:0, B:0 } }, xp:[] })); }` });
+  await fd.page.evaluate(() => document.getElementById('focusBtn').click());
+  await fd.page.waitForTimeout(1500);
+  const door = await fd.page.evaluate(async () => {
+    const f = document.getElementById('fcFresh'); f.hidden = false; document.getElementById('fcFreshT').textContent = 'A fresh week: a good day to restart';
+    await new Promise(res => setTimeout(res, 300));
+    const b = (id) => { const e = document.getElementById(id); return e && !e.hidden && e.offsetParent ? Math.round(e.getBoundingClientRect().bottom) : null; };
+    return { habit: b('fcHabit') !== null, begin: b('fcBegin'), adjust: b('fcAdjust'), h: innerHeight };
+  });
+  t.check('telemovel: porta da sala de foco cabe em 390x844 com a linha de recomeco, totais e experiencia',
+    door.adjust !== null && door.adjust <= door.h && door.begin <= door.h, JSON.stringify(door));
+  await fd.close();
+
   // ala da arte no telemovel: ficha aberta por cima da dica
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   await T.serve(ctx, {});

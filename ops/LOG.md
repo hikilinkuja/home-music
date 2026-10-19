@@ -17,7 +17,8 @@
   do ecrã; a v5.5 publicada também falhava. Corrigido no telemóvel (espaços mais curtos, nomes das cenas a 12 px,
   que o script tinha passado a 14 px); o `t-ui.js` passa a forçar a linha de recomeço, para o apanhar em qualquer
   dia.
-- Testes: RESULTADO
+- Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
+  ads 71, ui 46), depois `ui` com a verificação da porta (47, falha na v5.5); `build.sh` com validação OK.
 
 ## 2026-10-18: auditoria de UI, ronda 3 (tipografia), proposta (sessão Claude Code na nuvem)
 
