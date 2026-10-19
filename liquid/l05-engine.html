@@ -752,6 +752,7 @@ function audibleLevel(k){
 /* feed the VU meters and the tonearm creep */
 setInterval(function(){
   if(!radioOn) return;
+  if(aside()) muteDecks();
   /* o botao segue sempre o estado real */
   var mb=$("muteBtn");
   if(mb){ var want = muted ? "Unmute" : "Mute"; if(mb.textContent!==want){ mb.textContent=want; mb.classList.toggle("on", muted); } }
@@ -996,12 +997,15 @@ function recAt(el, fn){
    armado nele (no telemovel o seguinte arma no proprio prato do ar). p.entry: a rampa de entrada (ms)
    que corre quando o portao abrir; a do primeiro disco e a rampInFirst */
 function onAir(k){ return radioOn && k===activeKey && !REC.on && !(PRE.t && PRE.k===k); }
+function aside(){ return !!(window.HMSIDE && HMSIDE.f<0.01 && Object.keys(HMSIDE.src).some(function(s){ return HMSIDE.src[s]; })); }
+function muteDecks(){ ["A","B"].forEach(function(k){ var p=P[k]; if(p && p.ready && p.yt){ try{ if(!p.yt.isMuted()) p.yt.mute(); }catch(e){} } }); }
 function gate(k){
   var p=P[k]; if(!p || !p.ready || !p.yt) return;
   var st=-9, mu=true;
   try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){ return; }
   if(st===1 && !muted && onAir(k)){
-    if(!mu) return;
+    if(aside()){ if(!mu){ try{ p.yt.mute(); }catch(e){} } return; }
+    if(!mu){ applyVol(k); return; }
     if(p.entry) fadeVol(p, 0);
     try{ p.yt.unMute(); }catch(e){}
     if(firstRampWait){ rampInFirst(); }
@@ -1009,6 +1013,7 @@ function gate(k){
       var ms=p.entry; p.entry=0;
       animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
     }
+    else { applyVol(k); }
   } else if(st===-1 && !mu){
     /* estado -1 num leitor com som: no ar e fora da carga, um anuncio a meio do disco; calado ate a
        musica voltar ao estado 1 */
@@ -1601,7 +1606,8 @@ function sideFade(key, on, ms){
   HMSIDE.h=animClock(ms||700, function(x){
     HMSIDE.f=from+(target-from)*x;
     try{ applyVol("A"); applyVol("B"); }catch(e){}
-  });
+  }, function(){ if(target===0) muteDecks(); else { try{ gate(activeKey); }catch(e){} } });
+  if(target===1){ try{ gate(activeKey); }catch(e){} }
 }
 function mx2SideRadio(on){
   /* on=true: a radio desvanece de lado enquanto a tape toca */

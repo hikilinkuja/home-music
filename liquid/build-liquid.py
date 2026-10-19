@@ -1554,6 +1554,58 @@ rep('''  $("gTrackCount").textContent = n + " records from this sound in tonight
 rep('''  $("fsBtn").textContent = document.fullscreenElement ? "Exit" : "Immerse";''',
     '''  $("fsBtn").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";''', what='13 ecra inteiro')
 
+# 14) radio de lado sempre calada (queixa do Paulo a 2026-10-19: a radio, baixinha, por tras da sala de foco
+#     numa troca de disco). Com a radio de lado (sala de foco, arcada, tapes) o volume 0 nao chega: o YouTube
+#     pode repor um volume seu e tirar o mudo quando a musica comeca, e o portao, vendo o leitor com som,
+#     saia sem corrigir. Agora: de lado, os pratos ficam mudos (o portao nao abre e volta a calar, o fim do
+#     esbatido cala os dois e o relogio dos VU vigia a cada 500 ms); de volta, o portao abre o prato do ar no
+#     inicio do esbatido; com som, o portao reaplica sempre o volume. Teste: ops/tests/t-side.js
+rep('''function gate(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return;
+  var st=-9, mu=true;
+  try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){ return; }
+  if(st===1 && !muted && onAir(k)){
+    if(!mu) return;
+    if(p.entry) fadeVol(p, 0);
+    try{ p.yt.unMute(); }catch(e){}
+    if(firstRampWait){ rampInFirst(); }
+    else if(p.entry){
+      var ms=p.entry; p.entry=0;
+      animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
+    }
+  }''', '''function aside(){ return !!(window.HMSIDE && HMSIDE.f<0.01 && Object.keys(HMSIDE.src).some(function(s){ return HMSIDE.src[s]; })); }
+function muteDecks(){ ["A","B"].forEach(function(k){ var p=P[k]; if(p && p.ready && p.yt){ try{ if(!p.yt.isMuted()) p.yt.mute(); }catch(e){} } }); }
+function gate(k){
+  var p=P[k]; if(!p || !p.ready || !p.yt) return;
+  var st=-9, mu=true;
+  try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){ return; }
+  if(st===1 && !muted && onAir(k)){
+    if(aside()){ if(!mu){ try{ p.yt.mute(); }catch(e){} } return; }
+    if(!mu){ applyVol(k); return; }
+    if(p.entry) fadeVol(p, 0);
+    try{ p.yt.unMute(); }catch(e){}
+    if(firstRampWait){ rampInFirst(); }
+    else if(p.entry){
+      var ms=p.entry; p.entry=0;
+      animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
+    }
+    else { applyVol(k); }
+  }''', what='14 portao calado de lado')
+rep('''  HMSIDE.h=animClock(ms||700, function(x){
+    HMSIDE.f=from+(target-from)*x;
+    try{ applyVol("A"); applyVol("B"); }catch(e){}
+  });''', '''  HMSIDE.h=animClock(ms||700, function(x){
+    HMSIDE.f=from+(target-from)*x;
+    try{ applyVol("A"); applyVol("B"); }catch(e){}
+  }, function(){ if(target===0) muteDecks(); else { try{ gate(activeKey); }catch(e){} } });
+  if(target===1){ try{ gate(activeKey); }catch(e){} }''', what='14 esbatido de lado')
+rep('''setInterval(function(){
+  if(!radioOn) return;
+  /* o botao segue sempre o estado real */''', '''setInterval(function(){
+  if(!radioOn) return;
+  if(aside()) muteDecks();
+  /* o botao segue sempre o estado real */''', what='14 vigia de lado')
+
 assert 'REC_TIMEOUT' not in s and 'hardNextAudio' not in s and 'cutTo(' not in s, '12: restos do prazo fixo e do corte no mesmo prato'
 assert s.count('.unMute(')==1, '12: o unMute so pode viver no portao do som (gate): %d' % s.count('.unMute(')
 

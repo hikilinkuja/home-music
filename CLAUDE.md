@@ -104,6 +104,10 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   vigia do carregamento: progresso é `getCurrentTime()` a mudar, 15 s parado recarrega uma vez, a
   segunda paragem troca de disco, sem prazo fixo; no computador, um salto deixa o disco atual a
   tocar até o seguinte estar pronto.
+- Rádio de lado (v5.7, secção 14 do `build-liquid.py`, teste `ops/tests/t-side.js`): com a sala de foco, a arcada ou
+  uma tape a tocar, os dois pratos da rádio ficam em mudo, não só com volume 0 (o YouTube pode repor um volume seu
+  e tirar o mudo); o portão não abre de lado e volta a calar, o fim do esbatido cala os dois pratos, o relógio dos
+  VU vigia a cada 500 ms; ao voltar, o portão abre o prato do ar no início do esbatido e reaplica o volume.
 - Registo de emissão: `HMPLOG` (l03) guarda cada disco em localStorage `hm_plog` (2000 linhas),
   exportável em CSV e JSON no painel `?dev` (tecla d: separadores Next, Log, Banks, Engine);
   `hm_intro_log` guarda porque a introdução falhou, quando falha. Os dados nunca saem do browser.
@@ -157,9 +161,9 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 3. `bash ops/tools/build.sh` monta as duas salas e corre `ops/tools/validate.py`
    (sintaxe JavaScript, caracteres proibidos, videoIds, géneros). Não publicar com falhas.
    Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
-   corre os testes no Chromium com o YouTube simulado, cerca de 9 minutos; ver
+   corre os testes no Chromium com o YouTube simulado, cerca de 18 minutos; ver
    `ops/tests/README.md`). Com `FAIL`, não publicar.
-4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.7), e
+4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.8), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a
    `https://hikilinkuja.github.io/home-music/liquid/index.html?cb=<tempo>`.

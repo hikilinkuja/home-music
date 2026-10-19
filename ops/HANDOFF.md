@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-19, v5.6 e auditoria de UI, rondas 0 a 3). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-19, v5.7 e auditoria de UI, rondas 0 a 3). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -221,6 +221,11 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
   l01; maiúsculas só em rótulos, botões e títulos curtos (frases em minúsculas, como estão escritas); mínimo de
   10 px em maiúsculas e 12 px em frases; família mantida (Courier New do sistema; letra própria fica como ideia).
   Regra: nenhum tamanho em píxeis fora das variáveis e dos tamanhos de exibição; o `t-ui.js` falha se aparecer.
+- Pedidos do Paulo de 2026-10-19 (fora das rondas), pela ordem que ele aceitou: (1) feito na v5.7, a rádio ouvia-se
+  baixinha por trás da sala de foco numa troca de disco (secção 14 do `build-liquid.py`, teste `t-side.js`);
+  (2) estudo de letras mais legíveis em monitor grande, ronda 3b, antes da ronda 4 (pares candidatos e capturas em
+  `ops/notes/2026-10-19/`); (3) volume vertical para Rain, Fire e Vinyl na barra da sala de foco, opção A
+  (controlo vertical por cima de cada botão, ao passar o rato e ao segundo toque), na ronda 4.
 - Em fila: ronda 4 (conteúdo e densidade; anotado: texto sobre o campo
   líquido sem fundo (nome do bloco, «on air», BPM), pulsar de «drop the needle» até 0,3, «Spin the dubplate»
   com o estilo geral dentro da consola, barra de cima a 1024 px em duas filas; a ligação «Liner

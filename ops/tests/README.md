@@ -9,7 +9,7 @@ testes só precisa de ler essas linhas.
 ## Como correr
 
 ```
-bash ops/tests/run.sh                  # monta o site e corre todos (cerca de 10 minutos)
+bash ops/tests/run.sh                  # monta o site e corre todos (cerca de 18 minutos)
 bash ops/tests/run.sh art devlog       # só os indicados
 NOBUILD=1 bash ops/tests/run.sh gate   # sem montar antes
 ```
@@ -33,6 +33,7 @@ Precisa de Node, do Playwright com Chromium (vêm instalados nas sessões na nuv
 | `t-ritual.js` | cada disco toca até ao fim; levantar, 2,0 s (mais ou menos 0,05), pousar; música 0,25 a 1,0 s depois; kit dub só depois de reggae, dub, ska e ragga jungle (computador em kingston, telemóvel em flight) | 2 min |
 | `t-ads.js` | anúncios e leitores parados (o YouTube simulado ganha `window.__ytRule`: anúncio em estado -1 com o tempo a avançar, leitor parado no zero, anúncio a meio do disco): nenhum leitor sai do mudo antes do estado 1 (rádio no computador e no telemóvel, sala de foco, respiração), também com mute a meio do anúncio; anúncio a meio do disco calado logo; o prato à espera fora do ecrã (1 por 1) e o do ar no monitor; o disco pré-carregado entra sem espera; o rito espera um anúncio de 50 s sem trocar de disco; o salto espera pelo disco seguinte e faz-se no prato do ar se o livre ficar bloqueado; leitor parado (também o primeiro disco) recarregado uma vez ~15 s depois e trocado na segunda paragem. Oito cenários ao mesmo tempo | 1,5 min |
 | `t-ui.js` | auditoria de UI, rondas 0 a 3: o Session log tem estilo (ligações em teal, sem sublinhado, separadas, contraste AA sobre o painel, no computador e no telemóvel); no telemóvel, a ficha da obra aberta fica por cima da dica da ala da arte e deixa ver o nome do artista; termos escolhidos pelo Paulo: os antigos ausentes das fontes da interface, os novos presentes, rótulos visíveis certos (Skip… só no telemóvel), botões do monitor do telemóvel em duas filas no máximo, ligações do topo do painel do género escondidas com o painel estendido ; ronda 2 (cores): nenhuma cor literal fora do `:root`, das variáveis da consola e das exceções, variáveis usadas todas definidas, contraste dos casos corrigidos, «Kill the bass» aceso em verde, acento da madrugada em pergaminho ; ronda 3 (tipografia): tamanhos e espaçamentos só pelas variáveis da escala (fora os de exibição) e, na emissão, nos painéis, nas Mixtapes, no Earn a skip e na sala de foco, nenhum texto abaixo de 10 px, nenhuma frase abaixo de 12 px e nenhum texto em maiúsculas com mais de cinco palavras (fora as exceções da nota); porta da sala de foco a caber em 390x844 com a linha de recomeço forçada (segunda-feira e dia 1), totais e experiência | 75 s |
+| `t-side.js` | rádio de lado (sala de foco aberta) sempre calada, mesmo com um YouTube que repõe um volume seu: no arranque do disco (com e sem tirar o mudo), depois de um anúncio a meio do disco e a tirar o mudo sozinho a meio da música (a vigia de 500 ms cala em menos de meio segundo); ao fechar a sala, a rádio volta a ouvir-se no seu volume. O YouTube simulado ganha `restore` e `_restoreNow` | 8 min |
 
 ## Limites (o que estes testes não apanham)
 

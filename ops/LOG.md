@@ -1,5 +1,22 @@
 # Registo das voltas
 
+## 2026-10-19: v5.7, rádio calada de lado (sessão Claude Code na nuvem)
+
+- Queixa do Paulo, com captura: na sala de foco («Read», lo-fi beats a tocar), a música da rádio ouvia-se por trás,
+  baixa mas audível, perto do fim da primeira faixa da sala.
+- Diagnóstico: com a rádio de lado o volume é 0 (fator `HMSIDE.f`), mas o motor não pedia mudo. Se o YouTube repõe
+  um volume seu (depois de um anúncio a meio do disco) ou tira o mudo sozinho, o portão do som saía sem corrigir
+  («se tem som, não faço nada») e a rádio ficava audível até ao fim do disco. O YouTube simulado não repunha volume
+  e por isso os testes não o apanhavam; o YouTube real não toca vídeos na nuvem, e não pude confirmar qual dos dois
+  comportamentos é o dele: a correção cobre os dois.
+- Reproduzido no YouTube simulado com `restore` e `_restoreNow` (lib/common.js): no motor publicado, 19,6 s e 16,7 s
+  de rádio audível em 75 s; no corrigido, 0 s e 0,17 s (vigia de 500 ms).
+- Motor (`build-liquid.py`, secção 14, diff revisto): de lado, os pratos ficam mudos (portão, fim do esbatido,
+  vigia de 500 ms); ao voltar, o portão abre o prato do ar no início do esbatido; com som, o portão reaplica sempre
+  o volume. O único `unMute` continua no portão.
+- Teste novo `ops/tests/t-side.js` (4 variantes, 20 verificações).
+- Testes: RESULTADO
+
 ## 2026-10-19: v5.6, auditoria de UI, ronda 3 (tipografia) (sessão Claude Code na nuvem)
 
 - Escolha do Paulo: todas as recomendações de `ops/notes/2026-10-18/ui-type.md`.
