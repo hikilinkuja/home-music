@@ -1,7 +1,13 @@
 # Auditoria de UI e UX da sala liquid: ronda 3 (tipografia), proposta
 
-2026-10-18. Base: secção 2 do relatório da ronda 0 (`ui-audit.md`). Nada implementado: espera a escolha do
-Paulo. A proposta foi aplicada numa cópia de trabalho, medida e fotografada (antes e depois no mesmo bloco da
+2026-10-18. Base: secção 2 do relatório da ronda 0 (`ui-audit.md`).
+
+**Implementado na v5.6 (2026-10-19): o Paulo aceitou todas as recomendações** (escala, regra das maiúsculas,
+mínimo, família mantida). O script aplicado às fontes deu o mesmo diff do ensaio (4 ficheiros, 396 linhas
+acrescentadas e 392 retiradas, contando o `liquid/index.html` montado); as medições da secção 2 valem para a
+versão publicada. Teste no `ops/tests/t-ui.js`.
+
+Texto original da proposta: A proposta foi aplicada numa cópia de trabalho, medida e fotografada (antes e depois no mesmo bloco da
 grelha, `?block=flight`), e as fontes voltaram ao estado publicado. O script que a aplica está em
 `ui-typescale.py`, nesta pasta.
 

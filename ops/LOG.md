@@ -1,5 +1,19 @@
 # Registo das voltas
 
+## 2026-10-19: v5.6, auditoria de UI, ronda 3 (tipografia) (sessão Claude Code na nuvem)
+
+- Escolha do Paulo: todas as recomendações de `ops/notes/2026-10-18/ui-type.md`.
+- `ops/notes/2026-10-18/ui-typescale.py` aplicado às fontes (l01, l07, l08): 178 tamanhos e 140 espaçamentos
+  passam às variáveis da escala; 20 regras de frases deixam as maiúsculas; 7 tamanhos de exibição ficam. O diff
+  é o mesmo do ensaio da proposta, por isso as medições da proposta valem: tamanhos desenhados de 20 para 10
+  (computador), mínimo de 8 para 10 px, frases abaixo de 12 px de 91 para 4 rótulos, maiúsculas longas de 22
+  para 3 exceções.
+- Motor intacto.
+- Teste `t-ui.js` alargado (46 verificações): tamanhos e espaçamentos só pelas variáveis; mínimos e
+  maiúsculas verificados na emissão, nos painéis, nas Mixtapes, no Earn a skip e na sala de foco; falha 3
+  verificações contra a versão anterior.
+- Testes: RESULTADO
+
 ## 2026-10-18: auditoria de UI, ronda 3 (tipografia), proposta (sessão Claude Code na nuvem)
 
 - Proposta em `ops/notes/2026-10-18/ui-type.md`: cinco tamanhos (10, 12, 13, 14, 16 px) e dois espaçamentos

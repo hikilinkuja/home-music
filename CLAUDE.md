@@ -159,7 +159,7 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
    Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
    corre os testes no Chromium com o YouTube simulado, cerca de 9 minutos; ver
    `ops/tests/README.md`). Com `FAIL`, não publicar.
-4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.6), e
+4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.7), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a
    `https://hikilinkuja.github.io/home-music/liquid/index.html?cb=<tempo>`.

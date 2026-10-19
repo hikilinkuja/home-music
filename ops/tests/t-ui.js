@@ -8,7 +8,10 @@
 // nenhuma cor literal nas fontes da interface fora do :root (l01), das variaveis da consola (#ag-dk, l08) e das
 // excecoes (canvas e SVG desenhados em JavaScript; sombras e gradientes em preto, branco ou tinta com alfa);
 // todas as variaveis usadas estao definidas; contraste dos casos corrigidos; acento da madrugada em pergaminho.
-// Cerca de 60 segundos.
+// Ronda 3 (tipografia, ops/notes/2026-10-18/ui-type.md): tamanhos e espacamentos so pelas variaveis (fora os de
+// exibicao); nos estados abertos, nenhum texto abaixo de 10 px, nenhuma frase abaixo de 12 px (fora tres rotulos
+// escritos em maiusculas) e nenhum texto em maiusculas com mais de cinco palavras (fora tres excecoes).
+// Cerca de 70 segundos.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -64,6 +67,42 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
   t.check('cores: nenhuma literal fora do :root, da consola e das excecoes', stray.length === 0, stray.slice(0, 8).join(' | '));
   const undef = [...uses].filter(v => !defs.has(v));
   t.check('cores: todas as variaveis usadas estao definidas', undef.length === 0, undef.join(' | '));
+  // tipografia: so variaveis, fora os tamanhos de exibicao
+  const DISPLAY = new Set(['clamp(20px,3.4vw,34px)', 'clamp(13px,1.8vw,17px)', 'clamp(22px,4.6vw,30px)', 'calc(var(--fc-ring) * .25)', '25cqmin', '.2em', '34px']);
+  const badType = [];
+  for (const f of ['l01-head.html', 'l02-body.html', 'l03-plog.html', 'l06-art.html', 'l07-focus.html', 'l08-arcade.html', 'l09-dev.html']) {
+    const src = fs.readFileSync(path.join(T.ROOT, 'liquid', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    for (const m of src.matchAll(/(?<![\w-])font-size\s*:\s*([^;}"]+)/g)) {
+      const v = m[1].trim();
+      if (!/^var\(--fs-(label|small|body|title|head)\)$/.test(v) && !DISPLAY.has(v)) badType.push(f + ' font-size:' + v);
+    }
+    for (const m of src.matchAll(/(?<![\w-])letter-spacing\s*:\s*([^;}"]+)/g)) {
+      const v = m[1].trim();
+      if (!/^(0|normal|var\(--ls-(caps|title)\))$/.test(v)) badType.push(f + ' letter-spacing:' + v);
+    }
+  }
+  t.check('letra: tamanhos e espacamentos so pelas variaveis da escala', badType.length === 0, badType.slice(0, 8).join(' | '));
+  // nos estados abertos: minimo de 10 px, frases de 12 px, maiusculas so em textos curtos
+  const TYPE = () => {
+    const SMALL_OK = '#tBpm, #tYear, .sk-target', CAPS_OK = '#blockLabel, #waK, .mc-line';
+    const bad = [];
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) {
+      const txt = n.nodeValue.replace(/\s+/g, ' ').trim(), el = n.parentElement;
+      if (!txt || !el || /^(SCRIPT|STYLE|OPTION|TITLE)$/.test(el.tagName) || !el.getClientRects().length) continue;
+      const cs = getComputedStyle(el);
+      if (cs.visibility !== 'visible' || el.closest('[hidden]') || el.closest('#devPanel')) continue;
+      let shown = true; for (let x = el; x; x = x.parentElement) { const c = getComputedStyle(x); if (c.display === 'none' || +c.opacity === 0) { shown = false; break; } }
+      if (!shown) continue;
+      const fs = parseFloat(cs.fontSize), caps = cs.textTransform === 'uppercase', words = txt.split(' ').length;
+      const who = (el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + el.className) + ' «' + txt.slice(0, 30) + '»';
+      if (fs < 10) bad.push('abaixo de 10 px: ' + who + ' ' + fs);
+      else if (!caps && fs < 12 && !el.closest(SMALL_OK)) bad.push('frase abaixo de 12 px: ' + who + ' ' + fs);
+      if (caps && words > 5 && !el.closest(CAPS_OK)) bad.push('maiusculas longas: ' + who);
+    }
+    return bad;
+  };
   const browser = await T.launch();
 
   for (const mode of ['desktop', 'mobile']) {
@@ -131,6 +170,18 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
       t.check('cores: Kill the bass aceso em verde', C.bass[1] === 'rgb(28, 122, 58)', C.bass[1]);
       t.check('cores: consola com contraste AA (Kill the bass aceso, teclas, valores)', rb >= 4.5 && rk >= 4.5 && rv >= 4.5, [rb, rk, rv].map(x => x.toFixed(2)).join(' '));
     }
+    const tb = [];
+    for (const open of [null, 'genreBtn', 'giftBtn', 'mixBtn', 'skipBtn', 'focusBtn']) {
+      await r.page.evaluate((id) => {
+        document.querySelectorAll('.panel.on .pclose').forEach(b => b.click());
+        ['mixClose', 'skClose'].forEach(i => { const e = document.getElementById(i); if (e && e.offsetParent) e.click(); });
+        if (id) document.getElementById(id).click();
+      }, open);
+      await r.page.waitForTimeout(500);
+      tb.push(...(await r.page.evaluate(TYPE)).map(x => (open || 'emissao') + ': ' + x));
+    }
+    await r.page.evaluate(() => document.getElementById('fcExit').click());
+    t.check(`${mode}: letra (minimos e maiusculas) na emissao, paineis, Mixtapes, Earn a skip e sala de foco`, tb.length === 0, [...new Set(tb)].slice(0, 6).join(' | '));
     t.check(`${mode}: sem erros de JavaScript`, r.errors.length === 0, r.errors.join(' | '));
     await r.close();
   }

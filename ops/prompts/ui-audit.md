@@ -71,7 +71,7 @@ campos visuais do l04 e o tema da Dub Desk). Depois da aprovação: substituir o
 pelas variáveis e acrescentar um teste que falhe se aparecer uma cor literal fora da lista de
 exceções.
 
-## Ronda 3: tipografia
+## Ronda 3: tipografia (feita a 2026-10-19, v5.6; `ops/notes/2026-10-18/ui-type.md`)
 Manter a família, salvo proposta fundamentada. Propor uma escala curta (cinco ou seis
 tamanhos), dois ou três valores de espaçamento entre letras e regras para as maiúsculas,
 com capturas de antes e depois. Indicar os tamanhos mínimos efetivamente desenhados no

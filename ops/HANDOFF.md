@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-18, v5.5 e auditoria de UI, rondas 0 a 2). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-19, v5.6 e auditoria de UI, rondas 0 a 3). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -216,10 +216,11 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
   nas fontes da interface fora dessas definições e das exceções (canvas e SVG em JavaScript; sombras e
   gradientes em preto, branco ou tinta com alfa); o `t-ui.js` falha se aparecer uma. «Kill the bass» aceso
   passou a verde (a regra existia e perdia por especificidade).
-- Ronda 3 (tipografia) em curso: proposta em `ops/notes/2026-10-18/ui-type.md` (cinco tamanhos, dois
-  espaçamentos, regra das maiúsculas, mínimo de 10 px em maiúsculas e 12 px em frases; família mantida),
-  com o script `ui-typescale.py` na mesma pasta; à espera do Paulo. O `ui_audit.js` aceita agora `?block=`
-  como terceiro argumento, para comparar antes e depois no mesmo bloco.
+- Feito (v5.6): ronda 3, tipografia. Escala de cinco tamanhos (`--fs-label` 10, `--fs-small` 12, `--fs-body` 13,
+  `--fs-title` 14, `--fs-head` 16 px) e dois espaçamentos (`--ls-caps` 0,12em, `--ls-title` 0,2em) no `:root` do
+  l01; maiúsculas só em rótulos, botões e títulos curtos (frases em minúsculas, como estão escritas); mínimo de
+  10 px em maiúsculas e 12 px em frases; família mantida (Courier New do sistema; letra própria fica como ideia).
+  Regra: nenhum tamanho em píxeis fora das variáveis e dos tamanhos de exibição; o `t-ui.js` falha se aparecer.
 - Em fila: ronda 4 (conteúdo e densidade; anotado: texto sobre o campo
   líquido sem fundo (nome do bloco, «on air», BPM), pulsar de «drop the needle» até 0,3, «Spin the dubplate»
   com o estilo geral dentro da consola, barra de cima a 1024 px em duas filas; a ligação «Liner
