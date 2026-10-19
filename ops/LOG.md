@@ -17,6 +17,7 @@
 - Teste novo `ops/tests/t-side.js` (4 variantes, 20 verificações).
 - Testes: bateria completa a passar (art 40, gate 7, rain 5, focus 121, devlog 10, intro 5, ritual 14,
   ads 71, ui 47, side 20); `build.sh` com validação OK.
+- Servido confirmado: a liquid servida tem a secção 14 (pratos mudos de lado e vigia de 500 ms).
 
 ## 2026-10-19: v5.6, auditoria de UI, ronda 3 (tipografia) (sessão Claude Code na nuvem)
 
