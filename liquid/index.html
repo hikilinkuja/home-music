@@ -5029,7 +5029,9 @@ function beginRadio(){
       else if(!p.ld) ldStart(p, p.loadedId || current.v);
       p.yt.playVideo();
     }catch(e){}
-    gate(activeKey);
+    /* o portao so depois de o leitor responder ao seekTo e ao playVideo (as leituras ainda dariam o estado
+       de antes) */
+    gateSoon(activeKey);
     if(!firstLogged && current){
       firstLogged = true; pushHistory(current); plog("air", current);
       firstRampPending = true;
@@ -5191,12 +5193,13 @@ function gate(k){
   try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){ return; }
   if(st===1 && !muted && onAir(k)){
     if(aside()){ if(!mu){ try{ p.yt.mute(); }catch(e){} } return; }
-    if(!mu){ applyVol(k); return; }
-    if(p.entry) fadeVol(p, 0);
-    try{ p.yt.unMute(); }catch(e){}
-    if(firstRampWait){ rampInFirst(); }
+    /* as leituras da API sao copias do estado do leitor: logo a seguir ao unMute o isMuted() ainda da
+       true, por isso nada aqui o rele; e com o volume a 0 o unMute poe-no em 5, por isso o volume do motor
+       vai logo a seguir */
+    if(mu){ try{ p.yt.unMute(); }catch(e){} }
+    if(firstRampWait){ applyVol(k); rampInFirst(true); }
     else if(p.entry){
-      var ms=p.entry; p.entry=0;
+      var ms=p.entry; p.entry=0; p.fade=0; applyVol(k);
       animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
     }
     else { applyVol(k); }
@@ -5212,6 +5215,8 @@ function gate(k){
    vez (no ensaio salvou cerca de metade dos leitores parados no zero); a segunda paragem troca de
    disco. Acaba quando a musica chega ao estado 1. Antes do gesto de entrada o relogio nao corre (o
    primeiro disco carrega mudo no ecra de entrada, sem pressa) */
+var CMD_SETTLE=250;
+function gateSoon(k){ setTimeout(function(){ try{ gate(k); }catch(e){} }, CMD_SETTLE); }
 function ldStart(p, v){ p.ld={ v:v, last:performance.now(), ct:null, rl:0, kick:0 }; }
 function ldStop(p){ if(p) p.ld=null; }
 function ldCheck(p){
@@ -5399,7 +5404,7 @@ function recMusic(){
   lastT=0; lastStamp=Date.now();
   p.entry=soft ? 250 : 0;
   ldStart(p, t.v);
-  gate(k);
+  gateSoon(k);
 }
 /* o disco armado falhou de vez durante o rito (erros seguidos, prato livre bloqueado, troca sem
    disco): outro no prato do ar; sem disco vivo no bloco, silencio, e o vigia do fim volta a cada 600 ms */
@@ -6124,7 +6129,8 @@ function audioGuard(){
     var st=-9, mu=false, gv=100;
     try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); gv=p.yt.getVolume(); }catch(e){ return; }
     if(st!==1){ return; }
-    if(muted){ stable=0; return; }
+    /* de lado (foco, arcada, tapes) o mudo e de proposito */
+    if(muted || aside()){ stable=0; return; }
     var f=(p.fade==null?1:p.fade);
     var nd=$("needle");
     var ok=!mu && gv>1 && f>0.03;
@@ -6136,8 +6142,13 @@ function audioGuard(){
     }
     stable=0; tries++;
     try{
+      /* o portao pode lancar agora a rampa que esperava (a do primeiro disco ou a de entrada), que segue
+         sozinha; senao, a rampa do primeiro disco ainda por correr, com a musica no ar, corre ja (rede de
+         seguranca), e o volume a zero sem rampa nenhuma volta inteiro */
+      var fp=firstRampPending, pe=p.entry;
       gate(p.k);
-      if(f<=0.03 && !firstRampPending && !transitioning){ fadeVol(p, 1); }
+      var launched=(fp && !firstRampPending) || (pe && !p.entry);
+      if(f<=0.03 && !transitioning && !launched){ if(firstRampPending) rampInFirst(true); else fadeVol(p, 1); }
       applyVol(p.k);
     }catch(e){}
     if(tries>=3 && mu && nd){
@@ -6185,12 +6196,14 @@ window.HMDEV={
 };
 
 var firstRampPending=false, firstRampWait=false, rampDur=2000;
-function rampInFirst(){
+function rampInFirst(opened){
   if(!firstRampPending) return;
-  /* portao do som: com o anuncio a passar (calado), a rampa espera que o portao abra (gate) */
+  /* portao do som: com o anuncio a passar (calado), a rampa espera que o portao abra (gate). opened: o
+     portao viu o prato no ar, a tocar e com som (ou acabou de lhe tirar o mudo), e nao se rele o
+     isMuted(), que logo a seguir ao unMute ainda da true */
   var p=P[activeKey], st=-9, mu=true;
   try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){}
-  if(st!==1 || mu){ firstRampWait=true; return; }
+  if(!opened && (st!==1 || mu)){ firstRampWait=true; return; }
   firstRampPending=false; firstRampWait=false;
   /* lenta e constante, em linha reta */
   var DURR=rampDur;
@@ -6272,6 +6285,11 @@ var $=function(id){ return document.getElementById(id); };
    Sound Killah do zero; quando o telefone da faixa entra (28,5 s) o intro desce,
    um segundo de sulco vazio, a agulha encontra o disco, e a emissao sobe. */
 var P_SRC="https://archive.org/download/DPH011/04_Koncrete_Roots_Sound_Killah.mp3";
+/* fontes, por ordem (v5.8): a copia do proprio site (sfx/, servida pelo GitHub Pages com a pagina,
+   ficheiro inteiro e sem alteracao, ver sfx/LICENSES.md) e, so se faltar ou falhar, o original no
+   Internet Archive. O archive.org caiu varias vezes entre agosto e outubro de 2026 e cada queda
+   deixava a abertura muda: a dependencia externa era a causa das falhas repetidas */
+var P_SRCS=["../sfx/intro-sound-killah.mp3", P_SRC];
 var P_START=0, P_FADE=28.5, MC_AT_TRK=[6, 10.5, 15, 19, 23, 26.2];
 /* robustez (10/2026, «a musica e o texto da abertura deixaram de funcionar uns dias»): o disco
    pede-se logo ao carregar a pagina (preload) e o toque so o poe a tocar; desde o toque tem
@@ -6279,14 +6297,16 @@ var P_START=0, P_FADE=28.5, MC_AT_TRK=[6, 10.5, 15, 19, 23, 26.2];
    depois de comecar, a radio entra; o click tambem arranca (o iOS pode nao aceitar o pointerdown
    como gesto); e cada abertura deixa o desfecho no localStorage hm_intro_log (anel de I_LOGMAX,
    lido no separador Engine do ?dev): ok, complete, error (codigo), refused (nome da recusa),
-   timeout, stalled, user-skip, com os ms desde o toque */
+   timeout, stalled, user-skip, com os ms desde o toque, a fonte em uso (si: 0 site, 1 archive.org)
+   e as fontes que falharam antes (fb, «fonte:codigo») */
 var I_BUDGET=10000, I_STALL=8000, I_LOGMAX=30;
 var intro={ audio:null, tick:null, shown:0, fading:false, done:false, started:false,
   t0:0, via:"", playing:false, clickTried:false, waitClick:null, guard:null, rej:"",
-  preErr:0, preRs:0, retried:false, lastCt:0, lastMove:0 };
+  preErr:0, preRs:0, retried:false, lastCt:0, lastMove:0, si:0, fb:[] };
 function introLog(why, info){
   var a=intro.audio, e={ ts:Date.now(), why:why, el:(intro.t0 ? Math.round(performance.now()-intro.t0) : 0),
-    via:intro.via, lines:intro.shown, pre:intro.preRs, pe:intro.preErr, rt:(intro.retried ? 1 : 0) };
+    via:intro.via, lines:intro.shown, pre:intro.preRs, pe:intro.preErr, rt:(intro.retried ? 1 : 0), si:intro.si };
+  if(intro.fb.length) e.fb=intro.fb.join(" ");
   try{ e.rs=a.readyState; e.ns=a.networkState; e.ct=Math.round((a.currentTime||0)*10)/10; if(a.error) e.code=a.error.code; }catch(x){}
   if(intro.rej) e.rej=intro.rej;
   try{ if(navigator.onLine===false) e.off=1; }catch(x){}
@@ -6310,10 +6330,24 @@ function introFail(why, info){
   introLog(why, info);
   sequenceIntoRadio();
 }
+/* uma fonte falhou: passa a seguinte, antes ou depois do toque (depois do toque, toca-a logo).
+   Sem mais fontes, ou se a abertura ja soava, a abertura nao toca */
+function introSrcError(a){
+  if(intro.done || a!==intro.audio) return;
+  var code=-1; try{ code=(a.error && a.error.code) || -1; }catch(e){}
+  intro.fb.push(intro.si+":"+code);
+  if(!intro.playing && intro.si+1<P_SRCS.length){
+    intro.si++;
+    try{ a.src=P_SRCS[intro.si]; }catch(e){ introFail("error"); return; }
+    if(intro.started) introPlay("fallback");
+    return;
+  }
+  introFail("error");
+}
 function makeIntroAudio(){
   var a=new Audio();
   a.preload="auto";
-  a.addEventListener("error", function(){ introFail("error"); });
+  a.addEventListener("error", function(){ introSrcError(a); });
   a.addEventListener("playing", function(){
     if(!intro.started || intro.done) return;
     intro.lastMove=performance.now();
@@ -6323,10 +6357,12 @@ function makeIntroAudio(){
       introLog("ok");
     }
   });
-  a.src=P_SRC;
+  a.src=P_SRCS[intro.si];
   return a;
 }
 try{ intro.audio=makeIntroAudio(); }catch(e){ intro.audio=null; }
+/* depois da abertura o ficheiro deixa de descarregar */
+function releaseAudio(a){ try{ a.pause(); a.removeAttribute("src"); a.load(); }catch(e){} }
 
 function showLine(i){
   var line=MC_LINES[i], mc=$("mc");
@@ -6337,14 +6373,36 @@ function showLine(i){
   void div.offsetWidth; div.classList.add("show");
 }
 /* a agulha a serio e uma agulha a serio: o vinil da casa (freesound 625771, CC0),
-   do segundo 13 ao 17; a musica entra aos 15 e aos 17 ja vai a 100 por cento */
+   do segundo 13 ao 17; a musica entra aos 15 e aos 17 ja vai a 100 por cento. Como a abertura
+   (v5.8): copia do site primeiro, o freesound de reserva, e pedido logo ao carregar a pagina */
 var VINYL_SRC="https://cdn.freesound.org/previews/625/625771_9351406-hq.mp3";
+var VINYL_SRCS=["../sfx/vinyl-625771.mp3", VINYL_SRC];
+var vinyl={ el:null, i:0, want:false, dead:false, off:false, onDead:null };
+function makeVinyl(){
+  var v=new Audio();
+  v.preload="auto";
+  v.addEventListener("error", function(){
+    if(vinyl.off || v!==vinyl.el) return;
+    if(vinyl.i+1<VINYL_SRCS.length){
+      vinyl.i++;
+      try{ v.src=VINYL_SRCS[vinyl.i]; }catch(e){}
+      if(vinyl.want){ var p=v.play(); if(p && p.catch) p.catch(function(){}); }
+      return;
+    }
+    vinyl.dead=true;
+    if(vinyl.onDead) vinyl.onDead();
+  });
+  v.addEventListener("loadedmetadata", function(){ if(vinyl.want){ try{ v.currentTime=13; }catch(e){} } });
+  v.src=VINYL_SRCS[0];
+  return v;
+}
+try{ vinyl.el=makeVinyl(); }catch(e){ vinyl.el=null; }
 function sequenceIntoRadio(){
   if(intro.done) return; intro.done=true;
   if(intro.tick){ clearInterval(intro.tick); intro.tick=null; }
   if(intro.guard){ clearTimeout(intro.guard); intro.guard=null; }
   if(intro.waitClick){ clearTimeout(intro.waitClick); intro.waitClick=null; }
-  try{ if(intro.audio) intro.audio.pause(); }catch(e){}
+  if(intro.audio) releaseAudio(intro.audio);
   $("splash").classList.add("off");
   $("introCredit").classList.remove("on");
   $("skipIntro").style.display="none";
@@ -6356,26 +6414,33 @@ function sequenceIntoRadio(){
   }
   /* 1 s de silencio, depois o sulco real */
   setTimeout(function(){
-    var v=new Audio(VINYL_SRC);
+    var v=vinyl.el;
+    if(!v){ try{ v=vinyl.el=makeVinyl(); }catch(e){ begin(); return; } }
+    /* as duas fontes falharam: a radio entra ja, sem agulha */
+    if(vinyl.dead){ begin(); return; }
+    vinyl.want=true; vinyl.onDead=begin;
     var vol=0.8;
     try{ var sv=localStorage.getItem("hm_vol"); if(sv!==null) vol=Math.max(0,Math.min(100,parseInt(sv,10)||80))/100; }catch(e){}
     try{ if(window.matchMedia && matchMedia("(max-width:760px)").matches) vol=1; }catch(e){}
     v.volume=vol;
-    v.addEventListener("loadedmetadata", function(){ try{ v.currentTime=13; }catch(e){} });
-    v.addEventListener("error", begin);
-    var p=v.play(); if(p && p.catch) p.catch(begin);
+    if(v.readyState>=1){ try{ v.currentTime=13; }catch(e){} }
+    /* AbortError e NotSupportedError: a fonte falhou e o evento error decide (reserva ou radio) */
+    var p=v.play(); if(p && p.catch) p.catch(function(e){ if(!e || (e.name!=="AbortError" && e.name!=="NotSupportedError")) begin(); });
     /* sem progresso em 2,5 s, a radio entra na mesma */
     setTimeout(function(){ if(!begun && (!v.currentTime || v.currentTime<13.3)) begin(); }, 2500);
+    /* o relogio da agulha acaba aos 17 s do vinil ou, se o vinil nunca andar, 10 s depois */
+    var tEnd=performance.now()+10000;
     var h=setInterval(function(){
       var t=v.currentTime||0;
       if(t>=15 && !begun) begin();
-      if(t>=17){
+      if(t>=17 || performance.now()>tEnd){
         clearInterval(h);
+        begin();
         var v0=v.volume, t0=performance.now();
         var f=setInterval(function(){
           var x=Math.min(1,(performance.now()-t0)/300);
           try{ v.volume=v0*(1-x); }catch(e){}
-          if(x>=1){ clearInterval(f); try{ v.pause(); }catch(e){} }
+          if(x>=1){ clearInterval(f); vinyl.off=true; releaseAudio(v); }
         }, 40);
       }
     }, 60);
@@ -6396,13 +6461,16 @@ function fadeOutIntro(ms){
 }
 /* play no gesto; uma recusa NotAllowedError no pointerdown espera pelo click do mesmo toque */
 function introPlay(via){
-  var a=intro.audio, p=null;
+  var a=intro.audio, p=null, si=intro.si;
   try{ p=a.play(); }catch(e){ introRefused(e, via); return; }
-  if(p && p.then) p.then(null, function(e){ introRefused(e, via); });
+  /* a recusa de uma fonte que entretanto deu lugar a reserva ja nao conta */
+  if(p && p.then) p.then(null, function(e){ if(si===intro.si) introRefused(e, via); });
 }
 function introRefused(e, via){
   if(intro.done || intro.playing) return;
   var name=(e && e.name) || "Error";
+  /* NotSupportedError: a fonte falhou; decide o evento error (reserva ou radio) */
+  if(name==="NotSupportedError") return;
   intro.rej=name;
   if(name==="NotAllowedError" && via!=="click" && !intro.clickTried){
     if(!intro.waitClick) intro.waitClick=setTimeout(function(){
@@ -6431,8 +6499,8 @@ function startIntro(ev){
     catch(e){ introFail("no-audio", { name:(e && e.name) || "Error" }); return; }
   }
   intro.preRs=a.readyState;
-  /* o preload falhou antes do toque: uma tentativa nova, ja dentro do gesto */
-  if(a.error || intro.preErr){ intro.retried=true; try{ a.src=P_SRC; }catch(e){} }
+  /* todas as fontes falharam no preload: nova volta, ja dentro do gesto, a comecar pela copia do site */
+  if(a.error || intro.preErr){ intro.retried=true; intro.si=0; try{ a.src=P_SRCS[0]; }catch(e){} }
   a.volume=vol;
   introPlay(intro.via);
   /* rede de seguranca: o disco tem I_BUDGET ms desde o toque para soar (rede lenta, servidor do
@@ -6464,11 +6532,9 @@ $("splash").addEventListener("click", function(ev){
 });
 $("tapHint").addEventListener("keydown", function(ev){ if(ev.key==="Enter"||ev.key===" ") startIntro(ev); });
 $("skipIntro").addEventListener("click", function(){
-  if(!intro.started){
-    if(window.HM) HM.fxResume();
-    /* a abertura ja nao vai tocar: o preload para aqui */
-    try{ if(intro.audio){ intro.audio.removeAttribute("src"); intro.audio.load(); } }catch(e){}
-  } else if(!intro.done && !intro.fading){ introLog("user-skip"); }
+  /* antes do toque, a abertura ja nao vai tocar: o sequenceIntoRadio para o preload */
+  if(!intro.started){ if(window.HM) HM.fxResume(); }
+  else if(!intro.done && !intro.fading){ introLog("user-skip"); }
   if(intro.started && !intro.fading){ fadeOutIntro(600); } else { sequenceIntoRadio(); }
 });
 
@@ -8657,8 +8723,10 @@ function fcPlayer(cb){
           q.forEach(function(f){ try{ f(); }catch(err){} });
         },
         onStateChange:function(e){
-          /* portao do som: so com a musica em PLAYING; o estado -1 (anuncio a meio) volta a calar */
-          try{ if(e.data===1) fcp.yt.unMute(); else if(e.data===-1) fcp.yt.mute(); }catch(err){}
+          /* portao do som: so com a musica em PLAYING; o estado -1 (anuncio a meio) volta a calar. O volume
+             vai outra vez logo a seguir ao unMute: com o volume a 0 (musica calada no intervalo) o YouTube
+             poe-no em 5 (medido a 2026-10-21) */
+          try{ if(e.data===1){ fcp.yt.unMute(); fcp.yt.setVolume(fcVol()); } else if(e.data===-1) fcp.yt.mute(); }catch(err){}
           if(e.data===0 && FC.on && fcp.playing) fcNext();
         },
         onError:function(){ if(FC.on && fcp.playing) setTimeout(fcNext, 900); }
@@ -10332,6 +10400,8 @@ document.addEventListener("keyup", function(ev){
         if(e.code) det.push("media error "+e.code);
         if(e.name) det.push(e.name);
         if(e.rej && e.rej!==e.name) det.push("rejected "+e.rej);
+        if(e.si!=null) det.push("source "+(e.si ? "archive.org" : "site copy"));
+        if(e.fb) det.push("failed sources "+e.fb);
         det.push("ready "+e.rs+", net "+e.ns+", at "+e.ct+" s");
         if(e.pre!=null) det.push("preloaded to "+e.pre);
         if(e.pe) det.push("preload error "+e.pe);

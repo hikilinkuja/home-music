@@ -108,6 +108,14 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   uma tape a tocar, os dois pratos da rádio ficam em mudo, não só com volume 0 (o YouTube pode repor um volume seu
   e tirar o mudo); o portão não abre de lado e volta a calar, o fim do esbatido cala os dois pratos, o relógio dos
   VU vigia a cada 500 ms; ao voltar, o portão abre o prato do ar no início do esbatido e reaplica o volume.
+- API do YouTube (lida e medida a 2026-10-21, `ops/notes/2026-10-21/`): as leituras (`getPlayerState`, `isMuted`,
+  `getVolume`) são cópias que só mudam com a mensagem seguinte do leitor; logo a seguir a uma ordem ainda dão o
+  valor antigo, `loadVideoById` apaga-as, e o `unMute` com o volume a 0 põe o volume em 5. Regra do motor: nunca
+  decidir pela leitura feita logo a seguir à própria ordem (depois de um `seekTo` ou `playVideo` nosso, o portão
+  espera 250 ms, `gateSoon`), e repor o volume logo a seguir ao `unMute`. Secção 15
+  do `build-liquid.py` (v5.8): a rampa do primeiro disco já não fica à espera para sempre (o primeiro disco ficava
+  a volume 0: «a música para ao fim de um segundo»). Teste `ops/tests/t-realyt.js`, com o YouTube simulado
+  assíncrono (`ytAsync` em `lib/common.js`; `HM_YT_ASYNC=1` no ambiente liga-o em todos os testes).
 - Registo de emissão: `HMPLOG` (l03) guarda cada disco em localStorage `hm_plog` (2000 linhas),
   exportável em CSV e JSON no painel `?dev` (tecla d: separadores Next, Log, Banks, Engine);
   `hm_intro_log` guarda porque a introdução falhou, quando falha. Os dados nunca saem do browser.
@@ -146,6 +154,14 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   `liquid/build-liquid.py` a partir de `radio/e05-engine.html`: nunca editar o l05 à mão.
 - Fontes da sala antiga: `radio/e01-head.html`, `e02-body.html`, `e04a/b/c-stage.html`,
   `e05-engine.html` (congeladas).
+- Abertura (v5.8, secção 1 do `liquid/l06-art.html`, teste `ops/tests/t-intro.js`): a faixa (Koncrete Roots,
+  «Sound Killah», CC BY-NC-ND 4.0, ficheiro inteiro e sem alteração) e a agulha (freesound 625771, CC0) tocam as
+  cópias do próprio site, `sfx/intro-sound-killah.mp3` e `sfx/vinyl-625771.mp3`, pedidas logo ao carregar; o
+  archive.org e o freesound ficam só de reserva (o archive.org caiu várias vezes em agosto a outubro de 2026 e a
+  abertura ficava muda). Estão no repositório desde 2026-10-21, trazidas pelo fluxo `.github/workflows/intro-media.yml`
+  (Actions, «Run workflow»; corre `ops/tools/fetch_intro_media.py`, que confere o MD5; da nuvem do Claude esses
+  anfitriões estão bloqueados); o `validate.py` falha se faltarem ou não forem MP3. `hm_intro_log` regista a fonte que tocou (`si`: 0 site, 1 reserva) e as que falharam (`fb`).
+  A sala antiga, congelada, continua a depender do archive.org.
 - Som do «dawn override»: `sfx/dawn-mc.mp3` ainda não existe; o módulo HMDAWN (l06) toca os
   efeitos e salta a voz até o Paulo enviar a gravação.
 - Notas de análise (mapas do motor, da galeria, da sala de foco, diagnósticos, conceitos de
@@ -161,7 +177,7 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
 3. `bash ops/tools/build.sh` monta as duas salas e corre `ops/tools/validate.py`
    (sintaxe JavaScript, caracteres proibidos, videoIds, géneros). Não publicar com falhas.
    Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
-   corre os testes no Chromium com o YouTube simulado, cerca de 18 minutos; ver
+   corre os testes no Chromium com o YouTube simulado, cerca de 22 minutos; ver
    `ops/tests/README.md`). Com `FAIL`, não publicar.
 4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.8), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.

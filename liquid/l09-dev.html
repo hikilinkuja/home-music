@@ -397,6 +397,8 @@
         if(e.code) det.push("media error "+e.code);
         if(e.name) det.push(e.name);
         if(e.rej && e.rej!==e.name) det.push("rejected "+e.rej);
+        if(e.si!=null) det.push("source "+(e.si ? "archive.org" : "site copy"));
+        if(e.fb) det.push("failed sources "+e.fb);
         det.push("ready "+e.rs+", net "+e.ns+", at "+e.ct+" s");
         if(e.pre!=null) det.push("preloaded to "+e.pre);
         if(e.pe) det.push("preload error "+e.pe);

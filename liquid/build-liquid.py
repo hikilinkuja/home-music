@@ -1606,6 +1606,86 @@ rep('''setInterval(function(){
   if(aside()) muteDecks();
   /* o botao segue sempre o estado real */''', what='14 vigia de lado')
 
+# 15) o primeiro disco ja nao fica a volume 0 (queixa do Paulo a 2026-10-21: «a musica para ao fim de um
+#     segundo; com o mute volta um segundo e para outra vez»). A API verdadeira do YouTube (www-widgetapi.js,
+#     lida e medida a 2026-10-21, ops/notes/2026-10-21/) devolve copias do estado do leitor, que so mudam com
+#     a mensagem seguinte dele: logo a seguir a um unMute, o isMuted() ainda da true; e o unMute com o volume
+#     a 0 poe o volume em 5. A rampa do primeiro disco, se o leitor ainda nao estava pronto (o seekTo(0) do
+#     arranque passa pelo estado 3), ficava a espera do portao, e o portao so a chamava ao tirar o mudo, e
+#     ai relia o isMuted() (true) e voltava a esperar; com o leitor ja com som, nunca mais a chamava. O disco
+#     ficava a fade 0: o portao (v5.7) e o guarda do som (a cada 3 s) repunham o volume 0, e cada «Unmute»
+#     dava o volume 5 do YouTube ate ao toque seguinte do guarda. Agora: o portao corre a rampa que espera
+#     sempre que ve o prato no ar, a tocar e com som (tirado o mudo ou nao), sem reler o isMuted(); o volume
+#     do motor vai logo a seguir ao unMute; a rampa de entrada do rito corre mesmo que o leitor ja tenha som;
+#     o guarda do som nao briga com a radio de lado e, como rede de seguranca, corre a rampa em falta.
+#     Teste: ops/tests/t-realyt.js (YouTube simulado assincrono, como o verdadeiro)
+rep('''    if(aside()){ if(!mu){ try{ p.yt.mute(); }catch(e){} } return; }
+    if(!mu){ applyVol(k); return; }
+    if(p.entry) fadeVol(p, 0);
+    try{ p.yt.unMute(); }catch(e){}
+    if(firstRampWait){ rampInFirst(); }
+    else if(p.entry){
+      var ms=p.entry; p.entry=0;
+      animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
+    }
+    else { applyVol(k); }''', '''    if(aside()){ if(!mu){ try{ p.yt.mute(); }catch(e){} } return; }
+    /* as leituras da API sao copias do estado do leitor: logo a seguir ao unMute o isMuted() ainda da
+       true, por isso nada aqui o rele; e com o volume a 0 o unMute poe-no em 5, por isso o volume do motor
+       vai logo a seguir */
+    if(mu){ try{ p.yt.unMute(); }catch(e){} }
+    if(firstRampWait){ applyVol(k); rampInFirst(true); }
+    else if(p.entry){
+      var ms=p.entry; p.entry=0; p.fade=0; applyVol(k);
+      animClock(ms, function(x){ if(activeKey!==k || REC.on) return false; fadeVol(p, x); }, function(){ fadeVol(p, 1); });
+    }
+    else { applyVol(k); }''', what='15 portao sem reler o mudo')
+rep('''function rampInFirst(){
+  if(!firstRampPending) return;
+  /* portao do som: com o anuncio a passar (calado), a rampa espera que o portao abra (gate) */
+  var p=P[activeKey], st=-9, mu=true;
+  try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){}
+  if(st!==1 || mu){ firstRampWait=true; return; }''', '''function rampInFirst(opened){
+  if(!firstRampPending) return;
+  /* portao do som: com o anuncio a passar (calado), a rampa espera que o portao abra (gate). opened: o
+     portao viu o prato no ar, a tocar e com som (ou acabou de lhe tirar o mudo), e nao se rele o
+     isMuted(), que logo a seguir ao unMute ainda da true */
+  var p=P[activeKey], st=-9, mu=true;
+  try{ st=p.yt.getPlayerState(); mu=p.yt.isMuted(); }catch(e){}
+  if(!opened && (st!==1 || mu)){ firstRampWait=true; return; }''', what='15 rampa do primeiro disco')
+rep('''    if(st!==1){ return; }
+    if(muted){ stable=0; return; }''', '''    if(st!==1){ return; }
+    /* de lado (foco, arcada, tapes) o mudo e de proposito */
+    if(muted || aside()){ stable=0; return; }''', what='15 guarda calado de lado')
+rep('''      gate(p.k);
+      if(f<=0.03 && !firstRampPending && !transitioning){ fadeVol(p, 1); }''', '''      /* o portao pode lancar agora a rampa que esperava (a do primeiro disco ou a de entrada), que segue
+         sozinha; senao, a rampa do primeiro disco ainda por correr, com a musica no ar, corre ja (rede de
+         seguranca), e o volume a zero sem rampa nenhuma volta inteiro */
+      var fp=firstRampPending, pe=p.entry;
+      gate(p.k);
+      var launched=(fp && !firstRampPending) || (pe && !p.entry);
+      if(f<=0.03 && !transitioning && !launched){ if(firstRampPending) rampInFirst(true); else fadeVol(p, 1); }''', what='15 guarda corre a rampa')
+# 15b) o portao depois de uma ordem nossa ao leitor (seekTo, playVideo) espera CMD_SETTLE ms: no mesmo instante
+#      a copia do estado ainda e a de antes (a musica a tocar) e o som abria com o leitor a carregar depois do
+#      seekTo (estado 3), contra a regra do portao (so no estado 1). Visto no t-ads com o YouTube simulado
+#      assincrono, no arranque e no pousar no prato do ar. Se o estado mudar, o onState abre-o na mesma
+rep('''function ldStart(p, v){''', '''var CMD_SETTLE=250;
+function gateSoon(k){ setTimeout(function(){ try{ gate(k); }catch(e){} }, CMD_SETTLE); }
+function ldStart(p, v){''', what='15b gateSoon')
+rep('''      p.yt.playVideo();
+    }catch(e){}
+    gate(activeKey);
+    if(!firstLogged && current){''', '''      p.yt.playVideo();
+    }catch(e){}
+    /* o portao so depois de o leitor responder ao seekTo e ao playVideo (as leituras ainda dariam o estado
+       de antes) */
+    gateSoon(activeKey);
+    if(!firstLogged && current){''', what='15b portao no arranque')
+rep('''  ldStart(p, t.v);
+  gate(k);
+}''', '''  ldStart(p, t.v);
+  gateSoon(k);
+}''', what='15b portao no pousar')
+
 assert 'REC_TIMEOUT' not in s and 'hardNextAudio' not in s and 'cutTo(' not in s, '12: restos do prazo fixo e do corte no mesmo prato'
 assert s.count('.unMute(')==1, '12: o unMute so pode viver no portao do som (gate): %d' % s.count('.unMute(')
 

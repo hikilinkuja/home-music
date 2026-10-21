@@ -1,6 +1,7 @@
 name: intro media (sfx)
 # Descarrega para sfx/ as gravacoes da abertura (ops/tools/fetch_intro_media.py) e faz o commit.
-# Corre so a pedido (separador Actions, «Run workflow»); com os ficheiros ja no ramo, nao faz nada.
+# So a pedido (separador Actions, «Run workflow»); com os ficheiros ja no ramo, nao faz nada (cerca de 15 s).
+# Os dois ficheiros chegaram a 2026-10-21 (o archive.org esteve em baixo parte do dia).
 on:
   workflow_dispatch:
 permissions:
@@ -24,4 +25,6 @@ jobs:
           git push origin HEAD:main
       - name: report missing files
         if: env.FETCH_FAILED == '1'
-        run: exit 1
+        run: |
+          echo "::warning::sfx/intro-sound-killah.mp3 ou sfx/vinyl-625771.mp3 por trazer (fonte em baixo); correr outra vez mais tarde"
+          exit 1

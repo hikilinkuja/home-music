@@ -102,3 +102,20 @@ All in `scratchpad/understand/`:
 - `media/`: test WAV files
 
 No repository files were modified.
+## Addendum, 2026-10-21 (v5.8)
+
+Fix 1 was the one left undone, and the intro failed again on 2026-10-21. Public outage trackers record
+archive.org outages on 2026-08-16 to 08-25 (power feed damage, acknowledged on the Internet Archive blog),
+2026-09-15, 09-16, 09-17 and 09-20, and 2026-10-07. On 2026-10-21, from GitHub Actions, archive.org did not
+answer: a first attempt hung for about 9 minutes, and a second run timed out three times in a row (60 s each,
+15:49 to 15:52 UTC), while freesound answered in 20 s. Fix 1 is now in place: the room plays `sfx/intro-sound-killah.mp3`
+and `sfx/vinyl-625771.mp3` first and falls back to archive.org and freesound only on error, before or after
+the tap. The fallback on a stale play() rejection is ignored (Chromium rejects the old promise with
+NotSupportedError after the source has already moved on). `hm_intro_log` records the source used (`si`) and the
+failed ones (`fb`). The files come from `ops/tools/fetch_intro_media.py`, run by the
+`.github/workflows/intro-media.yml` workflow, which checks the MD5 against the Internet Archive metadata.
+Both files reached `main` the same day (the vinyl at 15:53 UTC; the track at 17:29 UTC, when archive.org
+answered again: 8,793,667 bytes in 1.3 s, MD5 05b38e088d00be98fe13fc1d18ef508b, matching the item metadata).
+`validate.py` fails if either file is missing or is not a complete MP3. Side finding: the test stub served media without range support,
+so the needle never seeked to 13 s in tests (it played from 0 and the radio started on the 2.5 s fallback);
+the stub now answers Range requests, as GitHub Pages and freesound do.

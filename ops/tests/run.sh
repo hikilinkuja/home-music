@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Testes da sala liquid: monta o site (build.sh, com validacao) e corre os testes no Chromium com o
 # YouTube simulado. Uso, a partir de qualquer pasta do repositorio:
-#   bash ops/tests/run.sh                 todos (cerca de 18 minutos)
-#   bash ops/tests/run.sh art devlog      so os indicados (art gate rain focus devlog intro ritual ads ui side)
+#   bash ops/tests/run.sh                 todos (cerca de 22 minutos)
+#   bash ops/tests/run.sh art devlog      so os indicados (art gate rain focus devlog intro ritual ads ui side realyt)
 #   NOBUILD=1 bash ops/tests/run.sh ...   sem montar antes
+#   HM_YT_ASYNC=1 bash ops/tests/run.sh   todos com o YouTube simulado assincrono, como o verdadeiro (lib/common.js)
 # Sai com codigo 1 se algum teste falhar. Nao publicar com falhas.
 set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -14,7 +15,7 @@ if [ -z "${NOBUILD:-}" ]; then
   echo "build: $(tail -1 /tmp/hm-build.log)"
 fi
 
-ALL="art gate rain focus devlog intro ritual ads ui side"
+ALL="art gate rain focus devlog intro ritual ads ui side realyt"
 LIST="${*:-$ALL}"
 fail=0
 for t in $LIST; do

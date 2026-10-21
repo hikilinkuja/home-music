@@ -8,7 +8,10 @@ Verifica:
   - todos os generos usados existem em GENRES (e03) e em GBPM (radio/e05-engine.html);
   - as duas salas montadas contem o catalogo inteiro;
   - liquid/focus-evidence.json (zona «why?» da sala de foco) e JSON valido, com campos, forcas e
-    estados conhecidos, ids unicos, e cobre todos os data-why e why: do liquid/l07-focus.html.
+    estados conhecidos, ids unicos, e cobre todos os data-why e why: do liquid/l07-focus.html;
+  - as gravacoes da abertura e da agulha (SFX_MEDIA, v5.8), pedidas pela sala liquid, existem no
+    repositorio e parecem MP3 completos (sem elas, a abertura volta a depender do archive.org; trazer
+    com ops/tools/fetch_intro_media.py ou com o fluxo .github/workflows/intro-media.yml).
 Uso: python3 ops/tools/validate.py   (a partir da raiz do repositorio)
 """
 import json
@@ -24,6 +27,7 @@ EVID = "liquid/focus-evidence.json"
 FOCUS = "liquid/l07-focus.html"
 EVSTATUS = {"in room", "tip", "proposed", "not planned"}
 E03 = "radio/e03-data.html"
+SFX_MEDIA = ["sfx/intro-sound-killah.mp3", "sfx/vinyl-625771.mp3"]
 BANNED = {chr(0x2014): "travessao", chr(0x2013): "meia-risca", chr(0x2022): "marcador"}
 fails = []
 
@@ -89,6 +93,22 @@ def evidence_check():
     return len(ids)
 
 
+def media_check():
+    """Gravacoes servidas pelo proprio site que a sala liquid pede (sfx/*.mp3)."""
+    html = open("liquid/index.html", encoding="utf-8").read()
+    # o sfx/dawn-mc.mp3 (voz do «dawn override») ainda nao existe e o HMDAWN salta-o: fica de fora
+    names = [n for n in SFX_MEDIA if f'"../{n}"' in html]
+    for n in names:
+        if not os.path.isfile(n):
+            fails.append(f"{n} pedido pela sala liquid e ausente (a abertura voltaria a depender da fonte externa): "
+                         "trazer com ops/tools/fetch_intro_media.py ou o fluxo .github/workflows/intro-media.yml")
+            continue
+        head = open(n, "rb").read(4)
+        if os.path.getsize(n) < 50000 or not (head[:3] == b"ID3" or (head[0] == 0xFF and head[1] & 0xE0 == 0xE0)):
+            fails.append(f"{n} nao parece um MP3 completo ({os.path.getsize(n)} bytes)")
+    return len(names)
+
+
 def main():
     e03 = open(E03, encoding="utf-8").read()
     for i, (code, mod) in enumerate(scripts(e03)):
@@ -124,7 +144,8 @@ def main():
         if n < len(vids):
             fails.append(f"{page} tem {n} faixas, o catalogo tem {len(vids)}: montar de novo")
     nev = evidence_check()
-    print(f"catalogo: {len(vids)} faixas, {len(used)} generos; provas da sala de foco: {nev}")
+    nmed = media_check()
+    print(f"catalogo: {len(vids)} faixas, {len(used)} generos; provas da sala de foco: {nev}; gravacoes em sfx/: {nmed}")
     for g, n in used.most_common():
         print(f"  {g:22s} {n}")
     if fails:

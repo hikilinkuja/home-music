@@ -86,9 +86,19 @@ function media() {
 // restore: { vol, unmute, each } imita um YouTube que, quando a musica comeca (com each, tambem quando volta
 // depois de um anuncio a meio), repoe um volume seu (por exemplo o que a pessoa usa no YouTube) e, com unmute,
 // tira tambem o mudo; _restoreNow(vol) fa-lo a meio da musica, sem mudar de estado (t-side.js).
-function ytStub(dur, load) {
+// async: { cmd, info, ev, poll, seekBuf } imita a API verdadeira (www-widgetapi.js lido e leitor medido a 2026-10-21,
+// ops/notes/2026-10-21): as ordens (mute, unMute, setVolume, playVideo...) chegam ao leitor por postMessage, cmd ms
+// depois; as leituras (getPlayerState, isMuted, getVolume, getCurrentTime) devolvem o playerInfo guardado, que so
+// muda com as mensagens infoDelivery do leitor (info ms depois de cada ordem e a cada poll ms): logo a seguir a uma
+// ordem, a leitura ainda da o valor antigo; loadVideoById e cueVideoById apagam o playerInfo (undefined ate a
+// mensagem seguinte); numa mudanca de estado o playerInfo chega antes do onStateChange (ev ms depois); o unMute com
+// o volume a 0 poe o volume em 5 (medido); seekTo com a musica a tocar passa seekBuf ms pelo estado 3. Sem async, o
+// leitor e o de sempre (sincrono). window.__players guarda o leitor verdadeiro.
+function ytStub(dur, load, async) {
+  const A = async ? JSON.stringify(Object.assign({ cmd: 5, info: 5, ev: 10, poll: 500, seekBuf: 300 }, async)) : 'null';
   return `
 (function(){
+  var A=${A};
   function L(o){ o.t=performance.now(); (window.__log=window.__log||[]).push(o); }
   function durFor(id){ if(${dur | 0}) return ${dur | 0}; var h=0; for(var i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))>>>0; } return 150 + (h % 300); }
   var LOAD=${load | 0}, NL=0, NLV={}, NLE={};
@@ -166,7 +176,41 @@ function ytStub(dur, load) {
   Player.prototype.isMuted=function(){ return this.mu; };
   Player.prototype.getVideoData=function(){ return {}; };
   Player.prototype.getIframe=function(){ return document.getElementById(this.el); };
-  window.YT={ Player:Player, PlayerState:{ENDED:0,PLAYING:1,PAUSED:2,BUFFERING:3,CUED:5} };
+  /* fachada assincrona: o que a pagina ve quando A existe */
+  function Facade(el, opts){
+    var self=this, ev=(opts && opts.events) || {};
+    this.el=el; this.info={};
+    var inner=new Player(el, { events:{
+      onReady:function(){ self._deliver(); setTimeout(function(){ ev.onReady && ev.onReady({target:self}); }, A.ev); },
+      onStateChange:function(e){ var st=e.data; self._deliver(); setTimeout(function(){ ev.onStateChange && ev.onStateChange({data:st, target:self}); }, A.ev); },
+      onError:function(e){ var c=e.data; setTimeout(function(){ ev.onError && ev.onError({data:c, target:self}); }, A.ev); }
+    } });
+    this.inner=inner;
+    setInterval(function(){ self._deliver(); }, A.poll);
+  }
+  Facade.prototype._deliver=function(){ var i=this.inner;
+    this.info={ playerState:i.st, muted:i.mu, volume:i.vol, currentTime:i.getCurrentTime(), currentTimeLastUpdated_:Date.now()/1000, playbackRate:1, duration:i.dur }; };
+  ['mute','unMute','setVolume','playVideo','pauseVideo','stopVideo','seekTo'].forEach(function(n){
+    Facade.prototype[n]=function(){ var a=arguments, self=this; setTimeout(function(){
+      var i=self.inner;
+      if(n==='unMute' && i.mu && i.vol===0){ i.vol=5; L({ev:'restore', el:i.el, vid:i.vid, vol:5, mu:false, why:'unMute at 0'}); }
+      if(n==='seekTo' && i.st===1 && A.seekBuf){ i._freeze(); i.t0=a[0]||0; i._set(3); var tok=i._loadTok; setTimeout(function(){ if(tok===i._loadTok && i.st===3) i._play(); }, A.seekBuf); }
+      else i[n].apply(i, a);
+      setTimeout(function(){ self._deliver(); }, A.info); }, A.cmd); return this; };
+  });
+  ['loadVideoById','cueVideoById'].forEach(function(n){
+    Facade.prototype[n]=function(){ var a=arguments, self=this; this.info={}; setTimeout(function(){ self.inner[n].apply(self.inner, a); }, A.cmd); return this; };
+  });
+  Facade.prototype.getPlayerState=function(){ return this.info.playerState; };
+  Facade.prototype.isMuted=function(){ return this.info.muted; };
+  Facade.prototype.getVolume=function(){ return this.info.volume; };
+  Facade.prototype.getDuration=function(){ return this.info.duration; };
+  Facade.prototype.getCurrentTime=function(){ var h=this.info.currentTime; if(this.info.playerState===1){ var k=Date.now()/1000-this.info.currentTimeLastUpdated_; if(k>0) h+=Math.min(k,1); } return h; };
+  Facade.prototype.getVideoData=function(){ return {}; };
+  Facade.prototype.getIframe=function(){ return document.getElementById(this.el); };
+  Facade.prototype._midroll=function(s){ return this.inner._midroll(s); };
+  Facade.prototype._restoreNow=function(v){ return this.inner._restoreNow(v); };
+  window.YT={ Player:(A ? Facade : Player), PlayerState:{ENDED:0,PLAYING:1,PAUSED:2,BUFFERING:3,CUED:5} };
   setTimeout(function(){ if(window.onYouTubeIframeAPIReady) window.onYouTubeIframeAPIReady(); }, 30);
 })();`;
 }
@@ -198,35 +242,55 @@ const MIME = { html: 'text/html; charset=utf-8', js: 'application/javascript', c
 const AIC = JSON.stringify({ data: [{ id: 1, title: 'Stand-in painting', artist_display: 'Stand-in Painter', date_display: '1884',
   image_id: 'abc', short_description: 'Stand-in description.', medium_display: 'Oil on canvas', credit_line: 'Test' }] });
 
-// opt: { dur, load, page: (html)=>html, archive: 'ok'|'503'|'abort'|{delayMs}, freesound: 'ok'|'abort'|'local', aic: 'ok'|'fail' }
+// audio com pedidos parciais (Range), como o GitHub Pages, o freesound e o archive.org: sem eles o Chromium nao
+// deixa saltar para um ponto do ficheiro (a agulha comeca aos 13 s do vinil)
+function fulfillMedia(route, body, contentType) {
+  const m = /bytes=(\d+)-(\d*)/.exec(route.request().headers()['range'] || '');
+  if (!m) return route.fulfill({ status: 200, contentType, headers: { 'Accept-Ranges': 'bytes' }, body }).catch(() => {});
+  const a = Math.min(+m[1], body.length - 1), b = m[2] ? Math.min(+m[2], body.length - 1) : body.length - 1;
+  return route.fulfill({ status: 206, contentType, body: body.subarray(a, b + 1),
+    headers: { 'Accept-Ranges': 'bytes', 'Content-Range': `bytes ${a}-${b}/${body.length}` } }).catch(() => {});
+}
+
+// opt: { dur, load, ytAsync (ver ytStub; HM_YT_ASYNC=1 no ambiente liga-o em todos os testes), page: (html)=>html, archive: 'ok'|'503'|'abort'|{delayMs}, freesound: 'ok'|'abort'|'local', aic: 'ok'|'fail',
+//        sfx: 'abort'|'404'|'ok'|'real' (copias da abertura e da agulha em sfx/; por omissao falham, como o archive.org,
+//        para a abertura nao atrasar os outros testes; 'real' serve os ficheiros do repositorio) }
 async function serve(ctx, opt = {}) {
   const M = media();
   const st = { tap: null };
   await ctx.route('**/*', async (route) => {
     const u = new URL(route.request().url());
+    if (u.hostname === 'hm.test' && /^\/sfx\/(intro-sound-killah|vinyl-625771)\.mp3$/.test(u.pathname) && opt.sfx !== 'real') {
+      const s = opt.sfx || 'abort';
+      if (s === 'abort') return route.abort('connectionrefused');
+      if (s === '404') return route.fulfill({ status: 404, body: '' });
+      return fulfillMedia(route, u.pathname.includes('vinyl') ? M.vinyl : M.intro, 'audio/wav');
+    }
     if (u.hostname === 'hm.test') {
       const f = path.join(ROOT, decodeURIComponent(u.pathname));
       if (!f.startsWith(ROOT) || !fs.existsSync(f) || !fs.statSync(f).isFile()) return route.fulfill({ status: 404, body: '' });
       let body = fs.readFileSync(f);
       if (opt.page && f.endsWith('index.html')) body = opt.page(body.toString('utf8'));
+      if (/\.(mp3|wav)$/.test(f)) return fulfillMedia(route, body, MIME[path.extname(f).slice(1)]);
       return route.fulfill({ status: 200, contentType: MIME[path.extname(f).slice(1)] || 'application/octet-stream', body });
     }
     if (u.hostname === '127.0.0.1') return route.continue();
     if (u.hostname === 'www.youtube.com' && u.pathname === '/iframe_api')
-      return route.fulfill({ status: 200, contentType: 'application/javascript', body: ytStub(opt.dur || 0, opt.load || 1200) });
+      return route.fulfill({ status: 200, contentType: 'application/javascript', body: ytStub(opt.dur || 0, opt.load || 1200, opt.ytAsync || (process.env.HM_YT_ASYNC ? {} : null)) });
     if (u.hostname === 'archive.org' && u.pathname.includes('DPH011')) {
       const a = opt.archive || 'abort';
       if (a === 'abort') return route.abort('connectionrefused');
       if (a === '503') return route.fulfill({ status: 503, contentType: 'text/html', body: 'Service Unavailable' });
       if (a.delayMs) { while (st.tap === null) await new Promise(r => setTimeout(r, 50)); const w = st.tap + a.delayMs - Date.now(); if (w > 0) await new Promise(r => setTimeout(r, w)); }
-      return route.fulfill({ status: 200, contentType: 'audio/wav', body: M.intro }).catch(() => {});
+      return fulfillMedia(route, M.intro, 'audio/wav');
     }
     if (u.href.includes('Symphonie') || (u.hostname === 'archive.org' && /\.(mp4|webm)$/.test(u.pathname))) {
       return M.film ? route.fulfill({ status: 200, contentType: 'video/webm', body: M.film }) : route.abort();
     }
     if (u.hostname.endsWith('freesound.org')) {
       if ((opt.freesound || 'abort') === 'abort') return route.abort();
-      return route.fulfill({ status: 200, contentType: 'audio/wav', body: u.pathname.includes('869851') ? M.rain : (u.pathname.includes('625771') ? M.vinyl : M.loop) });
+      if (u.pathname.includes('625771')) return fulfillMedia(route, M.vinyl, 'audio/wav');
+      return route.fulfill({ status: 200, contentType: 'audio/wav', body: u.pathname.includes('869851') ? M.rain : M.loop });
     }
     if (u.hostname.endsWith('wikimedia.org')) return M.pic ? route.fulfill({ status: 200, contentType: 'image/jpeg', body: M.pic }) : route.abort();
     if (u.hostname === 'api.artic.edu' && u.pathname.includes('/iiif/')) return M.pic ? route.fulfill({ status: 200, contentType: 'image/jpeg', body: M.pic }) : route.abort();

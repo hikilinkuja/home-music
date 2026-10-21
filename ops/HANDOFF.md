@@ -1,6 +1,6 @@
 # Passagem de trabalho para as sessões na nuvem
 
-Estado a 2026-10-08 (atualizado a 2026-10-19, v5.7 e auditoria de UI, rondas 0 a 3). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
+Estado a 2026-10-08 (atualizado a 2026-10-21, v5.8, abertura servida pelo próprio site; auditoria de UI, rondas 0 a 3). Ler primeiro o `CLAUDE.md` da raiz. Executar as tarefas por ordem,
 sem esperar nova ordem do Paulo, publicando por lotes (no máximo cerca de 150 faixas novas
 por commit, para não perder trabalho se a máquina for reciclada). Guardar os ficheiros de
 trabalho em `ops/queue/` e fazer commit deles com cada lote, para a sessão seguinte retomar.
@@ -245,6 +245,34 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
   com o estilo geral dentro da consola, barra de cima a 1024 px em duas filas; a ligação «Liner
   source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em
   `ops/queue/blurb-sources.tsv`), 5 (limpeza de código; motor a nível max).
+
+## Primeiro disco calado (v5.8, 2026-10-21; motor)
+
+- Queixa do Paulo: «music stops after playing for 1 second. when click mute it restarts for a second and then stops
+  again». Causa (notas em `ops/notes/2026-10-21/`): a API verdadeira do YouTube devolve cópias do estado do leitor
+  que só mudam com a mensagem seguinte dele, e o `unMute` com o volume a 0 põe-no em 5 (lido e medido); a rampa do
+  primeiro disco ficava à espera para sempre e o disco ficava a volume 0. O defeito vem do portão do som da v5.1;
+  a v5.7 transformou três segundos baixinhos em silêncio.
+- Feito: secção 15 do `build-liquid.py` (diff revisto; 15b: depois de um `seekTo` ou `playVideo` nosso, o portão espera
+  250 ms, porque a bateria assíncrona mostrou o som a abrir com o leitor no estado 3); leitor da sala de foco repõe o
+  volume depois do `unMute`;
+  YouTube simulado assíncrono nos testes (`ytAsync`, ou `HM_YT_ASYNC=1` para a bateria inteira) e teste novo
+  `t-realyt.js` (12 verificações; na v5.7 publicada passam 5).
+- Por confirmar: ouvir no computador e no telemóvel do Paulo. Se voltar a acontecer, pedir o registo (tecla d,
+  separador Log, exportar JSON).
+
+## Abertura (v5.8, 2026-10-21)
+
+- Queixa do Paulo: a abertura voltou a falhar («countless times»). Causa: a faixa vinha em streaming do archive.org,
+  que caiu várias vezes entre agosto e outubro de 2026; a 2026-10-21 não respondeu às ligações do GitHub Actions
+  (três tentativas de 60 s, 15h49 a 15h52 UTC).
+- Feito: a abertura e a agulha tocam primeiro as cópias do site (`sfx/intro-sound-killah.mp3`,
+  `sfx/vinyl-625771.mp3`) e só usam o archive.org e o freesound de reserva (secção 1 do l06; teste `t-intro.js`).
+  O vinil chegou ao `main` às 15h53 UTC (1 626 336 bytes, 56,6 s, MP3 de 48 kHz).
+- A faixa chegou ao `main` no mesmo dia, às 17h29 UTC, quando o archive.org voltou a responder (8 793 667 bytes,
+  MD5 conferido com os metadados do item; 320 kbps, 219 s). O fluxo `.github/workflows/intro-media.yml` fica só a
+  pedido («Run workflow»), para o caso de ser preciso trazer outra vez; no computador do Paulo também serve
+  `python3 ops/tools/fetch_intro_media.py`. O `validate.py` falha se os ficheiros faltarem.
 
 ## Próxima ronda (proposta)
 

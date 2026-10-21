@@ -1468,8 +1468,10 @@ function fcPlayer(cb){
           q.forEach(function(f){ try{ f(); }catch(err){} });
         },
         onStateChange:function(e){
-          /* portao do som: so com a musica em PLAYING; o estado -1 (anuncio a meio) volta a calar */
-          try{ if(e.data===1) fcp.yt.unMute(); else if(e.data===-1) fcp.yt.mute(); }catch(err){}
+          /* portao do som: so com a musica em PLAYING; o estado -1 (anuncio a meio) volta a calar. O volume
+             vai outra vez logo a seguir ao unMute: com o volume a 0 (musica calada no intervalo) o YouTube
+             poe-no em 5 (medido a 2026-10-21) */
+          try{ if(e.data===1){ fcp.yt.unMute(); fcp.yt.setVolume(fcVol()); } else if(e.data===-1) fcp.yt.mute(); }catch(err){}
           if(e.data===0 && FC.on && fcp.playing) fcNext();
         },
         onError:function(){ if(FC.on && fcp.playing) setTimeout(fcNext, 900); }

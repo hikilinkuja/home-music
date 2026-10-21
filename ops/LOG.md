@@ -1,5 +1,31 @@
 # Registo das voltas
 
+## 2026-10-21: v5.8, abertura servida pelo próprio site e primeiro disco já não calado (sessão Claude Code na nuvem)
+
+- Queixas do Paulo: a abertura voltou a falhar («countless times this happened»); «music stops after playing for
+  1 second. when click mute it restarts for a second and then stops again».
+- Abertura: a faixa vinha em streaming do archive.org, que caiu várias vezes entre agosto e outubro (registos
+  públicos) e, a 2026-10-21, não respondeu ao GitHub Actions das 15h49 às 15h52 UTC. Correção: a abertura e a agulha
+  tocam as cópias do site (`sfx/intro-sound-killah.mp3`, `sfx/vinyl-625771.mp3`), pedidas ao carregar, com o
+  archive.org e o freesound de reserva antes e depois do toque; registo da fonte em `hm_intro_log` (`si`, `fb`) e no
+  separador Engine do `?dev`. Os ficheiros vieram pelo fluxo novo `.github/workflows/intro-media.yml`
+  (`ops/tools/fetch_intro_media.py`, MD5 conferido com os metadados do Internet Archive): o vinil às 15h53, a faixa
+  às 17h29, quando o archive.org voltou. `sfx/LICENSES.md` atualizado (CC BY-NC-ND 4.0 permite a cópia inteira e sem
+  alteração, com crédito; o vinil é CC0). `validate.py` falha se faltarem.
+- Primeiro disco calado (motor, secção 15 do `build-liquid.py`, diff revisto): li o código da API do YouTube e medi o
+  leitor verdadeiro (`ops/notes/2026-10-21/`): as leituras são cópias que só mudam com a mensagem seguinte do leitor
+  e o `unMute` com o volume a 0 põe-no em 5. A rampa do primeiro disco ficava à espera para sempre e o disco a volume
+  0; cada «Unmute» dava uns segundos do volume 5 do YouTube até o guarda do som repor o 0. O defeito vem do portão do
+  som da v5.1 (a v5.0 não o tem; a v5.7 só trocou três segundos baixinhos por silêncio). 15b: depois de um `seekTo` ou
+  `playVideo` nosso, o portão espera 250 ms. Sala de foco: o leitor repõe o volume depois do `unMute`.
+- Testes: YouTube simulado assíncrono, como o verdadeiro (`ytAsync`; `HM_YT_ASYNC=1` liga-o em toda a bateria); teste
+  novo `t-realyt.js` (12 verificações; na v5.7 publicada passam 5); `t-intro.js` alargado (20, com os dois ficheiros
+  verdadeiros de `sfx/`); o simulador de áudio passou a responder a pedidos parciais (sem eles a agulha nunca saltava
+  para os 13 s nos testes). Bateria oficial: art 40, gate 7, rain 5, focus 121, devlog 10, intro 18 (20 depois de
+  chegar a faixa), ritual 14, ads 71, ui 47, side 20, realyt 12, todos a passar; a mesma bateria com o YouTube
+  assíncrono também passa toda (antes da 15b, o `t-ads` assíncrono falhava 5 verificações, como na v5.7).
+- Em fila: confirmar a ouvir no computador e no telemóvel; Recursive; ronda 5; ronda 4.
+
 ## 2026-10-19: escolha da letra e passagem para o computador (sessão Claude Code na nuvem)
 
 - Estudo de letras enviado ao Paulo (cinco folhas, seis pares contra as capturas dele). Escolha: 6, Recursive
