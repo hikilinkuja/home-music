@@ -24,6 +24,8 @@
   para os 13 s nos testes). Bateria oficial: art 40, gate 7, rain 5, focus 121, devlog 10, intro 18 (20 depois de
   chegar a faixa), ritual 14, ads 71, ui 47, side 20, realyt 12, todos a passar; a mesma bateria com o YouTube
   assíncrono também passa toda (antes da 15b, o `t-ads` assíncrono falhava 5 verificações, como na v5.7).
+- Servido confirmado: a liquid servida tem as fontes da abertura em lista (`P_SRCS`), o `gateSoon` e a rampa com
+  `opened`; o GitHub Pages serve as duas gravações com pedidos parciais (206; 8 793 667 e 1 626 336 bytes).
 - Em fila: confirmar a ouvir no computador e no telemóvel; Recursive; ronda 5; ronda 4.
 
 ## 2026-10-19: escolha da letra e passagem para o computador (sessão Claude Code na nuvem)
