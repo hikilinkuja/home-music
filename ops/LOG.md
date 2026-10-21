@@ -13,6 +13,7 @@
 - Prova: estilo calculado de 21 398 elementos em 22 estados (1440 e 390 px), zero diferenças; bateria completa antes e
   depois igual (art 40, gate 7, rain 5, focus 121, devlog 10, intro 20, ritual 14, ads 71, ui 54, side 20, realyt 12).
 - A v5.9 ficou servida: a página tem a Recursive e as variações, e o GitHub Pages serve a letra como `font/woff2`.
+- Servido confirmado: a liquid servida já não tem o `HMFOCUS`, o `skipIfBlocked` nem o `introAudio`, e tem o motor atual.
 - Em fila: ronda 4 (conteúdo e densidade, com o volume vertical opção A).
 
 ## 2026-10-21: v5.9, letra Recursive (sessão Claude Code na nuvem)
