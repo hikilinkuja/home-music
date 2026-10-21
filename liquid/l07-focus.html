@@ -121,7 +121,7 @@
   text-align:center; max-width:90vw; font-variation-settings:var(--fv-label)}
 #fcTag b{font-weight:400; color:var(--dim)}
 #fcDial{position:relative; width:var(--fc-ring); height:var(--fc-ring); background:none; border:0; padding:0;
-  cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%}
+  cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%; transition:width .6s ease, height .6s ease}
 #fcDial svg{position:absolute; inset:0; width:100%; height:100%}
 #fcDial .trk{fill:var(--chrome); stroke:var(--line); stroke-width:2}
 #fcArc{fill:none; stroke:var(--amber); stroke-width:3; stroke-dasharray:1080.7;
@@ -129,7 +129,6 @@
 #focus.brk #fcArc{stroke:var(--teal)}
 #fcDial .in{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:12px}
-#fcDial{transition:width .6s ease, height .6s ease}
 /* durante o foco so os minutos (os segundos a mudar no centro do ecra puxam o olhar); os
    segundos voltam ao passar o rato, em pausa e nos intervalos */
 #fcTime{font-size:calc(var(--fc-ring) * .25); font-size:25cqmin; line-height:1; letter-spacing:0; display:flex; align-items:baseline;
@@ -149,7 +148,7 @@
 #fcNote{width:100%; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:var(--fs-body); padding:0 12px}
 #fcNote:focus{border-color:var(--teal); outline:none}
-#fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+#fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; align-items:center}
 #focus #fcActs .tbtn[hidden]{display:none}
 #fcPhase{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); text-transform:uppercase; transition:color .6s; font-variation-settings:var(--fv-label)}
 #focus.brk #fcPhase{color:var(--teal)}
@@ -270,7 +269,6 @@
   color:var(--paper); font-family:var(--mono); font-size:var(--fs-body); letter-spacing:0; padding:0 10px}
 #fcIfRow input:focus{border-color:var(--teal); outline:none}
 #fcIfLnk{flex:none; white-space:nowrap}
-#fcActs{align-items:center}
 .fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:var(--dim); font-family:var(--mono);
   font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s; font-variation-settings:var(--fv-label)}
 .fc-quiet:hover{color:var(--paper); border-color:var(--line)}
@@ -336,9 +334,8 @@
   #fcIntent{height:48px; font-size:var(--fs-title)}
   #fcScenes{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px}
   .fc-card{min-height:0; padding:12px; gap:5px}
-  .fc-card .nm{font-size:var(--fs-small)}
+  .fc-card .nm{font-size:var(--fs-small); letter-spacing:var(--ls-caps)}
   .fc-card .for, #fcEntry .opt{display:none}
-  .fc-card .gs{font-size:var(--fs-small); line-height:1.5}
   .fc-card .sd{margin-top:2px}
   #fcPhone{margin-top:6px}
   #fcBegin{margin-top:8px; width:100%}
@@ -371,7 +368,6 @@
   #fcHabit .q{letter-spacing:0}
   #fcHabit .tbtn{padding:0 12px; letter-spacing:var(--ls-caps)}
   .fc-card .gs{display:none}
-  .fc-card .nm{letter-spacing:var(--ls-caps)}
   #fcSound{gap:2px 8px}
   #fcSound .k{display:none}
   #fcStep{font-size:var(--fs-small); letter-spacing:0; padding:0 8px}
@@ -2297,7 +2293,7 @@ function focusClose(){
 document.getElementById("focusBtn").addEventListener("click", focusOpen);
 $("fcExit").addEventListener("click", focusClose);
 profBuild();
-/* estado da sala para os testes (ops/tests/t-focus.js); o motor usa outro nome, HMFOCUS */
+/* estado da sala para os testes (ops/tests/t-focus.js) */
 window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor, log:function(){ return FL; }, xStats:function(){ return FL.x ? xStats(FL.x) : null; },
   xNext:xNext, dayKey:dayKey, csv:logCsv };
 })();

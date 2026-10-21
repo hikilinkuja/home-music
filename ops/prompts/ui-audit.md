@@ -84,7 +84,7 @@ nível (gaveta, dica, painel) e o que pode sair, com captura de antes e maquete 
 Prioridades: cartão do canto inferior esquerdo, barra de botões no telemóvel, sala de foco.
 Nenhuma funcionalidade sai sem decisão do Paulo.
 
-## Ronda 5: limpeza de código
+## Ronda 5: limpeza de código (feita a 2026-10-21, v5.10; `ops/notes/2026-10-21/ronda5.md`)
 Atualizar o inventário de código da ronda 0 e remover só o que se prova não ser usado.
 Prova por ocorrência: pesquisa no código e cobertura de CSS no Chromium. A cobertura só
 vale para os estados visitados, por isso uma regra só sai se não for usada em nenhum estado

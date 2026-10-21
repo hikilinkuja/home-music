@@ -228,9 +228,10 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
   rótulos e maiúsculas com `--fv-label` (monoespaçada linear), frases e campos com `--fv-text` (casual), escala fluida
   (+15% aos 2560 px), teste no `t-ui.js`. Não é motor; (3) volume vertical para Rain, Fire e Vinyl na barra da sala de foco, opção A
   (controlo vertical por cima de cada botão, ao passar o rato e ao segundo toque), na ronda 4.
-- Ordem pedida pelo Paulo a 2026-10-19 (confirmada a 2026-10-21): a Recursive (feita, v5.9) e depois a ronda 5 (limpeza de código, prompt em
-  `ops/prompts/ui-audit.md`; as cinco funções do motor sem chamador ficam a nível max, diff revisto). A ronda 4 fica em
-  fila depois disso, com o volume vertical opção A.
+- Ordem pedida pelo Paulo a 2026-10-19 (confirmada a 2026-10-21): a Recursive (feita, v5.9) e a ronda 5 (feita, v5.10:
+  saíram o `HMFOCUS` e as cinco funções do motor sem chamador, o resto da abertura antiga e seis regras de CSS repetidas;
+  zero diferenças no estilo calculado de 21 398 elementos em 22 estados; relatório em `ops/notes/2026-10-21/ronda5.md`).
+  Segue-se a ronda 4, com o volume vertical opção A.
 - Sessões no computador do Paulo (desde 2026-10-19, por limite de uso na nuvem): `git pull --rebase origin main`
   antes de tudo. Os testes precisam de Node, do Playwright com Chromium (no computador pode instalar-se com
   `npm i -g playwright` e `npx playwright install chromium`; a regra de não instalar é só da nuvem) e, para o teste
@@ -239,7 +240,7 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
   líquido sem fundo (nome do bloco, «on air», BPM), pulsar de «drop the needle» até 0,3, «Spin the dubplate»
   com o estilo geral dentro da consola, barra de cima a 1024 px em duas filas; a ligação «Liner
   source» só abre o campo `w`, 50 faixas; as fontes do Discogs dos 719 textos estão só em
-  `ops/queue/blurb-sources.tsv`), 5 (limpeza de código; motor a nível max).
+  `ops/queue/blurb-sources.tsv`).
 
 ## Primeiro disco calado (v5.8, 2026-10-21; motor)
 

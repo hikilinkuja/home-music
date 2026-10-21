@@ -6,7 +6,8 @@ Duas queixas do Paulo no mesmo dia: «why is the intro fucked up once again? cou
 Ficheiros desta pasta:
 - `yt-api-probe.js`: mede o leitor verdadeiro do YouTube (secção 2);
 - `compare-versions.js`: compara o som da emissão entre versões publicadas, com o YouTube simulado síncrono e
-  assíncrono (secção 4).
+  assíncrono (secção 4);
+- `ronda5.md`: a ronda 5 da auditoria de UI (limpeza de código), feita no mesmo dia.
 
 ## 1. A abertura
 

@@ -133,9 +133,10 @@ input,textarea,select{font-family:var(--font-text); font-variation-settings:var(
 #standby.off{opacity:0; pointer-events:none}
 #standby .big{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--red); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 #standbyMsg{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); text-align:center; max-width:34ch}
-.vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
+/* o volume nunca sai do painel: ocupa a linha de baixo, a largura que houver */
+.vp-ctrl{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:7px 8px;
   background:var(--glass); border:1px solid var(--line); border-top:none}
-#vol{flex:1; accent-color:var(--amber); background:transparent}
+#vol{flex:1 1 100%; width:100%; max-width:none; min-width:0; margin-top:6px; accent-color:var(--amber); background:transparent}
 /* rotulo curto no telemovel (monitor de 200 px): «Earn a skip» punha os botoes do monitor em tres filas */
 .lbl-narrow{display:none}
 #needle{
@@ -473,9 +474,6 @@ input,textarea,select{font-family:var(--font-text); font-variation-settings:var(
   .vp-resize{display:none}
   #vol{display:none}
 }
-/* o volume nunca sai do painel: ocupa a linha de baixo, a largura que houver */
-.vp-ctrl{flex-wrap:wrap}
-#vol{flex:1 1 100%; width:100%; max-width:none; min-width:0; margin-top:6px}
 .gx-eph{margin:12px 0 4px}
 .gx-eph img{width:100%; border:1px solid var(--line); display:block}
 .gx-eph figcaption{font-size:var(--fs-small); color:var(--dim); letter-spacing:0; padding-top:6px; line-height:1.8}

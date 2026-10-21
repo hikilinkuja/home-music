@@ -1686,6 +1686,46 @@ rep('''  ldStart(p, t.v);
   gateSoon(k);
 }''', what='15b portao no pousar')
 
+# 16) limpeza (auditoria de UI, ronda 5, 2026-10-21; ops/notes/2026-10-21/ronda5.md): sai so o que se provou
+#     morto, sem nenhuma referencia na pagina montada nem nos testes. O HMFOCUS (o modo de foco antigo da radio:
+#     valvula de generos e ducking) nunca e ligado (nada escreve HMFOCUS.on), por isso os seus ramos nunca corriam;
+#     HM.skipIfBlocked, HM.flushPeek, HM.reVol, FX.transitionFx e FX.oneDrop nao tem chamador; introAudio e
+#     introFading eram o resto da abertura da sala antiga (sempre null e false desde a secao 1). Comportamento igual
+rep(new_v1, old_v1, what='16 HMFOCUS na escolha do genero')
+rep(new_v2, old_v2, what='16 HMFOCUS no fim da corrida')
+rep('  var fdk=(window.HMFOCUS && HMFOCUS.on && HMFOCUS.duck) || 1;\n', '', what='16 HMFOCUS no volume')
+rep('masterVol * f * fdk * sdf', 'masterVol * f * sdf', what='16 volume sem fdk')
+rep('window.HMFOCUS={ on:false, duck:1, allow:{} };\n', '', what='16 HMFOCUS')
+rep('''window.HM.skipIfBlocked=function(){
+  try{
+    if(window.HMFOCUS && HMFOCUS.on && current && !HMFOCUS.allow[current.g]){ hardNext("focus"); return true; }
+  }catch(e){}
+  return false;
+};
+''', '', what='16 skipIfBlocked')
+rep('window.HM.flushPeek=function(){ try{ devQ.length=0; }catch(e){} };\n', '', what='16 flushPeek')
+rep('window.HM.reVol=function(){ try{ applyVol("A"); applyVol("B"); }catch(e){} };\n', '', what='16 reVol')
+rep('''  /* o kit dub da troca antiga, para quem o chame: agora agendado no relogio do audio */
+  transitionFx: function(at){ this.kit("dub", at||0); },
+''', '', what='16 transitionFx')
+rep('''  oneDrop: function(){
+    /* dois compassos de one drop a 72 BPM: kick no 3, rim com eco no 3 e meio */
+    var self=this, beat=60/72;
+    [0,1].forEach(function(bar){
+      var b0=bar*4*beat;
+      self.kick(b0+2*beat);
+      self.rim(b0+2*beat, true);
+      self.rim(b0+3.5*beat, bar===1);
+      self.bubble(b0+1*beat); self.bubble(b0+3*beat);
+    });
+  },
+''', '', what='16 oneDrop')
+rep('  if(introAudio && !introFading){ try{ introAudio.volume=masterVol/100; }catch(e){} }\n', '', what='16 introAudio no volume')
+rep('  if(introAudio){ try{ introAudio.muted = muted; }catch(e){} }\n', '', what='16 introAudio no mute')
+rep('/* a introducao da sala liquida vive no modulo l06 */\nvar introAudio=null, introFading=false;\n', '/* a introducao da sala liquida vive no modulo l06 */\n', what='16 introAudio')
+for dead in ('HMFOCUS', 'skipIfBlocked', 'flushPeek', 'reVol', 'transitionFx', 'oneDrop', 'introAudio', 'introFading'):
+    assert dead not in s, '16: ainda ha %s' % dead
+
 assert 'REC_TIMEOUT' not in s and 'hardNextAudio' not in s and 'cutTo(' not in s, '12: restos do prazo fixo e do corte no mesmo prato'
 assert s.count('.unMute(')==1, '12: o unMute so pode viver no portao do som (gate): %d' % s.count('.unMute(')
 

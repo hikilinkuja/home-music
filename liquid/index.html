@@ -133,9 +133,10 @@ input,textarea,select{font-family:var(--font-text); font-variation-settings:var(
 #standby.off{opacity:0; pointer-events:none}
 #standby .big{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--red); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 #standbyMsg{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); text-align:center; max-width:34ch}
-.vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
+/* o volume nunca sai do painel: ocupa a linha de baixo, a largura que houver */
+.vp-ctrl{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:7px 8px;
   background:var(--glass); border:1px solid var(--line); border-top:none}
-#vol{flex:1; accent-color:var(--amber); background:transparent}
+#vol{flex:1 1 100%; width:100%; max-width:none; min-width:0; margin-top:6px; accent-color:var(--amber); background:transparent}
 /* rotulo curto no telemovel (monitor de 200 px): «Earn a skip» punha os botoes do monitor em tres filas */
 .lbl-narrow{display:none}
 #needle{
@@ -473,9 +474,6 @@ input,textarea,select{font-family:var(--font-text); font-variation-settings:var(
   .vp-resize{display:none}
   #vol{display:none}
 }
-/* o volume nunca sai do painel: ocupa a linha de baixo, a largura que houver */
-.vp-ctrl{flex-wrap:wrap}
-#vol{flex:1 1 100%; width:100%; max-width:none; min-width:0; margin-top:6px}
 .gx-eph{margin:12px 0 4px}
 .gx-eph img{width:100%; border:1px solid var(--line); display:block}
 .gx-eph figcaption{font-size:var(--fs-small); color:var(--dim); letter-spacing:0; padding-top:6px; line-height:1.8}
@@ -4358,17 +4356,6 @@ var FX = {
       self.env(g2, t, 0.004, 0.09, 0.09);
     });
   },
-  oneDrop: function(){
-    /* dois compassos de one drop a 72 BPM: kick no 3, rim com eco no 3 e meio */
-    var self=this, beat=60/72;
-    [0,1].forEach(function(bar){
-      var b0=bar*4*beat;
-      self.kick(b0+2*beat);
-      self.rim(b0+2*beat, true);
-      self.rim(b0+3.5*beat, bar===1);
-      self.bubble(b0+1*beat); self.bubble(b0+3*beat);
-    });
-  },
   /* pousar a agulha, como um braco a serio e sempre a seco (nunca pelo eco): o contacto do
      diamante (estalido curto de banda larga com um ressalto), o corpo surdo da capsula em
      graves e medios graves (ruido em modos amortecidos, nao um bip de sintetizador), e ~0,4 s
@@ -4526,8 +4513,6 @@ var FX = {
     if(!cache.drop) cache.drop=this._mkDrop(c);
     if(!cache.lift) cache.lift=this._mkLift(c);
   },
-  /* o kit dub da troca antiga, para quem o chame: agora agendado no relogio do audio */
-  transitionFx: function(at){ this.kit("dub", at||0); },
   /* kits do intervalo entre discos, todos com at (s a partir de agora). Ensaio: HMFX.kit(nome) */
   kits: {
     /* o kit dub de sempre (one drop, bolha de orgao, sub, telefone), encolhido para caber entre
@@ -4836,9 +4821,7 @@ function genreHasTracks(gn){
   return TRACKS.some(function(t){ return t.g===gn && !deadIds[t.v]; });
 }
 function pickGenre(fromG){
-  var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks).filter(function(gg){ return !window.HMFOCUS || !HMFOCUS.on || HMFOCUS.allow[gg]; });
-  if(window.HMFOCUS && HMFOCUS.on && HMFOCUS.extra){ HMFOCUS.extra.forEach(function(gg){ if(HMFOCUS.allow[gg] && genreHasTracks(gg) && bg.indexOf(gg)<0) bg.push(gg); }); }
-  if(!bg.length) bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
+  var bg = BLOCKS[currentBlock].genres.filter(genreHasTracks);
   if(!bg.length) return null;
   function dBpm(a,b){ return Math.abs((GBPM[a]||120)-(GBPM[b]||120)); }
   if(fromG && ADJ[fromG]){
@@ -4870,8 +4853,7 @@ function buildQueue(){ currentGenre=null; runLeft=0; }
 function nextTrack(){
   PW="run"; OPV=null; DDP=false;
   var bg = BLOCKS[currentBlock].genres;
-  var fOut = window.HMFOCUS && HMFOCUS.on && currentGenre && !HMFOCUS.allow[currentGenre];
-  if(!currentGenre || fOut || bg.indexOf(currentGenre)<0 || !genreHasTracks(currentGenre) || runLeft<=0){
+  if(!currentGenre || bg.indexOf(currentGenre)<0 || !genreHasTracks(currentGenre) || runLeft<=0){
     var wasBridge=false;
     if(forceGenre && genreHasTracks(forceGenre)){
       currentGenre=forceGenre; forceGenre=null; wasBridge=true; PW="force";
@@ -4943,9 +4925,8 @@ function deckOfPlayer(k){ return SIMPLE ? rigDeck : k; }
 function applyVol(k){
   var p=P[k]; if(!p || !p.ready || !p.yt) return;
   var f = (p.fade==null?1:p.fade);
-  var fdk=(window.HMFOCUS && HMFOCUS.on && HMFOCUS.duck) || 1;
   var sdf=(window.HMSIDE && HMSIDE.f!=null)?HMSIDE.f:1;
-  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f * fdk * sdf)))); }catch(e){}
+  try{ p.yt.setVolume(Math.round(Math.max(0, Math.min(100, masterVol * f * sdf)))); }catch(e){}
 }
 function fadeVol(p, f){ p.fade = f; applyVol(p.k); }
 function audibleLevel(k){
@@ -5654,7 +5635,6 @@ volEl.addEventListener("input", function(){
   try{ localStorage.setItem("hm_vol", String(masterVol)); }catch(e){}
   applyVol("A"); applyVol("B");
   FX.setVol(masterVol/100);
-  if(introAudio && !introFading){ try{ introAudio.volume=masterVol/100; }catch(e){} }
 });
 FX.setVol(masterVol/100);
 function toggleMute(){
@@ -5664,7 +5644,6 @@ function toggleMute(){
      musica em PLAYING (o armado, a espera no prato ou a rodar mudo durante o rito, abre no pousar) */
   ["A","B"].forEach(function(k){ var p=P[k]; if(p.ready){ try{ if(muted) p.yt.mute(); else gate(k); }catch(e){} } });
   try{ FX.setVol(masterVol/100, 0.08); }catch(e){}
-  if(introAudio){ try{ introAudio.muted = muted; }catch(e){} }
   $("muteBtn").classList.toggle("on", muted);
   $("muteBtn").textContent = muted ? "Unmute" : "Mute";
 }
@@ -6076,7 +6055,6 @@ document.addEventListener("keydown", function(e){
 });
 
 /* a introducao da sala liquida vive no modulo l06 */
-var introAudio=null, introFading=false;
 
 /* ---------------- arranque automatico: sem ecra de press play ---------------- */
 function firstGesture(){
@@ -6126,17 +6104,8 @@ window.HM={
     })();
   }
 };
-window.HMFOCUS={ on:false, duck:1, allow:{} };
 window.HM.side=function(on){ try{ sideFade("arcade", on); }catch(e){} };
 window.HM.sideKey=function(k, on, ms){ try{ sideFade(k, on, ms); }catch(e){} };
-window.HM.skipIfBlocked=function(){
-  try{
-    if(window.HMFOCUS && HMFOCUS.on && current && !HMFOCUS.allow[current.g]){ hardNext("focus"); return true; }
-  }catch(e){}
-  return false;
-};
-window.HM.flushPeek=function(){ try{ devQ.length=0; }catch(e){} };
-window.HM.reVol=function(){ try{ applyVol("A"); applyVol("B"); }catch(e){} };
 var guardOn=false;
 function audioGuard(){
   if(guardOn) return; guardOn=true;
@@ -7397,7 +7366,7 @@ window.HMDAWN=(function(){
   text-align:center; max-width:90vw; font-variation-settings:var(--fv-label)}
 #fcTag b{font-weight:400; color:var(--dim)}
 #fcDial{position:relative; width:var(--fc-ring); height:var(--fc-ring); background:none; border:0; padding:0;
-  cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%}
+  cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%; transition:width .6s ease, height .6s ease}
 #fcDial svg{position:absolute; inset:0; width:100%; height:100%}
 #fcDial .trk{fill:var(--chrome); stroke:var(--line); stroke-width:2}
 #fcArc{fill:none; stroke:var(--amber); stroke-width:3; stroke-dasharray:1080.7;
@@ -7405,7 +7374,6 @@ window.HMDAWN=(function(){
 #focus.brk #fcArc{stroke:var(--teal)}
 #fcDial .in{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:12px}
-#fcDial{transition:width .6s ease, height .6s ease}
 /* durante o foco so os minutos (os segundos a mudar no centro do ecra puxam o olhar); os
    segundos voltam ao passar o rato, em pausa e nos intervalos */
 #fcTime{font-size:calc(var(--fc-ring) * .25); font-size:25cqmin; line-height:1; letter-spacing:0; display:flex; align-items:baseline;
@@ -7425,7 +7393,7 @@ window.HMDAWN=(function(){
 #fcNote{width:100%; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:var(--fs-body); padding:0 12px}
 #fcNote:focus{border-color:var(--teal); outline:none}
-#fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+#fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; align-items:center}
 #focus #fcActs .tbtn[hidden]{display:none}
 #fcPhase{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); text-transform:uppercase; transition:color .6s; font-variation-settings:var(--fv-label)}
 #focus.brk #fcPhase{color:var(--teal)}
@@ -7546,7 +7514,6 @@ window.HMDAWN=(function(){
   color:var(--paper); font-family:var(--mono); font-size:var(--fs-body); letter-spacing:0; padding:0 10px}
 #fcIfRow input:focus{border-color:var(--teal); outline:none}
 #fcIfLnk{flex:none; white-space:nowrap}
-#fcActs{align-items:center}
 .fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:var(--dim); font-family:var(--mono);
   font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s; font-variation-settings:var(--fv-label)}
 .fc-quiet:hover{color:var(--paper); border-color:var(--line)}
@@ -7612,9 +7579,8 @@ window.HMDAWN=(function(){
   #fcIntent{height:48px; font-size:var(--fs-title)}
   #fcScenes{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px}
   .fc-card{min-height:0; padding:12px; gap:5px}
-  .fc-card .nm{font-size:var(--fs-small)}
+  .fc-card .nm{font-size:var(--fs-small); letter-spacing:var(--ls-caps)}
   .fc-card .for, #fcEntry .opt{display:none}
-  .fc-card .gs{font-size:var(--fs-small); line-height:1.5}
   .fc-card .sd{margin-top:2px}
   #fcPhone{margin-top:6px}
   #fcBegin{margin-top:8px; width:100%}
@@ -7647,7 +7613,6 @@ window.HMDAWN=(function(){
   #fcHabit .q{letter-spacing:0}
   #fcHabit .tbtn{padding:0 12px; letter-spacing:var(--ls-caps)}
   .fc-card .gs{display:none}
-  .fc-card .nm{letter-spacing:var(--ls-caps)}
   #fcSound{gap:2px 8px}
   #fcSound .k{display:none}
   #fcStep{font-size:var(--fs-small); letter-spacing:0; padding:0 8px}
@@ -9573,7 +9538,7 @@ function focusClose(){
 document.getElementById("focusBtn").addEventListener("click", focusOpen);
 $("fcExit").addEventListener("click", focusClose);
 profBuild();
-/* estado da sala para os testes (ops/tests/t-focus.js); o motor usa outro nome, HMFOCUS */
+/* estado da sala para os testes (ops/tests/t-focus.js) */
 window.HMFR={ fc:FC, fresh:freshLabel, profFor:profFor, log:function(){ return FL; }, xStats:function(){ return FL.x ? xStats(FL.x) : null; },
   xNext:xNext, dayKey:dayKey, csv:logCsv };
 })();

@@ -1,5 +1,20 @@
 # Registo das voltas
 
+## 2026-10-21: v5.10, auditoria de UI, ronda 5 (limpeza de código) (sessão Claude Code na nuvem)
+
+- Inventário atualizado (`ui_audit.js`, `ui_report.py`, `ui_static.py`): CSS com 672 regras, nenhuma sem referência
+  fora do CSS; JavaScript com 525 funções, cinco sem nenhuma referência (as do motor já anotadas na ronda 0).
+- Saiu (motor, secção 16 do `build-liquid.py`, diff revisto): o `HMFOCUS` (modo de foco antigo da rádio, que nada
+  liga), `HM.skipIfBlocked`, `HM.flushPeek`, `HM.reVol`, `FX.transitionFx`, `FX.oneDrop` e o resto da abertura da sala
+  antiga (`introAudio`, `introFading`); o l05 gerado perde 29 linhas. CSS: seis regras repetidas fundidas ou retiradas
+  (l01 `.vp-ctrl` e `#vol`; l07 `#fcDial`, `#fcActs`, `.fc-card .nm` e a `.fc-card .gs` escondida). Ficam os seis blocos
+  `@media` do telemóvel no l01 (regras únicas junto de cada secção; juntá-los mudaria a cascata). Relatório:
+  `ops/notes/2026-10-21/ronda5.md`.
+- Prova: estilo calculado de 21 398 elementos em 22 estados (1440 e 390 px), zero diferenças; bateria completa antes e
+  depois igual (art 40, gate 7, rain 5, focus 121, devlog 10, intro 20, ritual 14, ads 71, ui 54, side 20, realyt 12).
+- A v5.9 ficou servida: a página tem a Recursive e as variações, e o GitHub Pages serve a letra como `font/woff2`.
+- Em fila: ronda 4 (conteúdo e densidade, com o volume vertical opção A).
+
 ## 2026-10-21: v5.9, letra Recursive (sessão Claude Code na nuvem)
 
 - O Paulo confirmou que a v5.8 funciona e pediu a letra escolhida (Recursive) e, a seguir, a ronda 5.
