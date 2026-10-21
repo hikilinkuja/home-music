@@ -162,6 +162,13 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
   (Actions, «Run workflow»; corre `ops/tools/fetch_intro_media.py`, que confere o MD5; da nuvem do Claude esses
   anfitriões estão bloqueados); o `validate.py` falha se faltarem ou não forem MP3. `hm_intro_log` regista a fonte que tocou (`si`: 0 site, 1 reserva) e as que falharam (`fb`).
   A sala antiga, congelada, continua a depender do archive.org.
+- Letra da liquid (v5.9, escolhida pelo Paulo a 2026-10-19; `liquid/fonts/README.md`): Recursive, servida pelo
+  próprio site (`liquid/fonts/`, licença OFL). No `:root` do l01: `--font-label` e `--fv-label` (`"MONO" 1, "CASL" 0`,
+  monoespaçada e linear, a largura de sempre) para rótulos, maiúsculas, textos de 10 px, números do mostrador e o cartão
+  da faixa; `--font-text` e `--fv-text` (`"MONO" 0, "CASL" 0.6`, casual e proporcional) para as frases e os campos de
+  texto. Regra: toda a regra CSS com `text-transform:uppercase` ou `--fs-label` leva
+  `font-variation-settings:var(--fv-label)` (o `t-ui.js` verifica). Tamanhos fluidos: iguais até 1440 px de largura,
+  15% maiores aos 2560 px.
 - Som do «dawn override»: `sfx/dawn-mc.mp3` ainda não existe; o módulo HMDAWN (l06) toca os
   efeitos e salta a voz até o Paulo enviar a gravação.
 - Notas de análise (mapas do motor, da galeria, da sala de foco, diagnósticos, conceitos de
@@ -179,7 +186,7 @@ curso e a fila estão em `ops/HANDOFF.md`; o histórico das voltas em `ops/LOG.m
    Se a mudança tocar no motor, na interface ou nas salas: `bash ops/tests/run.sh` (monta e
    corre os testes no Chromium com o YouTube simulado, cerca de 22 minutos; ver
    `ops/tests/README.md`). Com `FAIL`, não publicar.
-4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.8), e
+4. Commit com mensagem curta em inglês, prefixada pela versão (próxima: v5.10), e
    `git push origin HEAD:main`. O GitHub Pages atualiza em um a dois minutos.
 5. Confirmar o servido com um pedido a
    `https://hikilinkuja.github.io/home-music/liquid/index.html?cb=<tempo>`.

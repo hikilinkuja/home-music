@@ -1,5 +1,20 @@
 # Registo das voltas
 
+## 2026-10-21: v5.9, letra Recursive (sessão Claude Code na nuvem)
+
+- O Paulo confirmou que a v5.8 funciona e pediu a letra escolhida (Recursive) e, a seguir, a ronda 5.
+- Letra servida pelo site (`liquid/fonts/`: subconjuntos latino e latino alargado com todos os eixos, do pacote npm
+  `@fontsource-variable/recursive` 5.3.0, e a licença OFL); `@font-face` no l01; `--font-label` e `--fv-label`
+  (monoespaçada linear) em todas as regras com maiúsculas ou 10 px (80 regras, por script), no cartão da faixa, nos
+  relógios, no alvo do Earn a skip e no Begin; `--font-text` e `--fv-text` (casual) no corpo e nos campos de texto.
+  Medido nos estados abertos (sala, sugestão, sala de foco, «why?», gaveta, arcada) a 390, 1440 e 2560 px: nenhum
+  texto com a variação errada; o subconjunto alargado não chega a ser pedido.
+- Escala fluida: os cinco tamanhos iguais até 1440 px e 15% maiores aos 2560 px (10/12/13/14/16 para
+  11,5/13,8/15/16,1/18,4).
+- Testes: `t-ui.js` com seis verificações novas (54); `validate.py` verifica os ficheiros da letra. Bateria completa:
+  art 40, gate 7, rain 5, focus 121, devlog 10, intro 20, ritual 14, ads 71, ui 54, side 20, realyt 12, todos a passar.
+- Em fila: ronda 5 (limpeza de código), ronda 4.
+
 ## 2026-10-21: v5.8, abertura servida pelo próprio site e primeiro disco já não calado (sessão Claude Code na nuvem)
 
 - Queixas do Paulo: a abertura voltou a falhar («countless times this happened»); «music stops after playing for

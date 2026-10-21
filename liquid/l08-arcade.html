@@ -6,7 +6,7 @@
 #arcade.on{display:block}
 #arcClose{position:absolute; right:10px; top:8px; background:none; border:none; color:var(--dim);
   font-size:var(--fs-head); cursor:pointer}
-#arcade h3{margin:0 0 2px; font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber)}
+#arcade h3{margin:0 0 2px; font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber); font-variation-settings:var(--fv-label)}
 #arcade .asub{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); margin:0 0 14px}
 .arc-tabs{display:flex; gap:7px; margin:0 0 16px}
 .arc-game{display:none}
@@ -19,7 +19,7 @@
 #arcYt{width:100%; height:100%}
 #arcMask{position:absolute; inset:0; background:repeating-linear-gradient(45deg,var(--surface) 0 12px,var(--ink) 12px 24px);
   display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:var(--fs-label);
-  letter-spacing:var(--ls-caps); text-transform:uppercase; text-align:center; padding:10px}
+  letter-spacing:var(--ls-caps); text-transform:uppercase; text-align:center; padding:10px; font-variation-settings:var(--fv-label)}
 #arcOpts{flex:1; min-width:250px}
 .arc-opt{display:block; width:100%; text-align:left; margin:0 0 7px; padding:9px 12px}
 .arc-opt.good{color:var(--ink); background:var(--teal); border-color:var(--teal)}
@@ -34,7 +34,7 @@
 #dkCrate{display:flex; gap:7px; flex-wrap:wrap; margin:6px 0 16px}
 .dkPlate{background:var(--dk-wood-lit); border:1px solid var(--dk-edge); color:var(--dk-text); cursor:pointer;
   font-family:var(--mono); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase;
-  padding:8px 11px; text-align:left; line-height:1.5}
+  padding:8px 11px; text-align:left; line-height:1.5; font-variation-settings:var(--fv-label)}
 .dkPlate b{display:block; color:var(--dk-text-hi); font-weight:500; letter-spacing:var(--ls-caps)}
 .dkPlate.on{background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-wood)}
 .dkPlate.on b{color:var(--dk-wood)}
@@ -43,8 +43,8 @@
 #desk::before{content:""; display:block; position:absolute; left:0; right:0; top:0; height:4px;
   background:linear-gradient(90deg, var(--dk-green) 0 33%, var(--dk-gold) 33% 66%, var(--dk-red) 66% 100%)}
 #deskHead{display:flex; align-items:center; gap:12px; margin:6px 0 16px}
-#deskHead .dname{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dk-text-hi); text-transform:uppercase}
-#deskHead .dsub{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dk-dim); text-transform:uppercase}
+#deskHead .dname{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dk-text-hi); text-transform:uppercase; font-variation-settings:var(--fv-label)}
+#deskHead .dsub{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dk-dim); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 #dkPlay{margin-left:auto}
 #deskRow{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start}
 .kbank{display:flex; gap:18px; flex-wrap:wrap}
@@ -56,7 +56,7 @@
 .kcap i{position:absolute; left:50%; top:4px; width:3px; height:18px; margin-left:-1.5px;
   background:var(--dk-red); border-radius:2px; transform-origin:50% 25px}
 .knob label{display:block; margin-top:7px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dk-text);
-  text-transform:uppercase}
+  text-transform:uppercase; font-variation-settings:var(--fv-label)}
 .knob .kv{font-size:var(--fs-small); color:var(--dk-dim)}
 .kscale{position:absolute; inset:-7px; border-radius:50%; border:1px dotted var(--dk-edge)}
 #dkTimeBank{display:flex; flex-direction:column; gap:6px}

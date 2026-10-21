@@ -1,5 +1,9 @@
 # Estudo de letras (ronda 3b da auditoria de UI), 2026-10-19
 
+**Implementado na v5.9 (2026-10-21): a 6, Recursive**, servida pelo site (`liquid/fonts/`), com a regra do estudo
+(rótulos e maiúsculas monoespaçados, frases casuais) escrita em CSS e verificada no `t-ui.js` (nenhum desvio nos
+estados abertos, a 390, 1440 e 2560 px), e a escala fluida (+15% aos 2560 px).
+
 Pedido do Paulo: no monitor grande, o texto corrido em Courier New lê-se mal (painel Suggest a tune, cartões das
 cenas, zona «why?», gaveta de ajustes); o cartão da faixa, em contrapartida, «brilha». Leitura: a Courier New serve
 como letra de exibição (curta, grande, negrito, maiúsculas) e falha como letra de texto (traço fino, monoespaçada,

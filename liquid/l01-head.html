@@ -19,14 +19,37 @@
   --blk:var(--amber);   /* acento do bloco: o motor muda-o (l05, setNow) */
   /* tipografia por papeis (auditoria de UI, ronda 3; ops/notes/2026-10-18/ui-type.md): cinco tamanhos e dois
      espacamentos; as maiusculas so em rotulos, botoes e titulos curtos; ops/tests/t-ui.js verifica */
-  --fs-label:10px; --fs-small:12px; --fs-body:13px; --fs-title:14px; --fs-head:16px;
+  /* tamanhos fluidos (2026-10-21): iguais ate 1440 px de largura; crescem ate +15% aos 2560 px (monitor grande) */
+  --fs-label:clamp(10px, calc(10px + (100vw - 1440px) * .001339), 11.5px);
+  --fs-small:clamp(12px, calc(12px + (100vw - 1440px) * .001607), 13.8px);
+  --fs-body:clamp(13px, calc(13px + (100vw - 1440px) * .001786), 15px);
+  --fs-title:clamp(14px, calc(14px + (100vw - 1440px) * .001875), 16.1px);
+  --fs-head:clamp(16px, calc(16px + (100vw - 1440px) * .002143), 18.4px);
   --ls-caps:.12em; --ls-title:.2em;
-  --mono:"Courier New", ui-monospace, Menlo, monospace;
+  /* letra (ronda 3b, escolhida pelo Paulo a 2026-10-19; liquid/fonts/README.md): Recursive, servida pelo proprio
+     site; rotulos, maiusculas, numeros e o cartao da faixa monoespacados e lineares (--fv-label, a largura de
+     sempre: 0,6 do tamanho por letra), frases em minusculas e campos de texto casuais e proporcionais (--fv-text) */
+  --font-label:"Recursive", "Courier New", ui-monospace, Menlo, monospace;
+  --font-text:"Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:var(--font-label);
+  --fv-label:"MONO" 1, "CASL" 0;
+  --fv-text:"MONO" 0, "CASL" 0.6;
 }
+@font-face{font-family:"Recursive"; font-style:oblique 0deg 15deg; font-weight:300 1000; font-display:swap;
+  src:url("fonts/recursive-latin-full-normal.woff2") format("woff2-variations"), url("fonts/recursive-latin-full-normal.woff2") format("woff2");
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Recursive"; font-style:oblique 0deg 15deg; font-weight:300 1000; font-display:swap;
+  src:url("fonts/recursive-latin-ext-full-normal.woff2") format("woff2-variations"), url("fonts/recursive-latin-ext-full-normal.woff2") format("woff2");
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0; background:var(--bg); color:var(--paper); font-family:var(--mono); overflow:hidden}
-button{font-family:var(--mono)}
+body{margin:0; background:var(--bg); color:var(--paper); font-family:var(--font-text); font-variation-settings:var(--fv-text); overflow:hidden}
+button{font-family:var(--mono); font-variation-settings:inherit}
+input,textarea,select{font-family:var(--font-text); font-variation-settings:var(--fv-text)}
+/* rotulos: o que se escreve em maiusculas ou a 10 px leva a variacao monoespacada (as regras com
+   text-transform:uppercase ou --fs-label tem --fv-label); e o cartao da faixa, os relogios, os numeros do
+   mostrador (o alvo do Earn a skip) e o Begin */
+#tArtist, #tTitle, #clock, #fcTime, #fcClock, #fcBegin, #skTarget{font-family:var(--font-label); font-variation-settings:var(--fv-label)}
 ::placeholder{color:var(--dim); opacity:1}
 :focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
@@ -42,8 +65,8 @@ button{font-family:var(--mono)}
   background:linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
 }
 .brand b{font-size:var(--fs-head); letter-spacing:var(--ls-title); color:var(--paper); text-shadow:2px 2px 0 rgba(0,0,0,.8)}
-.brand span{margin-left:10px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--blk)}
-.onair{display:flex; align-items:center; gap:7px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim)}
+.brand span{margin-left:10px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--blk); font-variation-settings:var(--fv-label)}
+.onair{display:flex; align-items:center; gap:7px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
 .onair .dot{width:6px; height:6px; background:var(--red); border-radius:50%; animation:blink 2.1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 .hdr-btns{margin-left:auto; display:flex; align-items:center; gap:8px}
@@ -51,8 +74,7 @@ button{font-family:var(--mono)}
 .tbtn{
   cursor:pointer; background:var(--chrome); border:1px solid var(--line); color:var(--dim);
   font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:7px 11px;
-  font-family:var(--mono); text-decoration:none; display:inline-flex; align-items:center;
-}
+  font-family:var(--mono); text-decoration:none; display:inline-flex; align-items:center; font-variation-settings:var(--fv-label)}
 .tbtn:hover{color:var(--amber); border-color:var(--amber)}
 .tbtn.on{color:var(--ink); background:var(--amber); border-color:var(--amber)}
 /* regresso a radio (ala da arte, sala de foco): debrum vermelho por fora, distinto dos outros
@@ -68,25 +90,25 @@ button{font-family:var(--mono)}
 }
 .chiprow{display:flex; gap:10px; align-items:baseline; margin-bottom:6px}
 #gChip{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--ink);
-  background:var(--blk); padding:3px 8px; text-shadow:none}
-#tYear{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim)}
-#tBpm{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); border:1px solid var(--amber-edge); padding:2px 6px; text-shadow:none}
+  background:var(--blk); padding:3px 8px; text-shadow:none; font-variation-settings:var(--fv-label)}
+#tYear{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim); font-variation-settings:var(--fv-label)}
+#tBpm{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); border:1px solid var(--amber-edge); padding:2px 6px; text-shadow:none; font-variation-settings:var(--fv-label)}
 #tFresh{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--ink);
-  background:var(--teal); padding:3px 7px; text-shadow:none}
-#tArtist{margin:0; font-size:clamp(20px,3.4vw,34px); letter-spacing:var(--ls-caps); text-transform:uppercase; line-height:1.08}
+  background:var(--teal); padding:3px 7px; text-shadow:none; font-variation-settings:var(--fv-label)}
+#tArtist{margin:0; font-size:clamp(20px,3.4vw,34px); letter-spacing:var(--ls-caps); text-transform:uppercase; line-height:1.08; font-variation-settings:var(--fv-label)}
 #tTitle{color:var(--amber); font-size:clamp(13px,1.8vw,17px); margin:4px 0 8px}
 #tBlurb{color:var(--text); font-size:var(--fs-body); line-height:1.55; margin:0; max-width:52ch;
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
 .t-links{margin-top:9px; display:flex; gap:9px; flex-wrap:wrap}
 .t-links a{color:var(--teal); text-decoration:none; font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  text-transform:uppercase; border:1px solid var(--teal-edge); padding:5px 9px; background:var(--chrome)}
+  text-transform:uppercase; border:1px solid var(--teal-edge); padding:5px 9px; background:var(--chrome); font-variation-settings:var(--fv-label)}
 .t-links a:hover{border-color:var(--teal)}
 
 /* o monitor: o menor leitor conforme, moldura mate ao canto */
 .vidpanel{position:fixed; right:20px; bottom:20px; z-index:30; width:300px}
 .vp-top{display:flex; justify-content:space-between; align-items:center; padding:5px 8px;
   background:var(--glass); border:1px solid var(--line); border-bottom:none;
-  font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim)}
+  font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
 .vp-top .dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
 .vp-screen{position:relative; width:300px; height:200px; background:var(--bg); border:1px solid var(--line)}
 .yt-slot{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; overflow:hidden}
@@ -109,7 +131,7 @@ button{font-family:var(--mono)}
 #standby{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:6px; background:var(--panel); z-index:3; transition:opacity .6s}
 #standby.off{opacity:0; pointer-events:none}
-#standby .big{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--red); text-transform:uppercase}
+#standby .big{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--red); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 #standbyMsg{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); text-align:center; max-width:34ch}
 .vp-ctrl{display:flex; gap:8px; align-items:center; padding:7px 8px;
   background:var(--glass); border:1px solid var(--line); border-top:none}
@@ -119,8 +141,7 @@ button{font-family:var(--mono)}
 #needle{
   position:fixed; right:20px; bottom:252px; z-index:31; display:none; cursor:pointer;
   background:var(--amber); color:var(--ink); border:none; font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  text-transform:uppercase; padding:9px 12px;
-}
+  text-transform:uppercase; padding:9px 12px; font-variation-settings:var(--fv-label)}
 #needle.on{display:block}
 
 /* paineis */
@@ -134,11 +155,11 @@ button{font-family:var(--mono)}
   #genrePanel #gExt blockquote{grid-column:1/-1}
   #genrePanel #gExt .gx-note{grid-column:1/-1}
 }
-.panel h3{margin:0 0 2px; font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber)}
+.panel h3{margin:0 0 2px; font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber); font-variation-settings:var(--fv-label)}
 .psub{margin:0 0 12px; color:var(--dim); font-size:var(--fs-small); letter-spacing:0;}
 .pclose{position:absolute; right:10px; top:8px; cursor:pointer; background:none; border:none;
   color:var(--dim); font-size:var(--fs-head)}
-#gName{font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; margin-bottom:6px}
+#gName{font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; margin-bottom:6px; font-variation-settings:var(--fv-label)}
 #gNote{color:var(--text); font-size:var(--fs-small); line-height:1.6}
 #gTrackCount{color:var(--dim); font-size:var(--fs-small); letter-spacing:var(--ls-caps); margin:8px 0}
 .g-links{display:flex; flex-direction:column; gap:6px; margin-top:10px}
@@ -164,7 +185,7 @@ button{font-family:var(--mono)}
 #fieldName{position:fixed; left:50%; transform:translateX(-50%); top:56px; z-index:46;
   color:var(--amber); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase;
   background:rgba(6,5,17,.85); border:1px solid var(--line); padding:7px 12px;
-  opacity:0; pointer-events:none; transition:opacity .35s}
+  opacity:0; pointer-events:none; transition:opacity .35s; font-variation-settings:var(--fv-label)}
 #fieldName.on{opacity:1}
 
 /* ---------- mobile: full bleed; navegacao em fita deslizante, alvos de toque a serio ---------- */
@@ -181,7 +202,7 @@ button{font-family:var(--mono)}
     -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:4px 0 10px}
   .hdr-btns::-webkit-scrollbar{display:none}
   .tbtn{font-size:var(--fs-label); padding:11px 13px; min-height:42px; letter-spacing:var(--ls-caps);
-    flex:0 0 auto; white-space:nowrap}
+    flex:0 0 auto; white-space:nowrap; font-variation-settings:var(--fv-label)}
   .vidpanel{right:10px; bottom:10px; width:200px}
   .vp-screen{width:200px; height:200px}
   .vp-ctrl{padding:6px 6px; gap:6px}
@@ -195,7 +216,7 @@ button{font-family:var(--mono)}
   #tTitle{font-size:var(--fs-small); margin:3px 0 6px}
   #tBlurb{display:none}
   .t-links{flex-direction:column; align-items:stretch; gap:6px}
-  .t-links a,.t-links .tbtn{font-size:var(--fs-label); padding:10px 11px; letter-spacing:var(--ls-caps); min-height:38px}
+  .t-links a,.t-links .tbtn{font-size:var(--fs-label); padding:10px 11px; letter-spacing:var(--ls-caps); min-height:38px; font-variation-settings:var(--fv-label)}
   .t-links a{display:inline-flex; align-items:center}
   .panel{top:102px; width:94vw; right:3vw; max-height:calc(100vh - 148px)}
   #genrePanel{width:94vw}
@@ -214,7 +235,7 @@ button{font-family:var(--mono)}
 .dance-list a:hover{color:var(--amber)}
 .dance-note{color:var(--dim); font-size:var(--fs-small); letter-spacing:0; line-height:1.7; margin-top:10px}
 .dance-meta{display:block; color:var(--dim); font-size:var(--fs-small); letter-spacing:0; margin-top:2px}
-.dance-more{display:block; color:var(--amber); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:4px 0}
+.dance-more{display:block; color:var(--amber); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:4px 0; font-variation-settings:var(--fv-label)}
 
 #gExt{margin-top:16px; border-top:1px dashed var(--line); padding-top:12px}
 /* com o painel estendido, as ligacoes do topo repetiam as de «Go deeper»: ficam so as de baixo */
@@ -224,7 +245,7 @@ button{font-family:var(--mono)}
 #gExt blockquote cite{display:block; margin-top:6px; font-style:normal; font-size:var(--fs-small);
   letter-spacing:0;}
 #gExt blockquote cite a{color:var(--dim)}
-.gx-h{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--amber); margin:12px 0 6px}
+.gx-h{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--amber); margin:12px 0 6px; font-variation-settings:var(--fv-label)}
 .gx-list{list-style:none; margin:0; padding:0}
 .gx-list li{padding:5px 0; font-size:var(--fs-small); border-bottom:1px dotted var(--line)}
 .gx-list li a{color:var(--teal); text-decoration:none}
@@ -239,7 +260,7 @@ button{font-family:var(--mono)}
   background:rgba(6,5,17,.97); border:1px solid var(--amber); padding:0}
 .drawer.on{display:block}
 .dw-in{padding:24px 26px 30px; max-width:860px; margin:0 auto; position:relative}
-.dw-title{margin:0 0 4px; font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber)}
+.dw-title{margin:0 0 4px; font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber); font-variation-settings:var(--fv-label)}
 .dw-sub{margin:0 0 18px; color:var(--dim); font-size:var(--fs-small); letter-spacing:0; line-height:1.8}
 .dw-tape{border:1px solid var(--line); background:var(--surface); padding:14px 16px; margin:0 0 16px}
 .dw-tape h4{margin:0 0 10px; font-size:var(--fs-body); letter-spacing:0;}
@@ -253,7 +274,7 @@ button{font-family:var(--mono)}
 .scbar{flex:1; height:4px; background:var(--line); cursor:pointer; position:relative}
 .scbar i.scfill{display:block; height:100%; width:0; background:var(--amber)}
 .sctime{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); min-width:72px; text-align:right}
-.sclink{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
+.sclink{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim); font-variation-settings:var(--fv-label)}
 .sclink:hover{color:var(--paper)}
 
 .dw-yt{position:relative; width:100%; aspect-ratio:16/9; max-height:300px; background:var(--bg); border:1px solid var(--line)}
@@ -275,12 +296,12 @@ button{font-family:var(--mono)}
 #skill.on{display:flex}
 .sk-card{position:relative; width:min(380px, 92vw); background:var(--surface); border:1px solid var(--amber);
   padding:22px 22px 18px; text-align:center}
-.sk-title{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber); margin-bottom:6px}
+.sk-title{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber); margin-bottom:6px; font-variation-settings:var(--fv-label)}
 .sk-sub{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); line-height:1.8; margin-bottom:14px}
-.sk-target{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--paper); margin-bottom:12px}
+.sk-target{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--paper); margin-bottom:12px; font-variation-settings:var(--fv-label)}
 .sk-target b{color:var(--teal); font-size:var(--fs-title)}
 #skPad{width:100%; height:92px; cursor:pointer; background:var(--amber-soft); border:2px solid var(--amber);
-  color:var(--amber); font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; font-family:var(--mono)}
+  color:var(--amber); font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; font-family:var(--mono); font-variation-settings:var(--fv-label)}
 #skPad:active{background:var(--amber); color:var(--ink)}
 #skPad:disabled{opacity:.35; cursor:not-allowed}
 .sk-meter{margin-top:10px; font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--paper)}
@@ -296,7 +317,7 @@ button{font-family:var(--mono)}
 #toast{position:fixed; left:50%; transform:translateX(-50%); bottom:240px; z-index:50;
   background:rgba(6,5,17,.95); border:1px solid var(--blk); color:var(--paper);
   font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:9px 14px;
-  opacity:0; pointer-events:none; transition:opacity .4s}
+  opacity:0; pointer-events:none; transition:opacity .4s; font-variation-settings:var(--fv-label)}
 #toast.on{opacity:1}
 
 /* ---------- a abertura da sala liquida: so o disco 2, depois a agulha ---------- */
@@ -305,17 +326,17 @@ button{font-family:var(--mono)}
 #splash.off{opacity:0; pointer-events:none}
 .sp-inner{text-align:center; padding:20px; max-width:560px}
 #tapHint{display:block; margin-top:26px; color:var(--amber); font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite}
+  text-transform:uppercase; cursor:pointer; animation:tapPulse 1.7s ease-in-out infinite; font-variation-settings:var(--fv-label)}
 @keyframes tapPulse{0%,100%{opacity:.3}50%{opacity:1}}
 #mc{display:none; text-align:left; min-height:200px; width:min(88vw,440px); transition:opacity 1.4s ease}
 #mc.on{display:block}
 .mc-line{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--paper); opacity:0; transform:translateY(8px);
-  transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase}
+  transition:opacity .45s ease, transform .45s ease; margin:9px 0; text-transform:uppercase; font-variation-settings:var(--fv-label)}
 .mc-line.show{opacity:1; transform:none}
 .mc-line.big{font-size:clamp(22px,4.6vw,30px); letter-spacing:var(--ls-caps); color:var(--amber); text-shadow:2px 2px 0 var(--bg)}
 #skipIntro{position:fixed; right:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
   cursor:pointer; background:none; border:1px solid var(--line); color:var(--dim);
-  font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:8px 13px}
+  font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:8px 13px; font-variation-settings:var(--fv-label)}
 #skipIntro:hover{color:var(--amber); border-color:var(--amber)}
 #introCredit{position:fixed; left:18px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:81;
   color:var(--dim); font-size:var(--fs-small); letter-spacing:0; pointer-events:none; text-align:left; line-height:1.9; opacity:0; transition:opacity 1.2s ease}
@@ -365,7 +386,7 @@ button{font-family:var(--mono)}
   display:none}
 #waHint.on{display:block}
 #waPoemTitle{position:absolute; left:22px; right:22px; top:10px; font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  line-height:1.7; text-align:right; color:var(--dim); text-transform:uppercase}
+  line-height:1.7; text-align:right; color:var(--dim); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 /* a barra da ala: o regresso a esquerda, as duas paredes (esta semana, o quadro do dia) em
    botoes segmentados, e o Full screen; fica por cima de tudo menos da ficha da sala */
 #waBar{position:absolute; left:0; right:0; top:0; z-index:2; display:flex; align-items:center; gap:8px;
@@ -376,9 +397,9 @@ button{font-family:var(--mono)}
 /* o cartao e so da obra: tipo, titulo, autor e a ficha da sala */
 #waCap{position:absolute; left:16px; bottom:16px; max-width:min(480px,86vw);
   background:rgba(6,5,17,.78); border:1px solid var(--line); padding:11px 13px}
-#waCap .k{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--teal); text-transform:uppercase}
-#waCap .t{font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; margin:4px 0 2px; color:var(--paper)}
-#waCap .a{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim); text-transform:uppercase}
+#waCap .k{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--teal); text-transform:uppercase; font-variation-settings:var(--fv-label)}
+#waCap .t{font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; margin:4px 0 2px; color:var(--paper); font-variation-settings:var(--fv-label)}
+#waCap .a{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 .wa-arow{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 16px}
 #waCap .bmore{margin:0}
 /* z-index acima da dica (#waHint, 4): no telemovel a ficha ocupa o ecra e a dica tapava o artista */
@@ -386,9 +407,9 @@ button{font-family:var(--mono)}
   background:var(--panel); border-left:1px solid var(--line); padding:54px 24px 28px; touch-action:pan-y;
   overflow-y:auto; transform:translateX(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1)}
 #wartFicha.on{transform:translateX(0)}
-#wartFicha h3{margin:0 0 2px; font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber)}
+#wartFicha h3{margin:0 0 2px; font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--amber); font-variation-settings:var(--fv-label)}
 #wartFicha .fsub{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); margin:0 0 16px}
-#wartFicha .fk{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--teal); text-transform:uppercase; margin:15px 0 4px}
+#wartFicha .fk{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--teal); text-transform:uppercase; margin:15px 0 4px; font-variation-settings:var(--fv-label)}
 #wartFicha .fv{font-size:var(--fs-body); line-height:1.8; color:var(--text); margin:0}
 #wartFicha .fv b{color:var(--paper); font-weight:500}
 #wartFicha a{display:block; color:var(--amber); font-size:var(--fs-small); letter-spacing:0;
@@ -396,7 +417,7 @@ button{font-family:var(--mono)}
 #wartFichaClose{position:absolute; right:12px; top:12px; background:none; border:none; color:var(--dim);
   font-size:var(--fs-head); cursor:pointer}
 #waBadge{display:none; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase;
-  color:var(--ink); background:var(--teal); padding:3px 8px; margin:0 0 12px}
+  color:var(--ink); background:var(--teal); padding:3px 8px; margin:0 0 12px; font-variation-settings:var(--fv-label)}
 /* navegacao entre as pecas da semana: a meia altura do palco (no telemovel, ver abaixo) */
 .wa-nav{position:absolute; top:calc(var(--wa-st) + (100% - var(--wa-st) - var(--wa-sb)) / 2);
   transform:translateY(-50%); z-index:2; background:none;
@@ -406,7 +427,7 @@ button{font-family:var(--mono)}
 #waNum{color:var(--dim)}
 /* ecra de toque: botoes da barra com alvo a serio, tambem com o telemovel deitado */
 @media (pointer:coarse){
-  #waBar .tbtn{font-size:var(--fs-label); padding:11px 13px; min-height:42px; letter-spacing:var(--ls-caps); white-space:nowrap}
+  #waBar .tbtn{font-size:var(--fs-label); padding:11px 13px; min-height:42px; letter-spacing:var(--ls-caps); white-space:nowrap; font-variation-settings:var(--fv-label)}
 }
 /* telemovel de pe: regresso e Immerse numa linha, as duas paredes na de baixo; as setas
    descem para uma faixa propria logo acima do cartao, fora do palco (nunca sobre a obra) */
@@ -465,11 +486,11 @@ button{font-family:var(--mono)}
 }
 
 /* ---------- cartao: credito da oferta + estender a descricao ---------- */
-#tRec{color:var(--amber); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; margin:6px 0 0}
+#tRec{color:var(--amber); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; margin:6px 0 0; font-variation-settings:var(--fv-label)}
 #tBlurb.open{-webkit-line-clamp:unset; display:block; overflow:visible}
 .bmore{background:none; border:none; border-bottom:1px dotted var(--teal); color:var(--teal);
   font-family:var(--mono); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase;
-  cursor:pointer; padding:2px 0 1px; margin:4px 0 0}
+  cursor:pointer; padding:2px 0 1px; margin:4px 0 0; font-variation-settings:var(--fv-label)}
 .bmore:hover{color:var(--paper); border-color:var(--paper)}
 
 /* ---------- suggest a tune (ids gift*) ---------- */
@@ -485,12 +506,12 @@ textarea.gift-field{min-height:84px; resize:vertical}
   background:var(--panel); border:1px solid var(--teal); padding:8px 12px 10px; display:none; overscroll-behavior:contain}
 #devPanel.on{display:block}
 #devPanel.wide{width:min(780px, calc(100vw - 24px))}
-#devPanel h4{margin:0 0 7px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--teal); text-transform:uppercase}
-#devPanel h5{margin:12px 0 4px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); text-transform:uppercase; font-weight:500}
+#devPanel h4{margin:0 0 7px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--teal); text-transform:uppercase; font-variation-settings:var(--fv-label)}
+#devPanel h5{margin:12px 0 4px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); text-transform:uppercase; font-weight:500; font-variation-settings:var(--fv-label)}
 #devTabs{display:flex; flex-wrap:wrap; gap:4px; margin:0 0 9px; position:sticky; top:-8px; z-index:1;
   background:var(--panel); padding:4px 0}
 #devTabs button{background:none; border:1px solid var(--line); color:var(--dim); font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  text-transform:uppercase; padding:4px 7px; cursor:pointer}
+  text-transform:uppercase; padding:4px 7px; cursor:pointer; font-variation-settings:var(--fv-label)}
 #devTabs button[aria-selected="true"]{border-color:var(--teal); color:var(--teal)}
 #devTabs #devHide{margin-left:auto; letter-spacing:0}
 .dv-pane{display:none; font-size:var(--fs-small); line-height:1.6; color:var(--text)}
@@ -517,7 +538,7 @@ textarea.gift-field{min-height:84px; resize:vertical}
 #devNext li{border-bottom:1px dotted var(--line); padding:6px 0; font-size:var(--fs-small); line-height:1.6; color:var(--text)}
 #devNext li b{color:var(--paper); font-weight:500; display:block}
 #devNext li span{color:var(--amber)}
-#devNext li i{color:var(--teal); font-style:normal; display:block; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase}
+#devNext li i{color:var(--teal); font-style:normal; display:block; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 @media (max-width:760px){
   #devPanel,#devPanel.wide{left:8px; right:8px; width:auto; top:50px; max-height:calc(100vh - 64px)}
 }

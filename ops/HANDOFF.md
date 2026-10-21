@@ -224,16 +224,11 @@ Prompt das rondas em `ops/prompts/ui-audit.md` (uma ronda por sessão: «executa
 - Pedidos do Paulo de 2026-10-19 (fora das rondas), pela ordem que ele aceitou: (1) feito na v5.7, a rádio ouvia-se
   baixinha por trás da sala de foco numa troca de disco (secção 14 do `build-liquid.py`, teste `t-side.js`);
   (2) estudo de letras mais legíveis em monitor grande, ronda 3b (`ops/notes/2026-10-19/fontes-estudo.md`): o Paulo
-  escolheu a 6, Recursive (2026-10-19). Por implementar, primeiro passo da próxima sessão: letra servida pelo próprio
-  site (Recursive variável, woff2, subconjunto latino, com a licença OFL ao lado, numa pasta `liquid/fonts/`);
-  `@font-face` no l01; `--font-label` (Recursive com `font-variation-settings: "MONO" 1, "CASL" 0`) para tudo o que hoje
-  usa `--mono`, e `--font-text` (Recursive `"MONO" 0, "CASL" 0.6`) para as frases em minúsculas (as regras com
-  `--fs-small` ou `--fs-body` sem maiúsculas) e os campos de texto, como no guião `fontes-estudo.js`; escala fluida para
-  monitores grandes (os cinco tamanhos a crescer entre 1440 e 2560 px, por exemplo texto de leitura de 13 para 15 px);
-  teste no `t-ui.js` (letra carregada com `document.fonts.check`, rótulos e frases com a variação certa); bateria
-  completa; capturas antes e depois com `ops/tools/ui_audit.js`. Não é motor; (3) volume vertical para Rain, Fire e Vinyl na barra da sala de foco, opção A
+  escolheu a 6, Recursive (2026-10-19). Feito na v5.9 (2026-10-21): letra servida pelo site (`liquid/fonts/`, OFL),
+  rótulos e maiúsculas com `--fv-label` (monoespaçada linear), frases e campos com `--fv-text` (casual), escala fluida
+  (+15% aos 2560 px), teste no `t-ui.js`. Não é motor; (3) volume vertical para Rain, Fire e Vinyl na barra da sala de foco, opção A
   (controlo vertical por cima de cada botão, ao passar o rato e ao segundo toque), na ronda 4.
-- Ordem pedida pelo Paulo a 2026-10-19: implementar a Recursive e depois a ronda 5 (limpeza de código, prompt em
+- Ordem pedida pelo Paulo a 2026-10-19 (confirmada a 2026-10-21): a Recursive (feita, v5.9) e depois a ronda 5 (limpeza de código, prompt em
   `ops/prompts/ui-audit.md`; as cinco funções do motor sem chamador ficam a nível max, diff revisto). A ronda 4 fica em
   fila depois disso, com o volume vertical opção A.
 - Sessões no computador do Paulo (desde 2026-10-19, por limite de uso na nuvem): `git pull --rebase origin main`

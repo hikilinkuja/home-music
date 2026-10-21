@@ -11,7 +11,9 @@
 // Ronda 3 (tipografia, ops/notes/2026-10-18/ui-type.md): tamanhos e espacamentos so pelas variaveis (fora os de
 // exibicao); nos estados abertos, nenhum texto abaixo de 10 px, nenhuma frase abaixo de 12 px (fora tres rotulos
 // escritos em maiusculas) e nenhum texto em maiusculas com mais de cinco palavras (fora tres excecoes).
-// Cerca de 70 segundos.
+// Ronda 3b (letra Recursive, liquid/fonts): servida pelo site e carregada; variacoes so pelas variaveis e todo o
+// rotulo com --fv-label; rotulos monoespacados e frases casuais nos estados abertos; tamanhos de sempre a 1440 px
+// e 15% maiores a 2560 px. Cerca de 80 segundos.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -82,6 +84,23 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
     }
   }
   t.check('letra: tamanhos e espacamentos so pelas variaveis da escala', badType.length === 0, badType.slice(0, 8).join(' | '));
+  // letra Recursive (2026-10-21): servida pelo site; variacoes so pelas variaveis; rotulos (maiusculas, 10 px) com --fv-label
+  const l01 = fs.readFileSync(path.join(T.ROOT, 'liquid', 'l01-head.html'), 'utf8');
+  const faces = [...l01.matchAll(/@font-face\{[^}]*font-family:"Recursive"[^}]*url\("(fonts\/[\w.-]+\.woff2)"\)/g)].map(m => m[1]);
+  const missing = faces.filter(f => !fs.existsSync(path.join(T.ROOT, 'liquid', f)));
+  t.check('letra: Recursive servida pelo site (dois @font-face, ficheiros e licenca OFL presentes)',
+    faces.length === 2 && missing.length === 0 && fs.existsSync(path.join(T.ROOT, 'liquid', 'fonts', 'OFL.txt')), JSON.stringify({ faces, missing }));
+  const badFv = [];
+  for (const f of ['l01-head.html', 'l07-focus.html', 'l08-arcade.html']) {
+    const src = fs.readFileSync(path.join(T.ROOT, 'liquid', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    for (const st of src.matchAll(/<style>([\s\S]*?)<\/style>/g)) for (const b of st[1].matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+      const sel = b[1].trim(), body = b[2];
+      if (sel === ':root') continue;
+      for (const v of body.matchAll(/font-variation-settings\s*:\s*([^;}]+)/g)) if (!/^(var\(--fv-(label|text)\)|inherit)$/.test(v[1].trim())) badFv.push(f + ' ' + sel.slice(0, 40) + ' ' + v[1].trim());
+      if (/text-transform:uppercase|font-size:var\(--fs-label\)/.test(body) && !/font-variation-settings:var\(--fv-label\)/.test(body)) badFv.push(f + ' ' + sel.slice(0, 40) + ' sem --fv-label');
+    }
+  }
+  t.check('letra: variacoes so por --fv-label e --fv-text, e todo o rotulo com --fv-label', badFv.length === 0, badFv.slice(0, 6).join(' | '));
   // nos estados abertos: minimo de 10 px, frases de 12 px, maiusculas so em textos curtos
   const TYPE = () => {
     const SMALL_OK = '#tBpm, #tYear, .sk-target', CAPS_OK = '#blockLabel, #waK, .mc-line';
@@ -100,6 +119,24 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
       if (fs < 10) bad.push('abaixo de 10 px: ' + who + ' ' + fs);
       else if (!caps && fs < 12 && !el.closest(SMALL_OK)) bad.push('frase abaixo de 12 px: ' + who + ' ' + fs);
       if (caps && words > 5 && !el.closest(CAPS_OK)) bad.push('maiusculas longas: ' + who);
+    }
+    return bad;
+  };
+  // cada texto visivel com a variacao certa: rotulo (monoespacado) se em maiusculas, abaixo de 12 px ou no cartao da
+  // faixa, nos relogios, no alvo do Earn a skip e no Begin; frase (casual) nos outros casos (a regra do estudo da ronda 3b)
+  const FV = () => {
+    const LBL = '#tArtist,#tTitle,#clock,#fcTime,#fcClock,#fcBegin,#skTarget', bad = [];
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; const seen = new Set();
+    while ((n = w.nextNode())) {
+      const el = n.parentElement, txt = n.nodeValue.replace(/\s+/g, ' ').trim();
+      if (!txt || !el || seen.has(el) || /^(SCRIPT|STYLE|OPTION|TITLE)$/.test(el.tagName) || !el.getClientRects().length) continue;
+      seen.add(el);
+      const cs = getComputedStyle(el);
+      if (cs.visibility !== 'visible' || el.closest('[hidden]') || el.closest('#devPanel')) continue;
+      let shown = true; for (let x = el; x; x = x.parentElement) { const c = getComputedStyle(x); if (c.display === 'none' || +c.opacity === 0) { shown = false; break; } }
+      if (!shown) continue;
+      const wantL = cs.textTransform === 'uppercase' || parseFloat(cs.fontSize) < 11.9 || !!el.closest(LBL), isL = /"MONO" 1/.test(cs.fontVariationSettings);
+      if (wantL !== isL) bad.push((wantL ? 'rotulo sem mono: ' : 'frase em mono: ') + (el.id ? '#' + el.id : el.tagName.toLowerCase()) + ' «' + txt.slice(0, 24) + '»');
     }
     return bad;
   };
@@ -170,7 +207,20 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
       t.check('cores: Kill the bass aceso em verde', C.bass[1] === 'rgb(28, 122, 58)', C.bass[1]);
       t.check('cores: consola com contraste AA (Kill the bass aceso, teclas, valores)', rb >= 4.5 && rk >= 4.5 && rv >= 4.5, [rb, rk, rv].map(x => x.toFixed(2)).join(' '));
     }
-    const tb = [];
+    const tb = [], fv = [];
+    if (mode === 'desktop') {
+      // a letra carrega do proprio site; tamanhos fluidos: iguais a 1440 px, +15% aos 2560 px
+      const sizes = async () => r.page.evaluate(() => ['--fs-label', '--fs-small', '--fs-body', '--fs-title', '--fs-head'].map(v => {
+        const d = document.createElement('div'); d.style.fontSize = 'var(' + v + ')'; document.body.appendChild(d); const x = parseFloat(getComputedStyle(d).fontSize); d.remove(); return +x.toFixed(1); }));
+      const F = await r.page.evaluate(async () => { await document.fonts.ready; return { ok: document.fonts.check('16px Recursive'), st: [...document.fonts].filter(f => f.family.replace(/"/g, '') === 'Recursive').map(f => f.status) }; });
+      t.check('letra: Recursive carregada do site', F.ok && F.st.indexOf('loaded') >= 0, JSON.stringify(F));
+      const s1440 = await sizes();
+      await r.page.setViewportSize({ width: 2560, height: 1000 }); await r.page.waitForTimeout(300);
+      const s2560 = await sizes();
+      await r.page.setViewportSize({ width: 1440, height: 900 }); await r.page.waitForTimeout(300);
+      t.check('letra: tamanhos de sempre a 1440 px (10, 12, 13, 14, 16)', JSON.stringify(s1440) === JSON.stringify([10, 12, 13, 14, 16]), JSON.stringify(s1440));
+      t.check('letra: tamanhos maiores a 2560 px (11,5, 13,8, 15, 16,1, 18,4)', JSON.stringify(s2560) === JSON.stringify([11.5, 13.8, 15, 16.1, 18.4]), JSON.stringify(s2560));
+    }
     for (const open of [null, 'genreBtn', 'giftBtn', 'mixBtn', 'skipBtn', 'focusBtn']) {
       await r.page.evaluate((id) => {
         document.querySelectorAll('.panel.on .pclose').forEach(b => b.click());
@@ -179,7 +229,9 @@ const rgb = (s) => (s.match(/[\d.]+/g) || []).map(Number);
       }, open);
       await r.page.waitForTimeout(500);
       tb.push(...(await r.page.evaluate(TYPE)).map(x => (open || 'emissao') + ': ' + x));
+      fv.push(...(await r.page.evaluate(FV)).map(x => (open || 'emissao') + ': ' + x));
     }
+    t.check(`${mode}: rotulos monoespacados e frases casuais (Recursive) na emissao, paineis e sala de foco`, fv.length === 0, [...new Set(fv)].slice(0, 6).join(' | '));
     await r.page.evaluate(() => document.getElementById('fcExit').click());
     t.check(`${mode}: letra (minimos e maiusculas) na emissao, paineis, Mixtapes, Earn a skip e sala de foco`, tb.length === 0, [...new Set(tb)].slice(0, 6).join(' | '));
     t.check(`${mode}: sem erros de JavaScript`, r.errors.length === 0, r.errors.join(' | '));

@@ -14,14 +14,14 @@
 #fcGate.on{display:flex}
 #fcOrb{width:110px; height:110px; border-radius:50%; border:1px solid var(--teal-edge);
   box-shadow:0 0 60px var(--teal-glow) inset, 0 0 40px var(--teal-glow)}
-#fcWord{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--dim)}
+#fcWord{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
 #fcWhy{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); max-width:420px;
   text-align:center; line-height:2.1; padding:0 16px}
 #fcGateSkip{position:absolute; right:18px; bottom:16px}
 
 /* botoes da sala: alvo de 44 px e letra maior do que a da barra da radio */
 #focus .tbtn{font-size:var(--fs-label); min-height:44px; padding:0 16px; gap:8px; justify-content:center; white-space:nowrap;
-  transition:color .2s, border-color .2s, background .2s}
+  transition:color .2s, border-color .2s, background .2s; font-variation-settings:var(--fv-label)}
 #focus .tbtn.ic{width:44px; padding:0}
 #focus .tbtn.lit{color:var(--amber); border-color:var(--amber)}
 .fc-ico{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round;
@@ -33,7 +33,7 @@
 
 #fcTop{position:absolute; left:0; right:0; top:0; z-index:6; display:flex; align-items:center; gap:16px;
   padding:18px 26px; background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,0))}
-#fcTop .fbrand{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--paper)}
+#fcTop .fbrand{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--paper); font-variation-settings:var(--fv-label)}
 #fcClock{font-size:var(--fs-body); letter-spacing:var(--ls-caps); color:var(--amber)}
 #fcTop .fc-tr{margin-left:auto; display:flex; gap:10px}
 #focus[data-stage=entry] .fc-sess{display:none}
@@ -43,7 +43,7 @@
   transition:opacity .45s ease, transform .45s ease, visibility 0s linear .45s}
 #focus[data-stage=entry] #fcEntry, #focus[data-stage=session] #fcSess{opacity:1; visibility:visible; transform:none;
   transition:opacity .45s ease, transform .45s ease, visibility 0s}
-.fc-h{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--teal); margin:0; font-weight:400}
+.fc-h{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--teal); margin:0; font-weight:400; font-variation-settings:var(--fv-label)}
 .fc-cap{font-size:var(--fs-small); letter-spacing:0; color:var(--dim); text-align:center}
 
 /* ---------- entrada ---------- */
@@ -62,24 +62,24 @@
 .fc-card:hover{border-color:var(--dim)}
 .fc-card[aria-pressed=true]{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber); background:var(--amber-soft)}
 .fc-card.last{border-style:dashed}
-.fc-card .nm{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase}
-.fc-card .mn{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--amber); text-transform:uppercase}
+.fc-card .nm{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; font-variation-settings:var(--fv-label)}
+.fc-card .mn{font-size:var(--fs-title); letter-spacing:var(--ls-title); color:var(--amber); text-transform:uppercase; font-variation-settings:var(--fv-label)}
 .fc-card .for{font-size:var(--fs-small); letter-spacing:0; color:var(--text); font-style:italic}
 .fc-card .gs{font-size:var(--fs-small); line-height:1.6; color:var(--dim)}
 #fcPhone{display:flex; align-items:center; gap:8px; margin:20px 0 0}
 #fcPhone .fc-ico{width:15px; height:15px}
 .fc-card .sd{margin-top:auto; display:flex; align-items:center; gap:7px; font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  text-transform:uppercase; color:var(--text)}
+  text-transform:uppercase; color:var(--text); font-variation-settings:var(--fv-label)}
 #fcBegin{margin-top:12px; width:min(340px, 100%); height:60px; display:inline-flex; align-items:center;
   justify-content:center; gap:12px; background:var(--amber); border:1px solid var(--amber); color:var(--ink);
   font-family:var(--mono); font-size:var(--fs-head); letter-spacing:var(--ls-title); text-transform:uppercase; cursor:pointer;
-  transition:transform .15s ease, box-shadow .2s}
+  transition:transform .15s ease, box-shadow .2s; font-variation-settings:var(--fv-label)}
 #fcBegin:hover{box-shadow:0 0 0 3px var(--amber-edge)}
 #fcBegin:active{transform:scale(.98)}
 #fcBegin .fc-ico{fill:var(--ink); stroke:var(--ink)}
 #fcGoRow{display:flex; flex-direction:column; align-items:center; gap:14px; width:100%}
 #fcAdjust{background:none; border:0; min-height:44px; color:var(--teal); font-family:var(--mono); font-size:var(--fs-label);
-  letter-spacing:var(--ls-caps); text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
+  letter-spacing:var(--ls-caps); text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer; font-variation-settings:var(--fv-label)}
 /* porta (v5.0): recomeco a segunda e no dia 1, continuar onde parei, passo mais pequeno, habito
    de musica (so na primeira visita) e o som da cena, um passo atras das cartas */
 .fc-qh{display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap}
@@ -88,7 +88,7 @@
   cursor:pointer; opacity:.85}
 .fc-why:hover{opacity:1; color:var(--amber)}
 .fc-link{background:none; border:0; min-height:32px; padding:0 4px; color:var(--teal); font-family:var(--mono); font-size:var(--fs-label);
-  letter-spacing:var(--ls-caps); text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer}
+  letter-spacing:var(--ls-caps); text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; cursor:pointer; font-variation-settings:var(--fv-label)}
 #fcFresh{display:flex; align-items:center; gap:6px; margin:0; color:var(--teal)}
 #fcCont{width:min(600px, 100%); min-height:56px; display:flex; align-items:center; gap:14px; padding:8px 16px; box-sizing:border-box;
   background:var(--surface); border:1px solid var(--teal); color:var(--paper); font-family:var(--mono); text-align:left;
@@ -96,7 +96,7 @@
 #fcCont:hover{box-shadow:0 0 0 3px var(--teal-glow)}
 #fcCont .fc-ico{color:var(--teal); fill:var(--teal); stroke:var(--teal)}
 #fcCont .tx{display:flex; flex-direction:column; gap:4px; min-width:0}
-#fcCont b{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal)}
+#fcCont b{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); font-variation-settings:var(--fv-label)}
 #fcContN{font-size:var(--fs-small); letter-spacing:0; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 #fcStep{width:min(600px, 100%); height:40px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:var(--fs-body); letter-spacing:0; padding:0 14px; text-align:center}
@@ -105,8 +105,8 @@
 #fcHabit .q{font-size:var(--fs-small); letter-spacing:0; color:var(--paper)}
 #fcSound{display:flex; align-items:center; justify-content:center; gap:4px 10px; flex-wrap:wrap; font-size:var(--fs-small);
   letter-spacing:var(--ls-caps); color:var(--dim); text-align:center}
-#fcSound .k{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim)}
-#fcSoundN{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--paper)}
+#fcSound .k{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
+#fcSoundN{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--paper); font-variation-settings:var(--fv-label)}
 #fcProfPick{justify-content:center; width:min(760px, 100%)}
 .fc-card .sd .fc-ico{width:15px; height:15px}
 
@@ -118,7 +118,7 @@
 #fcSess > *{flex-shrink:0}
 #fcSess > #fcDial{flex-shrink:1; min-height:96px; container-type:size}
 #fcTag{font-size:var(--fs-title); letter-spacing:var(--ls-title); text-transform:uppercase; color:var(--dim);
-  text-align:center; max-width:90vw}
+  text-align:center; max-width:90vw; font-variation-settings:var(--fv-label)}
 #fcTag b{font-weight:400; color:var(--dim)}
 #fcDial{position:relative; width:var(--fc-ring); height:var(--fc-ring); background:none; border:0; padding:0;
   cursor:pointer; color:var(--paper); font-family:var(--mono); border-radius:50%}
@@ -134,11 +134,11 @@
    segundos voltam ao passar o rato, em pausa e nos intervalos */
 #fcTime{font-size:calc(var(--fc-ring) * .25); font-size:25cqmin; line-height:1; letter-spacing:0; display:flex; align-items:baseline;
   gap:.15em; transition:font-size .6s ease}
-#fcTU{font-size:.2em; letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim)}
+#fcTU{font-size:.2em; letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
 #fcTU:empty{display:none}
 #fcNext{font-size:var(--fs-small); letter-spacing:0; line-height:1.5; color:var(--dim); text-align:center; max-width:min(560px, 90vw)}
 #fcNext b{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal);
-  margin-right:8px}
+  margin-right:8px; font-variation-settings:var(--fv-label)}
 /* intervalo guiado: anel menor, convite a sair do ecra, onde paraste */
 #focus.brk{--fc-ring:min(300px, 60vw, 38vh)}
 #fcBrk{display:none; flex-direction:column; align-items:center; gap:8px; width:min(520px, 92vw)}
@@ -151,18 +151,18 @@
 #fcNote:focus{border-color:var(--teal); outline:none}
 #fcActs{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
 #focus #fcActs .tbtn[hidden]{display:none}
-#fcPhase{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); text-transform:uppercase; transition:color .6s}
+#fcPhase{font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--amber); text-transform:uppercase; transition:color .6s; font-variation-settings:var(--fv-label)}
 #focus.brk #fcPhase{color:var(--teal)}
 #fcMarks{display:flex; gap:5px}
 #fcMarks i{width:18px; height:3px; background:var(--line); transition:background .6s}
 #fcMarks i.done{background:var(--amber)}
-#fcHint{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim)}
+#fcHint{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
 #fcDock{position:absolute; left:50%; bottom:44px; transform:translateX(-50%); z-index:5; display:flex;
   align-items:center; padding:10px 12px; background:var(--glass); border:1px solid var(--line);
   max-width:calc(100% - 32px)}
 .fc-sep{width:1px; align-self:stretch; background:var(--line); margin:0 14px; flex:none}
 #fcNowBox{display:flex; flex-direction:column; gap:4px; min-width:110px; flex:1 1 230px; max-width:260px; margin-right:8px}
-#fcNowG{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); min-height:12px}
+#fcNowG{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); min-height:12px; font-variation-settings:var(--fv-label)}
 #fcNow{font-size:var(--fs-body); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 #fcSkipT{margin-left:6px}
 .fc-vol{display:flex; align-items:center; gap:8px; margin-left:12px; color:var(--dim)}
@@ -192,7 +192,7 @@
 .fc-hd{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
 .fc-sub{font-size:var(--fs-small); letter-spacing:var(--ls-caps); color:var(--dim); font-style:italic}
 .fc-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-.fc-l{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); min-width:88px}
+.fc-l{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); min-width:88px; font-variation-settings:var(--fv-label)}
 #fcDrawer select{flex:1; min-width:0; height:44px; background:var(--surface); border:1px solid var(--line); color:var(--paper);
   font-family:var(--mono); font-size:var(--fs-small); padding:0 10px}
 #fcDrawer .fc-row input[type=range]{flex:1; min-width:120px}
@@ -203,14 +203,14 @@
 .fc-chips{display:flex; flex-wrap:wrap; gap:6px}
 .fc-chip{min-height:34px; padding:0 9px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase;
   border:1px solid var(--line); color:var(--dim); background:transparent; font-family:var(--mono); cursor:pointer;
-  transition:color .2s, border-color .2s}
+  transition:color .2s, border-color .2s; font-variation-settings:var(--fv-label)}
 .fc-chip:hover{border-color:var(--amber)}
 .fc-chip[aria-pressed=true]{color:var(--teal); border-color:var(--teal)}
 #fcValve .fc-chip.more:not([aria-pressed=true]){display:none}
 #fcValve.all .fc-chip.more{display:inline-block}
-.fc-bgl{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); width:100%; margin-top:4px}
+.fc-bgl{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--dim); width:100%; margin-top:4px; font-variation-settings:var(--fv-label)}
 .fc-fader label{display:flex; justify-content:space-between; font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim);
-  text-transform:uppercase; margin-bottom:4px}
+  text-transform:uppercase; margin-bottom:4px; font-variation-settings:var(--fv-label)}
 .fc-fader input{width:100%}
 .fc-chk{display:flex; align-items:center; gap:10px; font-size:var(--fs-small); color:var(--text); min-height:32px; cursor:pointer}
 .fc-chk input{accent-color:var(--amber); width:16px; height:16px; margin:0}
@@ -226,7 +226,7 @@
 .fc-lvls{display:grid; grid-template-columns:max-content 1fr; gap:8px 14px; align-items:center; margin:0 0 8px;
   font-size:var(--fs-small); line-height:1.5; color:var(--dim)}
 .fc-lv{display:inline-block; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; padding:3px 7px;
-  border:1px solid currentColor; white-space:nowrap; flex:none; justify-self:start}
+  border:1px solid currentColor; white-space:nowrap; flex:none; justify-self:start; font-variation-settings:var(--fv-label)}
 .lv-strong{color:var(--ink); background:var(--teal); border-color:var(--teal)}
 .lv-moderate{color:var(--teal)}
 .lv-weak{color:var(--dim)}
@@ -244,7 +244,7 @@
 .fc-ev.hl{background:var(--teal-soft); box-shadow:-10px 0 0 var(--teal-soft), 10px 0 0 var(--teal-soft)}
 .fc-ev .bd{padding:0 0 16px; font-size:var(--fs-small); line-height:1.75; color:var(--text)}
 .fc-ev .bd p{margin:0 0 8px}
-.fc-ev .bd b{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); margin-right:10px}
+.fc-ev .bd b{font-weight:400; font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); margin-right:10px; font-variation-settings:var(--fv-label)}
 .fc-src{margin:8px 0 0; padding:0; list-style:none; font-size:var(--fs-small); line-height:1.6}
 .fc-src li{position:relative; padding-left:16px; margin-bottom:4px}
 .fc-src li::before{content:"-"; position:absolute; left:0; color:var(--dim)}
@@ -256,7 +256,7 @@
    e experiencia pessoal (tudo so neste browser) ---------- */
 #fcTot{display:flex; align-items:center; gap:2px 14px; min-height:44px; padding:0 4px; background:none; border:0;
   color:var(--dim); font-family:var(--mono); font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; cursor:pointer;
-  text-align:left; white-space:nowrap}
+  text-align:left; white-space:nowrap; font-variation-settings:var(--fv-label)}
 #fcTot:hover{color:var(--paper)}
 #focus[data-stage=session] #fcTot{display:none}
 #fcTot span:empty{display:none}
@@ -265,14 +265,14 @@
 #focus.ifon #fcEntry .opt{display:none}
 #fcStepRow, #fcIfRow{display:flex; align-items:center; gap:8px; width:min(600px, 100%)}
 #fcStepRow #fcStep{flex:1; width:auto; min-width:0}
-#fcIfRow .k{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); flex:none}
+#fcIfRow .k{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); flex:none; font-variation-settings:var(--fv-label)}
 #fcIfRow input{flex:1; min-width:0; height:40px; box-sizing:border-box; background:var(--surface); border:1px solid var(--line);
   color:var(--paper); font-family:var(--mono); font-size:var(--fs-body); letter-spacing:0; padding:0 10px}
 #fcIfRow input:focus{border-color:var(--teal); outline:none}
 #fcIfLnk{flex:none; white-space:nowrap}
 #fcActs{align-items:center}
 .fc-quiet{background:none; border:1px solid transparent; min-height:44px; padding:0 12px; color:var(--dim); font-family:var(--mono);
-  font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s}
+  font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:color .2s, border-color .2s; font-variation-settings:var(--fv-label)}
 .fc-quiet:hover{color:var(--paper); border-color:var(--line)}
 #fcParkBox{display:flex; align-items:center; gap:6px; width:min(440px, 86vw)}
 #fcPark{flex:1; min-width:0; height:44px; box-sizing:border-box; background:var(--surface); border:1px solid var(--teal);
@@ -283,7 +283,7 @@
 #fcRate .tbtn{width:44px; padding:0}
 #fcParked{width:100%; display:flex; flex-direction:column; gap:2px}
 #fcParked .fc-qh{justify-content:space-between}
-#fcParked .lb{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal)}
+#fcParked .lb{font-size:var(--fs-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--teal); font-variation-settings:var(--fv-label)}
 #fcParkL{list-style:none; margin:0; padding:0; max-height:64px; overflow-y:auto; font-size:var(--fs-small); line-height:1.4; color:var(--paper)}
 #fcParkL li{display:flex; align-items:center; justify-content:space-between; gap:8px}
 #fcParkL li span{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -296,7 +296,7 @@
 #focus.brk.more{--fc-ring:min(240px, 50vw, 28vh)}
 .fc-week{display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:6px; align-items:end}
 .fc-week .dy{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:var(--fs-label); letter-spacing:var(--ls-caps);
-  text-transform:uppercase; color:var(--dim)}
+  text-transform:uppercase; color:var(--dim); font-variation-settings:var(--fv-label)}
 .fc-week .bar{position:relative; width:100%; max-width:34px; height:56px; border-bottom:1px solid var(--line)}
 .fc-week .bar i{position:absolute; left:0; right:0; bottom:0; background:var(--teal); opacity:.75}
 .fc-week .td{color:var(--amber)}
@@ -310,7 +310,7 @@
 /* ---------- selo (ecra inteiro) ---------- */
 #focus.sealed #fcTop, #focus.sealed .fc-chrome, #focus.sealed #fcHint{display:none}
 #fcSealHint{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:5;
-  font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim); text-transform:uppercase; display:none}
+  font-size:var(--fs-label); letter-spacing:var(--ls-caps); color:var(--dim); text-transform:uppercase; display:none; font-variation-settings:var(--fv-label)}
 #focus.sealed #fcSealHint{display:block}
 
 /* barra mais estreita: os sons ficam so com o icone, o volume passa para a gaveta */
@@ -375,7 +375,7 @@
   #fcSound{gap:2px 8px}
   #fcSound .k{display:none}
   #fcStep{font-size:var(--fs-small); letter-spacing:0; padding:0 8px}
-  #fcTot{flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); padding:0}
+  #fcTot{flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; font-size:var(--fs-label); letter-spacing:var(--ls-caps); padding:0; font-variation-settings:var(--fv-label)}
   #focus.hastot[data-stage=entry] #fcClock{display:none}
   #fcIfRow{gap:6px}
   #fcIfRow input{font-size:var(--fs-small); padding:0 6px; letter-spacing:0}

@@ -11,7 +11,8 @@ Verifica:
     estados conhecidos, ids unicos, e cobre todos os data-why e why: do liquid/l07-focus.html;
   - as gravacoes da abertura e da agulha (SFX_MEDIA, v5.8), pedidas pela sala liquid, existem no
     repositorio e parecem MP3 completos (sem elas, a abertura volta a depender do archive.org; trazer
-    com ops/tools/fetch_intro_media.py ou com o fluxo .github/workflows/intro-media.yml).
+    com ops/tools/fetch_intro_media.py ou com o fluxo .github/workflows/intro-media.yml);
+  - os ficheiros da letra (liquid/fonts/*.woff2) pedidos pela sala liquid existem e sao WOFF2.
 Uso: python3 ops/tools/validate.py   (a partir da raiz do repositorio)
 """
 import json
@@ -106,6 +107,11 @@ def media_check():
         head = open(n, "rb").read(4)
         if os.path.getsize(n) < 50000 or not (head[:3] == b"ID3" or (head[0] == 0xFF and head[1] & 0xE0 == 0xE0)):
             fails.append(f"{n} nao parece um MP3 completo ({os.path.getsize(n)} bytes)")
+    # a letra servida pelo site (v5.9): cada woff2 pedido pela pagina existe e e WOFF2
+    for f in sorted(set(re.findall(r'url\("(fonts/[\w.-]+\.woff2)"\)', html))):
+        p = os.path.join("liquid", f)
+        if not os.path.isfile(p) or open(p, "rb").read(4) != b"wOF2":
+            fails.append(f"letra {p} ausente ou nao e WOFF2")
     return len(names)
 
 
