@@ -31,15 +31,31 @@ FILES = [
 ]
 
 
-def get(url, tries=5):
+def get(url, tries=3, deadline=240):
+    """Pedido com tentativas; cada tentativa tem um prazo total (um servidor a pingar bytes nao prende)."""
     last = None
     for i in range(tries):
+        t0 = time.time()
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=120) as r:
-                return r.read()
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
+                size = int(r.headers.get("Content-Length") or 0)
+                parts, got = [], 0
+                while True:
+                    chunk = r.read(262144)
+                    if not chunk:
+                        break
+                    parts.append(chunk)
+                    got += len(chunk)
+                    if time.time() - t0 > deadline:
+                        raise TimeoutError("prazo de %d s esgotado com %d de %d bytes" % (deadline, got, size))
+                body = b"".join(parts)
+                if size and len(body) != size:
+                    raise IOError("recebidos %d de %d bytes" % (len(body), size))
+                print("  %d bytes em %.1f s" % (len(body), time.time() - t0))
+                return body
         except Exception as e:  # rede, 5xx, tempo esgotado: tentar outra vez
             last = e
-            print("  tentativa %d falhou: %s" % (i + 1, e), file=sys.stderr)
+            print("  tentativa %d falhou ao fim de %.0f s: %s" % (i + 1, time.time() - t0, e), file=sys.stderr)
             time.sleep(5 * (i + 1))
     raise SystemExit("FAIL %s: %s" % (url, last))
 
@@ -57,28 +73,41 @@ def is_mp3(b):
     return b[:3] == b"ID3" or (len(b) > 1 and b[0] == 0xFF and (b[1] & 0xE0) == 0xE0)
 
 
+def fetch(dest, url, minimum, md5):
+    path = os.path.join(ROOT, dest)
+    print("a descarregar %s" % url)
+    body = get(url)
+    if len(body) < minimum:
+        raise SystemExit("FAIL %s: so %d bytes" % (dest, len(body)))
+    if not is_mp3(body):
+        raise SystemExit("FAIL %s: nao parece MP3 (comeca por %r)" % (dest, body[:8]))
+    got = hashlib.md5(body).hexdigest()
+    if md5 == "archive":
+        want = archive_md5()
+        if got != want:
+            raise SystemExit("FAIL %s: MD5 %s, o Internet Archive diz %s" % (dest, got, want))
+    with open(path + ".part", "wb") as fh:
+        fh.write(body)
+    os.replace(path + ".part", path)
+    print("ok %s: %d bytes, md5 %s" % (dest, len(body), got))
+
+
 def main():
     force = "--force" in sys.argv
+    failed = []
+    # cada ficheiro por si: uma fonte em baixo nao impede a outra
     for dest, url, minimum, md5 in FILES:
         path = os.path.join(ROOT, dest)
         if os.path.exists(path) and not force:
             print("ja existe: %s (%d bytes); --force para descarregar outra vez" % (dest, os.path.getsize(path)))
             continue
-        print("a descarregar %s" % url)
-        body = get(url)
-        if len(body) < minimum:
-            raise SystemExit("FAIL %s: so %d bytes" % (dest, len(body)))
-        if not is_mp3(body):
-            raise SystemExit("FAIL %s: nao parece MP3 (comeca por %r)" % (dest, body[:8]))
-        got = hashlib.md5(body).hexdigest()
-        if md5 == "archive":
-            want = archive_md5()
-            if got != want:
-                raise SystemExit("FAIL %s: MD5 %s, o Internet Archive diz %s" % (dest, got, want))
-        with open(path + ".part", "wb") as fh:
-            fh.write(body)
-        os.replace(path + ".part", path)
-        print("ok %s: %d bytes, md5 %s" % (dest, len(body), got))
+        try:
+            fetch(dest, url, minimum, md5)
+        except SystemExit as e:
+            print(e, file=sys.stderr)
+            failed.append(dest)
+    if failed:
+        sys.exit("por trazer: %s (tentar mais tarde)" % ", ".join(failed))
 
 
 if __name__ == "__main__":
